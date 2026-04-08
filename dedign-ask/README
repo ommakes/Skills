@@ -1,0 +1,81 @@
+# Ticket Decoder
+
+A Claude skill for designers who are tired of spending half a sprint figuring out what a ticket is actually asking for.
+
+-----
+
+## The problem it solves
+
+Tickets written by PMs, devs, or business stakeholders are often:
+
+- Vague about the real user need
+- Written from a system or QA perspective with no design context
+- **Prescriptive** — they specify a solution (“add a dropdown”) instead of describing what the user needs to do
+- Missing acceptance criteria, or AC written in a way that only makes sense to a developer
+- Already time-boxed with dev work underway, which limits what design can actually change
+
+The result is designers spending hours on back-and-forth with PMs just to understand what they’re supposed to make. This skill short-circuits that.
+
+-----
+
+## What it does
+
+Paste in a ticket — description, acceptance criteria, or both — and the skill produces a structured breakdown designed for designers, not developers.
+
+Every output covers seven sections:
+
+|Section                    |What it tells you                                                                                         |
+|---------------------------|----------------------------------------------------------------------------------------------------------|
+|**The real ask**           |What the user or business actually needs, stripped of implementation language                             |
+|**Type of design work**    |Is this content? A single screen? A branching flow? A new pattern?                                        |
+|**Known requirements**     |Only what’s explicitly stated in the ticket — your hard constraints                                       |
+|**Inferred context**       |What the ticket implies but doesn’t say, flagged clearly as assumptions                                   |
+|**Prescription alert**     |When the ticket specifies a UI solution instead of a need — with the risk and a question to push back with|
+|**Constraints and context**|Dev status, timeboxes, platform limits, existing patterns to account for                                  |
+|**Open questions**         |A ready-to-paste list of questions to bring to the PM before starting                                     |
+
+It ends with a **design readiness verdict**: Ready to start, Start with caution, or Not ready.
+
+-----
+
+## The prescription problem
+
+One of the most common ticket failure modes is writing a solution instead of a need. For example:
+
+> “Add a dropdown with three options: Credit Card, ACH, Check”
+
+This tells a designer what to build, not why. The skill catches this, reframes the underlying need, explains what gets lost if you just build what’s written, and generates a specific question to bring back to the stakeholder.
+
+It won’t tell you what the right design is. That’s your job. It just makes sure you’re not handed a solution and asked to render it.
+
+-----
+
+## How to use it
+
+1. Open Claude with this skill installed
+1. Paste in the ticket text — description, AC, or both
+1. Say something like “can you decode this ticket” or “what is this ticket actually asking for”
+1. Review the output, use the open questions list to prep your PM conversation
+
+You don’t need a perfectly formatted ticket. Messy, partial, or dev-written tickets are exactly what this is for.
+
+-----
+
+## What it won’t do
+
+- It won’t make design decisions for you
+- It won’t generate wireframes or flows
+- It won’t fix a bad ticket — it’ll tell you it’s bad and why
+- It won’t invent information that isn’t in the ticket (it’ll flag gaps as gaps)
+
+-----
+
+## Installation
+
+Download `ticket-decoder.skill` and install it via Claude’s skill settings.
+
+-----
+
+## Version
+
+v1.0 — Built for designers working in Jira or Azure DevOps environments where ticket quality is inconsistent and design time is limited.
