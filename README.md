@@ -39,3 +39,14 @@ Analyzes UI mockups or screenshots and generates a complete analytics event taxo
 → [metrics-tagging/](metrics-tagging/)
 
 ---
+
+## Design Ask
+
+Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing. Identifies what design work is actually being asked for, flags when tickets prescribe a UI solution instead of describing a user need, and produces a ready-to-use list of questions to bring to the PM before starting.
+
+**Use when:** a ticket is unclear, overly prescriptive, missing context, or you need to scope the design work before touching anything.
+
+→ [`design-ask/`](./design-ask)
+
+---
+
