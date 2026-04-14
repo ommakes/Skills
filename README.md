@@ -27,3 +27,15 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 **Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
 
 → [`Vois-Design-System/`](./Vois-Design-System)
+
+---
+
+## Metrics Tagging
+
+Analyzes UI mockups or screenshots and generates a complete analytics event taxonomy table for handoff to a tag implementation team. Identifies cascading inputs, high-impact fields, and coverage gaps across screen states.
+
+**Use when:** planning what to track in a flow, creating a tagging spec for handoff, or auditing a screen for analytics coverage.
+
+→ [metrics-tagging/](metrics-tagging/)
+
+---
