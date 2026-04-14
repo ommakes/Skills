@@ -151,3 +151,17 @@ When analyzing a screen, systematically check for all of these. Do not skip any 
 ## Coverage Gap Section
 
 After the table, always output a Coverage Gaps section:
+
+## Quality Check Before Outputting
+
+Before finalizing output, verify:
+- Every visible interactive element is in the table
+- No event name is duplicated
+- All event names follow the camelCase `nounVerb` pattern
+- Every row has all 5 columns populated
+- Cancel/close/dismiss buttons are included
+- Cascading inputs are flagged [CASCADE] in the Purpose column
+- High-impact inputs are flagged [HIGH IMPACT] in the Purpose column
+- Coverage gaps section calls out all missing screen states
+- Any input whose cascade behavior is unclear is flagged in Coverage Gaps
+- If no flow context was provided, the output notes that Purpose column accuracy is limited and prompts the designer to re-run with context
