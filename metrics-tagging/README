@@ -1,0 +1,29 @@
+# metrics-tagging
+
+A skill for analyzing UI mockups, screenshots, or prototype frames to identify all trackable interactions and generate a complete analytics event taxonomy table for handoff to a tag implementation team.
+
+## What it does
+
+Drop in a screen or describe a UI and the skill produces:
+
+- A full event taxonomy table with five columns: Event or Action, ID or Variable, Definition, Purpose, and Event Name
+- CASCADE and HIGH IMPACT flags on inputs that affect downstream flow behavior or business outcomes
+- A Coverage Gaps section calling out screen states not visible in the mockup
+- A naming convention reference using camelCase `nounVerb` pattern
+
+## When it triggers
+
+Use when a designer uploads a mockup or screenshot and asks what should be tagged, what events to fire, or how to document analytics. Also triggers on: "tag this screen," "identify events," "create a tagging spec," "what should we track," "build an event table."
+
+## Cascading input priority
+
+Not all inputs are equal. The skill applies two tests to prioritize which fields must be tagged:
+
+1. **Cascade test** — does changing this field affect anything else in the flow?
+2. **Outcome impact test** — does this field directly affect a core business outcome (pricing, eligibility, access level)?
+
+## Install
+
+```bash
+npx skills add ommakes/Skills
+```
