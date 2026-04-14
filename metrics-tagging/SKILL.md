@@ -151,6 +151,47 @@ When analyzing a screen, systematically check for all of these. Do not skip any 
 ## Coverage Gap Section
 
 After the table, always output a Coverage Gaps section:
+The following were NOT visible in the provided mockup or could not be
+determined from it. Verify these before handoff:
+
+ Error state: What fires if form validation fails?
+ Loading state: Is there a spinner or skeleton? Should it be tracked?
+ Empty state: What fires if the list/section is empty on load?
+ [Any cascading inputs flagged as unclear]
+ [Any conditional logic that depends on user state or permissions]
+
+ ## Business Context Priming
+
+If the designer provides flow context, use it to sharpen the Purpose column.
+Common KPIs by product type to map to:
+
+**SaaS / internal tools:**
+- Task completion rate → flow save/submit events
+- Task abandonment rate → cancel, close, back events
+- Time on task → flow start + flow saved pair
+- Feature adoption → optional feature toggles
+- Error rate → validation error events
+
+**E-commerce:**
+- Conversion rate → add to cart, checkout initiated, purchase completed
+- Cart abandonment → remove from cart, checkout exited
+- Funnel drop-off → step viewed vs. step completed pairs
+
+**Consumer apps:**
+- Activation rate → onboarding completed event
+- Retention signal → return visit, key feature used
+- Engagement depth → feature interaction frequency
+
+**If no context is provided**, use generic KPI language and note in the output that Purpose column accuracy will improve with flow context.
+
+## Output Format
+
+1. Start with a brief **Screen Summary** (1-2 sentences: what screen is this, what flow is it part of)
+2. Output the **Event Taxonomy Table** in full
+3. Output the **Coverage Gaps** section
+4. End with a **Naming Convention Reference** block showing the pattern used and any conventions observed or inferred
+
+## Example Output Structure
 
 ## Quality Check Before Outputting
 
