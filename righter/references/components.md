@@ -22,6 +22,21 @@ Detailed writing rules for each UI component. Read the relevant section when wri
 - ✓ "Delete 13 files"
 - ✗ "Error occurred while processing"
 
+**Prefix format:**
+Use a prefix when the alert requires a user action to resolve. The prefix precedes the title, separated by a space. Choose based on context:
+- `Action Required:` — user must complete a step to proceed
+- `Approval Required:` — a workflow gate; someone must sign off before continuing
+- `Review:` — no hard block, but the user should look at this before moving on
+- `Verify Now:` — time-sensitive or security-related; reserved for genuine urgency, not a substitute for Action Required
+
+Do not use a prefix for purely informational or destructive confirmation dialogs where no remediation action exists.
+- ✓ "Action Required: Policy can't be submitted"
+- ✓ "Approval Required: Rate change exceeds threshold"
+- ✓ "Review: Driver history may affect eligibility"
+- ✓ "Verify Now: Identity confirmation needed"
+- ✗ "Error: Something went wrong"
+- ✗ "Notice: Your session will expire"
+
 **Description rules:**
 - No more than 2 sentences
 - Include error codes in parentheses at the end of the last sentence
@@ -71,6 +86,18 @@ Detailed writing rules for each UI component. Read the relevant section when wri
 2. Description — explains consequence and next step (60–180 characters, 1–2 sentences)
 3. Link action — optional, for additional detail in a new tab
 
+**Prefix format:**
+Use a prefix on the title when the inline alert calls for a specific user action. Same set:
+- `Action Required:` — the user needs to fix something in this section
+- `Approval Required:` — sign-off needed before this section can proceed
+- `Review:` — worth reading, but not blocking
+- `Verify Now:` — time-sensitive; use only when urgency is genuine
+
+Skip the prefix for neutral or informational variants where no action is needed.
+- ✓ "Review: Premium may change"
+- ✓ "Action Required: Coverage gap detected"
+- ✗ "Warning: Something to look at"
+
 **Rules:**
 - Describe what happened, why, and what they can do
 - Don't repeat or restate the title in the description
@@ -112,6 +139,18 @@ Detailed writing rules for each UI component. Read the relevant section when wri
 - Max 2 lines in smaller viewports
 
 **Title (optional):** emphasized lead-in text, flows naturally into the description (20–40 characters)
+
+**Prefix format:**
+When the banner requires user action to resolve, open the title with a prefix. Same set as Alert Dialog:
+- `Action Required:` — user must do something to restore full functionality
+- `Approval Required:` — a decision or sign-off is blocking progress
+- `Review:` — the user should read this before continuing, but isn't hard-blocked
+- `Verify Now:` — time-sensitive or security-related; use sparingly
+
+Skip the prefix for system outages or read-only informational banners where no user action exists.
+- ✓ "Action Required: Billing information missing"
+- ✓ "Verify Now: Two-factor authentication needed"
+- ✗ "Notice: Scheduled maintenance tonight"
 
 **Description:** impact + consequence + connects to the action (50–140 characters, no period on short phrases)
 
