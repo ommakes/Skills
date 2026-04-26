@@ -16,6 +16,7 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 - `references/components.md` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip)
 - `references/weakeners.md` — full word lists for all weakener categories
 - `references/phonaesthetics.md` — full sound concepts and cluster table for word choice
+- `references/email.md` — full rules for product transactional emails (subject line, preheader, body, CTA, footer) including metrics and review checklist
 
 ---
 
@@ -166,6 +167,7 @@ Key patterns to catch immediately:
 - Filler: actually, basically, literally, just, simply
 - Weak verbs: "make a decision" → decide, "conduct an analysis" → analyze
 - Throat-clearing: "I think," "we believe," "it is important to note that"
+- Em dashes: never use — or --. Replace with a comma, a period, or restructure the sentence.
 
 ---
 
@@ -311,6 +313,7 @@ Run through this for every piece of copy before finalizing.
 **Mechanics**
 - [ ] Inconsistent terminology?
 - [ ] Preposition starting or ending a sentence?
+- [ ] Em dashes present? Replace with a comma, a period, or restructure the sentence.
 
 **Errors (if applicable)**
 - [ ] Clear next step provided?
