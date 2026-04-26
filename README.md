@@ -50,3 +50,13 @@ Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing
 
 ---
 
+## Designer IC Assessment
+
+Runs a structured behavioral interview to assess an IC designer across five categories and 19 competency areas, including AI fluency. Produces a competency-by-competency narrative, a scores-at-a-glance table, and a CSV export for Notion / FigJam handoff. Supports both designer self-assessment and manager assessment as independent sessions.
+
+**Use when:** running a designer self-assessment, a manager assessment, or preparing for an IC level calibration conversation.
+
+→ [`designer-ic-assessment/`](./designer-ic-assessment)
+
+---
+
