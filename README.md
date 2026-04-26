@@ -12,9 +12,9 @@ npx skills add ommakes/Skills
 
 ## Righter
 
-A UX content writing skill that reviews and rewrites UI copy against a defined set of writing principles, error message guidelines, and component-specific rules. Outputs before/after comparisons with ARI reading level metrics.
+UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails.
 
-**Use when:** reviewing button labels, error messages, empty states, onboarding copy, tooltips, or any in-product text.
+**Use when:** any request to write, review, or improve UI copy, error messages, button labels, tooltips, empty states, onboarding copy, form text, or product emails.
 
 → [`righter/`](./righter)
 
