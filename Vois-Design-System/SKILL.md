@@ -111,6 +111,23 @@ Cap text containers at `65ch`. The `ch` unit is relative to the current font's c
 
 Do not use `max-width: 600px` or similar fixed widths for text containers — they break at different font sizes.
 
+### Text Truncation
+
+Use `line-clamp` to cap text to a fixed number of lines without JavaScript measurement or manual character counting:
+
+```css
+.card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+```
+
+The `-webkit-` prefix is still required for cross-browser support. The un-prefixed `line-clamp` property is not yet universally supported — use the `-webkit-box` pattern above.
+
+Never truncate with JavaScript `substring` or character limits — they break at different font sizes, languages, and zoom levels.
+
 ### Copy and Punctuation
 
 These details matter. Agents get them wrong by default.
@@ -269,6 +286,37 @@ Use `interpolate-size: allow-keywords` to animate height from `0` to `auto` with
 ```
 
 This replaces the pattern of measuring scrollHeight in JavaScript and animating to a pixel value.
+
+### Images
+
+Use `object-view-box` for native CSS image cropping instead of `overflow: hidden` wrapper hacks or `clip-path`:
+
+```css
+.avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  /* Crop to the center-top of the image — values are fractions of the image */
+  object-view-box: inset(0% 10% 20% 10%);
+}
+```
+
+The `inset()` values follow the same top/right/bottom/left shorthand as `margin`. This is especially useful for headshots and product images that need consistent framing without asking authors to pre-crop assets.
+
+### Textareas
+
+Use `field-sizing: content` on `<textarea>` elements to make them grow with the user's input without JavaScript resize listeners:
+
+```css
+textarea {
+  field-sizing: content;
+  min-height: 2.5rem;   /* prevents collapse when empty */
+  max-height: 20rem;    /* optional cap to prevent infinite growth */
+  resize: none;         /* no manual resize handle needed */
+}
+```
+
+**Browser support:** Chrome 123+, Edge 123+. Firefox and Safari do not yet support this. Provide a JS fallback or accept the fixed-height behavior as a progressive enhancement.
 
 ---
 
@@ -562,6 +610,36 @@ html {
 
 No inline styles for values that have token equivalents.
 
+### Selector Patterns
+
+Use `:has()` to style a parent or sibling based on its descendants — the "parent selector" CSS never had until now. This replaces most patterns that previously required JavaScript class toggling:
+
+```css
+/* Style a form field wrapper when its input is invalid */
+.form-field:has(input:invalid) {
+  border-color: var(--color-destructive);
+}
+
+/* Style a card differently when it contains a checked radio */
+.option-card:has(input[type="radio"]:checked) {
+  background: var(--color-surface-selected);
+  border-color: var(--color-primary);
+}
+
+/* Show a label only when a sibling input has a value */
+.input-wrapper:has(input:not(:placeholder-shown)) .floating-label {
+  transform: translateY(-100%);
+  font-size: 0.75rem;
+}
+
+/* Target the next sibling of an element with :has() + combinators */
+.nav-item:has(> .active) + .nav-item {
+  border-left: 2px solid var(--color-border);
+}
+```
+
+Prefer `:has()` over JavaScript class manipulation for state-driven style changes. It keeps styling in CSS where it belongs and avoids layout thrash from JS-driven class toggling.
+
 ---
 
 ## 11. Pre-Submit Checklist
@@ -595,6 +673,10 @@ No inline styles for values that have token equivalents.
 - [ ] Modals use `inert` on background content
 - [ ] Modals have `overscroll-behavior: contain`
 - [ ] `scrollbar-gutter: stable` on `html`
+- [ ] Image crops use `object-view-box`, not `overflow: hidden` wrapper hacks
+- [ ] Auto-growing textareas use `field-sizing: content` (with fallback awareness)
+- [ ] Text truncation uses `line-clamp`, not JavaScript substring
+- [ ] Parent/sibling state styling uses `:has()`, not JS class toggling
 
 **Animation**
 - [ ] UI animations under 300ms (large elements under 500ms)
@@ -637,3 +719,7 @@ No inline styles for values that have token equivalents.
 | Animation feels off | Check `transform-origin` and slow it down |
 | Hover on mobile | Guard with `@media (hover: hover) and (pointer: fine)` |
 | Unsure about contrast | Measure it. 4.5:1 minimum for normal text |
+| Truncate text to N lines | `line-clamp` — not JS substring |
+| Crop an image without wrappers | `object-view-box: inset(...)` |
+| Style parent based on child state | `:has()` selector |
+| Auto-growing textarea | `field-sizing: content` |
