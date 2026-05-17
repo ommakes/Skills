@@ -60,3 +60,12 @@ Runs a structured behavioral interview to assess an IC designer across five cate
 
 ---
 
+## Vois Patterns
+
+Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. Read before vois-design-system.
+
+**Use when:** building a new page, form, table, modal, or feature. Need to determine structure and container type before implementing.
+
+→ [`Vois-Patterns/`](./Vois-Patterns)
+
+---
