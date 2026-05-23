@@ -759,6 +759,12 @@ Example:
 - Design-system handles tokens, spacing, components, animation, accessibility
 - This skill handles structural decisions and microcopy routing
 
+**This skill ↔ vois-components:**
+
+- After picking a container type here, read vois-components to select specific components
+- vois-components resolves ambiguous pairs — Dialog vs Drawer, Toast vs Banner, Select vs Combobox
+- Always call `record_component_choice` after selecting; do not skip it
+
 **This skill ↔ righter skill:**
 
 - Every word in UI comes from righter
