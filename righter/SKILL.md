@@ -6,6 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
+version: 1.1.0
 ---
 
 # Righter
@@ -16,7 +17,30 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 - `references/components.md` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip)
 - `references/weakeners.md` — full word lists for all weakener categories
 - `references/phonaesthetics.md` — full sound concepts and cluster table for word choice
-- `references/email.md` — full rules for product transactional emails (subject line, preheader, body, CTA, footer) including metrics and review checklist
+
+---
+
+## How to Use This Skill
+
+**Always call `get_microcopy` first before writing or reviewing any copy.**
+
+The `get_microcopy` MCP tool returns workspace-specific copy rules, approved terminology, and tone overrides that take precedence over the general principles in this skill. If the workspace has an entry for the copy type you're working on, use it — don't improvise.
+
+```
+Tool: get_microcopy
+Arguments:
+  context: <what the copy is for, e.g. "empty state for token list", "error on form submit">
+  copy_type: <one of: label | cta | error | empty_state | tooltip | placeholder | helper_text | toast | modal_title | modal_body>
+```
+
+**Resolution order:**
+1. Workspace override (from `get_microcopy`) — use this if returned, no changes
+2. Knowledge base match (from `get_microcopy`) — apply as a strong starting point, adapt if needed
+3. LLM fallback — `get_microcopy` returns nothing; apply the principles in this skill directly
+
+When falling back to the principles, note it at the top of your output: `Source: LLM fallback — no workspace or knowledge base match for this copy type.`
+
+The tool logs every query. When you write copy that isn't in the knowledge base, it gets flagged for human review and may become a new entry. This is how the system improves.
 
 ---
 
@@ -24,15 +48,17 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 
 ### Mode 1: Review Existing Copy
 For each piece of content:
-1. Check against the review checklist below
-2. Identify every violation
-3. Rewrite it
-4. Output in the review format below
+1. Call `get_microcopy` with the relevant context
+2. Check against the review checklist below
+3. Identify every violation
+4. Rewrite it
+5. Output in the review format below
 
 ### Mode 2: Write New Copy
-1. Apply all relevant principles
-2. For labels, CTAs, and microcopy: read `references/phonaesthetics.md` and apply sound guidance
-3. Output in the new copy format below
+1. Call `get_microcopy` with the relevant context
+2. Apply all relevant principles
+3. For labels, CTAs, and microcopy: read `references/phonaesthetics.md` and apply sound guidance
+4. Output in the new copy format below
 
 ---
 
@@ -44,6 +70,8 @@ Use this block for every piece of copy reviewed:
 ---
 **Before:** [original copy]
 **After:** [rewritten copy]
+
+**Source:** [Workspace override | Knowledge base | LLM fallback]
 
 **Principles applied:**
 - [Principle name]: [one sentence on why this improved the copy]
@@ -65,6 +93,8 @@ Use this block for every piece of copy reviewed:
 ---
 **Copy:** [final copy]
 
+**Source:** [Workspace override | Knowledge base | LLM fallback]
+
 **Principles applied:**
 - [Principle name]: [one sentence on why]
 
@@ -85,7 +115,7 @@ Use this block for every piece of copy reviewed:
 
 ## UX Writing Principles
 
-Apply all of these when reviewing or writing.
+Apply all of these when reviewing or writing. These are the fallback when `get_microcopy` returns no match.
 
 ### 1. Use active voice
 Subject → verb → object. Active voice is shorter and easier to follow.
@@ -167,7 +197,6 @@ Key patterns to catch immediately:
 - Filler: actually, basically, literally, just, simply
 - Weak verbs: "make a decision" → decide, "conduct an analysis" → analyze
 - Throat-clearing: "I think," "we believe," "it is important to note that"
-- Em dashes: never use — or --. Replace with a comma, a period, or restructure the sentence.
 
 ---
 
@@ -291,6 +320,9 @@ Round to one decimal place. Always include grade and age range.
 
 Run through this for every piece of copy before finalizing.
 
+**Before starting**
+- [ ] Called `get_microcopy` and checked for workspace/knowledge base match?
+
 **Voice and structure**
 - [ ] Passive voice present?
 - [ ] Complex sentence structure?
@@ -313,7 +345,6 @@ Run through this for every piece of copy before finalizing.
 **Mechanics**
 - [ ] Inconsistent terminology?
 - [ ] Preposition starting or ending a sentence?
-- [ ] Em dashes present? Replace with a comma, a period, or restructure the sentence.
 
 **Errors (if applicable)**
 - [ ] Clear next step provided?
