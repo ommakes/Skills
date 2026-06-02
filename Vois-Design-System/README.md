@@ -1,79 +1,87 @@
 # Vois Design System Skill
 
-A structured skill file for AI coding agents (Cursor, Claude Code, v0) that teaches them your design system rules — spacing, typography, color tokens, component patterns, animation, and accessibility — so they produce consistent UI without guessing.
+**Version 1.2.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool
+
+A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
 ---
 
-## What this is
+## What it covers
 
-`SKILL.md` is a plain markdown file that AI coding tools read as project-level context. When an agent builds UI with this skill loaded, it knows:
-
-- Your spacing scale and grid system
-- Your typography hierarchy and font tokens
-- How to use CSS variables instead of hardcoded values
-- Which components exist and when to use them
-- Correct animation timing and easing
-- Accessibility requirements
-- Modern CSS patterns (`svh`/`dvh`, `light-dark()`, `interpolate-size`, etc.)
-
-It's the difference between an agent that invents values and one that follows your system.
+| Section | What it enforces |
+|---------|-----------------|
+| **Spacing** | 4/8 grid, `gap`-first layout, no sibling padding hacks, `min-width: 0` on flex children |
+| **Typography** | Type scale, fluid type with `clamp()`, `text-wrap`, readable line length, punctuation rules |
+| **Color** | OKLCH tokens, dark mode with `light-dark()`, 60/30/10 distribution, no hardcoded hex |
+| **Components** | shadcn/ui New-York style, CVA for variants, `data-slot` for internals, modal patterns |
+| **Layout** | `svh`/`lvh`/`dvh` viewport units, `content-visibility`, `aspect-ratio`, `object-fit` |
+| **Tailwind v4** | `@theme` over `@layer base`, `@import`, container queries, no `transition: all` |
+| **Animation** | Timing, easing curves, `prefers-reduced-motion`, `transform-origin`, no `scale(0)` |
+| **Accessibility** | WCAG AA contrast, focus states, touch targets, semantic HTML, ARIA, `<fieldset>`, `<time>` |
+| **Responsive** | Mobile-first, container queries vs. breakpoints, `em`-based media queries |
+| **CSS Architecture** | `@layer` structure, no ID selectors, `:is()`/`:where()`, specificity hygiene |
 
 ---
 
 ## Installation
 
-### Option 1: Live URL (recommended)
+Copy `SKILL.md` into your Claude skill directory. The exact path depends on your setup:
 
-If you use Vois, reference your workspace's live skill URL directly in your project rules. The skill stays current with your tokens automatically — font changes, new tokens, and updated annotations reflect immediately.
+- **Claude Code:** `~/.claude/skills/vois-design-system/SKILL.md`
+- **Custom path:** wherever your `CLAUDE.md` or system prompt references skills from
 
-Add to `.cursorrules` in your project root:
-
-```
-Use the design system skill at https://vois.design/api/skill/[your-workspace-id]
-before writing any UI code.
-```
-
-### Option 2: Static file
-
-Download `SKILL.md` and add it to your project:
-
-```
-your-project/
-  skills/
-    vois-design-system/
-      SKILL.md
-```
-
-Then reference it in `.cursorrules`:
-
-```
-Use the design system skill at skills/vois-design-system/SKILL.md
-before writing any UI code.
-```
-
-**Note:** The static file is a snapshot. It won't update when your tokens change. Use the live URL if you want your skill to stay in sync with your Vois workspace.
+The skill fires automatically based on its description when you're building UI components, pages, or anything that should conform to this design system.
 
 ---
 
-## Customizing the skill
+## How it works
 
-### Fonts
+Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. After Claude completes any UI task, it calls `vois_record_rule_usage` with the IDs of the rules it applied. This creates a feedback loop for tracking which rules fire frequently, which get violated, and which need clarification.
 
-The skill ships with default fonts (Host Grotesk, Inter Tight, Geist Mono). To use your own:
+---
 
-1. Open `SKILL.md`
-2. Find the **Fonts** section under Typography
-3. Update the font names in the table
-4. Make sure your `@theme` block defines the corresponding tokens:
+## Rule ID reference
 
-```css
-@theme {
-  --font-heading: "Your Heading Font", sans-serif;
-  --font-body: "Your Body Font", sans-serif;
-  --font-mono: "Your Mono Font", monospace;
-}
+| Prefix | Section |
+|--------|---------|
+| `DS-SPACING` | Spacing scale and layout composition |
+| `DS-LAYOUT-COMP` | Flex/grid structure, sibling spacing, `aspect-ratio`, `object-fit` |
+| `DS-TYPOGRAPHY` | Type scale, fonts, text wrapping, copy rules |
+| `DS-COLOR` | Tokens, OKLCH, dark mode, contrast |
+| `DS-COMPONENT` | shadcn/ui components, CVA, variants |
+| `DS-MODAL` | Modal focus trapping, scroll bleed, layout shift |
+| `DS-LAYOUT` | Viewport units, `content-visibility` |
+| `DS-TAILWIND` | Tailwind v4 migration patterns, utility rules |
+| `DS-ANIMATION` | Timing, easing, reduced motion, scale/origin |
+| `DS-A11Y` | Accessibility — touch targets, focus, contrast, semantic HTML |
+| `DS-RESPONSIVE` | Mobile-first, breakpoints, container queries |
+| `DS-CSS` | Architecture, specificity, selectors, media queries |
+
+---
+
+## Files
+
+```
+Vois-Design-System/
+├── SKILL.md        ← the skill itself
+├── README.md       ← this file
+└── CHANGELOG.md    ← version history
 ```
 
+---
+
+## Version history
+
+See [CHANGELOG.md](./CHANGELOG.md) for full details.
+
+- **1.2.0** — Layout composition rules, expanded semantic HTML, CSS specificity and media query guidelines, rule IDs on all checklist items
+- **1.1.0** — Initial tracked release
+
+---
+
+## License
+
+Part of the [Personify Labs Skills repository](https://github.com/ommakes/Skills). See root LICENSE for terms.
 Always reference the token in components, not the font name directly:
 
 ```css
