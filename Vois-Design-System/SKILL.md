@@ -1,7 +1,7 @@
 ---
 name: vois-design-system
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Vois Design System Skill
@@ -37,6 +37,79 @@ Use `gap` for layout spacing between elements. Use padding for internal componen
 **Tailwind v4 note:** Dynamic spacing utilities accept any value without arbitrary syntax. This makes it easy to accidentally use off-grid values. Don't. Stay on the scale. `[DS-SPACING-003]`
 
 Verify spacing holds at every responsive breakpoint before considering a component done. `[DS-SPACING-004]`
+
+### Layout Composition `[DS-LAYOUT-COMP]`
+
+These rules determine how to structure elements. AI consistently picks the wrong approach here.
+
+**Spacing between siblings always belongs to the parent.**
+
+If two adjacent elements need space between them, wrap them in a flex or grid container and use `gap`. Never use `padding-bottom` on the first element or `margin-top` on the second to manufacture spacing between siblings. `[DS-LAYOUT-COMP-001]`
+
+```css
+/* bad */
+.card { padding-bottom: 16px; }
+
+/* good */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+```
+
+**Don't add wrapper divs without a layout reason.** `[DS-LAYOUT-COMP-002]`
+
+Every container element should be doing something: defining a flex/grid context, controlling overflow, establishing a stacking context, or grouping semantically related elements. If a `<div>` is just sitting there wrapping a single child with no CSS purpose, remove it.
+
+**`min-width: 0` on flex children that contain text or overflow.** `[DS-LAYOUT-COMP-003]`
+
+Flexbox children default to `min-width: auto`, which means they refuse to shrink below their content size. This causes text overflow and layout bugs. Add `min-width: 0` to any flex child that contains long text, a `<pre>`, a table, or anything that might overflow its container.
+
+```css
+.flex-child-with-text {
+  min-width: 0; /* allows text to truncate properly */
+}
+```
+
+**Don't set `width: 100%` on flex or grid children unless the parent isn't controlling sizing.** `[DS-LAYOUT-COMP-004]`
+
+If the parent is already a flex row or grid, children size according to the layout. Adding `width: 100%` fights the layout algorithm and produces unexpected results.
+
+**Use `aspect-ratio` instead of the padding-top percentage hack.** `[DS-LAYOUT-COMP-005]`
+
+```css
+/* bad — the old hack */
+.video-wrapper {
+  position: relative;
+  padding-top: 56.25%;
+}
+.video-wrapper iframe {
+  position: absolute;
+  inset: 0;
+}
+
+/* good */
+.video-wrapper {
+  aspect-ratio: 16 / 9;
+}
+.video-wrapper iframe {
+  width: 100%;
+  height: 100%;
+}
+```
+
+**Images always need `object-fit` when a size is set.** `[DS-LAYOUT-COMP-006]`
+
+If you set `width` and `height` on an image, also set `object-fit: cover` (or `contain` if you need the full image visible). Without it, the image will stretch.
+
+```css
+img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+```
 
 ---
 
@@ -518,10 +591,41 @@ Never remove `outline` without providing a `:focus-visible` replacement. `[DS-A1
 - Decorative icons need `aria-hidden="true"`. `[DS-A11Y-008]`
 - Error messages need `aria-live="polite"` or `role="alert"`. `[DS-A11Y-009]`
 - Images need `alt`. Decorative images get `alt=""`, not a missing alt attribute. `[DS-A11Y-010]`
+- Use `<ul>` or `<ol>` for lists of items. Don't use a stack of `<div>` siblings when the content is semantically a list. `[DS-A11Y-011]`
+- Use `<br>` only for intentional line breaks in content (addresses, poems). Never use it to create visual spacing between elements — that's a layout problem. `[DS-A11Y-012]`
+- `loading="lazy"` on all images that aren't in the initial viewport. Skip it on hero images and above-the-fold content — those should load immediately. `[DS-A11Y-013]`
+- `<time datetime="...">` for dates and times. The `datetime` attribute is machine-readable; the element content is human-readable. `[DS-A11Y-014]`
+
+```html
+<!-- bad -->
+<span>Published Feb 21, 2025</span>
+
+<!-- good -->
+<time datetime="2025-02-21">February 21, 2025</time>
+```
+
+- Don't use heading elements (`<h1>`–`<h6>`) just to get a certain font size. Use them for document structure. Style with CSS. `[DS-A11Y-015]`
+- `<fieldset>` and `<legend>` for groups of related form controls (radio groups, checkbox groups). Don't skip this — screen readers announce the group label with each input. `[DS-A11Y-016]`
+
+```html
+<!-- bad -->
+<div>
+  <p>Preferred contact method</p>
+  <label><input type="radio" name="contact"> Email</label>
+  <label><input type="radio" name="contact"> Phone</label>
+</div>
+
+<!-- good -->
+<fieldset>
+  <legend>Preferred contact method</legend>
+  <label><input type="radio" name="contact"> Email</label>
+  <label><input type="radio" name="contact"> Phone</label>
+</fieldset>
+```
 
 ### Color and Meaning
 
-Never use color as the only signal for state. Error, success, and warning states always need a secondary indicator — an icon, a text label, or both. `[DS-A11Y-011]`
+Never use color as the only signal for state. Error, success, and warning states always need a secondary indicator — an icon, a text label, or both. `[DS-A11Y-017]`
 
 ---
 
@@ -565,6 +669,80 @@ html {
 ```
 
 No inline styles for values that have token equivalents. `[DS-CSS-001]`
+
+### Selectors and Specificity `[DS-CSS-SELECTORS]`
+
+**Don't fight specificity — avoid creating it.**
+
+- Never use `#id` selectors for styling. IDs have high specificity and make overrides painful. `[DS-CSS-002]`
+- Keep selectors shallow. If your selector has more than 2 levels of nesting, you're coupling styles to DOM structure. Add a class instead. `[DS-CSS-003]`
+- Use `:is()` to group selectors without multiplying specificity. `[DS-CSS-004]`
+
+```css
+/* bad — specificity stacks up */
+.card .header h2,
+.card .header h3,
+.card .header h4 {
+  color: var(--color-heading);
+}
+
+/* good — :is() takes the specificity of its most specific argument, but written once */
+.card .header :is(h2, h3, h4) {
+  color: var(--color-heading);
+}
+```
+
+- Use `:where()` when you want zero-specificity base styles that are easy to override. `[DS-CSS-005]`
+
+```css
+/* zero specificity — anything can override this */
+:where(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.2;
+}
+```
+
+**Separate layout from visual concerns.** `[DS-CSS-006]`
+
+Don't mix sizing/positioning properties with visual/brand properties in the same class. Layout classes control where things go. Visual classes control how things look.
+
+```css
+/* bad — layout and visual mixed */
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--color-warning-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-warning-border);
+}
+
+/* good — keep them together when using utility classes (Tailwind handles this),
+   but in hand-authored CSS, group by concern */
+```
+
+This matters more in hand-authored CSS than in Tailwind, where utilities are already atomic. The principle still applies: don't write a `.card` class that controls both margin-bottom (layout) and background-color (visual) if the layout might vary by context.
+
+### Media Queries `[DS-CSS-MQ]`
+
+Use `em` for breakpoints, not `px`. Breakpoints in `em` respect the user's browser font size preference and scale correctly when users zoom. `[DS-CSS-007]`
+
+```css
+/* bad */
+@media (min-width: 768px) { ... }
+
+/* good */
+@media (min-width: 48em) { ... } /* 48em × 16px = 768px */
+```
+
+Common breakpoint values in `em`:
+
+| Name | em | Equivalent px |
+|------|----|---------------|
+| sm | 40em | 640px |
+| md | 48em | 768px |
+| lg | 64em | 1024px |
+| xl | 80em | 1280px |
+
+Note: Tailwind's built-in breakpoints use `px` internally, so this rule applies primarily to any hand-authored `@media` queries outside Tailwind utilities.
 
 ---
 
@@ -616,11 +794,25 @@ No inline styles for values that have token equivalents. `[DS-CSS-001]`
 - [ ] Contrast passes WCAG AA `[DS-A11Y-004]`
 - [ ] No `div` or `span` as interactive elements without ARIA `[DS-A11Y-005]`
 - [ ] All images have `alt` `[DS-A11Y-010]`
+- [ ] `<fieldset>` and `<legend>` used for radio/checkbox groups `[DS-A11Y-016]`
+- [ ] `<br>` not used for spacing `[DS-A11Y-012]`
+- [ ] `<ul>`/`<ol>` used for lists, not stacked divs `[DS-A11Y-011]`
+- [ ] `loading="lazy"` on below-the-fold images `[DS-A11Y-013]`
 
 **Layout**
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
 - [ ] Long pages use `content-visibility: auto` on off-screen sections `[DS-LAYOUT-002]`
 - [ ] Tested at sm, md, lg breakpoints `[DS-RESPONSIVE-002]`
+- [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
+- [ ] No wrapper divs that serve no layout purpose `[DS-LAYOUT-COMP-002]`
+- [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
+- [ ] Images with set dimensions have `object-fit` `[DS-LAYOUT-COMP-006]`
+- [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
+
+**CSS**
+- [ ] No `#id` selectors used for styling `[DS-CSS-002]`
+- [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
+- [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
 
 ---
 
@@ -641,4 +833,12 @@ No inline styles for values that have token equivalents. `[DS-CSS-001]`
 | Animation feels off | Check `transform-origin` and slow it down |
 | Hover on mobile | Guard with `@media (hover: hover) and (pointer: fine)` |
 | Unsure about contrast | Measure it. 4.5:1 minimum for normal text |
+| Space between two adjacent elements | `gap` on the parent, not `padding-bottom` on the first child |
+| Flex child text overflowing or not truncating | Add `min-width: 0` to the flex child |
+| Fixed-size image looks stretched | Add `object-fit: cover` or `object-fit: contain` |
+| 16:9 or other ratio container | `aspect-ratio: 16 / 9`, not padding-top hack |
+| Group of radio or checkbox inputs | Wrap in `<fieldset>` with `<legend>` |
+| Date or time in content | `<time datetime="...">` |
+| Hand-authoring a media query | Use `em` not `px` for the breakpoint value |
+| Selector getting hard to override | You've gone too deep — add a class instead |
 | Done with UI work | Call `vois_record_rule_usage` with rule IDs applied |
