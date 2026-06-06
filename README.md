@@ -85,6 +85,15 @@ Runs a structured behavioral interview to assess an IC designer across five cate
 
 ---
 
+### GTM Positioning
+Framework for B2B product positioning, GTM strategy selection, and website messaging. Covers three positioning strategies (mature category, emerging category, new category), five GTM types (Vertical through Platform), page-by-page website messaging guide, persona-based messaging matrix, marketing assets by awareness stage, and value prop variations by awareness stage. Based on the Fletch framework by Anthony Pierri.
+
+**Use when:** positioning a product, choosing a GTM motion, writing homepage or website copy, crafting messaging for different buyer personas, planning content by awareness stage, or writing ads and landing page copy.
+
+→ [`gtm-positioning/`](./gtm-positioning)
+
+---
+
 ## The Design System Stack
 
 The four design system skills form a complete pipeline:
@@ -117,7 +126,7 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-05-23
+**Last updated:** 2026-06-06
 **Use when:** building a new page, form, table, modal, or feature. Need to determine structure and container type before implementing.
 
 → [`Vois-Patterns/`](./Vois-Patterns)
