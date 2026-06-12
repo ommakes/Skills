@@ -94,6 +94,15 @@ Framework for B2B product positioning, GTM strategy selection, and website messa
 
 ---
 
+### Design Rationale
+Help designers articulate their design decisions using cognitive science, behavioral psychology, and platform standards as the language — not intuition or preference. Includes a comprehensive library of 28+ named principles across three tiers (cognitive/behavioral laws, platform standards, applied patterns) and 15+ real-world product precedents organized by moment type (onboarding, navigation, conversion, errors, empty states, offboarding).
+
+**Use when:** explaining a design decision in a critique or design review, preparing to defend a design choice against pushback, auditing a screen for principle alignment, or evaluating whether a decision is truly irreversible.
+
+→ [`design-rationale/`](./design-rationale)
+
+---
+
 ## The Design System Stack
 
 The four design system skills form a complete pipeline:
@@ -126,9 +135,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-06-06
-**Use when:** building a new page, form, table, modal, or feature. Need to determine structure and container type before implementing.
-
-→ [`Vois-Patterns/`](./Vois-Patterns)
-
----
+**Last updated:** 2026-06-12
