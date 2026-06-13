@@ -8,12 +8,21 @@ npx skills add ommakes/Skills
 
 ---
 
-## Chain Orchestrator
+## Orchestrators
+
+### Vois Loop
+Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-design-system, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer.
+
+**Use when:** someone says "build this", pastes a ticket, or asks to run the full design loop. Calls all the other skills in the right order, including vois-router.
+
+→ [`vois-loop/`](./vois-loop)
+
+---
 
 ### Vois Router
-Single entry point for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, or AUDIT), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated (confirm-at-each-handoff) and fast (run-and-summarize) modes, inline righter invocation with batching, opt-in design-rationale at two points in the chain, session state for recovery, and gap surfacing.
+Chain orchestrator for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, or AUDIT), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated and fast modes, inline righter invocation with batching, opt-in design-rationale at two points, session state for recovery, and gap surfacing.
 
-**Use when:** starting any UI work against the Vois design system without knowing which skill to call first. Paste a ticket, brief, or question and the router handles the rest.
+**Use when:** starting any UI work against the Vois design system without running the full iterative loop. Use vois-loop above when starting from a ticket or brief.
 
 → [`vois-router/`](./vois-router)
 
@@ -21,7 +30,7 @@ Single entry point for the Vois design system skill chain. Reads your input, cla
 
 ## Design System Skills (Read in Order)
 
-These four skills work together as a stack. Read them in this order when building UI, or use **vois-router** above to run the chain automatically.
+These four skills work together as a stack. Read them in this order when building UI, or use **vois-loop** / **vois-router** above to run the chain automatically.
 
 ### Vois Patterns
 Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. 
