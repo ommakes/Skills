@@ -8,9 +8,20 @@ npx skills add ommakes/Skills
 
 ---
 
+## Chain Orchestrator
+
+### Vois Router
+Single entry point for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, or AUDIT), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated (confirm-at-each-handoff) and fast (run-and-summarize) modes, inline righter invocation with batching, opt-in design-rationale at two points in the chain, session state for recovery, and gap surfacing.
+
+**Use when:** starting any UI work against the Vois design system without knowing which skill to call first. Paste a ticket, brief, or question and the router handles the rest.
+
+→ [`vois-router/`](./vois-router)
+
+---
+
 ## Design System Skills (Read in Order)
 
-These four skills work together as a stack. Read them in this order when building UI.
+These four skills work together as a stack. Read them in this order when building UI, or use **vois-router** above to run the chain automatically.
 
 ### Vois Patterns
 Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. 
@@ -135,4 +146,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-06-12
+**Last updated:** 2026-06-13
