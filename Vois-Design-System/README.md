@@ -136,6 +136,18 @@ If your stack differs, some sections may not apply directly.
 
 ---
 
+## Relationship to Other Skills
+
+| Skill | Role |
+|---|---|
+| **vois-components** | Read before this skill. Selects the specific components this skill implements with tokens and spacing. |
+| **vois-patterns** | Read before vois-components. Determines the container type and structural path. |
+| **righter** | Invoked inline during implementation — not after. All UI copy (labels, errors, helper text, empty states) is written by righter as components are built. |
+| **vois-router** | Chain orchestrator that packages context from vois-components and calls this skill in sequence. Use vois-router as the entry point instead of loading this skill directly. |
+| **vois-loop** | Top-level iterative orchestrator. Calls this skill as the implementation step after patterns and components are decided, with righter inline and a validate pass after. |
+
+---
+
 ## Contributing
 
 Found a rule that's missing or wrong? Open an issue or PR at [github.com/ommakes/Skills](https://github.com/ommakes/Skills).

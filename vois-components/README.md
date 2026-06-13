@@ -85,6 +85,8 @@ Without this event, your component selections are invisible to the system.
 - **`vois-patterns`** — Read first. Determines the container type and structure.
 - **`vois-design-system`** — Read after. Applies tokens, spacing, and accessibility rules.
 - **`righter`** — Consulted for all UI copy (labels, button text, error messages).
+- **`vois-router`** — Chain orchestrator that calls this skill in sequence. Use vois-router as the entry point instead of loading this skill directly.
+- **`vois-loop`** — Top-level iterative orchestrator. Wraps vois-router and adds conflict detection and upstream re-routing. The recommended entry point for feature builds from a ticket or brief.
 
 ## Version
 
