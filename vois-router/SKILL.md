@@ -34,6 +34,10 @@ The skills this router coordinates:
 Each of these skills works standalone. The router adds orchestration on top —
 nothing more.
 
+**If you need iterative conflict resolution:** use `vois-loop` instead. vois-loop
+wraps this router and adds upstream re-routing when skills conflict with each
+other mid-chain. vois-router is a linear single-pass chain — it does not loop back.
+
 -----
 
 ## Modes
