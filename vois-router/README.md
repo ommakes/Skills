@@ -71,7 +71,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode".
 
 ## Version
 
-**v1.1.0** — Initial release. See `CHANGELOG.md` for details.
+**v1.2.0** — Added mandatory righter copy gate (step 2b) before implementation. See `CHANGELOG.md` for details.
 
 ---
 

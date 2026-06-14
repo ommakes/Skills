@@ -1,6 +1,6 @@
 ---
 name: vois-router
-version: 1.1.0
+version: 1.2.0
 attribution: Personify Labs
 license: CC-BY 4.0
 description: >
@@ -248,11 +248,17 @@ chain completion block (see below).
 
    → Offer design-rationale here (opt-in)
 
+2b. righter — MANDATORY copy gate (see rule below)
+   Must complete before any code is written.
+   Outputs needed: approved copy for every text-bearing element on the screen
+
 3. vois-design-system
-   Context package: components from step 2, platform, token constraints
+   Context package: components from step 2, approved copy from step 2b,
+                    platform, token constraints
    Outputs needed:  implemented UI with tokens, spacing, accessibility applied
 
-righter: invoked inline at steps 1 and 2 (see righter rules below)
+righter: invoked inline at steps 1 and 2, AND as a mandatory batch gate
+at step 2b before any implementation begins (see righter rules below)
 ```
 
 **Context packaging for vois-patterns:**
@@ -408,6 +414,26 @@ moments and loading righter at the right time.
 - The designer asks about specific wording at any point
 - Copy is included in the brief and needs review
 
+**Mandatory gate before implementation (step 2b):**
+
+After vois-components completes and before vois-design-system begins, the router
+must pause and collect every copy item identified across the entire screen. This
+is not optional and does not require a prompt from the designer.
+
+Steps:
+
+1. List every text-bearing element on the screen: headings, subheads, body copy,
+   CTAs, labels, placeholders, empty states, error messages, nav items, status
+   badges, tooltips, form helper text, confirmations.
+1. If three or more items exist (they almost always will), run righter in batch
+   mode across all of them at once.
+1. Only proceed to vois-design-system after righter output is confirmed.
+1. Pass the approved copy into vois-design-system as part of the context package.
+
+Never write implementation code — HTML, JSX, or any component output — with
+copy that has not passed through righter. Writing copy from memory and applying
+righter principles informally is not the same as running the skill.
+
 ### Single copy item
 
 Pause the current step, run righter, then resume.
@@ -552,6 +578,9 @@ Record the gap and the designer's choice in the session state under
 - Passes a PICK-UP path ID forward without validating it first
 - Makes component or structural decisions itself
 - Invokes righter per-item when three or more copy items are queued
+- Writes any implementation code before righter has reviewed all copy on the screen
+- Skips the step 2b copy gate because the chain is in fast mode — the gate is
+  mandatory in both modes; only the confirmation prompt is skipped in fast mode
 - Proceeds past a gap report without surfacing it
 - Keeps prompting after one unanswered handoff in gated mode
 
