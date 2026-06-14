@@ -4,6 +4,29 @@ All notable changes to the vois-router skill are documented here.
 
 ---
 
+## [1.2.0] — 2026-06-14
+
+### Added
+
+**Mandatory righter copy gate (step 2b)**
+
+A new required step in the FULL-CHAIN sequence, inserted between vois-components and vois-design-system:
+
+- After vois-components completes, the router enumerates every text-bearing element on the screen: headings, subheads, body copy, CTAs, labels, placeholders, empty states, error messages, nav items, status badges, tooltips, form helper text, confirmations
+- All items are batched and sent to righter in a single invocation — never per-item
+- Implementation (vois-design-system) cannot begin until righter output is confirmed
+- Approved copy is passed into vois-design-system as part of the context package
+- Gate is mandatory in both gated and fast modes; only the gated confirmation prompt is skipped in fast mode
+
+### Changed
+
+- **FULL-CHAIN sequence:** step 2b added; vois-design-system context package updated to include `approved copy from step 2b`
+- **Righter invocation rules:** new "Mandatory gate before implementation (step 2b)" subsection with step-by-step protocol
+- **"What the router never does":** two new items — "Writes any implementation code before righter has reviewed all copy on the screen" and "Skips the step 2b copy gate because the chain is in fast mode"
+- **Version bump:** `1.1.0` → `1.2.0`
+
+---
+
 ## [1.1.0] — 2026-06-13
 
 ### Added
