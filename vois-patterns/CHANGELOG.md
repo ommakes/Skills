@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.3.1] - 2026-06-17
+
+### Changed
+
+- Updated cross-references from `vois-design-system` to its new name, `vois-tokens`.
+
+---
+
 ## [1.3.0] - 2026-06-17
 
 ### Changed

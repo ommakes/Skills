@@ -1,14 +1,14 @@
 ---
 name: vois-patterns
-description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-design-system. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.3.0
+description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
+version: 1.3.1
 ---
 
 # Vois Patterns Skill
 
 You are building the *structure* of pages and containers for a design system. This skill defines the architectural decisions that come *before* implementation (tokens, components, styling).
 
-**Read this skill first.** After you determine structure here, read `vois-design-system` for implementation details (spacing, typography, components, tokens).
+**Read this skill first.** After you determine structure here, read `vois-tokens` for implementation details (spacing, typography, components, tokens).
 
 This skill routes to `righter` skill for all microcopy (button labels, error messages, field descriptions, helper text). Don't guess at words—follow the righter skill.
 
@@ -40,7 +40,7 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
    ```
 
 5. **For every word that appears in UI**, check `righter` skill. See `references/microcopy-routing.md` for the full list of what counts as copy.
-6. Then read `vois-design-system` for implementation (tokens, spacing, components).
+6. Then read `vois-tokens` for implementation (tokens, spacing, components).
 
 ---
 
@@ -90,7 +90,7 @@ Read only the one reference file that matches the path you picked. Each template
 
 # Spacing Rules (Quick Reference)
 
-These are implemented via design-system; listed here for context.
+These are implemented via vois-tokens; listed here for context.
 
 - 24px vertical: heading ↔ body text
 - 24px horizontal: between two input fields
@@ -98,7 +98,7 @@ These are implemented via design-system; listed here for context.
 - 20px horizontal: between primary/secondary buttons (bottom right anchored)
 - Use gap tokens on container div instead of margin-bottom on elements
 
-For exact Tailwind class names and token values, see vois-design-system.
+For exact Tailwind class names and token values, see vois-tokens.
 
 ---
 
@@ -109,18 +109,18 @@ For exact Tailwind class names and token values, see vois-design-system.
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
 - [ ] All copy routed to righter skill and reviewed
-- [ ] Ready to read vois-design-system for tokens, spacing, components
+- [ ] Ready to read vois-tokens for tokens, spacing, components
 - [ ] Mobile breakpoint behavior defined (action sheets vs dialogs, sidebar vs hamburger, etc.)
 
 ---
 
 # Relationship to Other Skills
 
-**This skill ↔ vois-design-system:**
+**This skill ↔ vois-tokens:**
 
 - Read this first (what to build)
-- Then read design-system (how to code it correctly)
-- Design-system handles tokens, spacing, components, animation, accessibility
+- Then read vois-tokens (how to code it correctly)
+- vois-tokens handles tokens, spacing, components, animation, accessibility
 - This skill handles structural decisions and microcopy routing
 
 **This skill ↔ vois-components:**

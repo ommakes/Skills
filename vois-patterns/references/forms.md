@@ -12,7 +12,7 @@
 
 → Layout: Single column, stack vertically
 → No grouping needed
-→ Space between fields: 24px (spacing-md in design-system)
+→ Space between fields: 24px (spacing-md in vois-tokens)
 
 ### IF: 7-15 fields (medium form) `[PATH-C-MEDIUM]`
 
@@ -52,7 +52,7 @@
 
 ## Field Labeling:
 
-**Form labels follow typography rules from vois-design-system:**
+**Form labels follow typography rules from vois-tokens:**
 
 - Use H5 (14px, medium weight) for input labels
 - Use Description style (14px normal) for helper text

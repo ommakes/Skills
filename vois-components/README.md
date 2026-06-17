@@ -20,7 +20,7 @@ The skill covers 20 high-ambiguity component pairs organized by job, with decisi
 2. For each component you need to pick, find the matching job section below
 3. Walk the decision tree to a specific component name
 4. Call `record_component_choice` MCP tool with your selection
-5. Then read `vois-design-system` for implementation (tokens, spacing, accessibility)
+5. Then read `vois-tokens` for implementation (tokens, spacing, accessibility)
 
 **Do not skip the `record_component_choice` call.** This feeds the self-improving design system.
 
@@ -83,7 +83,7 @@ Without this event, your component selections are invisible to the system.
 ## Related Skills
 
 - **`vois-patterns`** — Read first. Determines the container type and structure.
-- **`vois-design-system`** — Read after. Applies tokens, spacing, and accessibility rules.
+- **`vois-tokens`** — Read after. Applies tokens, spacing, and accessibility rules.
 - **`righter`** — Consulted for all UI copy (labels, button text, error messages).
 - **`vois-router`** — Chain orchestrator that calls this skill in sequence. Use vois-router as the entry point instead of loading this skill directly.
 - **`vois-loop`** — Top-level iterative orchestrator. Wraps vois-router and adds conflict detection and upstream re-routing. The recommended entry point for feature builds from a ticket or brief.

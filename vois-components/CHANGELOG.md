@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.2.1] — 2026-06-17
+
+### Changed
+
+- Updated cross-references from `vois-design-system` to its new name, `vois-tokens`.
+
+---
+
 ## [1.2.0] — 2026-06-17
 
 ### Changed
@@ -33,7 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - "Why not X" explanations for each rubric to surface reasoning
 - `record_component_choice` MCP tool integration — every selection is recorded
 - Quick reference table mapping all 20 jobs at a glance
-- Cross-references to `vois-patterns` (read before) and `vois-design-system` (read after)
+- Cross-references to `vois-patterns` (read before) and `vois-tokens` (read after)
 - Workspace manifest guidance — handles custom or renamed components gracefully
 
 ### Architecture
@@ -54,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Related Work
 
 - Part of the Vois self-improving design system (see [PRD 4](../self-improving-design-system/04-component-selection-layer-prd.md) for full context)
-- Sits between `vois-patterns` (structure) and `vois-design-system` (implementation)
+- Sits between `vois-patterns` (structure) and `vois-tokens` (implementation)
 - Works alongside `righter` skill for all UI copy
 
 ### Known Limitations

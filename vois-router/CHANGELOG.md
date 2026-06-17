@@ -4,12 +4,20 @@ All notable changes to the vois-router skill are documented here.
 
 ---
 
+## [1.3.1] — 2026-06-17
+
+### Changed
+
+- Updated cross-references from `vois-design-system` to its new name, `vois-tokens`.
+
+---
+
 ## [1.3.0] — 2026-06-17
 
 ### Changed
 
-- **COMPONENT-ONLY route:** rewritten to specify scoped reference-file loading instead of vague "scoped" language. Now that `vois-design-system` has addressable `references/` files, the router tells it which component was picked and it reads only `references/components.md` (and usually `references/animation.md` for the transition) instead of the full skill.
-- **Skill list in the intro:** updated to note which skills now use the `SKILL.md` + `references/` structure (`vois-design-system`, `vois-patterns`, `vois-components`).
+- **COMPONENT-ONLY route:** rewritten to specify scoped reference-file loading instead of vague "scoped" language. Now that `vois-tokens` has addressable `references/` files, the router tells it which component was picked and it reads only `references/components.md` (and usually `references/animation.md` for the transition) instead of the full skill.
+- **Skill list in the intro:** updated to note which skills now use the `SKILL.md` + `references/` structure (`vois-tokens`, `vois-patterns`, `vois-components`).
 - No changes to session state format, handoff blocks, work-type classification, or gap handling.
 - **Version bump:** `1.2.0` → `1.3.0`
 
@@ -21,17 +29,17 @@ All notable changes to the vois-router skill are documented here.
 
 **Mandatory righter copy gate (step 2b)**
 
-A new required step in the FULL-CHAIN sequence, inserted between vois-components and vois-design-system:
+A new required step in the FULL-CHAIN sequence, inserted between vois-components and vois-tokens:
 
 - After vois-components completes, the router enumerates every text-bearing element on the screen: headings, subheads, body copy, CTAs, labels, placeholders, empty states, error messages, nav items, status badges, tooltips, form helper text, confirmations
 - All items are batched and sent to righter in a single invocation — never per-item
-- Implementation (vois-design-system) cannot begin until righter output is confirmed
-- Approved copy is passed into vois-design-system as part of the context package
+- Implementation (vois-tokens) cannot begin until righter output is confirmed
+- Approved copy is passed into vois-tokens as part of the context package
 - Gate is mandatory in both gated and fast modes; only the gated confirmation prompt is skipped in fast mode
 
 ### Changed
 
-- **FULL-CHAIN sequence:** step 2b added; vois-design-system context package updated to include `approved copy from step 2b`
+- **FULL-CHAIN sequence:** step 2b added; vois-tokens context package updated to include `approved copy from step 2b`
 - **Righter invocation rules:** new "Mandatory gate before implementation (step 2b)" subsection with step-by-step protocol
 - **"What the router never does":** two new items — "Writes any implementation code before righter has reviewed all copy on the screen" and "Skips the step 2b copy gate because the chain is in fast mode"
 - **Version bump:** `1.1.0` → `1.2.0`
@@ -70,7 +78,7 @@ A new required step in the FULL-CHAIN sequence, inserted between vois-components
 
 **Per-skill context packaging**
 
-- FULL-CHAIN: translates raw input into vois-patterns decision framing, passes path ID to vois-components, packages components + platform for vois-design-system
+- FULL-CHAIN: translates raw input into vois-patterns decision framing, passes path ID to vois-components, packages components + platform for vois-tokens
 - PICK-UP: validates path ID with designer before passing to vois-components
 - COMPONENT-ONLY: frames decision as job-to-be-done before loading vois-components
 

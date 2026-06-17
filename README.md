@@ -11,7 +11,7 @@ npx skills add ommakes/Skills
 ## Orchestrators
 
 ### Vois Loop
-Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-design-system, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer.
+Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer.
 
 **Use when:** someone says "build this", pastes a ticket, or asks to run the full design loop. Calls all the other skills in the right order, including vois-router.
 
@@ -58,7 +58,7 @@ Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigatio
 
 ---
 
-### Vois Design System
+### Vois Tokens
 A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design system rules — spacing, typography, color tokens, component patterns, animation, and accessibility — so agents produce consistent UI without guessing.
 
 **Read third** (after patterns and components are locked in) to implement with the correct tokens, spacing, and styling rules.
@@ -67,7 +67,7 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill.
 
-→ [`vois-design-system/`](./vois-design-system)
+→ [`vois-tokens/`](./vois-tokens)
 
 ---
 
@@ -138,7 +138,7 @@ The four design system skills form a complete pipeline:
    ↓ (structures → container types)
 2. vois-components
    ↓ (selects → specific components for each job)
-3. vois-design-system
+3. vois-tokens
    ↓ (implements → tokens, spacing, accessibility)
 4. righter (consulted throughout for all UI copy)
 ```
@@ -147,7 +147,7 @@ Read them in order. Each skill assumes you've read the previous one and points f
 
 - **Patterns** answers "what structure am I building?"
 - **Components** answers "which component for this job?"
-- **Design System** answers "how do I implement this correctly?"
+- **Tokens** answers "how do I implement this correctly?"
 - **Righter** answers "what words go here?" (consulted at every step)
 
 ---

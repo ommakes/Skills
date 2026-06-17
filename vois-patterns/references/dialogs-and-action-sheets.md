@@ -39,7 +39,7 @@
 **Body:**
 
 - Single input field OR simple content
-- Max width: depends on desktop or mobile (see vois-design-system)
+- Max width: depends on desktop or mobile (see vois-tokens)
 
 **Footer:**
 

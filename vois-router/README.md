@@ -8,7 +8,7 @@ Chain orchestrator for the Vois design system skill chain. Single entry point fo
 
 vois-router reads your input, classifies the work into one of six types, sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs — not a raw re-explanation of the problem.
 
-It coordinates: vois-patterns, vois-components, vois-design-system, righter, and design-rationale.
+It coordinates: vois-patterns, vois-components, vois-tokens, righter, and design-rationale.
 
 Each of those skills works standalone. The router adds orchestration on top — nothing more.
 
@@ -53,7 +53,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode".
 | **vois-loop** | Higher-level orchestrator that wraps this router. Use vois-loop when starting from a ticket and you want iterative conflict resolution. |
 | **vois-patterns** | Step 1 in FULL-CHAIN: structural container decisions and path ID. |
 | **vois-components** | Step 2 in FULL-CHAIN, entry point for PICK-UP and COMPONENT-ONLY: specific component selection. |
-| **vois-design-system** | Step 3 in FULL-CHAIN: token, spacing, and accessibility implementation. |
+| **vois-tokens** | Step 3 in FULL-CHAIN: token, spacing, and accessibility implementation. |
 | **righter** | Invoked inline throughout — not a sequential step. Batched when 3+ copy items are queued at the same step. |
 | **design-rationale** | Opt-in at two points in FULL-CHAIN (after patterns, after components). Primary skill for RATIONALE-ONLY and AUDIT. |
 
@@ -64,7 +64,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode".
 | **Iteration** | No — single pass | Yes — detects conflicts, routes back upstream |
 | **Conflict handling** | Not handled | Built-in loop-back protocol |
 | **Pre-flight** | Routes directly | Runs design-ask before routing |
-| **Validate pass** | Not included | Inline after vois-design-system |
+| **Validate pass** | Not included | Inline after vois-tokens |
 | **Best for** | Clear work type, direct routing | Feature builds from tickets or briefs |
 
 ---

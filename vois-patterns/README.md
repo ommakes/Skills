@@ -6,7 +6,7 @@ Structural decision trees and UI patterns for building consistent interfaces wit
 
 `vois-patterns` is a skill that tells you **which container type to build** and **how to structure it** before you implement it with tokens and components.
 
-It's the architectural layer above `vois-design-system` (implementation) and `righter` (microcopy).
+It's the architectural layer above `vois-tokens` (implementation) and `righter` (microcopy).
 
 ## When to Use This
 
@@ -18,7 +18,7 @@ Use `vois-patterns` when you're:
 - Figuring out how to handle form states (view/edit)
 - Deciding between sidebar vs modal for details
 
-Load it *before* reading `vois-design-system` or `righter`.
+Load it *before* reading `vois-tokens` or `righter`.
 
 ## Quick Start
 
@@ -38,9 +38,9 @@ Load it *before* reading `vois-design-system` or `righter`.
    - Every word in UI comes from righter
    - Button labels, error messages, field descriptions, status labels, etc.
 
-4. **Read `vois-design-system` for implementation**
+4. **Read `vois-tokens` for implementation**
    - Apply tokens for spacing, typography, color
-   - Use components from the design system
+   - Use components from vois-tokens
    - Handle animations and responsive behavior
 
 ## File Structure
@@ -73,7 +73,7 @@ Each template includes:
 
 1. **Decision trees come first, implementation comes second**
    - Determine structure with vois-patterns
-   - Then implement with vois-design-system
+   - Then implement with vois-tokens
    - Then get copy from righter
 
 2. **Every word in UI is routed to righter**
@@ -98,10 +98,10 @@ Each template includes:
 
 ## Relationship to Other Skills
 
-### vois-patterns ↔ vois-design-system
+### vois-patterns ↔ vois-tokens
 - Read **vois-patterns** first → determines structure and layout
-- Then read **vois-design-system** → implements with tokens, components, spacing
-- Design-system: how to code it correctly
+- Then read **vois-tokens** → implements with tokens, components, spacing
+- vois-tokens: how to code it correctly
 - vois-patterns: what to build
 
 ### vois-patterns ↔ righter
@@ -142,7 +142,7 @@ See `CHANGELOG.md` for update history and rationale.
    - Label: "Customer" (righter)
    - Helper: "Select from your saved customers" (righter)
    - Button: "Create invoice" (righter)
-5. Implement: vois-design-system spacing, tokens, components
+5. Implement: vois-tokens spacing, tokens, components
 ```
 
 ### Example 2: Settings Page (Billing)
@@ -152,7 +152,7 @@ See `CHANGELOG.md` for update history and rationale.
 3. Macro decision: Deep (4+ sections) → sidebar navigation
 4. Permissions: Some fields hidden if user not billing admin
 5. Route to righter: Section headers, button labels, all copy
-6. Implement: vois-design-system for layout, tabs, spacing
+6. Implement: vois-tokens for layout, tabs, spacing
 ```
 
 ### Example 3: Table with Inline Editing
@@ -162,7 +162,7 @@ See `CHANGELOG.md` for update history and rationale.
 3. Table structure: 25 per page, first column pinned, quick action buttons on hover
 4. Sidebar form: 4 input fields (within sidebar limit)
 5. Route to righter: Column headers, button labels, action menu items
-6. Implement: vois-design-system for table density, spacing, component patterns
+6. Implement: vois-tokens for table density, spacing, component patterns
 ```
 
 ## Microcopy Routing Checklist
@@ -237,7 +237,7 @@ See `CHANGELOG.md` for detailed rationale on each update.
 ## Skills This Integrates With
 
 - **righter** — UX content writing principles for all UI copy
-- **vois-design-system** — Implementation details (tokens, spacing, components)
+- **vois-tokens** — Implementation details (tokens, spacing, components)
 - **PostHog** — Analytics on pattern usage and effectiveness
 - **Claude Code** — Primary consumer of these patterns
 
@@ -264,7 +264,7 @@ A: Patterns tell you *when and where* to use tokens. Design tokens tell you *how
 
 Example:
 - vois-patterns: "Primary button on right, secondary on left, 20px between them"
-- vois-design-system: "Use spacing-xs (20px) token, color-interactive-primary for button, typography-button-small for label"
+- vois-tokens: "Use spacing-xs (20px) token, color-interactive-primary for button, typography-button-small for label"
 
 ## Contact & Questions
 
