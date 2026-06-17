@@ -1,4 +1,4 @@
-# Vois Design System Skill
+# Vois Tokens Skill
 
 **Version 1.2.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool
 
@@ -27,7 +27,7 @@ A Claude skill that enforces consistent, production-quality UI output when build
 
 Copy `SKILL.md` into your Claude skill directory. The exact path depends on your setup:
 
-- **Claude Code:** `~/.claude/skills/vois-design-system/SKILL.md`
+- **Claude Code:** `~/.claude/skills/vois-tokens/SKILL.md`
 - **Custom path:** wherever your `CLAUDE.md` or system prompt references skills from
 
 The skill fires automatically based on its description when you're building UI components, pages, or anything that should conform to this design system.
@@ -62,7 +62,7 @@ Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. After Cla
 ## Files
 
 ```
-Vois-Design-System/
+vois-tokens/
 ├── SKILL.md        ← the skill itself
 ├── README.md       ← this file
 └── CHANGELOG.md    ← version history

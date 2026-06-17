@@ -6,7 +6,7 @@ Top-level iterative orchestrator for the Vois design system skill chain. Runs th
 
 ## What This Is
 
-vois-loop wraps design-ask, vois-router, and the full design system skill chain (vois-patterns → vois-components → vois-design-system → validate → design-rationale) in a loop that can route back upstream when skills conflict with each other.
+vois-loop wraps design-ask, vois-router, and the full design system skill chain (vois-patterns → vois-components → vois-tokens → validate → design-rationale) in a loop that can route back upstream when skills conflict with each other.
 
 Unlike vois-router, which executes a linear single-pass chain, vois-loop treats iteration as part of the process. If a component choice breaks during implementation, or righter's correct copy doesn't fit the selected component, the loop names the conflict and re-routes to the right upstream skill — without losing prior decisions.
 
@@ -46,8 +46,8 @@ Switch at any point: "switch to fast mode" / "switch to gated mode".
 | **vois-router** | Called internally to classify the work type and sequence the chain. |
 | **vois-patterns** | Step 1 of the chain: determines container type and path ID. |
 | **vois-components** | Step 2: selects specific components for the container. Loop-backs often land here. |
-| **vois-design-system** | Step 3: implements in code using Vois tokens, spacing, and accessibility rules. |
-| **righter** | Runs inline during vois-design-system — not as a sequential step. |
+| **vois-tokens** | Step 3: implements in code using Vois tokens, spacing, and accessibility rules. |
+| **righter** | Runs inline during vois-tokens — not as a sequential step. |
 | **design-rationale** | Closes the loop. Opt-in at two points. Documents iteration history if loop-backs occurred. |
 
 ## vois-loop vs vois-router
@@ -57,7 +57,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode".
 | **Iteration** | Yes — detects conflicts, routes back upstream | No — single pass through the chain |
 | **Conflict handling** | Built-in loop-back protocol with named conflict types | Not handled — run vois-loop if you need it |
 | **Pre-flight** | Runs design-ask before routing | Routes directly from input |
-| **Validate pass** | Inline after vois-design-system | Not included |
+| **Validate pass** | Inline after vois-tokens | Not included |
 | **Best for** | Feature builds from tickets or briefs | Direct routing when work type is clear |
 
 Both support gated and fast modes. Both produce a chain completion block.

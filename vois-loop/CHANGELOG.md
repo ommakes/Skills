@@ -4,6 +4,14 @@ All notable changes to the vois-loop skill are documented here.
 
 ---
 
+## [1.2.1] — 2026-06-17
+
+### Changed
+
+- Updated cross-references from `vois-design-system` to its new name, `vois-tokens`.
+
+---
+
 ## [1.2.0] — 2026-06-13
 
 ### Added
@@ -16,7 +24,7 @@ All notable changes to the vois-loop skill are documented here.
 
 **Conflict detection**
 
-- Five conflict types defined with explicit upstream targets: vois-components → vois-design-system, righter (inline) → vois-design-system, vois-design-system → vois-components, vois-patterns → vois-components, and any skill → design-ask
+- Five conflict types defined with explicit upstream targets: vois-components → vois-tokens, righter (inline) → vois-tokens, vois-tokens → vois-components, vois-patterns → vois-components, and any skill → design-ask
 - Clear separation between what counts as a conflict (requires loop-back) and what does not (righter iteration, multiple valid component options, pattern gaps, validate WARN)
 
 **Loop-back protocol**
@@ -34,10 +42,10 @@ All notable changes to the vois-loop skill are documented here.
 
 **Inline validate pass (Step 4)**
 
-- Runs after vois-design-system completes, before design-rationale
+- Runs after vois-tokens completes, before design-rationale
 - Six check categories: Semantic HTML, Accessibility, Token alignment, React, Animation, Component fidelity
 - Three verdicts per category: PASS, WARN (non-blocking), FAIL (triggers loop-back)
-- All checks tied to vois-design-system rule IDs (`DS-A11Y-*`, `DS-SPACING-*`, `DS-ANIMATION-*`, etc.)
+- All checks tied to vois-tokens rule IDs (`DS-A11Y-*`, `DS-SPACING-*`, `DS-ANIMATION-*`, etc.)
 
 **Gated and fast modes**
 

@@ -1,14 +1,14 @@
 ---
 name: vois-components
-description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-design-system applies tokens. For every component you pick, call the record_component_choice MCP tool. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.2.0
+description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. For every component you pick, call the record_component_choice MCP tool. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
+version: 1.2.1
 ---
 
 # Vois Component Selection Skill
 
-You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-design-system`).
+You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-tokens`).
 
-Read this skill after `vois-patterns` has determined the container type. For every component you pick, call `record_component_choice` before moving to `vois-design-system`.
+Read this skill after `vois-patterns` has determined the container type. For every component you pick, call `record_component_choice` before moving to `vois-tokens`.
 
 The Quick Reference table below resolves most cases on its own. When it doesn't — ambiguous case, need the full decision tree, or need to justify the choice — read the matching reference file.
 
@@ -102,6 +102,6 @@ Each reference file has the full decision tree (with thresholds and edge cases) 
 
 **Read `vois-patterns` first.** That skill determines the container type — settings page, form, table, dialog. Once you know the structure, come here to pick the specific components that fill it.
 
-**Read `vois-design-system` after.** Once components are selected, `vois-design-system` handles tokens, spacing, animation, and accessibility implementation.
+**Read `vois-tokens` after.** Once components are selected, `vois-tokens` handles tokens, spacing, animation, and accessibility implementation.
 
 **Righter for all copy.** Component labels, empty state messages, button text, error copy — all of it goes through `righter` (which calls `get_microcopy` first). This skill says nothing about words.

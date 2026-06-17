@@ -42,5 +42,5 @@ Use righter skill for:
 2. Call record_pattern_decision with the path ID
 3. For every word, check righter skill
 4. Get the exact copy from righter
-5. Then implement with vois-design-system rules (tokens, spacing, components)
+5. Then implement with vois-tokens rules (tokens, spacing, components)
 ```

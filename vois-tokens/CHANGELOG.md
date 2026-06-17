@@ -1,6 +1,15 @@
 # Changelog
 
-All notable changes to the Vois Design System skill are documented here.
+All notable changes to the Vois Tokens skill are documented here.
+
+---
+
+## [1.4.0] — 2026-06-17
+
+### Changed
+
+- **Renamed `vois-design-system` → `vois-tokens`.** Folder, `name:` frontmatter, and all cross-references in `vois-patterns`, `vois-components`, `vois-router`, `vois-loop`, and the top-level README updated to the new name. Rule IDs (`[DS-*]`) are unchanged — only the skill name moved.
+- **Version bump:** `1.3.0` → `1.4.0`
 
 ---
 

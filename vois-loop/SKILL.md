@@ -1,11 +1,11 @@
 ---
 name: vois-loop
-version: 1.2.0
+version: 1.2.1
 author: Personify Labs
 description: >
   Iterative design build loop for the Vois design system. Wraps design-ask,
   vois-router, and the full skill chain (vois-patterns, vois-components,
-  vois-design-system, righter, design-rationale) in a loop that detects
+  vois-tokens, righter, design-rationale) in a loop that detects
   conflicts between skills and routes back upstream when something doesn't
   resolve cleanly. Includes an inline validation pass (no external skill
   required) that checks implementation correctness before design-rationale
@@ -32,7 +32,7 @@ design-ask
     ↓
 vois-router (classifies + sequences)
     ↓
-vois-patterns → vois-components → vois-design-system
+vois-patterns → vois-components → vois-tokens
       ↑___________________loop back_________________|
                                                     ↓
                                               righter (inline throughout)
@@ -43,12 +43,12 @@ vois-patterns → vois-components → vois-design-system
 ```
 
 **Where righter lives:** righter is not a sequential step. It runs inline
-throughout vois-design-system — whenever labels, errors, button copy, helper
-text, or any UI string is encountered. It does not run after vois-design-system.
+throughout vois-tokens — whenever labels, errors, button copy, helper
+text, or any UI string is encountered. It does not run after vois-tokens.
 It runs during it.
 
 **Where validate lives:** validate is not an external skill. It is a structured
-pass defined in this skill (Step 4) that runs after vois-design-system completes.
+pass defined in this skill (Step 4) that runs after vois-tokens completes.
 No external skill is needed or called.
 
 Max iterations: 3. If unresolved after 3 passes, surface the conflict to the
@@ -74,7 +74,7 @@ Pre-flight:
 Chain:
   ✓ vois-patterns    PATH-[X] — [container type]
   ✓ vois-components  [components selected]
-  ● vois-design-system  in progress
+  ● vois-tokens  in progress
     ↳ righter        [N copy items queued | inline as needed]
   ○ validate   pending
   ○ design-rationale pending
@@ -92,7 +92,7 @@ Designer inputs:
 
 Legend: ✓ complete · ● in progress · ○ pending · ✕ skipped · ↺ re-running
 
-Note righter is nested under vois-design-system in the state block — it's a
+Note righter is nested under vois-tokens in the state block — it's a
 subprocess, not a peer step.
 
 -----
@@ -146,7 +146,7 @@ In fast mode: display and proceed immediately.
 Execute the chain in order:
 
 ```
-vois-patterns → vois-components → vois-design-system (with righter inline)
+vois-patterns → vois-components → vois-tokens (with righter inline)
 ```
 
 ### vois-patterns
@@ -162,7 +162,7 @@ Selects specific components within the chosen container. Resolves ambiguous
 pairs (Dialog vs Drawer, Toast vs Banner, Select vs Combobox). Calls
 `record_component_choice` after each selection.
 
-### vois-design-system
+### vois-tokens
 
 Implements the structure and components in code using shadcn/ui, Tailwind v4,
 and Motion. Applies spacing tokens, type scale, color tokens, animation rules,
@@ -174,7 +174,7 @@ confirmation dialogs — is written during this step by invoking righter. Do not
 defer copy to after implementation. Copy affects component sizing, layout, and
 interaction patterns. It must be resolved as the implementation is built.
 
-vois-design-system closes by calling `vois_record_rule_usage` with the rule
+vois-tokens closes by calling `vois_record_rule_usage` with the rule
 IDs applied. If any rule was violated or found ambiguous, flag it.
 
 -----
@@ -186,12 +186,12 @@ accepted by the next skill without revisiting an upstream decision.
 
 ### What counts as a conflict
 
-**vois-components → vois-design-system conflict:**
+**vois-components → vois-tokens conflict:**
 The selected component does not exist in the shadcn/ui manifest or cannot
 be implemented against the Vois token set without inventing values. Loop back
 to vois-components with the specific gap.
 
-**righter (inline) → vois-design-system conflict:**
+**righter (inline) → vois-tokens conflict:**
 The correct copy for a UI element is too long, too conditional, or requires
 a link — and the component the copy needs to live in can't support it. The
 component choice is wrong. Loop back to vois-components.
@@ -200,7 +200,7 @@ Example: righter's correct error message is 35 words and needs a CTA link.
 The component selected for this was an inline helper text span. The right
 component is a Banner or Alert. Loop back to vois-components.
 
-**vois-design-system → vois-components conflict:**
+**vois-tokens → vois-components conflict:**
 During implementation, the token or layout rules for the chosen container type
 make a component selection technically incompatible. Example: a component that
 requires a fixed-height container was selected for a PATH-C form that uses
@@ -376,10 +376,10 @@ Do not attempt a 4th iteration. Surface it and let the designer decide.
 
 ## Step 4: Validate pass
 
-After vois-design-system completes and no active conflicts remain, run
+After vois-tokens completes and no active conflicts remain, run
 validate.
 
-The validate pass checks the implementation output against the vois-design-system
+The validate pass checks the implementation output against the vois-tokens
 pre-submit checklist. It uses the design system's own rule IDs so violations
 trace back to their source rule.
 
@@ -469,7 +469,7 @@ Pre-flight:
 Decisions:
   Structure:    [PATH-X] — [container type]
   Components:   [list with one-line reasoning each]
-  Implementation: [summary of vois-design-system output]
+  Implementation: [summary of vois-tokens output]
   Copy:         [list of copy items produced via righter]
   Rationale:    [ran / skipped at offer point 1 / skipped at offer point 2]
 
@@ -486,7 +486,7 @@ Validation:
   FAIL:  [none — loop resolved all failures before this point]
 
 Rule usage:
-  [vois-design-system rule IDs applied, per vois_record_rule_usage output]
+  [vois-tokens rule IDs applied, per vois_record_rule_usage output]
 
 Gaps flagged:
   [none | any unresolved pattern or component gaps]
@@ -514,7 +514,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode."
 
 - Runs the chain without going through design-ask first
 - Routes before design-ask returns "Ready" or "Start with caution"
-- Runs righter as a sequential step after vois-design-system — it runs inline during it
+- Runs righter as a sequential step after vois-tokens — it runs inline during it
 - Defers copy until after implementation is built
 - Loops back without naming the conflict explicitly
 - Runs more than 3 iterations without surfacing to the designer
@@ -538,7 +538,7 @@ Switch at any point: "switch to fast mode" / "switch to gated mode."
 |Ticket + "fast mode"              |Same, no confirmations                          |
 |design-ask returns "Not ready"    |Stop, surface gaps, wait                        |
 |Conflict at righter (inline)      |Loop back to vois-components                    |
-|Conflict at vois-design-system    |Loop back to vois-components or vois-patterns   |
+|Conflict at vois-tokens    |Loop back to vois-components or vois-patterns   |
 |Conflict traces to bad requirement|Loop back to design-ask                         |
 |validate FAIL                     |Loop back to relevant skill, counts as iteration|
 |3 iterations, still conflicted    |Surface to designer, stop                       |

@@ -1,6 +1,6 @@
 ---
 name: vois-router
-version: 1.3.0
+version: 1.3.1
 description: >
   Orchestrates the Vois design system skill chain. Use this skill as the single
   entry point whenever you're doing any UI work against the Vois design system —
@@ -8,7 +8,7 @@ description: >
   decision. The router reads your input, identifies the right starting point and
   skill sequence, and packages context forward so you don't have to re-explain
   the problem at each step. Works with vois-patterns, vois-components,
-  vois-design-system, righter, and design-rationale. Each of those skills can
+  vois-tokens, righter, and design-rationale. Each of those skills can
   still be used standalone — this router is additive, not a replacement.
   Trigger when someone says "build this screen", "what component should I use",
   "help me write this copy", "route me through the design system", or pastes any
@@ -26,7 +26,7 @@ and carries context forward between them so each skill starts with what it needs
 The skills this router coordinates:
 - `vois-patterns` — structural container decisions (SKILL.md + references/ per template)
 - `vois-components` — specific component selection (SKILL.md + references/ per job category)
-- `vois-design-system` — tokens, spacing, implementation (SKILL.md + references/ per topic)
+- `vois-tokens` — tokens, spacing, implementation (SKILL.md + references/ per topic)
 - `righter` — all UI copy, invoked inline throughout (SKILL.md + references/ already in place)
 - `design-rationale` — cognitive/behavioral audit, opt-in at two points in the chain (SKILL.md + references/ already in place)
 
@@ -74,7 +74,7 @@ Mode:         [gated | fast]
 Chain:
   ✓ vois-patterns     PATH-D — Dialog/Action Sheet
   ● vois-components   in progress
-  ○ vois-design-system pending
+  ○ vois-tokens pending
   ○ righter           pending (3 copy items queued)
   ○ design-rationale  pending (offered after components)
 
@@ -114,7 +114,7 @@ Do not ask multiple questions. Do not ask for information that won't change the 
 ## Step 2: Resolve platform
 
 Platform is a required input. It affects vois-patterns mobile rules,
-vois-design-system breakpoint behavior, and righter copy choices. Silently
+vois-tokens breakpoint behavior, and righter copy choices. Silently
 inferring the wrong platform produces wrong output through the entire chain.
 
 **Infer confidently (no need to ask) when:**
@@ -244,7 +244,7 @@ chain completion block (see below).
 
    → Offer design-rationale here (opt-in)
 
-3. vois-design-system
+3. vois-tokens
    Context package: components from step 2, platform, token constraints
    Outputs needed:  implemented UI with tokens, spacing, accessibility applied
 
@@ -264,7 +264,7 @@ framing the skill expects: what is the user trying to accomplish?
 > "vois-patterns selected [PATH-X] — [container type]. Jobs-to-be-done for this
 > screen: [list]. Which components should we use?"
 
-**Context packaging for vois-design-system:**
+**Context packaging for vois-tokens:**
 
 > "Components selected: [list with reasoning]. Platform: [platform]. Implement
 > using Vois tokens, spacing rules, and accessibility requirements."
@@ -277,7 +277,7 @@ framing the skill expects: what is the user trying to accomplish?
 Entry point: vois-components
 Context package: path ID from prior session, jobs-to-be-done
 
-Then: vois-design-system
+Then: vois-tokens
 Context package: components from vois-components
 ```
 
@@ -303,7 +303,7 @@ wrong component selections with no error. Always validate.
 1. vois-components
    Context package: decision framed as job-to-be-done
 
-2. vois-design-system (scoped)
+2. vois-tokens (scoped)
    Context package: selected component only — relevant reference file(s) only,
    not a full implementation run
 ```
@@ -315,11 +315,11 @@ Frame the component question as a job before loading the skill:
 Don't present it as "modal vs drawer" — vois-components works from jobs, not
 component names. Let the decision tree resolve the choice.
 
-**Scoped loading for vois-design-system:** vois-design-system is organized as
+**Scoped loading for vois-tokens:** vois-tokens is organized as
 a SKILL.md plus a `references/` folder, one file per topic (spacing,
 typography, color, components, layout-and-responsive, tailwind-v4, animation,
 accessibility, css-architecture). For a COMPONENT-ONLY run, tell
-vois-design-system which component was selected and let it read only the
+vois-tokens which component was selected and let it read only the
 matching reference file(s) — e.g. a modal selection only needs
 `references/components.md` (and usually `references/animation.md` for the
 entrance transition), not the full skill. This is what makes "scoped" actually
@@ -470,7 +470,7 @@ If no or no response: proceed to vois-components immediately.
 > any tensions. One extra step."
 
 If yes: load design-rationale in audit mode with the component choices as input.
-If no or no response: proceed to vois-design-system immediately.
+If no or no response: proceed to vois-tokens immediately.
 
 Don't offer design-rationale in COPY-ONLY runs.
 In RATIONALE-ONLY and AUDIT runs, design-rationale is the primary step.
@@ -502,7 +502,7 @@ Design-rationale findings:
   [summary if ran, or "not run"]
 
 Implementation:
-  [link or reference to vois-design-system output]
+  [link or reference to vois-tokens output]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
