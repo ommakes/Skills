@@ -102,3 +102,33 @@ Common breakpoint values in `em`:
 | xl | 80em | 1280px |
 
 Note: Tailwind's built-in breakpoints use `px` internally, so this rule applies primarily to any hand-authored `@media` queries outside Tailwind utilities.
+
+## When a Value Doesn't Match Any Token `[DS-CSS-008]`
+
+`SKILL.md` says "flag it, don't invent it." Concretely:
+
+- If the needed value is within **~10% of an existing token**, round to that token. (A 23px gap rounds to `gap-6`/24px.)
+- If it's further off than that, don't silently pick the nearest one — call `vois_record_rule_usage` with `ambiguous: true` and flag it to the designer. Inventing a value that's 30% off the scale defeats the point of having a scale.
+
+## Border Radius Scale `[DS-CSS-009]`
+
+| Token | Value | Use |
+|---|---|---|
+| `--radius-sm` | 0.25rem (4px) | Inputs, badges, small controls |
+| `--radius-md` | 0.5rem (8px) | Buttons, cards, default |
+| `--radius-lg` | 0.75rem (12px) | Modals, large containers |
+| `--radius-full` | 9999px | Avatars, pills, circular icons |
+
+## Z-Index Scale `[DS-CSS-010]`
+
+Named layers, not arbitrary numbers:
+
+| Token | Value | Layer |
+|---|---|---|
+| `--z-dropdown` | 10 | Dropdowns, popovers, comboboxes |
+| `--z-sticky` | 20 | Sticky headers, sticky table headers |
+| `--z-overlay` | 30 | Scrims/backdrops behind modals |
+| `--z-modal` | 40 | Modals, dialogs, drawers |
+| `--z-toast` | 50 | Toasts, top-level notifications |
+
+Never hardcode a raw `z-index` number outside this scale — it's how stacking bugs creep in.

@@ -4,6 +4,21 @@ All notable changes to the vois-router skill are documented here.
 
 ---
 
+## [1.4.0] — 2026-06-17
+
+### Added
+
+- **`METRICS-ONLY` work type:** new row in the classification table routing analytics/event-tracking requests directly to `metrics-tagging`, bypassing the vois-patterns/vois-components/vois-tokens chain.
+- **Copy handoff schema:** the "approved copy from step 2b" context-package field passed to vois-tokens is now a defined list shape (`{ elementId, approvedCopy, sourceField }`) instead of free prose.
+
+### Changed
+
+- Noted that `gtm-positioning` and `designer-ic-assessment` are explicitly out of scope for this router's classification table — standalone skills outside the UI-build workflow.
+- Work-type count in Step 3 updated from six to seven.
+- **Version bump:** `1.3.1` → `1.4.0`
+
+---
+
 ## [1.3.1] — 2026-06-17
 
 ### Changed

@@ -6,6 +6,7 @@
 - **Never use Tailwind's built-in color palette** (`blue-500`, `red-400`, etc.) if a token exists for it. The token is always preferred. `[DS-COLOR-002]`
 - **Color cannot be the only signal.** Error states, success states, warnings — always pair color with an icon, label, or text. Never rely on color alone. `[DS-COLOR-003]`
 - **60/30/10 distribution:** roughly 60% neutral, 30% complementary/secondary, 10% accent/brand. This prevents visual stress and keeps hierarchy clear. `[DS-COLOR-004]`
+  - **When in doubt:** measure by rendered surface area (px² of background/fill), not element count. A single full-width accent banner can blow the 10% budget even though it's "one element." Eyeball the viewport as painted regions, not as a list of components.
 - Decorative icons that add no information get `aria-hidden="true"`. Don't let screen readers announce them. `[DS-COLOR-005]`
 
 ## OKLCH
@@ -43,3 +44,19 @@ html {
 This is cleaner than duplicating rules under a `.dark` selector for simple two-value swaps. For complex component variants, stick with the dark: modifier.
 
 Before shipping any component, verify both light and dark mode manually. `[DS-COLOR-007]`
+
+## Opacity Steps `[DS-COLOR-008]`
+
+Disabled and secondary states are expressed as opacity steps on the base color token, not as separate hardcoded colors:
+
+| Step | Opacity | Use |
+|------|---------|-----|
+| `100` | 100% | Default, fully interactive |
+| `60` | 60% | Secondary emphasis (placeholder text, inactive tab) |
+| `38` | 38% | Disabled (matches WCAG-adjacent disabled-state convention) |
+
+```css
+.button[disabled] { opacity: 0.38; }
+```
+
+Never invent a one-off disabled color — apply an opacity step to the existing token instead.

@@ -1,6 +1,6 @@
 ---
 name: vois-loop
-version: 1.2.1
+version: 1.3.0
 author: Personify Labs
 description: >
   Iterative design build loop for the Vois design system. Wraps design-ask,
@@ -217,6 +217,14 @@ A downstream skill surfaces ambiguity that traces back to the original
 requirement — the implementation is unresolvable because the ticket didn't
 define the user need clearly enough. Loop back to design-ask, not vois-router.
 This is rare but important to catch.
+
+**vois-tokens/vois-components → design-rationale conflict:**
+A token or component choice contradicts a design principle the designer has
+already stated or that design-rationale previously confirmed for this
+project (e.g. "we never use modals for destructive confirmation" but the
+chain selected an AlertDialog). Loop back to design-rationale to resolve
+the principle before continuing — don't silently override it in
+vois-tokens or vois-components.
 
 ### What does not count as a conflict
 
