@@ -4,6 +4,22 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.5.0] — 2026-06-17
+
+### Added
+
+- **Two new reference files:** `references/elevation.md` (shadow/elevation scale, modal scrim guidance, `[DS-ELEVATION]`) and `references/iconography.md` (icon sizing tied to text context, stroke-width consistency, `[DS-ICON]`).
+- **Decision frameworks ("When in doubt" subsections)** added to `spacing.md`, `color.md`, `css-architecture.md`, and `layout-and-responsive.md` to disambiguate previously behavior-only rules (smaller-token tie-breaker, 60/30/10 measured by surface area, off-token rounding tolerance, `svh`/`dvh` choice, `contain-intrinsic-size` estimation).
+- **New token coverage:** opacity-step scale for disabled/secondary states (`color.md`, `[DS-COLOR-008]`), border-radius scale and named z-index scale (`css-architecture.md`, `[DS-CSS-009]`/`[DS-CSS-010]`), heading-to-body spacing composition table (`typography.md`, `[DS-TYPOGRAPHY-015]`).
+- Cross-linked `components.md`'s modal section to the new elevation reference (`[DS-MODAL-004]`).
+
+### Changed
+
+- `SKILL.md` reference-file index and Quick Reference tables updated to list the two new files and the new decision points.
+- **Version bump:** `1.4.0` → `1.5.0`
+
+---
+
 ## [1.4.0] — 2026-06-17
 
 ### Changed

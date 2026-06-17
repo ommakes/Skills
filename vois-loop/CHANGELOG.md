@@ -4,6 +4,18 @@ All notable changes to the vois-loop skill are documented here.
 
 ---
 
+## [1.3.0] — 2026-06-17
+
+### Added
+
+- **Sixth conflict type:** vois-tokens/vois-components conflicting with a previously stated design-rationale principle now loops back to `design-rationale` instead of being silently overridden.
+
+### Changed
+
+- **Version bump:** `1.2.1` → `1.3.0`
+
+---
+
 ## [1.2.1] — 2026-06-17
 
 ### Changed

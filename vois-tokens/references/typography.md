@@ -21,6 +21,18 @@
 | Body | Body | 16px | 24px | normal | Long-form content, input field content |
 | Description | Description | 14px | 20px | normal | Short descriptions in toasts, alerts, dialogs, popovers |
 
+## Heading-to-Body Spacing `[DS-TYPOGRAPHY-015]`
+
+Spacing below a heading scales with its tier — don't reuse the same gap for an H0 and an H5:
+
+| Heading tier | Gap to body/content below |
+|---|---|
+| H0 / H1 | `gap-8` (32px) |
+| H2 / H3 | `gap-4` (16px) |
+| H4 / H5 / H6 | `gap-2` (8px) |
+
+This keeps composition consistent instead of picking a gap ad hoc per component.
+
 ## Fonts
 
 These are the default fonts. Your workspace may define different ones via typography tokens — check the token reference before assuming these apply.

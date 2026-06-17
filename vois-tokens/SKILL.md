@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Vois Tokens Skill
@@ -35,7 +35,9 @@ Read the file(s) that match what you're building. Each file is self-contained �
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
-| `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
+| `references/css-architecture.md` | @theme setup, selector specificity, media queries, border-radius/z-index scales | `[DS-CSS]` |
+| `references/elevation.md` | Shadow/elevation, modal scrims | `[DS-ELEVATION]` |
+| `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 
 **Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), read only the matching reference file plus this SKILL.md. You don't need the full set for a scoped task.
 
@@ -110,6 +112,13 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
 - [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
+- [ ] Border-radius and z-index values come from the scale, not invented `[DS-CSS-009]` `[DS-CSS-010]`
+
+**Elevation & Iconography**
+- [ ] Shadow tier matches the element's z-index layer `[DS-ELEVATION-002]`
+- [ ] Modal scrim is a separate scrim color, not a heavier shadow `[DS-ELEVATION-001]`
+- [ ] Icon size matches adjacent text size `[DS-ICON]`
+- [ ] Single stroke width used across all icons on screen `[DS-ICON-001]`
 
 ---
 
@@ -138,4 +147,8 @@ Run this regardless of which reference files you read — it's the universal gat
 | Date or time in content | `<time datetime="...">` | `references/accessibility.md` |
 | Hand-authoring a media query | Use `em` not `px` for the breakpoint value | `references/css-architecture.md` |
 | Selector getting hard to override | You've gone too deep — add a class instead | `references/css-architecture.md` |
+| Need a shadow or modal scrim | Use the elevation tier table | `references/elevation.md` |
+| Need an icon size | Match it to the adjacent text size | `references/iconography.md` |
+| Need a border-radius or z-index value | Use the scale, don't invent a number | `references/css-architecture.md` |
+| Value doesn't match any token | Round within ~10%, else flag with `ambiguous: true` | `references/css-architecture.md` |
 | Done with UI work | Call `vois_record_rule_usage` with rule IDs applied | — |

@@ -23,6 +23,8 @@ Stop using `vh`. It breaks on mobile because browser chrome changes the availabl
 
 Default to `svh` for anything that needs to fit on screen. Only reach for `dvh` when you specifically need the layout to respond to browser chrome changes.
 
+**When in doubt:** use `dvh` only when the layout must visibly react to chrome changes — virtual keyboard appearing, a collapsing app bar. Otherwise default to `svh`. `dvh` causes layout jumps as chrome animates in/out; don't use it just because it sounds more "accurate."
+
 ## Performance on Long Pages
 
 For pages with significant vertical scroll, use `content-visibility: auto` on sections that are far below the fold to skip rendering them until they approach the viewport: `[DS-LAYOUT-002]`
@@ -35,6 +37,8 @@ For pages with significant vertical scroll, use `content-visibility: auto` on se
 ```
 
 Don't apply this to sections visible on initial load.
+
+**Estimating `contain-intrinsic-size`:** don't guess. Render one representative instance of the section (or measure a similar existing section), take its actual height, and use that. A wildly wrong estimate causes the scroll-jump this property exists to prevent.
 
 ## Responsive Behavior `[DS-RESPONSIVE]`
 

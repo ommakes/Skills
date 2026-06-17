@@ -1,6 +1,6 @@
 ---
 name: vois-router
-version: 1.3.1
+version: 1.4.0
 description: >
   Orchestrates the Vois design system skill chain. Use this skill as the single
   entry point whenever you're doing any UI work against the Vois design system —
@@ -137,7 +137,7 @@ Record the platform in session state and carry it through every skill in the cha
 
 ## Step 3: Classify the work
 
-Map the input to one of six work types.
+Map the input to one of seven work types.
 
 | Work type | Signals | Entry point |
 |---|---|---|
@@ -147,6 +147,17 @@ Map the input to one of six work types.
 | **COPY-ONLY** | "What should this say?", copy pasted for review, error message request | righter |
 | **RATIONALE-ONLY** | "Help me defend this", "what principle applies?", "how do I explain this?" | design-rationale |
 | **AUDIT** | "Review this screen", "check this against the design system", existing design shared | design-rationale |
+| **METRICS-ONLY** | "What should we track?", "add analytics for X", event/tagging requests with no UI work | metrics-tagging |
+
+METRICS-ONLY is a standalone skill, not part of the vois-patterns →
+vois-components → vois-tokens chain — route directly to `metrics-tagging`
+and don't load any other skill in this list for it.
+
+`gtm-positioning` and `designer-ic-assessment` are intentionally **not**
+routed by this table — they're standalone skills outside the UI-build
+workflow this router orchestrates. If a request clearly maps to one of
+them, say so and point the designer there rather than forcing it through
+this classification.
 
 If the input signals multiple work types — a ticket that also asks for copy —
 classify by the primary job. Copy embedded in a full-chain brief is handled
@@ -446,6 +457,24 @@ After righter completes, resume the chain with all copy outputs integrated.
 Track queued copy items in the session state so none get dropped across
 righter invocations.
 
+### Copy handoff schema
+
+When righter output is passed into vois-tokens (e.g. as "approved copy" in
+the FULL-CHAIN context package), pass it as a list, not free prose:
+
+```
+approvedCopy: [
+  { elementId: "confirm-delete-button", approvedCopy: "Delete project", sourceField: "button-label" },
+  { elementId: "delete-error-helper", approvedCopy: "Couldn't delete — try again.", sourceField: "error-message" }
+]
+```
+
+- `elementId` — a stable identifier for the UI element the copy belongs to (matches what vois-components/vois-patterns referenced for that element)
+- `approvedCopy` — the final righter-approved string
+- `sourceField` — the copy category (`button-label`, `error-message`, `helper-text`, `empty-state`, `toast`, `tooltip`, `confirmation`, etc.)
+
+vois-tokens consumes this list directly rather than re-deriving copy intent from prose.
+
 ---
 
 ## Design-rationale: two opt-in points
@@ -576,4 +605,5 @@ Record the gap and the designer's choice in the session state under
 | Copy pasted for review | COPY-ONLY | righter |
 | "How do I explain this decision?" | RATIONALE-ONLY | design-rationale |
 | "Audit this screen" | AUDIT | design-rationale |
+| "What should we track?", analytics/event request | METRICS-ONLY | metrics-tagging |
 | Unclear | Ask one question | — |
