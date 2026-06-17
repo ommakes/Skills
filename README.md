@@ -39,6 +39,8 @@ Structural decision trees and UI patterns that tell agents *what to build* befor
 
 **Use when:** building a new page, form, table, modal, or feature and need to decide on the container type and layout pattern before writing code.
 
+Ships as `SKILL.md` plus a `references/` folder split by pattern (detail pages, forms, dialogs, settings pages, etc.) — `SKILL.md` is the decision tree and index, references hold the full path detail.
+
 → [`vois-patterns/`](./vois-patterns)
 
 ---
@@ -50,6 +52,8 @@ Component selection rubrics organized by job-to-be-done. Covers 20 high-ambiguit
 
 **Use when:** you need to decide between similar components — which one actually fits what you're building? Always call `record_component_choice` after selecting.
 
+Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigation, display, selection, overlays, feedback) — `SKILL.md` holds the quick-reference table and job index, references hold the full decision trees.
+
 → [`vois-components/`](./vois-components)
 
 ---
@@ -60,6 +64,8 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 **Read third** (after patterns and components are locked in) to implement with the correct tokens, spacing, and styling rules.
 
 **Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
+
+Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill.
 
 → [`vois-design-system/`](./vois-design-system)
 
@@ -155,4 +161,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-06-13
+**Last updated:** 2026-06-17

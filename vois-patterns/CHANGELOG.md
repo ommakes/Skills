@@ -6,6 +6,15 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.3.0] - 2026-06-17
+
+### Changed
+
+- **Structural restructure:** `SKILL.md` split from a single 776-line file into a 137-line entry point plus seven `references/` files (`detail-pages.md`, `microcopy-routing.md`, `table-list.md`, `dialogs-and-action-sheets.md`, `permissions-and-conditional-logic.md`, `settings-pages.md`, `forms.md`). No path content was added, removed, or reworded — every path ID (`[PATH-A]` through `[PATH-E]` and their sub-paths) is preserved. `record_pattern_decision` still only ever gets called with the specific sub-path IDs that existed before.
+- **Version bump:** `1.2.0` → `1.3.0`
+
+---
+
 ## [1.0.0] - 2026-05-12
 
 ### Initial Release

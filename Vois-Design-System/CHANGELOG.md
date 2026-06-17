@@ -4,6 +4,16 @@ All notable changes to the Vois Design System skill are documented here.
 
 ---
 
+## [1.3.0] — 2026-06-17
+
+### Changed
+
+- **Structural restructure:** `SKILL.md` split from a single 845-line file into a 141-line entry point plus nine `references/` files (`spacing.md`, `tailwind-v4.md`, `color.md`, `layout-and-responsive.md`, `typography.md`, `components.md`, `accessibility.md`, `css-architecture.md`, `animation.md`). No rule content was added, removed, or reworded — every `[DS-*]` rule ID is preserved. The Pre-Submit Checklist and Quick Reference table stay in `SKILL.md` since they're consulted on every job regardless of which reference file applies.
+- This enables scoped loading from `vois-router`: on a COMPONENT-ONLY route, the router can now point the skill at just `references/components.md` (and `references/animation.md` for transitions) instead of loading the full skill.
+- **Version bump:** `1.2.0` → `1.3.0`
+
+---
+
 ## [1.2.0] — 2026-06-02
 
 ### Added

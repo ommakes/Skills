@@ -1,8 +1,6 @@
 ---
 name: vois-router
-version: 1.2.0
-attribution: Personify Labs
-license: CC-BY 4.0
+version: 1.3.0
 description: >
   Orchestrates the Vois design system skill chain. Use this skill as the single
   entry point whenever you're doing any UI work against the Vois design system —
@@ -15,6 +13,8 @@ description: >
   Trigger when someone says "build this screen", "what component should I use",
   "help me write this copy", "route me through the design system", or pastes any
   feature brief, ticket, or design question without specifying which skill to use.
+attribution: Personify Labs
+license: CC-BY 4.0
 ---
 
 # Vois Router
@@ -24,21 +24,19 @@ you're working on. The router identifies which skills are needed, in what order,
 and carries context forward between them so each skill starts with what it needs.
 
 The skills this router coordinates:
-
-- `vois-patterns` — structural container decisions
-- `vois-components` — specific component selection
-- `vois-design-system` — tokens, spacing, implementation
-- `righter` — all UI copy, invoked inline throughout
-- `design-rationale` — cognitive/behavioral audit, opt-in at two points in the chain
+- `vois-patterns` — structural container decisions (SKILL.md + references/ per template)
+- `vois-components` — specific component selection (SKILL.md + references/ per job category)
+- `vois-design-system` — tokens, spacing, implementation (SKILL.md + references/ per topic)
+- `righter` — all UI copy, invoked inline throughout (SKILL.md + references/ already in place)
+- `design-rationale` — cognitive/behavioral audit, opt-in at two points in the chain (SKILL.md + references/ already in place)
 
 Each of these skills works standalone. The router adds orchestration on top —
-nothing more.
+nothing more. The router never needs to know which reference file a skill
+reads internally — that's the skill's own routing logic. The router's job
+is just to tell each skill what task it's doing, and (for COMPONENT-ONLY
+runs) to flag when a scoped, partial read is appropriate instead of a full one.
 
-**If you need iterative conflict resolution:** use `vois-loop` instead. vois-loop
-wraps this router and adds upstream re-routing when skills conflict with each
-other mid-chain. vois-router is a linear single-pass chain — it does not loop back.
-
------
+---
 
 ## Modes
 
@@ -57,7 +55,7 @@ complete summary at the end for review. The designer opts in by saying "just run
 
 To switch modes mid-session: "switch to fast mode" or "switch to gated mode".
 
------
+---
 
 ## Session State
 
@@ -90,7 +88,7 @@ Update the session state at every step. Never let it go stale. If the chain
 is abandoned mid-run, the session state is the recovery artifact — the designer
 can resume from it in a new session by pasting it back in.
 
------
+---
 
 ## Step 1: Read the input
 
@@ -98,11 +96,11 @@ Before routing anything, read the full input carefully. You're looking for four 
 
 1. **What exists** — ticket, brief, screen description, specific question, or
    existing design to evaluate?
-1. **What's being asked** — build something new, make a decision, write copy,
+2. **What's being asked** — build something new, make a decision, write copy,
    defend a choice, or pick up mid-chain?
-1. **How complete is the context** — enough to route confidently, or is a
+3. **How complete is the context** — enough to route confidently, or is a
    clarifying question needed?
-1. **Platform signal** — any explicit or inferable platform context?
+4. **Platform signal** — any explicit or inferable platform context?
 
 If the input is too vague to route — "help me with the design system" with no
 further context — ask one question before proceeding:
@@ -111,7 +109,7 @@ further context — ask one question before proceeding:
 
 Do not ask multiple questions. Do not ask for information that won't change the route.
 
------
+---
 
 ## Step 2: Resolve platform
 
@@ -120,14 +118,12 @@ vois-design-system breakpoint behavior, and righter copy choices. Silently
 inferring the wrong platform produces wrong output through the entire chain.
 
 **Infer confidently (no need to ask) when:**
-
 - Brief mentions React, shadcn, Tailwind, web, browser → infer **web**
 - Brief mentions iOS, Swift, SwiftUI, iPhone, iPad → infer **ios**
 - Brief mentions Android, Kotlin, Jetpack → infer **android**
 - The Vois design system is explicitly mentioned with no other context → infer **web**
 
 **Ask before routing when:**
-
 - No platform signal at all
 - Brief could be web or native (e.g. "mobile app" with no further detail)
 
@@ -137,20 +133,20 @@ Ask:
 
 Record the platform in session state and carry it through every skill in the chain.
 
------
+---
 
 ## Step 3: Classify the work
 
 Map the input to one of six work types.
 
-|Work type         |Signals                                                                             |Entry point     |
-|------------------|------------------------------------------------------------------------------------|----------------|
-|**FULL-CHAIN**    |Feature brief, screen description, Jira/ADO ticket, "build this"                    |vois-patterns   |
-|**PICK-UP**       |"I've done the structure", "I have path ID X", resuming a prior session             |vois-components |
-|**COMPONENT-ONLY**|"Modal or drawer?", "which component for X?", single component decision             |vois-components |
-|**COPY-ONLY**     |"What should this say?", copy pasted for review, error message request              |righter         |
-|**RATIONALE-ONLY**|"Help me defend this", "what principle applies?", "how do I explain this?"          |design-rationale|
-|**AUDIT**         |"Review this screen", "check this against the design system", existing design shared|design-rationale|
+| Work type | Signals | Entry point |
+|---|---|---|
+| **FULL-CHAIN** | Feature brief, screen description, Jira/ADO ticket, "build this" | vois-patterns |
+| **PICK-UP** | "I've done the structure", "I have path ID X", resuming a prior session | vois-components |
+| **COMPONENT-ONLY** | "Modal or drawer?", "which component for X?", single component decision | vois-components |
+| **COPY-ONLY** | "What should this say?", copy pasted for review, error message request | righter |
+| **RATIONALE-ONLY** | "Help me defend this", "what principle applies?", "how do I explain this?" | design-rationale |
+| **AUDIT** | "Review this screen", "check this against the design system", existing design shared | design-rationale |
 
 If the input signals multiple work types — a ticket that also asks for copy —
 classify by the primary job. Copy embedded in a full-chain brief is handled
@@ -160,7 +156,7 @@ If the input could be FULL-CHAIN or PICK-UP, default to FULL-CHAIN. Running
 vois-patterns when structure is already decided wastes one step. Skipping it
 when it was needed produces worse decisions downstream.
 
------
+---
 
 ## Step 4: Output the route
 
@@ -191,7 +187,7 @@ re-display the updated sequence before proceeding.
 
 In fast mode: display the route and immediately begin step 1.
 
------
+---
 
 ## Step 5: Execute the chain
 
@@ -229,7 +225,7 @@ Don't re-ask or add friction to confirmations.
 Execute all steps without pausing. Collect all outputs. At the end, present the
 chain completion block (see below).
 
------
+---
 
 ## Skill sequences by work type
 
@@ -248,17 +244,11 @@ chain completion block (see below).
 
    → Offer design-rationale here (opt-in)
 
-2b. righter — MANDATORY copy gate (see rule below)
-   Must complete before any code is written.
-   Outputs needed: approved copy for every text-bearing element on the screen
-
 3. vois-design-system
-   Context package: components from step 2, approved copy from step 2b,
-                    platform, token constraints
+   Context package: components from step 2, platform, token constraints
    Outputs needed:  implemented UI with tokens, spacing, accessibility applied
 
-righter: invoked inline at steps 1 and 2, AND as a mandatory batch gate
-at step 2b before any implementation begins (see righter rules below)
+righter: invoked inline at steps 1 and 2 (see righter rules below)
 ```
 
 **Context packaging for vois-patterns:**
@@ -279,7 +269,7 @@ framing the skill expects: what is the user trying to accomplish?
 > "Components selected: [list with reasoning]. Platform: [platform]. Implement
 > using Vois tokens, spacing rules, and accessibility requirements."
 
------
+---
 
 ### PICK-UP
 
@@ -305,7 +295,7 @@ first to re-establish the correct path.
 A stale or wrong path ID passed silently to vois-components produces subtly
 wrong component selections with no error. Always validate.
 
------
+---
 
 ### COMPONENT-ONLY
 
@@ -314,7 +304,7 @@ wrong component selections with no error. Always validate.
    Context package: decision framed as job-to-be-done
 
 2. vois-design-system (scoped)
-   Context package: selected component only — relevant token and usage rules,
+   Context package: selected component only — relevant reference file(s) only,
    not a full implementation run
 ```
 
@@ -325,7 +315,17 @@ Frame the component question as a job before loading the skill:
 Don't present it as "modal vs drawer" — vois-components works from jobs, not
 component names. Let the decision tree resolve the choice.
 
------
+**Scoped loading for vois-design-system:** vois-design-system is organized as
+a SKILL.md plus a `references/` folder, one file per topic (spacing,
+typography, color, components, layout-and-responsive, tailwind-v4, animation,
+accessibility, css-architecture). For a COMPONENT-ONLY run, tell
+vois-design-system which component was selected and let it read only the
+matching reference file(s) — e.g. a modal selection only needs
+`references/components.md` (and usually `references/animation.md` for the
+entrance transition), not the full skill. This is what makes "scoped" actually
+mean something instead of just loading the whole skill regardless.
+
+---
 
 ### COPY-ONLY
 
@@ -340,7 +340,7 @@ Frame for righter:
 > "Copy type: [type]. Context: [what it's for]. [Existing copy to review /
 > Write new copy from scratch]."
 
------
+---
 
 ### RATIONALE-ONLY
 
@@ -366,7 +366,7 @@ Combine into one question if multiple are absent:
 > "To give you a rationale that holds up, I need a bit more: [missing fields
 > as a plain list]. Can you fill those in?"
 
------
+---
 
 ### AUDIT
 
@@ -398,7 +398,7 @@ matters.
 The audit does not prescribe redesigns. It surfaces findings. What the designer
 does with them is their call.
 
------
+---
 
 ## Righter: inline invocation rules
 
@@ -407,32 +407,11 @@ identified during the chain. The router is responsible for recognizing copy
 moments and loading righter at the right time.
 
 **Trigger righter inline when:**
-
 - vois-patterns identifies a section needing labels, button copy, or error messages
 - vois-components selects a component with required copy (AlertDialog, Toast,
   empty states, helper text, confirmation dialogs)
 - The designer asks about specific wording at any point
 - Copy is included in the brief and needs review
-
-**Mandatory gate before implementation (step 2b):**
-
-After vois-components completes and before vois-design-system begins, the router
-must pause and collect every copy item identified across the entire screen. This
-is not optional and does not require a prompt from the designer.
-
-Steps:
-
-1. List every text-bearing element on the screen: headings, subheads, body copy,
-   CTAs, labels, placeholders, empty states, error messages, nav items, status
-   badges, tooltips, form helper text, confirmations.
-1. If three or more items exist (they almost always will), run righter in batch
-   mode across all of them at once.
-1. Only proceed to vois-design-system after righter output is confirmed.
-1. Pass the approved copy into vois-design-system as part of the context package.
-
-Never write implementation code — HTML, JSX, or any component output — with
-copy that has not passed through righter. Writing copy from memory and applying
-righter principles informally is not the same as running the skill.
 
 ### Single copy item
 
@@ -457,18 +436,17 @@ it fragments the chain badly on copy-heavy screens.
 Pass all items to righter together:
 
 > "Copy type and context for each:
-> 
 > 1. [type] — [context]
-> 1. [type] — [context]
-> 1. [type] — [context]
->    Write all. Apply righter principles to each."
+> 2. [type] — [context]
+> 3. [type] — [context]
+> Write all. Apply righter principles to each."
 
 After righter completes, resume the chain with all copy outputs integrated.
 
 Track queued copy items in the session state so none get dropped across
 righter invocations.
 
------
+---
 
 ## Design-rationale: two opt-in points
 
@@ -499,7 +477,7 @@ In RATIONALE-ONLY and AUDIT runs, design-rationale is the primary step.
 Don't double-offer — if the designer declined offer point 1, don't re-offer
 the same question at offer point 2.
 
------
+---
 
 ## Chain completion block
 
@@ -532,7 +510,7 @@ The completion block is the artifact. The designer should be able to paste it
 into a Jira ticket, a design handoff doc, or a PR description and have a clear
 record of what was decided and why.
 
------
+---
 
 ## Abandonment and recovery
 
@@ -545,7 +523,7 @@ After one unanswered handoff prompt, stop and note:
 If a designer pastes a session state block and says "resume", read it and
 pick up the chain from the last completed step. Don't re-run completed steps.
 
------
+---
 
 ## Gap handling
 
@@ -554,16 +532,16 @@ immediately. Don't absorb it silently and proceed as if a pattern matched.
 
 > "Gap flagged by [skill]: [gap description]. Closest match: [path ID or
 > component name].
-> 
+>
 > How do you want to proceed?
-> A — Use the closest match and note the divergence
-> B — Stop here and design a new pattern before continuing
-> C — Continue without a pattern match (document the decision)"
+>   A — Use the closest match and note the divergence
+>   B — Stop here and design a new pattern before continuing
+>   C — Continue without a pattern match (document the decision)"
 
 Record the gap and the designer's choice in the session state under
 "Gaps flagged". Include it in the chain completion block.
 
------
+---
 
 ## What the router never does
 
@@ -578,27 +556,24 @@ Record the gap and the designer's choice in the session state under
 - Passes a PICK-UP path ID forward without validating it first
 - Makes component or structural decisions itself
 - Invokes righter per-item when three or more copy items are queued
-- Writes any implementation code before righter has reviewed all copy on the screen
-- Skips the step 2b copy gate because the chain is in fast mode — the gate is
-  mandatory in both modes; only the confirmation prompt is skipped in fast mode
 - Proceeds past a gap report without surfacing it
 - Keeps prompting after one unanswered handoff in gated mode
 
------
+---
 
 ## Quick reference
 
-|You provide                        |Classification  |Starts at                         |
-|-----------------------------------|----------------|----------------------------------|
-|Jira / ADO ticket                  |FULL-CHAIN      |vois-patterns                     |
-|Feature brief or screen description|FULL-CHAIN      |vois-patterns                     |
-|"Build this screen / feature"      |FULL-CHAIN      |vois-patterns                     |
-|Session state block + "resume"     |PICK-UP         |last completed step               |
-|"I have path ID X, now what"       |PICK-UP         |vois-components (after validation)|
-|"Modal or drawer for this?"        |COMPONENT-ONLY  |vois-components                   |
-|"What component handles X?"        |COMPONENT-ONLY  |vois-components                   |
-|"What should this say?"            |COPY-ONLY       |righter                           |
-|Copy pasted for review             |COPY-ONLY       |righter                           |
-|"How do I explain this decision?"  |RATIONALE-ONLY  |design-rationale                  |
-|"Audit this screen"                |AUDIT           |design-rationale                  |
-|Unclear                            |Ask one question|—                                 |
+| You provide | Classification | Starts at |
+|---|---|---|
+| Jira / ADO ticket | FULL-CHAIN | vois-patterns |
+| Feature brief or screen description | FULL-CHAIN | vois-patterns |
+| "Build this screen / feature" | FULL-CHAIN | vois-patterns |
+| Session state block + "resume" | PICK-UP | last completed step |
+| "I have path ID X, now what" | PICK-UP | vois-components (after validation) |
+| "Modal or drawer for this?" | COMPONENT-ONLY | vois-components |
+| "What component handles X?" | COMPONENT-ONLY | vois-components |
+| "What should this say?" | COPY-ONLY | righter |
+| Copy pasted for review | COPY-ONLY | righter |
+| "How do I explain this decision?" | RATIONALE-ONLY | design-rationale |
+| "Audit this screen" | AUDIT | design-rationale |
+| Unclear | Ask one question | — |
