@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.2.0] — 2026-06-17
+
+### Changed
+
+- **Structural restructure:** `SKILL.md` split from a single 543-line file into a 107-line entry point plus seven `references/` files (`forms-and-process.md`, `navigation-and-switching.md`, `display-and-identity.md`, `selection-and-input.md`, `contextual-info-and-actions.md`, `overlays-and-containers.md`, `feedback-and-confirmation.md`), grouped by job. Only the Quick Reference table and job index remain in `SKILL.md`. No job content was added, removed, or reworded — every `[JOB-*]` ID is preserved.
+- **Version bump:** `1.1.0` → `1.2.0`
+
+---
+
 ## [1.0.0] — 2026-05-23
 
 ### Added

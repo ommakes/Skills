@@ -4,6 +4,17 @@ All notable changes to the vois-router skill are documented here.
 
 ---
 
+## [1.3.0] — 2026-06-17
+
+### Changed
+
+- **COMPONENT-ONLY route:** rewritten to specify scoped reference-file loading instead of vague "scoped" language. Now that `vois-design-system` has addressable `references/` files, the router tells it which component was picked and it reads only `references/components.md` (and usually `references/animation.md` for the transition) instead of the full skill.
+- **Skill list in the intro:** updated to note which skills now use the `SKILL.md` + `references/` structure (`vois-design-system`, `vois-patterns`, `vois-components`).
+- No changes to session state format, handoff blocks, work-type classification, or gap handling.
+- **Version bump:** `1.2.0` → `1.3.0`
+
+---
+
 ## [1.2.0] — 2026-06-14
 
 ### Added
