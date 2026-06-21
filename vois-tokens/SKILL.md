@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.5.0
+version: 1.4.0
 ---
 
 # Vois Tokens Skill
@@ -31,13 +31,12 @@ Read the file(s) that match what you're building. Each file is self-contained �
 | `references/typography.md` | Headings, body text, type scale, fonts, copy punctuation | `[DS-TYPOGRAPHY]` |
 | `references/color.md` | Color tokens, OKLCH, dark mode, light-dark() | `[DS-COLOR]` |
 | `references/components.md` | Component variants, cva, modals/dialogs, accordions | `[DS-COMPONENT]` `[DS-MODAL]` |
+| `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
-| `references/css-architecture.md` | @theme setup, selector specificity, media queries, border-radius/z-index scales | `[DS-CSS]` |
-| `references/elevation.md` | Shadow/elevation, modal scrims | `[DS-ELEVATION]` |
-| `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
+| `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
 
 **Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), read only the matching reference file plus this SKILL.md. You don't need the full set for a scoped task.
 
@@ -77,6 +76,15 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Modals have `overscroll-behavior: contain` `[DS-MODAL-002]`
 - [ ] `scrollbar-gutter: stable` on `html` `[DS-MODAL-003]`
 
+**Surfaces**
+- [ ] Nested rounded elements use concentric radius (`outer = inner + padding`) `[DS-SURFACE-001]`
+- [ ] Icons/buttons optically aligned, not just geometrically centered `[DS-SURFACE-003]`
+- [ ] Shadows used instead of borders for depth (not for dividers) `[DS-SURFACE-007]`
+- [ ] Image outlines are pure black/white at 0.1 opacity, never tinted `[DS-SURFACE-010]`
+- [ ] Enter animations split into chunks and staggered, not one big container `[DS-SURFACE-011]`
+- [ ] Exit animations are subtler/shorter than enters `[DS-SURFACE-013]`
+- [ ] Icon state transitions use scale 0.25→1, opacity, blur — not visibility toggling `[DS-SURFACE-014]`
+
 **Animation**
 - [ ] UI animations under 300ms (large elements under 500ms) `[DS-ANIMATION-001]` `[DS-ANIMATION-002]`
 - [ ] No keyboard-triggered animations `[DS-ANIMATION-003]`
@@ -85,6 +93,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] `prefers-reduced-motion` handled `[DS-ANIMATION-004]`
 - [ ] No `transition: all` `[DS-TAILWIND-005]`
 - [ ] Hover effects guarded on touch devices `[DS-ANIMATION-007]`
+- [ ] `will-change` only set when stutter is actually observed, only on transform/opacity/filter `[DS-ANIMATION-009]`
 
 **Accessibility**
 - [ ] All interactive elements have `:focus-visible` styles `[DS-A11Y-002]`
@@ -112,13 +121,6 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
 - [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
-- [ ] Border-radius and z-index values come from the scale, not invented `[DS-CSS-009]` `[DS-CSS-010]`
-
-**Elevation & Iconography**
-- [ ] Shadow tier matches the element's z-index layer `[DS-ELEVATION-002]`
-- [ ] Modal scrim is a separate scrim color, not a heavier shadow `[DS-ELEVATION-001]`
-- [ ] Icon size matches adjacent text size `[DS-ICON]`
-- [ ] Single stroke width used across all icons on screen `[DS-ICON-001]`
 
 ---
 
@@ -127,6 +129,12 @@ Run this regardless of which reference files you read — it's the universal gat
 | Situation | What to do | Full detail |
 |-----------|------------|---|
 | Need a component | Check manifest first | `references/components.md` |
+| Nesting rounded elements | `outerRadius = innerRadius + padding` | `references/surfaces.md` |
+| Icon or button looks off-center | Align optically, not geometrically | `references/surfaces.md` |
+| Card/container needs depth | Layered `box-shadow`, not a border | `references/surfaces.md` |
+| Image needs a subtle edge | 1px outline, pure black/white at 0.1 opacity | `references/surfaces.md` |
+| Page or section entering | Split into chunks, stagger ~100ms | `references/surfaces.md` |
+| Icon swapping state (play/pause, like) | scale 0.25→1 + opacity + blur, exact values | `references/surfaces.md` |
 | Need a color value | Check token list first | `references/color.md` |
 | Need a spacing value | Round to nearest 4 or 8 | `references/spacing.md` |
 | Need a font size | Use the type scale | `references/typography.md` |
@@ -147,8 +155,57 @@ Run this regardless of which reference files you read — it's the universal gat
 | Date or time in content | `<time datetime="...">` | `references/accessibility.md` |
 | Hand-authoring a media query | Use `em` not `px` for the breakpoint value | `references/css-architecture.md` |
 | Selector getting hard to override | You've gone too deep — add a class instead | `references/css-architecture.md` |
-| Need a shadow or modal scrim | Use the elevation tier table | `references/elevation.md` |
-| Need an icon size | Match it to the adjacent text size | `references/iconography.md` |
-| Need a border-radius or z-index value | Use the scale, don't invent a number | `references/css-architecture.md` |
-| Value doesn't match any token | Round within ~10%, else flag with `ambiguous: true` | `references/css-architecture.md` |
 | Done with UI work | Call `vois_record_rule_usage` with rule IDs applied | — |
+
+---
+
+## Reviewing Existing UI
+
+This section applies only when the task is **reviewing, auditing, or polishing existing code** against this design system — not when building something new from scratch. If you're asked to "review this component," "make this feel better," or "audit this screen for design system alignment," follow this output format.
+
+### Output Format
+
+Present every change as a markdown table with **Before** and **After** columns, grouped under a heading per rule or category. Don't list findings as loose "Before:" / "After:" prose lines outside a table — they're harder to scan and easy to skim past.
+
+- Include every change made, not a representative subset.
+- One diff per row. Don't bundle two unrelated changes into a single row.
+- Cite the specific file and property when it isn't obvious from the snippet.
+- If a category was checked but nothing needed to change, omit that table entirely. Empty tables are noise, not reassurance.
+
+### Example
+
+```markdown
+#### Concentric border radius `[DS-SURFACE-001]`
+| Before | After |
+| --- | --- |
+| `rounded-xl` on card + `rounded-xl` on inner button (`p-2`) | `rounded-2xl` on card (`12 + 8`), `rounded-lg` on inner button |
+
+#### Tabular numbers `[DS-TYPOGRAPHY-003]`
+| Before | After |
+| --- | --- |
+| `<span>{count}</span>` on animated counter | `<span className="tabular-nums">{count}</span>` |
+
+#### Scale on press `[DS-ANIMATION-008]`
+| Before | After |
+| --- | --- |
+| `scale(0.9)` on button press | Raised to `scale(0.96)` — below `0.95` reads as exaggerated |
+```
+
+### Review Checklist
+
+Run this for any review/audit task, regardless of which reference files the underlying build touched:
+
+- [ ] Spacing divisible by 4 or 8, no arbitrary values
+- [ ] Color uses tokens, not hardcoded hex or raw Tailwind palette
+- [ ] Nested rounded elements use concentric radius
+- [ ] Icons/buttons optically aligned, not just geometrically centered
+- [ ] Shadows used instead of borders for depth (not dividers)
+- [ ] Component manifest checked before any custom-built equivalent
+- [ ] Modals have `inert`, `overscroll-behavior: contain`, `scrollbar-gutter: stable`
+- [ ] Enter animations split/staggered; exits are subtler and shorter
+- [ ] No `transition: all`; `will-change` only where stutter was actually observed
+- [ ] Touch targets at least 44×44px; focus-visible styles present
+- [ ] Headings use `text-wrap: balance`; body copy uses `text-wrap: pretty`
+- [ ] Dynamic numbers use `tabular-nums`
+
+This checklist is deliberately a cross-section of the full pre-submit checklist above — it's what's most likely to be wrong in code that predates this design system, not an exhaustive re-walk of every rule. For a from-scratch build, use the full pre-submit checklist instead.
