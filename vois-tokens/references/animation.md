@@ -82,14 +82,26 @@ Tailwind v4's `hover:` only fires on devices that support hover. If writing raw 
 - First appearance: slight delay before showing (prevents accidental activation).
 - Moving between tooltips: no delay, no animation.
 
-## Button Press
+## Button Press `[DS-ANIMATION-008]`
+
+Use `scale(0.96)` on press. Never go below `0.95` — anything smaller reads as exaggerated rather than tactile.
 
 ```css
 button:active {
-  transform: scale(0.97);
-  transition: transform 150ms ease-out;
+  scale: 0.96;
+  transition-property: scale;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 ```
+
+```tsx
+<button className="transition-transform duration-150 ease-out active:scale-[0.96]">
+  Click me
+</button>
+```
+
+Not every button needs this. Add a `static` prop to disable it on buttons where the motion would be distracting (e.g. inside a list with frequent clicks).
 
 ## Using Motion
 
@@ -106,3 +118,20 @@ import { motion } from "motion/react"
 ```
 
 No bounce by default. Spring animations are native iOS patterns, not standard web UI.
+
+## GPU Compositing Hints `[DS-ANIMATION-009]`
+
+`will-change` pre-promotes an element to its own GPU layer. Without it, the browser only promotes on first animation, which can cause a one-frame stutter (most visible in Safari).
+
+Only worth it for properties the GPU can actually composite: `transform`, `opacity`, `filter`, `clip-path`. It does nothing for `width`, `height`, `top`, `left`, `background`, `border`, `color` — those aren't GPU-compositable regardless.
+
+```css
+/* Good */
+.animated-card { will-change: transform, opacity; }
+
+/* Bad — never */
+.animated-card { will-change: all; }
+.animated-card { will-change: background-color, padding; } /* doesn't help */
+```
+
+Add it only when you actually notice first-frame stutter, not preemptively on every animated element — each layer costs memory.

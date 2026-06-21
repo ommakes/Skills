@@ -76,8 +76,6 @@ html {
 
 This reserves space for the scrollbar even when it isn't visible.
 
-**Shadow and scrim:** modals use the `overlay` elevation tier for the modal surface itself and a dedicated backdrop scrim — see `references/elevation.md` for the shadow tokens and scrim opacity. `[DS-MODAL-004]`
-
 ## Accordions
 
 Use `interpolate-size: allow-keywords` to animate height from `0` to `auto` without JavaScript measurement:
