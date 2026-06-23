@@ -1,5 +1,6 @@
 ---
 name: designer-ic-assessment
+version: 1.0.0
 description: Facilitates a structured behavioral assessment interview for IC designer levels, incorporating AI fluency across competency areas. Use this skill when someone wants to run a designer self-assessment, a manager assessment of a designer, or set up an IC level calibration session. Trigger whenever someone mentions designer levels, IC rubric, design assessment, career calibration, manager assessment, or designer growth conversations. Also trigger if someone says they want to evaluate a designer's AI fluency, run a competency interview, or prepare for a calibration meeting.
 ---
 

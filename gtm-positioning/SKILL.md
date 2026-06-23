@@ -1,5 +1,6 @@
 ---
 name: gtm-positioning
+version: 1.0.0
 description: Framework-based skill for B2B product positioning, GTM strategy selection, and website messaging. Use when someone asks for help positioning their product, choosing a GTM strategy, writing homepage or website copy, messaging for different buyer personas, content strategy by awareness stage, or ad and landing page copy. Based on the Fletch framework by Anthony Pierri.
 ---
 

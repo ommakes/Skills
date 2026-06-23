@@ -1,5 +1,6 @@
 ---
 name: metrics-tagging
+version: 1.0.0
 description: Analyze UI mockups, screenshots, or prototype frames to identify all trackable interactions and generate a complete analytics event taxonomy table. Use this skill whenever a designer uploads a screen, mockup, prototype screenshot, or UI frame and wants to know what should be tagged, what events to fire, or how to document analytics for handoff. Also trigger when someone asks to "tag this screen," "identify events," "create a tagging spec," "what should we track," or "build an event table" for any UI. If a designer shares any visual of a UI and mentions analytics, tracking, tagging, GTM, events, or metrics — use this skill.
 ---
 

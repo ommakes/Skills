@@ -1,0 +1,96 @@
+{
+  "repository": "ommakes/Skills",
+  "description": "Claude skills for UX and product design workflows",
+  "license": "CC-BY 4.0",
+  "url": "https://github.com/ommakes/Skills",
+  "skills": [
+    {
+      "name": "vois-loop",
+      "path": "vois-loop",
+      "version": "1.3.0",
+      "author": "Personify Labs",
+      "description": "Iterative design build loop for the Vois design system. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly.",
+      "tags": ["design", "vois", "orchestrator", "workflow"]
+    },
+    {
+      "name": "vois-router",
+      "path": "vois-router",
+      "version": "1.4.0",
+      "author": "Personify Labs",
+      "description": "Orchestrates the Vois design system skill chain. Use this skill as the single entry point whenever you're doing any UI work against the Vois design system — building a screen, picking a component, writing copy, or defending a design decision.",
+      "tags": ["design", "vois", "orchestrator"]
+    },
+    {
+      "name": "vois-patterns",
+      "path": "vois-patterns",
+      "version": "1.3.1",
+      "author": "Personify Labs",
+      "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.",
+      "tags": ["design", "vois", "design-system", "patterns"]
+    },
+    {
+      "name": "vois-components",
+      "path": "vois-components",
+      "version": "1.2.1",
+      "author": "Personify Labs",
+      "description": "Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. For every component you pick, call the record_component_choice MCP tool.",
+      "tags": ["design", "vois", "design-system", "components"]
+    },
+    {
+      "name": "vois-tokens",
+      "path": "vois-tokens",
+      "version": "1.4.0",
+      "author": "Personify Labs",
+      "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system.",
+      "tags": ["design", "vois", "design-system", "tokens", "implementation"]
+    },
+    {
+      "name": "righter",
+      "path": "righter",
+      "version": "1.1.0",
+      "author": "Personify Labs",
+      "description": "Apply UX content writing principles to review existing UI copy or write new UI copy from scratch. Use this skill whenever someone asks you to review, audit, critique, or improve UI text, error messages, button labels, tooltips, empty states, onboarding copy, or any software interface copy.",
+      "tags": ["design", "content", "ux-writing", "copy"]
+    },
+    {
+      "name": "design-ask",
+      "path": "design-ask",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing. Identifies what design work is actually being asked for, flags when tickets prescribe a UI solution instead of describing a user need.",
+      "tags": ["design", "process", "ticket-analysis"]
+    },
+    {
+      "name": "design-rationale",
+      "path": "design-rationale",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Help designers articulate the cognitive science, behavioral psychology, and platform standards behind their design decisions. Use this skill when a designer needs to explain why they made a decision in a critique or design review.",
+      "tags": ["design", "rationale", "decision-making"]
+    },
+    {
+      "name": "metrics-tagging",
+      "path": "metrics-tagging",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Analyze UI mockups, screenshots, or prototype frames to identify all trackable interactions and generate a complete analytics event taxonomy table. Use this skill whenever a designer wants to know what should be tagged, what events to fire, or how to document analytics for handoff.",
+      "tags": ["design", "analytics", "metrics", "tagging"]
+    },
+    {
+      "name": "designer-ic-assessment",
+      "path": "designer-ic-assessment",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Facilitates a structured behavioral assessment interview for IC designer levels, incorporating AI fluency across competency areas. Produces a competency-by-competency narrative, scores table, and CSV export for Notion/FigJam handoff.",
+      "tags": ["design", "assessment", "career", "process"]
+    },
+    {
+      "name": "gtm-positioning",
+      "path": "gtm-positioning",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Framework for B2B product positioning, GTM strategy selection, and website messaging. Covers three positioning strategies, five GTM types, page-by-page website messaging guide, and persona-based messaging matrix. Based on the Fletch framework by Anthony Pierri.",
+      "tags": ["product", "positioning", "gtm", "messaging"]
+    }
+  ]
+}
