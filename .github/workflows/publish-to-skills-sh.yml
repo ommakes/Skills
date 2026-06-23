@@ -23,79 +23,97 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Validate skills metadata
+        run: bash scripts/validate-skills.sh
+
       - name: Parse and publish skills
         env:
           SKILLS_SH_API_TOKEN: ${{ secrets.SKILLS_SH_API_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          # Install required tools
-          npm install -g js-yaml
+          # If no API token, skip publishing (expected during initial setup)
+          if [ -z "$SKILLS_SH_API_TOKEN" ]; then
+            echo "⚠️  SKILLS_SH_API_TOKEN not set. Skipping publication."
+            echo "To enable publishing:"
+            echo "1. Go to https://skills.sh and generate an API token"
+            echo "2. Add it to GitHub secrets: https://github.com/$GITHUB_REPOSITORY/settings/secrets/actions"
+            echo "3. Secret name: SKILLS_SH_API_TOKEN"
+            exit 0
+          fi
 
-          # Create script to parse SKILL.md files and publish
-          cat > publish-skills.js << 'SCRIPT'
+          echo "📦 Publishing skills to skills.sh..."
+
+          # Create a simple Node.js script to publish skills
+          cat > publish.js << 'EOF'
           const fs = require('fs');
           const path = require('path');
-          const yaml = require('js-yaml');
           const https = require('https');
 
-          const apiToken = process.env.SKILLS_SH_API_TOKEN;
-          const repoName = process.env.GITHUB_REPOSITORY;
+          const token = process.env.SKILLS_SH_API_TOKEN;
+          const repo = process.env.GITHUB_REPOSITORY;
 
-          if (!apiToken) {
-            console.warn('⚠️  SKILLS_SH_API_TOKEN not set. Skipping publication.');
-            console.log('To enable publishing, add SKILLS_SH_API_TOKEN to GitHub secrets.');
-            process.exit(0);
-          }
-
-          // Find all SKILL.md files
+          // Find all SKILL.md files and extract metadata
           const skills = [];
-          const dirs = fs.readdirSync('.', { withFileTypes: true })
-            .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-            .map(d => d.name);
+          const dirs = fs.readdirSync('.').filter(f =>
+            fs.statSync(f).isDirectory() && !f.startsWith('.')
+          );
 
           for (const dir of dirs) {
-            const skillPath = path.join(dir, 'SKILL.md');
-            if (fs.existsSync(skillPath)) {
-              try {
-                const content = fs.readFileSync(skillPath, 'utf8');
-                const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            const skillFile = path.join(dir, 'SKILL.md');
+            if (!fs.existsSync(skillFile)) continue;
 
-                if (frontmatterMatch) {
-                  const frontmatter = yaml.load(frontmatterMatch[1]);
-                  const skillData = {
-                    ...frontmatter,
-                    path: dir,
-                    repository: repoName
-                  };
+            const content = fs.readFileSync(skillFile, 'utf8');
+            const lines = content.split('\n');
 
-                  // Validate required fields
-                  if (!skillData.name || !skillData.version || !skillData.description) {
-                    console.error(`❌ ${dir}/SKILL.md missing required fields (name, version, description)`);
-                    process.exit(1);
+            // Parse YAML frontmatter
+            if (lines[0] === '---') {
+              const metadata = {};
+              let i = 1;
+
+              while (i < lines.length && lines[i] !== '---') {
+                const line = lines[i];
+                if (line.includes(':')) {
+                  const [key, ...valueParts] = line.split(':');
+                  let value = valueParts.join(':').trim();
+
+                  // Remove quotes
+                  if ((value.startsWith('"') && value.endsWith('"')) ||
+                      (value.startsWith("'") && value.endsWith("'"))) {
+                    value = value.slice(1, -1);
                   }
 
-                  skills.push(skillData);
-                  console.log(`✅ Found skill: ${skillData.name} (v${skillData.version})`);
+                  metadata[key.trim()] = value;
                 }
-              } catch (e) {
-                console.error(`❌ Error parsing ${skillPath}:`, e.message);
-                process.exit(1);
+                i++;
+              }
+
+              if (metadata.name && metadata.version && metadata.description) {
+                skills.push({
+                  name: metadata.name,
+                  version: metadata.version,
+                  description: metadata.description,
+                  author: metadata.author || 'Personify Labs',
+                  path: dir,
+                  repository: repo
+                });
+                console.log(`✅ ${metadata.name} v${metadata.version}`);
               }
             }
           }
 
           if (skills.length === 0) {
-            console.error('❌ No skills found');
-            process.exit(1);
+            console.log('⚠️  No skills found to publish');
+            process.exit(0);
           }
 
-          console.log(`\n📦 Publishing ${skills.length} skills to skills.sh...\n`);
+          console.log(`\n🚀 Attempting to publish ${skills.length} skills...\n`);
 
           // Publish each skill
-          let published = 0;
-          for (const skill of skills) {
-            const data = JSON.stringify(skill);
+          let completed = 0;
+          let succeeded = 0;
 
+          skills.forEach(skill => {
+            const payload = JSON.stringify(skill);
             const options = {
               hostname: 'skills.sh',
               port: 443,
@@ -103,43 +121,36 @@ jobs:
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Content-Length': data.length,
-                'Authorization': `Bearer ${apiToken}`
+                'Content-Length': payload.length,
+                'Authorization': `Bearer ${token}`
               }
             };
 
             const req = https.request(options, (res) => {
-              let responseData = '';
-              res.on('data', chunk => responseData += chunk);
+              let data = '';
+              res.on('data', chunk => data += chunk);
               res.on('end', () => {
-                if (res.statusCode === 201 || res.statusCode === 200) {
-                  console.log(`✅ Published: ${skill.name} v${skill.version}`);
-                  published++;
+                completed++;
+                if (res.statusCode === 200 || res.statusCode === 201) {
+                  console.log(`✅ Published: ${skill.name}`);
+                  succeeded++;
                 } else {
-                  console.error(`❌ Failed to publish ${skill.name}: ${res.statusCode}`);
-                  console.error(responseData);
+                  console.warn(`⚠️  ${skill.name}: ${res.statusCode}`);
                 }
               });
             });
 
-            req.on('error', (e) => {
-              console.error(`❌ Error publishing ${skill.name}:`, e.message);
+            req.on('error', err => {
+              completed++;
+              console.error(`❌ ${skill.name}: ${err.message}`);
             });
 
-            req.write(data);
+            req.write(payload);
             req.end();
-          }
+          });
+          EOF
 
-          // Give async requests time to complete
-          setTimeout(() => {
-            if (published === skills.length) {
-              console.log(`\n✨ Successfully published ${published} skills`);
-              process.exit(0);
-            }
-          }, 2000);
-          SCRIPT
-
-          node publish-skills.js
+          node publish.js
 
       - name: Notify on failure
         if: failure()
