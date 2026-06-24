@@ -1,0 +1,40 @@
+# VOIS.md
+# Structural context for the Vois design system skill chain.
+# Created by vois-router setup interview. Edit manually if your product evolves.
+
+## Product type
+# One of: b2b-saas | b2c-app | internal-tool | marketplace | platform
+product-type:
+
+## Market structure
+# One of: single-vendor | multitenant | marketplace-two-sided | api-first
+market-structure:
+
+## Primary user archetype
+# One of: professional-buyer | domain-expert | power-user | casual-user
+user-archetype:
+
+## Density profile
+# One of: compact | balanced | spacious
+# compact = information-dense, assumes expertise
+# balanced = mixed experience levels
+# spacious = clarity over density, new or casual users
+density-profile:
+
+## Trust model
+# One of: brand-trust | peer-trust | algorithmic-trust | credential-trust
+# brand-trust = users trust the product name/company
+# peer-trust = social proof, ratings, community
+# algorithmic-trust = data, accuracy, precision signals
+# credential-trust = certs, compliance, institutional authority
+trust-model:
+
+## Collaboration model
+# One of: solo | team-synchronous | team-async | open-participation
+collaboration-model:
+
+## Notes
+# Optional: any additional context that shapes design decisions.
+# e.g. "Users switch between desktop and tablet frequently"
+# e.g. "Primary persona is a licensed adjuster with 10+ years experience"
+notes: |

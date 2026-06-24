@@ -1,6 +1,6 @@
 ---
 name: vois-router
-version: 1.4.0
+version: 1.5.0
 description: >
   Orchestrates the Vois design system skill chain. Use this skill as the single
   entry point whenever you're doing any UI work against the Vois design system —
@@ -38,6 +38,68 @@ runs) to flag when a scoped, partial read is appropriate instead of a full one.
 
 ---
 
+## Step 0: Load project context
+
+Before routing anything, check for three files at the project root. These are
+the persistent memory layer. Without them, every session starts cold and the
+skill chain applies generic defaults instead of project-specific rules.
+
+```
+PRODUCT.md   — strategic: why this exists, who it's for, what to avoid
+VOIS.md      — structural: product type, market shape, density, trust model
+DESIGN.md    — visual: tokens, components, do's and don'ts
+```
+
+### If all three files exist
+
+Silently read all three. Do not announce that you read them — just load the
+context and let it inform everything downstream. Update session state to
+reflect the loaded context.
+
+Key fields to extract and carry forward:
+
+From PRODUCT.md:
+- `register` (brand | product) — shapes which rule set applies
+- `anti-references` — pass to righter as additional copy constraints
+- `brand-personality` — inform vois-tokens tone choices
+
+From VOIS.md:
+- `product-type` — b2b-saas | b2c-app | internal-tool | marketplace | platform
+- `market-structure` — single-vendor | multitenant | marketplace-two-sided | api-first
+- `user-archetype` — professional-buyer | domain-expert | power-user | casual-user
+- `density-profile` — compact | balanced | spacious
+- `trust-model` — brand-trust | peer-trust | algorithmic-trust | credential-trust
+- `collaboration-model` — solo | team-synchronous | team-async | open-participation
+
+From DESIGN.md:
+- Token overrides (passed to vois-tokens)
+- Named rules and do's/don'ts (passed to righter as additional constraints)
+
+### If VOIS.md is missing (most common on first install)
+
+Run the setup interview before doing anything else. This is not optional — the
+router cannot apply the right sub-rules without knowing the product shape.
+
+Read `references/context-layer.md` → **Setup interview questions** section.
+It has the two-round question flow, PRODUCT.md and DESIGN.md offer logic, and
+file write instructions. Templates: `references/VOIS.md.template` and
+`references/PRODUCT.md.template`.
+
+### If PRODUCT.md or DESIGN.md is missing but VOIS.md exists
+
+Proceed. VOIS.md is the required file — the other two add fidelity but the
+chain runs without them. Note in session state what's missing and offer to
+create the missing file(s) after the current task completes.
+
+### Sub-rule sets by product type
+
+Read `references/context-layer.md` → **Sub-rule sets by product type** section
+when applying product-type defaults. Summary: b2b-saas = compact + credential
+trust; b2c-app = spacious + peer trust; internal-tool = compact + utility-first;
+marketplace = dual nav model; platform = developer register.
+
+---
+
 ## Modes
 
 The router runs in two modes. The designer sets this at the start or at any point
@@ -67,6 +129,12 @@ Format:
 
 ```
 ━━ Session ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Context:      [loaded | partial | not found]
+Product type: [b2b-saas | b2c-app | internal-tool | marketplace | platform]
+Structure:    [single-vendor | multitenant | marketplace-two-sided | api-first]
+Density:      [compact | balanced | spacious]
+Register:     [brand | product]
+
 Work type:    [classification]
 Platform:     [web | ios | android | inferred: web]
 Mode:         [gated | fast]
@@ -176,6 +244,7 @@ skip confirmation and proceed immediately after displaying it.
 
 ```
 ━━ Route ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Context:    [loaded | partial | not found]
 Work type:  [classification]
 Platform:   [platform]
 Mode:       [gated | fast]
@@ -279,6 +348,16 @@ framing the skill expects: what is the user trying to accomplish?
 
 > "Components selected: [list with reasoning]. Platform: [platform]. Implement
 > using Vois tokens, spacing rules, and accessibility requirements."
+
+If VOIS.md is loaded, append:
+
+> "Product type: [product-type]. Density profile: [density-profile]. Apply
+> the matching sub-rule defaults unless a specific token or pattern overrides."
+
+If DESIGN.md is loaded, append:
+
+> "Token overrides from DESIGN.md: [relevant token values]. Named rules:
+> [do's/don'ts relevant to this task]."
 
 ---
 
@@ -424,6 +503,21 @@ moments and loading righter at the right time.
 - The designer asks about specific wording at any point
 - Copy is included in the brief and needs review
 
+**Context to pass to righter always:**
+
+> "Copy type: [type]. Context: [what it's for]. Platform: [platform]."
+
+If PRODUCT.md is loaded, append:
+
+> "Product register: [brand | product]. Brand personality: [3 words from
+> PRODUCT.md]. Anti-references: [list from PRODUCT.md — avoid these tones
+> and patterns]."
+
+If VOIS.md is loaded, append:
+
+> "Product type: [product-type]. User archetype: [user-archetype]. Apply
+> the [product-type] copy register defaults."
+
 ### Single copy item
 
 Pause the current step, run righter, then resume.
@@ -515,6 +609,7 @@ completion block. This is the consolidated record of the session.
 
 ```
 ━━ Chain Complete ━━━━━━━━━━━━━━━━━━━━━━━━━
+Context:     [loaded | partial | not found]
 Work type:   [classification]
 Platform:    [platform]
 
@@ -574,6 +669,9 @@ Record the gap and the designer's choice in the session state under
 
 ## What the router never does
 
+- Routes before running Step 0 context initialization
+- Announces that it read PRODUCT.md, VOIS.md, or DESIGN.md — just uses them silently
+- Skips the VOIS.md setup interview when the file is missing
 - Routes before resolving platform when it's genuinely ambiguous
 - Loads a skill without displaying the route first
 - Skips the handoff block in gated mode
@@ -587,6 +685,7 @@ Record the gap and the designer's choice in the session state under
 - Invokes righter per-item when three or more copy items are queued
 - Proceeds past a gap report without surfacing it
 - Keeps prompting after one unanswered handoff in gated mode
+- Passes context files to skills without translating them into the skill's expected format
 
 ---
 
