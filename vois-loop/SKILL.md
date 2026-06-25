@@ -1,6 +1,6 @@
 ---
 name: vois-loop
-version: 1.3.0
+version: 1.4.0
 author: Personify Labs
 description: >
   Iterative design build loop for the Vois design system. Wraps design-ask,
@@ -391,6 +391,22 @@ The validate pass checks the implementation output against the vois-tokens
 pre-submit checklist. It uses the design system's own rule IDs so violations
 trace back to their source rule.
 
+**Auto-checked items first:** before grading by eye, run vois-tokens'
+mechanical detector against every file changed this iteration:
+
+```bash
+node <path-to-vois-tokens-skill>/scripts/detect.mjs <changed files...>
+```
+
+Items below marked `(auto-checked)` are exactly the rules this detector
+covers — fold its findings directly into the relevant category's verdict
+instead of re-deriving them by eye (a FAIL/WARN from `detect.mjs` output
+maps straight to a FAIL/WARN for that category; an empty result for a given
+rule ID means that line item passes). Items without `(auto-checked)` still
+require reading the code — the detector only catches the mechanically
+verifiable subset; see vois-tokens' `references/hooks.md` for the full
+coverage table.
+
 **Check categories:**
 
 **Semantic HTML**
@@ -403,18 +419,18 @@ trace back to their source rule.
 **Accessibility**
 
 - All interactive elements have :focus-visible styles `[DS-A11Y-002]`
-- No outline: none without a replacement `[DS-A11Y-003]`
+- No outline: none without a replacement `[DS-A11Y-003]` (auto-checked)
 - Touch targets minimum 44x44px `[DS-A11Y-001]`
-- Images have alt text `[DS-A11Y-010]`
-- Modals use inert on background content `[DS-MODAL-001]`
+- Images have alt text `[DS-A11Y-010]` (auto-checked)
+- Modals use inert on background content `[DS-MODAL-001]` (auto-checked)
 - Error messages linked to inputs via aria-describedby
 - Form inputs associated with labels via htmlFor / id pairing
 
 **Token alignment**
 
-- No hardcoded hex values `[DS-COLOR-001]`
-- No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]`
-- All spacing divisible by 4 or 8, no arbitrary values `[DS-SPACING-001]` `[DS-SPACING-003]`
+- No hardcoded hex values `[DS-COLOR-001]` (auto-checked, advisory)
+- No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]` (auto-checked, advisory)
+- All spacing divisible by 4 or 8, no arbitrary values `[DS-SPACING-001]` (auto-checked) `[DS-SPACING-003]`
 - Spacing between siblings uses gap on parent, not margin-bottom on child `[DS-LAYOUT-COMP-001]`
 
 **React**
@@ -425,9 +441,9 @@ trace back to their source rule.
 
 **Animation**
 
-- UI animations under 300ms `[DS-ANIMATION-001]`
-- prefers-reduced-motion handled `[DS-ANIMATION-004]`
-- No transition: all `[DS-TAILWIND-005]`
+- UI animations under 300ms `[DS-ANIMATION-001]` (auto-checked)
+- prefers-reduced-motion handled `[DS-ANIMATION-004]` (auto-checked)
+- No transition: all `[DS-TAILWIND-005]` (auto-checked)
 - Hover effects guarded on touch devices `[DS-ANIMATION-007]`
 
 **Component fidelity**
@@ -435,6 +451,12 @@ trace back to their source rule.
 - Component choices match what vois-components selected
 - Variants used semantically, not defaulted `[DS-COMPONENT-006]`
 - cva used for variant logic `[DS-COMPONENT-002]`
+
+`(auto-checked, advisory)` items are tiered `quality` in the detector by
+design — they overlap with the separate token-drift app's job of reconciling
+raw values against the live token list, so the detector flags them fast but
+never treats them as authoritative the way it does for the other
+auto-checked rules.
 
 The validate pass outputs one of three verdicts per check category:
 

@@ -1,0 +1,20 @@
+/* Fixture: one deliberate violation per CSS_EXT-applicable [DS-*] rule. */
+
+#sidebar {
+  /* DS-CSS-002: #id selector used for styling */
+  background: #336699; /* DS-COLOR-001: hardcoded hex outside a token definition */
+  color: red !important; /* DS-TAILWIND-004 */
+  outline: none; /* DS-A11Y-003: no focus styling replacement is provided */
+  transition: all; /* DS-TAILWIND-005 */
+  transition-duration: 700ms; /* DS-ANIMATION-001: 700ms > 500ms ceiling */
+  will-change: left, top; /* DS-ANIMATION-009: neither is transform/opacity/filter */
+}
+
+.modal-enter {
+  transform: scale(0); /* DS-ANIMATION-005 */
+}
+
+@media (min-width: 768px) {
+  /* DS-CSS-007: hand-authored breakpoint in px, not em */
+  .layout { height: 100vh; } /* DS-LAYOUT-001 */
+}
