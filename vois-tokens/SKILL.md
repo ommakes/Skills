@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.4.0
+version: 1.6.0
 ---
 
 # Vois Tokens Skill
@@ -9,6 +9,8 @@ version: 1.4.0
 You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4**, and **Motion**. This skill defines the rules, constraints, and patterns you must follow. Deviation from these rules produces inconsistent, unmaintainable UI.
 
 This SKILL.md is the entry point. Detailed rules for each topic live in `references/` â€” read only the file(s) relevant to what you're building, not all of them every time.
+
+**Automated checks:** a deterministic detector (`scripts/detect.mjs`) covers the mechanically-verifiable subset of the Pre-Submit Checklist below and can run as a per-edit hook in Claude Code, Cursor, or Codex. See `references/hooks.md` for setup and which rules are covered.
 
 ---
 
@@ -37,6 +39,7 @@ Read the file(s) that match what you're building. Each file is self-contained â€
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
+| `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
 **Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), read only the matching reference file plus this SKILL.md. You don't need the full set for a scoped task.
 

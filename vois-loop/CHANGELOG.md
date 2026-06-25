@@ -4,6 +4,15 @@ All notable changes to the vois-loop skill are documented here.
 
 ---
 
+## [1.4.0] — 2026-06-25
+
+### Changed
+
+- **Step 4: Validate pass** now opens by running vois-tokens' mechanical detector (`scripts/detect.mjs`) against every file changed in the iteration, before grading by eye. Checklist items the detector covers are marked `(auto-checked)` (or `(auto-checked, advisory)` for the two color rules that stay advisory to avoid overlapping with the token-drift app); their PASS/WARN/FAIL is taken directly from the detector's findings instead of being re-derived by reading the code. Judgment-only items are unchanged.
+- **Version bump:** `1.3.0` → `1.4.0`
+
+---
+
 ## [1.3.0] — 2026-06-17
 
 ### Added
