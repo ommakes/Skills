@@ -65,7 +65,7 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 **Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
 
-Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill.
+Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
 
 → [`vois-tokens/`](./vois-tokens)
 
@@ -161,4 +161,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-06-17
+**Last updated:** 2026-06-25

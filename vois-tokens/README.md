@@ -1,8 +1,10 @@
 # Vois Tokens Skill
 
-**Version 1.2.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool
+**Version 1.6.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
+
+A deterministic detector (`scripts/detect.mjs`) mechanically checks the subset of the Pre-Submit Checklist that doesn't require visual judgment, and can run as a per-edit hook in Claude Code, Cursor, or Codex. See [`references/hooks.md`](./references/hooks.md) for setup.
 
 ---
 
@@ -63,9 +65,11 @@ Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. After Cla
 
 ```
 vois-tokens/
-├── SKILL.md        ← the skill itself
-├── README.md       ← this file
-└── CHANGELOG.md    ← version history
+├── SKILL.md         ← the skill entry point
+├── README.md        ← this file
+├── CHANGELOG.md     ← version history
+├── references/      ← per-topic rule files (spacing, color, components, hooks, etc.)
+└── scripts/         ← detect.mjs detector + hook.mjs/hook-before-edit.mjs/hook-admin.mjs
 ```
 
 ---
@@ -74,6 +78,10 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.6.0** — Deterministic `scripts/detect.mjs` detector for the mechanically-checkable subset of the Pre-Submit Checklist, plus a per-edit hook (Claude Code, Cursor, Codex) and `hook-admin.mjs` CLI. New `references/hooks.md`.
+- **1.5.0** — Elevation and iconography reference files; decision frameworks for previously behavior-only rules
+- **1.4.0** — Renamed from `vois-design-system` to `vois-tokens`
+- **1.3.0** — Split `SKILL.md` into a slim entry point plus per-topic `references/` files
 - **1.2.0** — Layout composition rules, expanded semantic HTML, CSS specificity and media query guidelines, rule IDs on all checklist items
 - **1.1.0** — Initial tracked release
 
