@@ -4,7 +4,7 @@
 
 - Use **no more than 3 text styles** in any single component or section. `[DS-TYPOGRAPHY-001]`
 - Never skip heading levels. `h1` then `h2` then `h3`. Never `h1` directly to `h3`. `[DS-TYPOGRAPHY-002]`
-- Use the **monospace variant** (Geist Mono) for all numeric data — prices, counts, measurements, timestamps. Add `font-variant-numeric: tabular-nums` when numbers appear in columns or need to align. `[DS-TYPOGRAPHY-003]`
+- Use the **monospace variant** for all numeric data — prices, counts, measurements, timestamps. Add `font-variant-numeric: tabular-nums` when numbers appear in columns or need to align. `[DS-TYPOGRAPHY-003]`
 - Font size communicates hierarchy. If two things feel equally important, one of them should be deprioritized. `[DS-TYPOGRAPHY-004]`
 
 ## Type Scale
@@ -23,15 +23,15 @@
 
 ## Fonts
 
-These are the default fonts. Your workspace may define different ones via typography tokens — check the token reference before assuming these apply.
+Font choice is workspace-specific, defined via typography tokens. Check the token reference for the actual values before assuming a particular font applies.
 
-| Role | Default | Token |
-|------|---------|-------|
-| Headings and display | Host Grotesk | `--font-heading` |
-| Body and labels | Inter Tight | `--font-body` |
-| Numeric and monospace | Geist Mono | `--font-mono` |
+| Role | Token |
+|------|-------|
+| Headings and display | `--font-heading` |
+| Body and labels | `--font-body` |
+| Numeric and monospace | `--font-mono` |
 
-Always reference the token (`font-[var(--font-heading)]`) rather than the font name directly. If the workspace swaps the font, components update automatically without code changes. `[DS-TYPOGRAPHY-005]`
+Always reference the token (`font-[var(--font-heading)]`) rather than a font name directly. If the workspace swaps the font, components update automatically without code changes. `[DS-TYPOGRAPHY-005]`
 
 ## Fluid Type
 
