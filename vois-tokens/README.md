@@ -97,7 +97,7 @@ Always reference the token in components, not the font name directly:
 font-family: var(--font-heading);
 
 /* Not this */
-font-family: "Host Grotesk";
+font-family: "Some Font Name";
 ```
 
 ### Tokens
