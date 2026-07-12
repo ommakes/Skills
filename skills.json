@@ -9,7 +9,7 @@
       "path": "vois-loop",
       "version": "1.5.0",
       "author": "Personify Labs",
-      "description": "Iterative design build loop for the Vois design system. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly.",
+      "description": "Iterative design build loop for the Vois design system. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Validates REDESIGN work against a no-silent-changes contract (URLs, field names, event names, nav labels).",
       "tags": ["design", "vois", "orchestrator", "workflow"]
     },
     {
@@ -17,7 +17,7 @@
       "path": "vois-router",
       "version": "1.6.0",
       "author": "Personify Labs",
-      "description": "Orchestrates the Vois design system skill chain. Use this skill as the single entry point whenever you're doing any UI work against the Vois design system — building a screen, picking a component, writing copy, or defending a design decision.",
+      "description": "Orchestrates the Vois design system skill chain. Use this skill as the single entry point whenever you're doing any UI work against the Vois design system — building a screen, picking a component, writing copy, or defending a design decision. Carries taste dials (VARIANCE/MOTION/DENSITY) from VOIS.md, emits a one-line design read before any build route, and classifies REDESIGN work (greenfield/preserve/overhaul).",
       "tags": ["design", "vois", "orchestrator"]
     },
     {
@@ -41,7 +41,7 @@
       "path": "vois-tokens",
       "version": "1.7.0",
       "author": "Personify Labs",
-      "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system.",
+      "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation"]
     },
     {
