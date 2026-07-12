@@ -11,7 +11,7 @@ npx skills add ommakes/Skills
 ## Orchestrators
 
 ### Vois Loop
-Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer.
+Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer. For REDESIGN work, validates against a no-silent-changes contract — URLs, field names, event names, and nav labels can't shift without being called out.
 
 **Use when:** someone says "build this", pastes a ticket, or asks to run the full design loop. Calls all the other skills in the right order, including vois-router.
 
@@ -20,7 +20,7 @@ Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full sk
 ---
 
 ### Vois Router
-Chain orchestrator for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, or AUDIT), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated and fast modes, inline righter invocation with batching, opt-in design-rationale at two points, session state for recovery, and gap surfacing.
+Chain orchestrator for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, AUDIT, or REDESIGN), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated and fast modes, inline righter invocation with batching, opt-in design-rationale at two points, session state for recovery, and gap surfacing. Loads taste dials (VARIANCE/MOTION/DENSITY, 1–10) from VOIS.md and carries them downstream, and emits a one-line "design read" (audience · tone · V/M/D) before any build route so a wrong interpretation gets caught early. REDESIGN work runs in greenfield, preserve, or overhaul mode under a no-silent-changes contract.
 
 **Use when:** starting any UI work against the Vois design system without running the full iterative loop. Use vois-loop above when starting from a ticket or brief.
 
@@ -65,7 +65,9 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 **Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
 
-Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
+Tunes within the design system's guardrails using the taste dials (VARIANCE/MOTION/DENSITY) carried down from vois-router — dials adjust degree, never override safety, accessibility, or hard token rules. Flags DS-SLOP-* anti-tells (centered-hero, AI-gradient backgrounds, uniform three-card grids, eyebrow overuse, zigzag sections, spec-sheet tables) as advisory warnings, and enforces the redesign no-silent-changes contract when working in REDESIGN mode.
+
+Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, anti-slop, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules (including DS-SLOP-002) and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
 
 → [`vois-tokens/`](./vois-tokens)
 
