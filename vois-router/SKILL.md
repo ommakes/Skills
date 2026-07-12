@@ -1,6 +1,6 @@
 ---
 name: vois-router
-version: 1.5.0
+version: 1.6.0
 description: >
   Orchestrates the Vois design system skill chain. Use this skill as the single
   entry point whenever you're doing any UI work against the Vois design system —
@@ -70,6 +70,13 @@ From VOIS.md:
 - `density-profile` — compact | balanced | spacious
 - `trust-model` — brand-trust | peer-trust | algorithmic-trust | credential-trust
 - `collaboration-model` — solo | team-synchronous | team-async | open-participation
+- `variance` / `motion` / `density` — the three 1-10 taste dials. Carry all
+  three forward: VARIANCE informs vois-patterns/vois-components layout choices,
+  MOTION informs vois-tokens animation richness, DENSITY informs vois-tokens
+  spacing. If VOIS.md has no dial values, seed them from the product-type
+  defaults in `references/context-layer.md`. Dials tune within the design
+  system's guardrails — never pass them forward as license to break a safety,
+  a11y, or hard token rule.
 
 From DESIGN.md:
 - Token overrides (passed to vois-tokens)
@@ -133,6 +140,7 @@ Context:      [loaded | partial | not found]
 Product type: [b2b-saas | b2c-app | internal-tool | marketplace | platform]
 Structure:    [single-vendor | multitenant | marketplace-two-sided | api-first]
 Density:      [compact | balanced | spacious]
+Dials:        V/M/D [variance/motion/density, e.g. 3/3/9]
 Register:     [brand | product]
 
 Work type:    [classification]
@@ -210,6 +218,7 @@ Map the input to one of seven work types.
 | Work type | Signals | Entry point |
 |---|---|---|
 | **FULL-CHAIN** | Feature brief, screen description, Jira/ADO ticket, "build this" | vois-patterns |
+| **REDESIGN** | Existing UI provided *and* intent to change it — "redesign", "modernize", "revamp", "clean this up and ship it" | Redesign protocol, then vois-patterns |
 | **PICK-UP** | "I've done the structure", "I have path ID X", resuming a prior session | vois-components |
 | **COMPONENT-ONLY** | "Modal or drawer?", "which component for X?", single component decision | vois-components |
 | **COPY-ONLY** | "What should this say?", copy pasted for review, error message request | righter |
@@ -234,6 +243,12 @@ inline by righter and doesn't change the classification.
 If the input could be FULL-CHAIN or PICK-UP, default to FULL-CHAIN. Running
 vois-patterns when structure is already decided wastes one step. Skipping it
 when it was needed produces worse decisions downstream.
+
+**REDESIGN vs AUDIT** — both start from existing UI, but they differ in intent.
+AUDIT *surfaces findings and changes nothing*. REDESIGN *changes the UI*. If the
+designer wants the code modified, it's REDESIGN and the redesign protocol runs
+first to set the scope of allowed change. If they only want an evaluation, it's
+AUDIT. When unclear, ask which one before routing.
 
 ---
 
@@ -266,6 +281,32 @@ In gated mode: wait for confirmation. If the designer adjusts the route,
 re-display the updated sequence before proceeding.
 
 In fast mode: display the route and immediately begin step 1.
+
+---
+
+## Step 4.5: Declare the design read
+
+For any build route (FULL-CHAIN, PICK-UP, REDESIGN), emit a **one-line design
+read** before loading the first skill — a single sentence stating how you're
+interpreting the work, plus the dials. This is not design-ask (that's the heavy
+pre-flight); it's a cheap intent declaration the designer can correct in one
+glance before any tokens are spent.
+
+Format:
+
+```
+Design read: [audience/context] · [tone/posture in 2-4 words] · V/M/D [x/y/z]
+```
+
+Example:
+
+> Design read: dense internal ops tool for expert adjusters · utilitarian, low-key · V/M/D 2/2/9
+
+Rules:
+- One line. If your read is wrong, the designer says so and you adjust before building — that's the whole point.
+- Pull audience/tone from PRODUCT.md/VOIS.md when loaded; infer from the brief otherwise and mark the inference (`inferred:`).
+- Skip it for COPY-ONLY, RATIONALE-ONLY, AUDIT, and METRICS-ONLY runs — there's no build to frame.
+- In gated mode the design read piggybacks on the route confirmation (don't add a second prompt). In fast mode, print it and proceed.
 
 ---
 
@@ -351,8 +392,11 @@ framing the skill expects: what is the user trying to accomplish?
 
 If VOIS.md is loaded, append:
 
-> "Product type: [product-type]. Density profile: [density-profile]. Apply
-> the matching sub-rule defaults unless a specific token or pattern overrides."
+> "Product type: [product-type]. Density profile: [density-profile]. Taste
+> dials V/M/D: [variance]/[motion]/[density] — tune layout variance, animation
+> richness, and spacing density toward these, staying inside the guardrails.
+> Apply the matching sub-rule defaults unless a specific token or pattern
+> overrides."
 
 If DESIGN.md is loaded, append:
 
@@ -455,6 +499,49 @@ Combine into one question if multiple are absent:
 
 > "To give you a rationale that holds up, I need a bit more: [missing fields
 > as a plain list]. Can you fill those in?"
+
+---
+
+### REDESIGN
+
+A redesign changes existing UI. Before touching anything, classify the scope of
+change and lock the no-silent-changes contract — then run the normal build chain
+with that scope as a constraint.
+
+**Step A — classify the redesign into one of three modes:**
+
+| Mode | What it means | What's allowed to change |
+|---|---|---|
+| **greenfield** | Existing screen is a throwaway placeholder; start fresh | Everything — treat as FULL-CHAIN |
+| **preserve** | Modernize the look, keep the brand and structure | Visual layer only — tokens, spacing, motion, component polish. Brand identity, IA, and copy meaning stay. |
+| **overhaul** | New visual direction, but the product content/flows stay | Visuals and layout freely; content, flows, and identifiers preserved |
+
+If the mode isn't stated, ask (one question, A/B/C). Default to **preserve** when
+an established product is involved — it's the least destructive assumption.
+
+**Step B — audit first.** Before proposing changes, document what exists: brand
+tokens in use, information architecture, patterns worth keeping, patterns worth
+retiring. This is the same lightweight pass AUDIT runs; a redesign just doesn't
+stop there.
+
+**Step C — the no-silent-changes contract.** These carry meaning outside the
+visual layer and must **never** change as an invisible side effect of restyling.
+Changing one is an explicit, surfaced decision with a reason — never folded into
+a styling diff:
+
+- URL / route paths
+- Form field `name` / `id` attributes and API request/response field names
+- Analytics event names, `data-*` tracking hooks, test selectors (`data-testid`)
+- Primary navigation labels and their destinations
+
+Carry the contract forward into vois-tokens (it enforces the same list at edit
+time — see its "Reviewing Existing UI" section). Record the redesign mode in
+session state so every downstream skill knows the scope of allowed change.
+
+**Step D — run the chain** (vois-patterns → vois-components → vois-tokens) scoped
+to the mode from Step A. In `preserve` mode, vois-patterns and vois-components
+are largely confirmation passes over the existing structure rather than
+open-ended decisions.
 
 ---
 
@@ -681,6 +768,8 @@ Record the gap and the designer's choice in the session state under
 - Offers design-rationale twice if the designer already declined once
 - Bypasses vois-patterns to enter at vois-components in a FULL-CHAIN run
 - Passes a PICK-UP path ID forward without validating it first
+- Enters a redesign without classifying its mode (greenfield/preserve/overhaul) and locking the no-silent-changes contract first
+- Lets a redesign silently change URLs, form field names, analytics event names, or nav labels as a side effect of restyling
 - Makes component or structural decisions itself
 - Invokes righter per-item when three or more copy items are queued
 - Proceeds past a gap report without surfacing it
@@ -696,6 +785,7 @@ Record the gap and the designer's choice in the session state under
 | Jira / ADO ticket | FULL-CHAIN | vois-patterns |
 | Feature brief or screen description | FULL-CHAIN | vois-patterns |
 | "Build this screen / feature" | FULL-CHAIN | vois-patterns |
+| "Redesign / modernize / revamp this" + existing UI | REDESIGN | Redesign protocol → vois-patterns |
 | Session state block + "resume" | PICK-UP | last completed step |
 | "I have path ID X, now what" | PICK-UP | vois-components (after validation) |
 | "Modal or drawer for this?" | COMPONENT-ONLY | vois-components |

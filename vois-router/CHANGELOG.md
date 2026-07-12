@@ -4,6 +4,21 @@ All notable changes to the vois-router skill are documented here.
 
 ---
 
+## [1.6.0] — 2026-07-12
+
+### Added
+
+- **Taste dials (`VARIANCE` / `MOTION` / `DENSITY`, 1-10):** loaded from VOIS.md in Step 0 and carried forward to every skill — VARIANCE informs layout, MOTION informs animation richness, DENSITY informs spacing. Seeded from per-product-type defaults when VOIS.md has no explicit values. Added to the session-state block and the vois-tokens context package. Dials tune within the guardrails; they never license breaking a safety/a11y/hard-token rule.
+- **Step 4.5 — the one-line design read:** a cheap intent declaration (`audience · tone · V/M/D`) emitted before any build route so a wrong interpretation gets caught before tokens are spent. Skipped for COPY-ONLY/RATIONALE-ONLY/AUDIT/METRICS-ONLY.
+- **REDESIGN work type + redesign protocol:** classifies redesigns as greenfield / preserve / overhaul to set the scope of allowed change, audits the existing UI first, and locks a **no-silent-changes contract** (URLs, form field names, analytics event names, nav labels never change as a side effect of restyling). New classification-table row, quick-reference row, and never-does entries; REDESIGN-vs-AUDIT disambiguation note.
+- Setup interview gains Round 3 (motion + variance dial questions); `references/context-layer.md` gains default-dials-by-product-type and the density-profile↔DENSITY mapping; `VOIS.md.template` gains a `## Taste dials` block.
+
+### Changed
+
+- **Version bump:** `1.5.0` → `1.6.0`
+
+---
+
 ## [1.4.0] — 2026-06-17
 
 ### Added

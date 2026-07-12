@@ -1,6 +1,6 @@
 ---
 name: vois-loop
-version: 1.4.0
+version: 1.5.0
 author: Personify Labs
 description: >
   Iterative design build loop for the Vois design system. Wraps design-ask,
@@ -66,6 +66,8 @@ at every handoff. Never let it go stale.
 Iteration:     [1 of 3 max]
 Mode:          [gated | fast]
 Platform:      [web | ios | android]
+Dials:         V/M/D [variance/motion/density, e.g. 3/3/9]
+Design read:   [one line — how the loop is reading the work]
 
 Pre-flight:
   ✓ design-ask       verdict: [Ready / Caution / Not ready]
@@ -135,6 +137,11 @@ What carries forward from design-ask into vois-router:
 
 The router classifies work type and sequences the chain as normal. Its output
 is the planned route, which the loop uses to manage iteration order.
+
+The router also emits its one-line **design read** (Step 4.5) and the loaded
+taste dials at this point. Capture both into loop state before entering the
+chain — the design read is the cheapest place to catch a wrong interpretation,
+and the dials calibrate every downstream decision.
 
 In gated mode: show the route and wait for confirmation before entering the chain.
 In fast mode: display and proceed immediately.
@@ -451,6 +458,18 @@ coverage table.
 - Component choices match what vois-components selected
 - Variants used semantically, not defaulted `[DS-COMPONENT-006]`
 - cva used for variant logic `[DS-COMPONENT-002]`
+
+**Anti-slop** (judgment; `DS-SLOP-002` is auto-checked, advisory)
+
+- No AI gradient (purple/indigo→blue) as a default `[DS-SLOP-002]` (auto-checked, advisory)
+- No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
+- Feature groups aren't three identical cards; eyebrows not on every section `[DS-SLOP-003]` `[DS-SLOP-004]`
+- Layout has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
+
+**Redesign safety** (only when the run is a REDESIGN)
+
+- No load-bearing identifier changed silently — URLs, form field names, analytics event names, nav labels (see vois-router redesign protocol)
+- Changes stay within the classified mode (greenfield / preserve / overhaul)
 
 `(auto-checked, advisory)` items are tiered `quality` in the detector by
 design — they overlap with the separate token-drift app's job of reconciling

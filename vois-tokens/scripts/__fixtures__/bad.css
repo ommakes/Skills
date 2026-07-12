@@ -8,6 +8,7 @@
   transition: all; /* DS-TAILWIND-005 */
   transition-duration: 700ms; /* DS-ANIMATION-001: 700ms > 500ms ceiling */
   will-change: left, top; /* DS-ANIMATION-009: neither is transform/opacity/filter */
+  background-image: linear-gradient(to right, purple, blue); /* DS-SLOP-002: the AI gradient */
 }
 
 .modal-enter {
