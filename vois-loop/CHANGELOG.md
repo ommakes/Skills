@@ -4,6 +4,19 @@ All notable changes to the vois-loop skill are documented here.
 
 ---
 
+## [1.5.0] — 2026-07-12
+
+### Added
+
+- **Taste dials and the design read in loop state:** the `Dials: V/M/D` and `Design read:` lines are captured from vois-router (Step 2) before the chain runs, so a wrong read or miscalibrated dials surface at the cheapest possible point.
+- **Anti-slop and redesign-safety checks in the Step 4 validate pass:** a new Anti-slop category (`DS-SLOP-*`, with `DS-SLOP-002` folded in from the auto-checker as advisory) and a Redesign-safety category that fires only on REDESIGN runs, guarding against silently changed load-bearing identifiers and out-of-mode changes.
+
+### Changed
+
+- **Version bump:** `1.4.0` → `1.5.0`
+
+---
+
 ## [1.4.0] — 2026-06-25
 
 ### Changed

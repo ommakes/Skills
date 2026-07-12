@@ -329,6 +329,39 @@ export const RULES = [
       return [{ line, snippet: snippetAt(lines, line), message: `Custom Dialog/Modal missing: ${missing.join(", ")}.` }];
     },
   },
+  {
+    id: "DS-SLOP-002",
+    title: "AI gradient (purple/indigo → blue/cyan)",
+    severity: "quality", // advisory heuristic — a real brand can own this gradient; see references/anti-slop.md
+    extensions: ALL_EXT,
+    fixHint: "The purple/indigo→blue gradient is the template-output signature. Use the workspace's own accent tokens, or waive with ignore-rule DS-SLOP-002 if it's a genuine brand asset.",
+    check({ content, lines }) {
+      const AI_HUES = "violet|purple|indigo|fuchsia|blue|sky|cyan";
+      const findings = [];
+      // Tailwind gradient: bg-gradient-to-* with from-<hue> and to-<hue> both in the AI family.
+      const twPattern = new RegExp(
+        `\\bfrom-(?:${AI_HUES})-\\d{2,3}\\b[^"'\\n]*?\\bto-(?:${AI_HUES})-\\d{2,3}\\b`,
+        "g"
+      );
+      for (const raw of scanRegex(content, lines, twPattern, "Purple/indigo→blue gradient — the AI-slop gradient signature.")) {
+        // Only flag when the two stops are actually different hues (from-blue-500 to-blue-700 is a fine monochrome ramp).
+        const hues = raw.snippet.match(new RegExp(`(?:from|to)-(${AI_HUES})-`, "g")) || [];
+        const distinct = new Set(hues.map((h) => h.replace(/(?:from|to)-|-$/g, "")));
+        if (distinct.size >= 2) findings.push(raw);
+      }
+      // CSS linear-gradient() between two distinct AI-family hue keywords.
+      const cssPattern = /linear-gradient\([^)]*\)/g;
+      let m;
+      while ((m = cssPattern.exec(content)) !== null) {
+        const named = m[0].match(new RegExp(`\\b(${AI_HUES})\\b`, "g")) || [];
+        if (new Set(named).size >= 2) {
+          const line = lineAt(content, m.index);
+          findings.push({ line, snippet: snippetAt(lines, line), message: "linear-gradient between purple/indigo and blue — the AI-slop gradient signature." });
+        }
+      }
+      return findings;
+    },
+  },
 ];
 
 export function rulesForFile(filePath) {

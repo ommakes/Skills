@@ -26,7 +26,8 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `DS-CSS-002` | Yes | `#id` selector used for styling. |
 | `DS-CSS-007` | Yes | Hand-authored `@media` query in `px`. |
 | `DS-MODAL-001`/`002` | Yes | Custom (non-Radix) Dialog/Modal missing `inert` or `overscroll-behavior: contain`. |
-| Everything else in the Pre-Submit Checklist | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. Keep grading these by reading the code, the way this skill always has. |
+| `DS-SLOP-002` | Yes — advisory only | Purple/indigo→blue "AI gradient" (Tailwind `from-*`/`to-*` or CSS `linear-gradient`). Heuristic — a genuine brand can waive it; the other `DS-SLOP-*` rules stay judgment-only. |
+| Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. Keep grading these by reading the code, the way this skill always has. |
 
 ## Setup
 

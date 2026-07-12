@@ -11,8 +11,8 @@ the VOIS.md setup interview or when loading sub-rule defaults by product type.
 
 Tell the designer:
 
-> "Before we start, I need to understand what you're building. Six quick
-> questions — takes about two minutes. This creates VOIS.md, which means you
+> "Before we start, I need to understand what you're building. Eight quick
+> questions — takes about three minutes. This creates VOIS.md, which means you
 > won't have to explain this again."
 
 Ask:
@@ -54,8 +54,27 @@ Ask:
 >    - Team async (shared context, not real-time)
 >    - Open participation (public or semi-public contribution)"
 
-After both rounds, write VOIS.md using `references/VOIS.md.template`. Confirm
-with the designer before writing.
+### Round 3 — Taste dials
+
+Two dials the coarse questions above don't capture (density is already covered
+by Q4). Ask for a rough number; a range word is fine and maps to the midpoint.
+
+> "7. How much motion should the product have? (1-10)
+>    - 1-3: near-static — only essential feedback (most data/ops tools)
+>    - 4-7: fluid — transitions and micro-interactions (most product UI)
+>    - 8-10: choreographed — motion is part of the identity (marketing, showcase)
+>
+> 8. How much should layouts vary from a strict grid? (1-10)
+>    - 1-3: strict, symmetric, predictable grids
+>    - 4-7: deliberate asymmetry where it earns attention
+>    - 8-10: editorial / masonry — asymmetry is the point"
+
+Motion and density stay inside the hard guardrails regardless of the number —
+the dials tune within the rules, never around them.
+
+After all rounds, write VOIS.md using `references/VOIS.md.template` (fill the
+DENSITY dial from the Q4 answer per the mapping in "Sub-rule sets" below).
+Confirm with the designer before writing.
 
 ### PRODUCT.md interview (optional, offered after VOIS.md)
 
@@ -91,6 +110,18 @@ DESIGN.md marked `<!-- SEED: re-run once code exists. -->`.
 ## Sub-rule sets by product type
 
 These are starting point defaults. Any specific decision tree step can override.
+
+**Default taste dials by product type** (used to seed VOIS.md when the designer
+doesn't give explicit numbers; the `density-profile` categorical maps to the
+DENSITY dial as spacious≈2, balanced≈5, compact≈9):
+
+| Product type | VARIANCE | MOTION | DENSITY |
+|---|---|---|---|
+| b2b-saas | 3 | 3 | 9 (compact) |
+| b2c-app | 6 | 6 | 3 (spacious) |
+| internal-tool | 2 | 2 | 9 (compact) |
+| marketplace | 5 | 4 | 6 (balanced) |
+| platform (api-first) | 3 | 2 | 7 |
 
 ### b2b-saas (single-vendor)
 - Density: compact unless VOIS.md overrides

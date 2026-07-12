@@ -14,6 +14,7 @@ export function BadCard() {
       {/* DS-TYPOGRAPHY-009 */}
       <br />
       <br /> {/* DS-A11Y-012 */}
+      <div className="bg-gradient-to-r from-purple-500 to-blue-600" /> {/* DS-SLOP-002 (also trips DS-COLOR-002) */}
       <button className="active:scale-80">Press</button> {/* DS-ANIMATION-008 */}
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} /> {/* DS-ANIMATION-005; file has no reduced-motion fallback at all -> DS-ANIMATION-004 */}
     </div>

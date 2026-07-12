@@ -7,7 +7,7 @@
     {
       "name": "vois-loop",
       "path": "vois-loop",
-      "version": "1.3.0",
+      "version": "1.5.0",
       "author": "Personify Labs",
       "description": "Iterative design build loop for the Vois design system. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly.",
       "tags": ["design", "vois", "orchestrator", "workflow"]
@@ -15,7 +15,7 @@
     {
       "name": "vois-router",
       "path": "vois-router",
-      "version": "1.4.0",
+      "version": "1.6.0",
       "author": "Personify Labs",
       "description": "Orchestrates the Vois design system skill chain. Use this skill as the single entry point whenever you're doing any UI work against the Vois design system — building a screen, picking a component, writing copy, or defending a design decision.",
       "tags": ["design", "vois", "orchestrator"]
@@ -39,7 +39,7 @@
     {
       "name": "vois-tokens",
       "path": "vois-tokens",
-      "version": "1.4.0",
+      "version": "1.7.0",
       "author": "Personify Labs",
       "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation"]
