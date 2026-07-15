@@ -69,6 +69,14 @@
       "tags": ["design", "rationale", "decision-making"]
     },
     {
+      "name": "changelog-writer",
+      "path": "changelog-writer",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Writes external-facing changelog and release note entries in a pithy, tastefully sassy, occasionally clever voice that makes software updates fun to read without burying what actually shipped. For external/end-user changelogs only — ships with scripts that check structure, sass budget, voice, length, and cadence on every draft.",
+      "tags": ["content", "changelog", "release-notes", "copywriting"]
+    },
+    {
       "name": "metrics-tagging",
       "path": "metrics-tagging",
       "version": "1.0.0",

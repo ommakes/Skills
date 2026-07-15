@@ -8,9 +8,8 @@ description: >
   end users. Also trigger when someone pastes a list of shipped features/fixes and wants
   them turned into public-facing copy, or asks to make a changelog "less boring," "more fun,"
   or "not sound like corporate speak."
-metadata:
-  version: 1.0.0
-  audience: external
+version: 1.0.0
+audience: external
 ---
 
 # Changelog Writer
