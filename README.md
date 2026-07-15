@@ -122,6 +122,17 @@ Framework for B2B product positioning, GTM strategy selection, and website messa
 
 ---
 
+### Changelog Writer
+Writes external-facing changelog and release note entries in a pithy, tastefully sassy, occasionally clever voice that makes software updates fun to read without burying what actually shipped. Modeled on what Slack, Basecamp, Linear, Raycast, and Tumblr do well. Ships with `check-all.mjs` and friends — scripts that check every draft for structure, sass budget, voice, length, and cadence before it's published.
+
+**This skill is for external/end-user changelogs** — if the audience is internal engineering or the changelog needs to double as a searchable technical record, skip this skill and use a precise, Stripe-style format instead.
+
+**Use when:** writing, drafting, or reviewing a changelog entry, release notes, "what's new" post, or product update announcement for end users, or turning a raw list of shipped features/fixes into public-facing copy.
+
+→ [`changelog-writer/`](./changelog-writer)
+
+---
+
 ### Design Rationale
 Help designers articulate their design decisions using cognitive science, behavioral psychology, and platform standards as the language — not intuition or preference. Includes a comprehensive library of 28+ named principles across three tiers (cognitive/behavioral laws, platform standards, applied patterns) and 15+ real-world product precedents organized by moment type (onboarding, navigation, conversion, errors, empty states, offboarding).
 
@@ -163,4 +174,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-07-12
+**Last updated:** 2026-07-15
