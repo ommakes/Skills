@@ -75,7 +75,7 @@ node /path/to/Skills/vois-tokens/scripts/hook-admin.mjs reset
 
 ## Running the detector standalone
 
-Useful in CI, in `vois-loop`'s validate step, or to spot-check a file by hand:
+Useful in CI, as a manual validate step in your own build loop, or to spot-check a file by hand:
 
 ```bash
 node /path/to/Skills/vois-tokens/scripts/detect.mjs path/to/file.tsx [more files...]

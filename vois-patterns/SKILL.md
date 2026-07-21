@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.3.1
+version: 1.4.0
 ---
 
 # Vois Patterns Skill
@@ -19,7 +19,7 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
 1. **What is the user trying to accomplish?** (Dashboard overview? Edit a record? Confirm an action?)
 2. **Pick the container type** from the decision tree below.
 3. **Read the matching reference file** for full template rules.
-4. **Call `record_pattern_decision`** once you have picked a path. Do this before writing any code.
+4. **If a `record_pattern_decision` tool is available in your environment**, call it once you have picked a path, before writing any code. If it isn't available, this step is optional telemetry, not a gate — proceed to the next step.
 
    ```
    Tool: record_pattern_decision
@@ -29,7 +29,7 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
      reasoning: <one sentence on why you chose this path>
    ```
 
-   If no path fits well (confidence below 0.6), call `report_pattern_gap` instead of forcing a match:
+   If no path fits well (confidence below 0.6) and a `report_pattern_gap` tool is available, call it instead of forcing a match:
 
    ```
    Tool: report_pattern_gap
@@ -38,6 +38,8 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
      closestPathId: <the closest match even if it doesn't fit>
      gapDescription: <what the templates don't cover>
    ```
+
+   If neither tool is available, just proceed with your best-fit path and note the low confidence in your own output.
 
 5. **For every word that appears in UI**, check `righter` skill. See `references/microcopy-routing.md` for the full list of what counts as copy.
 6. Then read `vois-tokens` for implementation (tokens, spacing, components).
@@ -105,7 +107,7 @@ For exact Tailwind class names and token values, see vois-tokens.
 # Quick Checklist Before Implementation
 
 - [ ] Container type selected (settings / table / form / dialog / detail)
-- [ ] `record_pattern_decision` called with pathId and confidence
+- [ ] `record_pattern_decision` called with pathId and confidence, if that tool is available
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
 - [ ] All copy routed to righter skill and reviewed
@@ -127,7 +129,7 @@ For exact Tailwind class names and token values, see vois-tokens.
 
 - After picking a container type here, read vois-components to select specific components
 - vois-components resolves ambiguous pairs — Dialog vs Drawer, Toast vs Banner, Select vs Combobox
-- Always call `record_component_choice` after selecting; do not skip it
+- If a `record_component_choice` tool is available, call it after selecting; if not, this step is optional telemetry
 
 **This skill ↔ righter skill:**
 

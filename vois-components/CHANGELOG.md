@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.3.0] — 2026-07-21
+
+### Changed
+
+- **Standalone-safe:** `record_component_choice` and `report_pattern_gap` are now optional — call them if that MCP tool is available in your environment, otherwise proceed with your selection. Frontmatter `description` no longer states the MCP call as a requirement. This skill no longer assumes an MCP server, `vois-router`, or `vois-loop` is present.
+- **Version bump:** `1.2.1` → `1.3.0`
+
+---
+
 ## [1.2.1] — 2026-06-17
 
 ### Changed

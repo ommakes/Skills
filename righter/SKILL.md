@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Righter
@@ -22,7 +22,7 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 
 ## How to Use This Skill
 
-**Always call `get_microcopy` first before writing or reviewing any copy.**
+**If a `get_microcopy` tool is available in your environment, call it first before writing or reviewing any copy.**
 
 The `get_microcopy` MCP tool returns workspace-specific copy rules, approved terminology, and tone overrides that take precedence over the general principles in this skill. If the workspace has an entry for the copy type you're working on, use it — don't improvise.
 
@@ -36,11 +36,11 @@ Arguments:
 **Resolution order:**
 1. Workspace override (from `get_microcopy`) — use this if returned, no changes
 2. Knowledge base match (from `get_microcopy`) — apply as a strong starting point, adapt if needed
-3. LLM fallback — `get_microcopy` returns nothing; apply the principles in this skill directly
+3. LLM fallback — `get_microcopy` isn't available, or is available but returns nothing; apply the principles in this skill directly
 
-When falling back to the principles, note it at the top of your output: `Source: LLM fallback — no workspace or knowledge base match for this copy type.`
+When falling back to the principles, note it at the top of your output: `Source: LLM fallback — no get_microcopy tool available, or no workspace/knowledge base match for this copy type.`
 
-The tool logs every query. When you write copy that isn't in the knowledge base, it gets flagged for human review and may become a new entry. This is how the system improves.
+When the tool is available, it logs every query. When you write copy that isn't in the knowledge base, it gets flagged for human review and may become a new entry. This is how the system improves — this logging has no effect on how you should write or review copy either way.
 
 ---
 
@@ -48,14 +48,14 @@ The tool logs every query. When you write copy that isn't in the knowledge base,
 
 ### Mode 1: Review Existing Copy
 For each piece of content:
-1. Call `get_microcopy` with the relevant context
+1. If `get_microcopy` is available, call it with the relevant context
 2. Check against the review checklist below
 3. Identify every violation
 4. Rewrite it
 5. Output in the review format below
 
 ### Mode 2: Write New Copy
-1. Call `get_microcopy` with the relevant context
+1. If `get_microcopy` is available, call it with the relevant context
 2. Apply all relevant principles
 3. For labels, CTAs, and microcopy: read `references/phonaesthetics.md` and apply sound guidance
 4. Output in the new copy format below
@@ -321,7 +321,7 @@ Round to one decimal place. Always include grade and age range.
 Run through this for every piece of copy before finalizing.
 
 **Before starting**
-- [ ] Called `get_microcopy` and checked for workspace/knowledge base match?
+- [ ] If available, called `get_microcopy` and checked for workspace/knowledge base match?
 
 **Voice and structure**
 - [ ] Passive voice present?

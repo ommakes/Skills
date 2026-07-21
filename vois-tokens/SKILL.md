@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.7.0
+version: 1.8.0
 ---
 
 # Vois Tokens Skill
@@ -41,7 +41,7 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 1. Check the component manifest. If a component exists for what you need, use it. Do not build a new one.
 2. Check the token reference. If a token exists for the value you need, use it. Do not hardcode anything.
 3. If neither exists, flag it — don't invent values or components.
-4. After completing any UI work, call `vois_record_rule_usage` with the rule IDs you applied. This feeds the self-improving design system. If you violated a rule or found a rule unclear, include it with `violated: true` or `ambiguous: true`.
+4. If a `vois_record_rule_usage` tool is available, call it after completing any UI work with the rule IDs you applied — this feeds the self-improving design system. If you violated a rule or found a rule unclear, include it with `violated: true` or `ambiguous: true`. If the tool isn't available, this step is optional telemetry — skip it and move on.
 
 ---
 
@@ -196,7 +196,7 @@ Run this regardless of which reference files you read — it's the universal gat
 | Reaching for a purple→blue gradient | Stop — that's the AI-slop signature; use accent tokens | `references/anti-slop.md` |
 | Three identical feature cards in a row | Vary sizes or use a bento/asymmetric grid | `references/anti-slop.md` |
 | Every section has an uppercase eyebrow | Cap at ~1 per 3 sections | `references/anti-slop.md` |
-| Done with UI work | Call `vois_record_rule_usage` with rule IDs applied | — |
+| Done with UI work | Call `vois_record_rule_usage` with rule IDs applied, if that tool is available | — |
 
 ---
 
@@ -218,9 +218,12 @@ must never be changed silently as a side effect of restyling:
 These carry meaning that other systems (bookmarks, backends, dashboards, tests,
 muscle memory) depend on. If a redesign *needs* to change one, surface it as an
 explicit proposed change with the reason — don't fold it into a styling diff.
-Restyle freely; rewrite these only on purpose and out loud. See the redesign
-classification (greenfield / preserve / overhaul) in vois-router for how the
-scope of allowed change is set before the edit starts.
+Restyle freely; rewrite these only on purpose and out loud.
+
+Before editing, classify the scope of change you're making:
+- **Greenfield** — no existing UI to preserve; the contract above doesn't apply yet, but starts applying to whatever you ship.
+- **Preserve** — restyle/refactor only; every load-bearing identifier above must stay identical.
+- **Overhaul** — structural change is in scope; load-bearing identifiers may change, but only as an explicit, called-out decision — never a silent side effect of a styling pass.
 
 ### Output Format
 

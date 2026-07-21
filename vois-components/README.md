@@ -19,10 +19,10 @@ The skill covers 20 high-ambiguity component pairs organized by job, with decisi
 1. After you've read `vois-patterns` and decided on a container type
 2. For each component you need to pick, find the matching job section below
 3. Walk the decision tree to a specific component name
-4. Call `record_component_choice` MCP tool with your selection
+4. If a `record_component_choice` MCP tool is available in your environment, call it with your selection
 5. Then read `vois-tokens` for implementation (tokens, spacing, accessibility)
 
-**Do not skip the `record_component_choice` call.** This feeds the self-improving design system.
+**If the `record_component_choice` tool is available, don't skip the call** — it feeds the self-improving design system. If the tool isn't available, just proceed with your selection.
 
 ## The 20 Jobs Covered
 
@@ -61,7 +61,7 @@ These rubrics use standard shadcn/ui names. Your workspace may have custom or ex
 
 **Important:** Use the rubric logic (the decision tree) to make your selection. Then record the workspace-specific component name if it differs from the shadcn base.
 
-Example: your workspace has a `Banner` component instead of `Alert`. The job "Show transient feedback" still applies; you just record `Banner` instead of `Alert` when calling `record_component_choice`.
+Example: your workspace has a `Banner` component instead of `Alert`. The job "Show transient feedback" still applies; you just record `Banner` instead of `Alert` when calling `record_component_choice` (if that tool is available).
 
 ## Maintenance
 
@@ -71,35 +71,33 @@ This skill is reviewed quarterly. For each job, we check:
 
 When a component is deprecated in your workspace manifest, any rubric mentioning it must be updated in the same PR. This is enforced via pre-merge checks.
 
-## Instrumentation
+## Instrumentation (optional)
 
-Every component selection should emit a `record_component_choice` event. This data feeds:
+If a `record_component_choice` MCP tool is available in your environment, every component selection should emit an event through it. This data feeds:
 - The self-improving design system reconciler
 - Quarterly rubric reviews
 - Component usage analytics
 
-Without this event, your component selections are invisible to the system.
+If the tool isn't available, this skill still works standalone — just make the selection and move on.
 
 ## Related Skills
 
 - **`vois-patterns`** — Read first. Determines the container type and structure.
 - **`vois-tokens`** — Read after. Applies tokens, spacing, and accessibility rules.
 - **`righter`** — Consulted for all UI copy (labels, button text, error messages).
-- **`vois-router`** — Chain orchestrator that calls this skill in sequence. Use vois-router as the entry point instead of loading this skill directly.
-- **`vois-loop`** — Top-level iterative orchestrator. Wraps vois-router and adds conflict detection and upstream re-routing. The recommended entry point for feature builds from a ticket or brief.
 
 ## Version
 
-**v1.0.0** — Initial release. 20 jobs covering the most ambiguous shadcn/ui decisions.
+**v1.3.0** — Works standalone; MCP telemetry calls (`record_component_choice`, `report_pattern_gap`) are optional.
 
 ## Questions?
 
-If a job doesn't match what you're building, call `report_pattern_gap` with details. These reports feed future versions of this skill.
+If a job doesn't match what you're building and a `report_pattern_gap` tool is available, call it with details — these reports feed future versions of this skill. If the tool isn't available, just note the gap yourself and proceed with the closest match.
 
-If you think a decision tree is ambiguous or incomplete, note it when you call `record_component_choice` with reasoning — that feedback helps calibrate the rubrics.
+If you think a decision tree is ambiguous or incomplete and `record_component_choice` is available, note it when you call it with reasoning — that feedback helps calibrate the rubrics.
 
 ---
 
-**Last updated:** 2026-05-23  
+**Last updated:** 2026-07-21  
 **Maintained by:** Om Suthar / Vois team  
 **Repository:** [github.com/ommakes/Skills](https://github.com/ommakes/Skills)
