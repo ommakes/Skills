@@ -8,29 +8,9 @@ npx skills add ommakes/Skills
 
 ---
 
-## Orchestrators
-
-### Vois Loop
-Top-level iterative orchestrator. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Includes an inline validation pass against the design system's own rule IDs. Supports gated and fast modes. Max 3 iterations before surfacing to the designer. For REDESIGN work, validates against a no-silent-changes contract — URLs, field names, event names, and nav labels can't shift without being called out.
-
-**Use when:** someone says "build this", pastes a ticket, or asks to run the full design loop. Calls all the other skills in the right order, including vois-router.
-
-→ [`vois-loop/`](./vois-loop)
-
----
-
-### Vois Router
-Chain orchestrator for the Vois design system skill chain. Reads your input, classifies the work (FULL-CHAIN, PICK-UP, COMPONENT-ONLY, COPY-ONLY, RATIONALE-ONLY, AUDIT, or REDESIGN), sequences the right skills in the right order, and carries context forward between them so each skill starts with what it needs. Supports gated and fast modes, inline righter invocation with batching, opt-in design-rationale at two points, session state for recovery, and gap surfacing. Loads taste dials (VARIANCE/MOTION/DENSITY, 1–10) from VOIS.md and carries them downstream, and emits a one-line "design read" (audience · tone · V/M/D) before any build route so a wrong interpretation gets caught early. REDESIGN work runs in greenfield, preserve, or overhaul mode under a no-silent-changes contract.
-
-**Use when:** starting any UI work against the Vois design system without running the full iterative loop. Use vois-loop above when starting from a ticket or brief.
-
-→ [`vois-router/`](./vois-router)
-
----
-
 ## Design System Skills (Read in Order)
 
-These four skills work together as a stack. Read them in this order when building UI, or use **vois-loop** / **vois-router** above to run the chain automatically.
+These four skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens, with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`record_pattern_decision`, `record_component_choice`, `vois_record_rule_usage`, `get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
 
 ### Vois Patterns
 Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. 
@@ -50,7 +30,7 @@ Component selection rubrics organized by job-to-be-done. Covers 20 high-ambiguit
 
 **Read second** (after vois-patterns determines structure) to pick the right specific component for each job.
 
-**Use when:** you need to decide between similar components — which one actually fits what you're building? Always call `record_component_choice` after selecting.
+**Use when:** you need to decide between similar components — which one actually fits what you're building? Optionally calls `record_component_choice` after selecting, if that tool is available.
 
 Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigation, display, selection, overlays, feedback) — `SKILL.md` holds the quick-reference table and job index, references hold the full decision trees.
 
@@ -65,16 +45,16 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 **Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
 
-Tunes within the design system's guardrails using the taste dials (VARIANCE/MOTION/DENSITY) carried down from vois-router — dials adjust degree, never override safety, accessibility, or hard token rules. Flags DS-SLOP-* anti-tells (centered-hero, AI-gradient backgrounds, uniform three-card grids, eyebrow overuse, zigzag sections, spec-sheet tables) as advisory warnings, and enforces the redesign no-silent-changes contract when working in REDESIGN mode.
+Tunes within the design system's guardrails using taste dials (VARIANCE/MOTION/DENSITY, 1–10, defaulting to 5/4/5 if none are supplied) — dials adjust degree, never override safety, accessibility, or hard token rules. Flags DS-SLOP-* anti-tells (centered-hero, AI-gradient backgrounds, uniform three-card grids, eyebrow overuse, zigzag sections, spec-sheet tables) as advisory warnings, and enforces the redesign no-silent-changes contract when working on existing UI.
 
-Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, anti-slop, etc.) — lets `vois-router` load just the relevant reference file (e.g. `references/components.md`) on a COMPONENT-ONLY route instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules (including DS-SLOP-002) and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
+Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, anti-slop, etc.) — read only the reference file(s) relevant to what you're building instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules (including DS-SLOP-002) and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
 
 → [`vois-tokens/`](./vois-tokens)
 
 ---
 
 ### Righter
-UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. Always calls `get_microcopy` MCP tool first to check workspace-specific overrides before writing.
+UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. If a `get_microcopy` MCP tool is available, calls it first to check workspace-specific overrides before writing — otherwise applies the skill's principles directly.
 
 **Read throughout.** Vois Patterns and Vois Components route to this skill for all copy — button labels, error messages, field descriptions, helper text, status labels, empty states, toasts, confirmations.
 
@@ -156,7 +136,7 @@ The four design system skills form a complete pipeline:
 4. righter (consulted throughout for all UI copy)
 ```
 
-Read them in order. Each skill assumes you've read the previous one and points forward to the next.
+Read them in order. Each skill assumes you've read the previous one and points forward to the next. No orchestrator or MCP server is required — each skill works standalone.
 
 - **Patterns** answers "what structure am I building?"
 - **Components** answers "which component for this job?"
@@ -174,4 +154,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-07-15
+**Last updated:** 2026-07-21

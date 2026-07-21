@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.8.0] — 2026-07-21
+
+### Changed
+
+- **Standalone-safe:** `vois_record_rule_usage` is now optional — call it if that MCP tool is available in your environment, otherwise skip and proceed. The no-silent-changes contract's greenfield/preserve/overhaul classification is now self-contained in this skill instead of pointing to `vois-router`. This skill no longer assumes an MCP server, `vois-router`, or `vois-loop` is present — the taste-dial fallback (mid defaults 5/4/5) already covered the no-router case.
+- **Version bump:** `1.7.0` → `1.8.0`
+
+---
+
 ## [1.7.0] — 2026-07-12
 
 ### Added

@@ -6,6 +6,15 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.4.0] - 2026-07-21
+
+### Changed
+
+- **Standalone-safe:** `record_pattern_decision`, `report_pattern_gap`, and the reference to `record_component_choice` are now framed as optional — call them if that MCP tool is available in your environment, otherwise skip and proceed. This skill no longer assumes an MCP server, `vois-router`, or `vois-loop` is present.
+- **Version bump:** `1.3.1` → `1.4.0`
+
+---
+
 ## [1.3.1] - 2026-06-17
 
 ### Changed

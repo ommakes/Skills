@@ -5,49 +5,33 @@
   "url": "https://github.com/ommakes/Skills",
   "skills": [
     {
-      "name": "vois-loop",
-      "path": "vois-loop",
-      "version": "1.5.0",
-      "author": "Personify Labs",
-      "description": "Iterative design build loop for the Vois design system. Wraps design-ask, vois-router, and the full skill chain (vois-patterns, vois-components, vois-tokens, righter, design-rationale) in a loop that detects conflicts between skills and routes back upstream when something doesn't resolve cleanly. Validates REDESIGN work against a no-silent-changes contract (URLs, field names, event names, nav labels).",
-      "tags": ["design", "vois", "orchestrator", "workflow"]
-    },
-    {
-      "name": "vois-router",
-      "path": "vois-router",
-      "version": "1.6.0",
-      "author": "Personify Labs",
-      "description": "Orchestrates the Vois design system skill chain. Use this skill as the single entry point whenever you're doing any UI work against the Vois design system — building a screen, picking a component, writing copy, or defending a design decision. Carries taste dials (VARIANCE/MOTION/DENSITY) from VOIS.md, emits a one-line design read before any build route, and classifies REDESIGN work (greenfield/preserve/overhaul).",
-      "tags": ["design", "vois", "orchestrator"]
-    },
-    {
       "name": "vois-patterns",
       "path": "vois-patterns",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "author": "Personify Labs",
-      "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.",
+      "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Works standalone — telemetry tool calls are optional. Use when building pages, forms, features, workflows.",
       "tags": ["design", "vois", "design-system", "patterns"]
     },
     {
       "name": "vois-components",
       "path": "vois-components",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "author": "Personify Labs",
-      "description": "Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. For every component you pick, call the record_component_choice MCP tool.",
+      "description": "Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the record_component_choice MCP tool if one is available.",
       "tags": ["design", "vois", "design-system", "components"]
     },
     {
       "name": "vois-tokens",
       "path": "vois-tokens",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "author": "Personify Labs",
-      "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract.",
+      "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract. Works standalone — no orchestrator required.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation"]
     },
     {
       "name": "righter",
       "path": "righter",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": "Personify Labs",
       "description": "Apply UX content writing principles to review existing UI copy or write new UI copy from scratch. Use this skill whenever someone asks you to review, audit, critique, or improve UI text, error messages, button labels, tooltips, empty states, onboarding copy, or any software interface copy.",
       "tags": ["design", "content", "ux-writing", "copy"]

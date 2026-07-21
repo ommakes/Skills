@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.6.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool
+**Version 1.8.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
@@ -38,7 +38,7 @@ The skill fires automatically based on its description when you're building UI c
 
 ## How it works
 
-Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. After Claude completes any UI task, it calls `vois_record_rule_usage` with the IDs of the rules it applied. This creates a feedback loop for tracking which rules fire frequently, which get violated, and which need clarification.
+Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. If a `vois_record_rule_usage` tool is available in your environment, Claude calls it after completing any UI task with the IDs of the rules it applied — this creates a feedback loop for tracking which rules fire frequently, which get violated, and which need clarification. If the tool isn't available, this step is optional and the skill's rules still apply in full.
 
 ---
 
@@ -78,6 +78,8 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.8.0** — MCP telemetry (`vois_record_rule_usage`) is now optional; the no-silent-changes contract's redesign classification is self-contained instead of pointing to `vois-router`. Works fully standalone.
+- **1.7.0** — `references/anti-slop.md` DS-SLOP-* rule family, taste-dial consumption, no-silent-changes contract.
 - **1.6.0** — Deterministic `scripts/detect.mjs` detector for the mechanically-checkable subset of the Pre-Submit Checklist, plus a per-edit hook (Claude Code, Cursor, Codex) and `hook-admin.mjs` CLI. New `references/hooks.md`.
 - **1.5.0** — Elevation and iconography reference files; decision frameworks for previously behavior-only rules
 - **1.4.0** — Renamed from `vois-design-system` to `vois-tokens`
@@ -151,8 +153,6 @@ If your stack differs, some sections may not apply directly.
 | **vois-components** | Read before this skill. Selects the specific components this skill implements with tokens and spacing. |
 | **vois-patterns** | Read before vois-components. Determines the container type and structural path. |
 | **righter** | Invoked inline during implementation — not after. All UI copy (labels, errors, helper text, empty states) is written by righter as components are built. |
-| **vois-router** | Chain orchestrator that packages context from vois-components and calls this skill in sequence. Use vois-router as the entry point instead of loading this skill directly. |
-| **vois-loop** | Top-level iterative orchestrator. Calls this skill as the implementation step after patterns and components are decided, with righter inline and a validate pass after. |
 
 ---
 

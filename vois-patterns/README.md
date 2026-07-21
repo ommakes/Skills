@@ -110,15 +110,6 @@ Each template includes:
 - righter is the source of truth for all copy
 - vois-patterns tells you *where* copy goes
 
-### vois-patterns ↔ vois-router
-- **vois-router** calls this skill as Step 1 of a FULL-CHAIN run, packaging the user task and constraints in the framing this skill expects
-- Use vois-router as the entry point instead of loading this skill directly
-
-### vois-patterns ↔ vois-loop
-- **vois-loop** is the top-level iterative orchestrator that calls vois-router (and therefore this skill) inside a loop
-- If a downstream conflict traces back to a structural decision made here, vois-loop will route back to this skill with new context
-- The recommended entry point for feature builds starting from a ticket or brief
-
 ## How Patterns Improve
 
 This skill is designed to improve through agentic use:
@@ -275,6 +266,6 @@ If you have questions about a pattern or need clarification:
 
 ---
 
-**Last updated:** 2026-05-12  
-**Skill version:** 1.0.0  
-**Status:** Active and improving through agentic feedback loops
+**Last updated:** 2026-07-21  
+**Skill version:** 1.4.0  
+**Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`record_pattern_decision`, `report_pattern_gap`) are optional.

@@ -13,8 +13,8 @@ token. It violates *taste*.
 **These interact with the taste dials.** Several rules only fire above a
 `VARIANCE` threshold — a deliberately symmetric, low-variance product UI is not
 slop, but a symmetric marketing page that *defaults* to centered-everything is.
-Read the dial before flagging. Dials live in `VOIS.md` (see vois-router Step 0);
-if none are loaded, assume the mid defaults (V/M/D = 5/4/5).
+Read the dial before flagging. If no dials were passed in, assume the mid
+defaults (V/M/D = 5/4/5).
 
 Most of these are judgment-only — a regex can't tell a purposeful centered hero
 from a lazy one. `scripts/detect.mjs` mechanically flags only `DS-SLOP-002`

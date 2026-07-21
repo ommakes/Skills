@@ -1,14 +1,14 @@
 ---
 name: vois-components
-description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. For every component you pick, call the record_component_choice MCP tool. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.2.1
+description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
+version: 1.3.0
 ---
 
 # Vois Component Selection Skill
 
 You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-tokens`).
 
-Read this skill after `vois-patterns` has determined the container type. For every component you pick, call `record_component_choice` before moving to `vois-tokens`.
+Read this skill after `vois-patterns` has determined the container type. If a `record_component_choice` tool is available in your environment, call it for every component you pick before moving to `vois-tokens`; if not, just make the selection and move on.
 
 The Quick Reference table below resolves most cases on its own. When it doesn't — ambiguous case, need the full decision tree, or need to justify the choice — read the matching reference file.
 
@@ -19,7 +19,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 1. Identify the **job-to-be-done** — phrase it as a verb plus object: "confirm a destructive action", "show transient feedback", "group related controls"
 2. Find the matching row in Quick Reference, or the matching job in the index below
 3. If ambiguous, read the matching reference file and walk its decision tree
-4. Call `record_component_choice` with your selection:
+4. If a `record_component_choice` tool is available, call it with your selection:
 
    ```
    Tool: record_component_choice
@@ -30,7 +30,9 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
      reasoning: <one sentence on why you chose this over the alternatives>
    ```
 
-5. If no section matches your job, call `report_pattern_gap`:
+   If that tool isn't available, this step is optional telemetry — proceed with your selection.
+
+5. If no section matches your job and a `report_pattern_gap` tool is available, call it:
 
    ```
    Tool: report_pattern_gap
@@ -39,6 +41,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
      closestPathId: <closest job ID from this skill, e.g. JOB-OVERLAY-INTERACTION>
      gapDescription: <what the rubrics don't cover>
    ```
+
+   If that tool isn't available, just note the gap in your own output and proceed with the closest match.
 
 > **Note on workspace manifests.** These rubrics use standard shadcn/ui component names. Your workspace may extend or rename them — e.g. `Banner` instead of `Alert`, `DataTable` instead of `Table`. Check your workspace manifest for the exact name; use the rubric logic to make the selection, then record the workspace-specific name.
 

@@ -39,7 +39,7 @@ Use righter skill for:
 
 ```
 1. You determine structure with this skill (page-templates)
-2. Call record_pattern_decision with the path ID
+2. If a `record_pattern_decision` tool is available, call it with the path ID
 3. For every word, check righter skill
 4. Get the exact copy from righter
 5. Then implement with vois-tokens rules (tokens, spacing, components)
