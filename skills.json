@@ -15,7 +15,7 @@
     {
       "name": "vois-components",
       "path": "vois-components",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "author": "Personify Labs",
       "description": "Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the record_component_choice MCP tool if one is available.",
       "tags": ["design", "vois", "design-system", "components"]
