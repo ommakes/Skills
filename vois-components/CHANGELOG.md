@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.4.1] — 2026-07-23
+
+### Removed
+
+- The seven `references/*.md` files (`feedback-and-confirmation.md`, `overlays-and-containers.md`, `navigation-and-switching.md`, `selection-and-input.md`, `contextual-info-and-actions.md`, `display-and-identity.md`, `forms-and-process.md`) are deleted — confirmed fully redundant with `data/components-rules.json` (every decision tree node and "why not X" rationale traced back 1:1) now that the JSON has been verified in use. `SKILL.md`'s Job Index no longer lists file paths; it maps Job ID → job name directly.
+- **Version bump:** `1.4.0` → `1.4.1`
+
+---
+
 ## [1.4.0] — 2026-07-23
 
 ### Added

@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.4.0
+version: 1.4.1
 ---
 
 # Vois Component Selection Skill
@@ -88,17 +88,30 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ## Job Index
 
-`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 20 jobs — query it by `id` (e.g. `JOB-OVERLAY-INTERACTION`) or `number`. The reference files below are the same content in prose form; read one only if you want the narrative framing alongside the tree.
+`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 20 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
 
-| File | Jobs covered |
+| Job ID | Job |
 |---|---|
-| `references/feedback-and-confirmation.md` | Job 1 Confirm destructive action · Job 2 Transient feedback · Job 13 Loading state · Job 14 Empty content |
-| `references/overlays-and-containers.md` | Job 3 Focused overlay interaction · Job 4 Contain a unit of content · Job 20 Secondary content / persistent nav |
-| `references/navigation-and-switching.md` | Job 5 Switch views / filter · Job 17 Position in a hierarchy |
-| `references/selection-and-input.md` | Job 6 Choose from a list · Job 9 Accept text input · Job 10 Binary preference |
-| `references/contextual-info-and-actions.md` | Job 7 Contextual info (tooltip/popover) · Job 8 Trigger an action · Job 15 Expose a set of actions |
-| `references/display-and-identity.md` | Job 11 Label/categorize content · Job 12 Represent a user/group · Job 18 Display structured data |
-| `references/forms-and-process.md` | Job 16 Multi-step process · Job 19 Data entry surface |
+| `JOB-CONFIRM-DESTRUCTIVE` | Job 1 Confirm destructive action |
+| `JOB-TRANSIENT-FEEDBACK` | Job 2 Transient feedback |
+| `JOB-OVERLAY-INTERACTION` | Job 3 Focused overlay interaction |
+| `JOB-CONTAIN-CONTENT` | Job 4 Contain a unit of content |
+| `JOB-SWITCH-VIEWS` | Job 5 Switch views / filter |
+| `JOB-CHOOSE-FROM-LIST` | Job 6 Choose from a list |
+| `JOB-CONTEXTUAL-INFO` | Job 7 Contextual info (tooltip/popover) |
+| `JOB-TRIGGER-ACTION` | Job 8 Trigger an action |
+| `JOB-ACCEPT-TEXT` | Job 9 Accept text input |
+| `JOB-BINARY-PREFERENCE` | Job 10 Binary preference |
+| `JOB-LABEL-CONTENT` | Job 11 Label/categorize content |
+| `JOB-REPRESENT-USER` | Job 12 Represent a user/group |
+| `JOB-LOADING-STATE` | Job 13 Loading state |
+| `JOB-EMPTY-CONTENT` | Job 14 Empty content |
+| `JOB-EXPOSE-ACTIONS` | Job 15 Expose a set of actions |
+| `JOB-MULTISTEP-GUIDE` | Job 16 Multi-step process |
+| `JOB-NAVIGATION-POSITION` | Job 17 Position in a hierarchy |
+| `JOB-DISPLAY-DATA` | Job 18 Display structured data |
+| `JOB-DATA-ENTRY` | Job 19 Data entry surface |
+| `JOB-SECONDARY-CONTENT` | Job 20 Secondary content / persistent nav |
 
 ---
 
