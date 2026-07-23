@@ -26,7 +26,7 @@ Use this exact structure for every session summary.
 ---
 
 ## Breadth
-**Actively practiced this cycle:** [X] of 19 competencies
+**Actively practiced this cycle:** [X] of 23 competencies
 
 | Status | Competencies |
 |---|---|
@@ -128,13 +128,7 @@ Flag divergence explicitly in the Notable field. These are often the most useful
 
 ## Likert scale reference
 
-| Score | Label |
-|---|---|
-| 1 | Learner |
-| 2 | Developing |
-| 3 | Capable |
-| 4 | Advanced |
-| 5 | Expert |
+See `data/question-bank.json` → `likert_scale` for the full score/label/meaning lookup (1 Learner, 2 Developing, 3 Capable, 4 Advanced, 5 Expert).
 
 ---
 

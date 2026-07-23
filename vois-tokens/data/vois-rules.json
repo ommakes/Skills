@@ -1,0 +1,736 @@
+{
+  "source": "vois-tokens/references/*.md (12 files; excludes anti-slop.md and hooks.md — see note)",
+  "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown.",
+  "categories": {
+    "DS-A11Y": "Accessibility",
+    "DS-ANIMATION": "Animation",
+    "DS-COLOR": "Color",
+    "DS-COMPONENT": "Components",
+    "DS-MODAL": "Components",
+    "DS-CSS": "CSS Architecture",
+    "DS-ELEVATION": "Elevation",
+    "DS-ICON": "Iconography",
+    "DS-LAYOUT": "Layout, Viewport, and Responsive Behavior",
+    "DS-RESPONSIVE": "Layout, Viewport, and Responsive Behavior",
+    "DS-SPACING": "Spacing",
+    "DS-SURFACE": "Surfaces and Motion Polish",
+    "DS-TAILWIND": "Tailwind v4",
+    "DS-TYPOGRAPHY": "Typography"
+  },
+  "rules": [
+    {
+      "id": "DS-A11Y-001",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Minimum touch target: 44x44px. If the visual element is smaller, expand the hit area with a pseudo-element"
+    },
+    {
+      "id": "DS-A11Y-002",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "`:focus-visible` — triggers only when the browser determines a visible focus indicator is needed. This covers keyboard navigation and assistive technology, but not mouse clicks. Use this for focus rings on buttons and links"
+    },
+    {
+      "id": "DS-A11Y-003",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Never remove `outline` without providing a `:focus-visible` replacement."
+    },
+    {
+      "id": "DS-A11Y-004",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Minimum contrast ratio: 4.5:1 for normal text (under 18px regular, under 14px bold); 3:1 for large text (18px+ regular, 14px+ bold) and for UI components and graphical objects."
+    },
+    {
+      "id": "DS-A11Y-005",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "`<button>` for actions. `<a>` for navigation. Not `<div onClick>`."
+    },
+    {
+      "id": "DS-A11Y-006",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Form inputs need associated `<label>` elements, not just placeholder text."
+    },
+    {
+      "id": "DS-A11Y-007",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Icon-only buttons need `aria-label`."
+    },
+    {
+      "id": "DS-A11Y-008",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Decorative icons need `aria-hidden=\"true\"`."
+    },
+    {
+      "id": "DS-A11Y-009",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Error messages need `aria-live=\"polite\"` or `role=\"alert\"`."
+    },
+    {
+      "id": "DS-A11Y-010",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Images need `alt`. Decorative images get `alt=\"\"`, not a missing alt attribute."
+    },
+    {
+      "id": "DS-A11Y-011",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Use `<ul>` or `<ol>` for lists of items. Don't use a stack of `<div>` siblings when the content is semantically a list."
+    },
+    {
+      "id": "DS-A11Y-012",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Use `<br>` only for intentional line breaks in content (addresses, poems). Never use it to create visual spacing between elements — that's a layout problem."
+    },
+    {
+      "id": "DS-A11Y-013",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "`loading=\"lazy\"` on all images that aren't in the initial viewport. Skip it on hero images and above-the-fold content — those should load immediately."
+    },
+    {
+      "id": "DS-A11Y-014",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "`<time datetime=\"...\">` for dates and times. The `datetime` attribute is machine-readable; the element content is human-readable."
+    },
+    {
+      "id": "DS-A11Y-015",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Don't use heading elements (`<h1>`–`<h6>`) just to get a certain font size. Use them for document structure. Style with CSS."
+    },
+    {
+      "id": "DS-A11Y-016",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "`<fieldset>` and `<legend>` for groups of related form controls (radio groups, checkbox groups). Don't skip this — screen readers announce the group label with each input."
+    },
+    {
+      "id": "DS-A11Y-017",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Never use color as the only signal for state. Error, success, and warning states always need a secondary indicator — an icon, a text label, or both."
+    },
+    {
+      "id": "DS-ANIMATION-001",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "UI animations: under `300ms` as a default."
+    },
+    {
+      "id": "DS-ANIMATION-002",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Large elements (drawers, action sheets, modals entering): up to `500ms`."
+    },
+    {
+      "id": "DS-ANIMATION-003",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Never animate keyboard-triggered interactions. Repeated actions feel slower when animated. Keyboard users feel this."
+    },
+    {
+      "id": "DS-ANIMATION-004",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Always respect `prefers-reduced-motion`. Users who set this have real reasons — vestibular disorders, epilepsy, motion sensitivity."
+    },
+    {
+      "id": "DS-ANIMATION-005",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Never animate from `scale(0)`. Start at `0.9` or higher. Zero-scale animations feel mechanical."
+    },
+    {
+      "id": "DS-ANIMATION-006",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Set `transform-origin` to the trigger point. A dropdown expands from the button that opened it. A tooltip appears from the element it describes. The default `center` is wrong in most cases."
+    },
+    {
+      "id": "DS-ANIMATION-007",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Tailwind v4's `hover:` only fires on devices that support hover. If writing raw CSS, guard hover styles with `@media (hover: hover) and (pointer: fine)`."
+    },
+    {
+      "id": "DS-ANIMATION-008",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Use `scale(0.96)` on button press. Never go below `0.95` — anything smaller reads as exaggerated rather than tactile. Not every button needs this — add a `static` prop to disable it where the motion would be distracting (e.g. inside a list with frequent clicks)."
+    },
+    {
+      "id": "DS-ANIMATION-009",
+      "category": "DS-ANIMATION",
+      "category_label": "Animation",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Set `will-change` on GPU-compositable properties (`transform`, `opacity`, `filter`, `clip-path`) to pre-promote an element to its own GPU layer and avoid a one-frame stutter on first animation. It does nothing for `width`, `height`, `top`, `left`, `background`, `border`, or `color`. Add it only when you actually notice first-frame stutter, not preemptively — each layer costs memory."
+    },
+    {
+      "id": "DS-COLOR-001",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Never hardcode hex values. Use CSS tokens."
+    },
+    {
+      "id": "DS-COLOR-002",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Never use Tailwind's built-in color palette (`blue-500`, `red-400`, etc.) if a token exists for it. The token is always preferred."
+    },
+    {
+      "id": "DS-COLOR-003",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Color cannot be the only signal. Error states, success states, warnings — always pair color with an icon, label, or text. Never rely on color alone."
+    },
+    {
+      "id": "DS-COLOR-004",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "60/30/10 distribution: roughly 60% neutral, 30% complementary/secondary, 10% accent/brand. This prevents visual stress and keeps hierarchy clear."
+    },
+    {
+      "id": "DS-COLOR-005",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Decorative icons that add no information get `aria-hidden=\"true\"`. Don't let screen readers announce them."
+    },
+    {
+      "id": "DS-COLOR-006",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Dark mode is implemented via `@custom-variant dark (&:is(.dark *))`. Every color token must have a dark mode value."
+    },
+    {
+      "id": "DS-COLOR-007",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Before shipping any component, verify both light and dark mode manually."
+    },
+    {
+      "id": "DS-COMPONENT-001",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Check the manifest first. If `<Button>`, `<AlertBanner>`, or `<DataTable>` exists, use it. Don't rebuild it."
+    },
+    {
+      "id": "DS-COMPONENT-002",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Use Class Variance Authority (cva) for all variant styling. No ad-hoc className ternaries."
+    },
+    {
+      "id": "DS-COMPONENT-003",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Use `data-slot` attributes for styling component internals — don't reach into component children with arbitrary CSS selectors."
+    },
+    {
+      "id": "DS-COMPONENT-004",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "New-York style is the default for shadcn. The \"default\" style is deprecated."
+    },
+    {
+      "id": "DS-COMPONENT-005",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Components use a 2-layer architecture: Radix UI for structure/behavior, Tailwind for style. Don't collapse these."
+    },
+    {
+      "id": "DS-COMPONENT-006",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "When using a component with variants, use the most semantically appropriate variant. Don't default to `default` when `destructive`, `ghost`, or `outline` is more correct."
+    },
+    {
+      "id": "DS-MODAL-001",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Trap focus using `inert`. When a modal opens, add `inert` to all content outside the modal. This blocks keyboard and screen reader access to background content without manual focus trapping"
+    },
+    {
+      "id": "DS-MODAL-002",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Prevent scroll bleed. Add `overscroll-behavior: contain` to the modal's scrollable container so scrolling inside doesn't scroll the page behind it"
+    },
+    {
+      "id": "DS-MODAL-003",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Prevent layout shift. When a modal opens and the page scrollbar disappears, the layout jumps. Fix it with `scrollbar-gutter` on `html`"
+    },
+    {
+      "id": "DS-CSS-001",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "No inline styles for values that have token equivalents."
+    },
+    {
+      "id": "DS-CSS-002",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Never use `#id` selectors for styling. IDs have high specificity and make overrides painful."
+    },
+    {
+      "id": "DS-CSS-003",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Keep selectors shallow. If your selector has more than 2 levels of nesting, you're coupling styles to DOM structure. Add a class instead."
+    },
+    {
+      "id": "DS-CSS-004",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Use `:is()` to group selectors without multiplying specificity."
+    },
+    {
+      "id": "DS-CSS-005",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Use `:where()` when you want zero-specificity base styles that are easy to override."
+    },
+    {
+      "id": "DS-CSS-006",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Separate layout from visual concerns."
+    },
+    {
+      "id": "DS-CSS-007",
+      "category": "DS-CSS",
+      "category_label": "CSS Architecture",
+      "source_file": "vois-tokens/references/css-architecture.md",
+      "rule": "Use `em` for breakpoints, not `px`. Breakpoints in `em` respect the user's browser font size preference and scale correctly when users zoom."
+    },
+    {
+      "id": "DS-ELEVATION-001",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "The backdrop behind a modal is a separate concern from the modal's own shadow — use a scrim color (`oklch(0 0 0 / 0.4)`), not a darker shadow."
+    },
+    {
+      "id": "DS-ELEVATION-002",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Match the elevation tier to the z-index layer it occupies — overlay elevation pairs with the dropdown/overlay z-index, modal elevation pairs with the modal z-index. Don't put a heavier shadow on a lower-stacked element than a lighter one above it."
+    },
+    {
+      "id": "DS-ICON-001",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "Use a single stroke width across the icon set — 1.5px for the default (lucide-react/Radix Icons default). Don't mix stroke weights within the same screen; it reads as a design system bug, not a deliberate choice."
+    },
+    {
+      "id": "DS-ICON-002",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "If an icon's surrounding text size doesn't map cleanly to one of the four defined sizes (16/20/24/32px), round to the nearest one rather than introducing an arbitrary size."
+    },
+    {
+      "id": "DS-LAYOUT-001",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Stop using `vh`. It breaks on mobile because browser chrome changes the available height as you scroll. Use the right unit for the context"
+    },
+    {
+      "id": "DS-LAYOUT-002",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "For pages with significant vertical scroll, use `content-visibility: auto` on sections that are far below the fold to skip rendering them until they approach the viewport"
+    },
+    {
+      "id": "DS-RESPONSIVE-001",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Mobile-first. No prefix = mobile baseline. `md:`, `lg:` are progressive enhancements."
+    },
+    {
+      "id": "DS-RESPONSIVE-002",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Test at `sm` (640px), `md` (768px), `lg` (1024px) before considering a component done."
+    },
+    {
+      "id": "DS-RESPONSIVE-003",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Use container queries for component-level responsiveness. Use breakpoints for layout-level responsiveness."
+    },
+    {
+      "id": "DS-RESPONSIVE-004",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Touch targets, font sizes, and contrast ratios must meet minimums at every breakpoint."
+    },
+    {
+      "id": "DS-RESPONSIVE-005",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Don't build desktop-first and assume it'll work on mobile. It won't."
+    },
+    {
+      "id": "DS-LAYOUT-COMP-001",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "No `padding-bottom`/`margin-top` used to space siblings — use `gap` on the parent."
+    },
+    {
+      "id": "DS-LAYOUT-COMP-002",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "No wrapper divs that serve no layout purpose."
+    },
+    {
+      "id": "DS-LAYOUT-COMP-003",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "`min-width: 0` on flex children containing text or overflow-prone content."
+    },
+    {
+      "id": "DS-LAYOUT-COMP-006",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Images with set dimensions need `object-fit`."
+    },
+    {
+      "id": "DS-LAYOUT-COMP-005",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Use `aspect-ratio` instead of the padding-top percentage hack."
+    },
+    {
+      "id": "DS-SPACING-001",
+      "category": "DS-SPACING",
+      "category_label": "Spacing",
+      "source_file": "vois-tokens/references/spacing.md",
+      "rule": "All spacing must be divisible by 4 or 8. No exceptions."
+    },
+    {
+      "id": "DS-SPACING-002",
+      "category": "DS-SPACING",
+      "category_label": "Spacing",
+      "source_file": "vois-tokens/references/spacing.md",
+      "rule": "Use `gap` for layout spacing between elements. Use padding for internal component spacing. Avoid margin for layout — it's harder to reason about and doesn't compose well with flex/grid."
+    },
+    {
+      "id": "DS-SPACING-003",
+      "category": "DS-SPACING",
+      "category_label": "Spacing",
+      "source_file": "vois-tokens/references/spacing.md",
+      "rule": "Tailwind v4 note: Dynamic spacing utilities accept any value without arbitrary syntax. This makes it easy to accidentally use off-grid values. Don't. Stay on the scale."
+    },
+    {
+      "id": "DS-SPACING-004",
+      "category": "DS-SPACING",
+      "category_label": "Spacing",
+      "source_file": "vois-tokens/references/spacing.md",
+      "rule": "Verify spacing holds at every responsive breakpoint before considering a component done."
+    },
+    {
+      "id": "DS-SURFACE-001",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Mismatched radii on nested elements is one of the most common things that makes UI feel off."
+    },
+    {
+      "id": "DS-SURFACE-002",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "If padding between the two surfaces is larger than `24px`, treat them as independent surfaces and pick each radius on its own — forcing strict concentric math at that distance looks over-engineered, not intentional."
+    },
+    {
+      "id": "DS-SURFACE-003",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "When geometric centering looks wrong, align optically instead."
+    },
+    {
+      "id": "DS-SURFACE-004",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Buttons with text + icon: use slightly less padding on the icon side. Rule of thumb: `icon-side padding = text-side padding - 2px`."
+    },
+    {
+      "id": "DS-SURFACE-005",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Play button triangles: the geometric center of a triangle is not its visual center. Shift right ~2px."
+    },
+    {
+      "id": "DS-SURFACE-006",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Asymmetric icons (stars, arrows, carets): fix the SVG's `viewBox`/path directly if possible, so no compensating margin is needed in component code. Fall back to a small margin only if you can't touch the SVG."
+    },
+    {
+      "id": "DS-SURFACE-007",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "For cards, containers, and bordered buttons that exist to show depth or elevation, prefer a layered `box-shadow` over a solid `border`. Shadows use transparency so they adapt to any background color or image; solid border colors only look right on the background they were tuned for."
+    },
+    {
+      "id": "DS-SURFACE-008",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Do not apply this to dividers (`border-b`, `border-t`, list separators) or anything whose job is layout separation, not depth. Those stay as borders."
+    },
+    {
+      "id": "DS-SURFACE-009",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Add a subtle `1px` outline to images for consistent depth, especially in systems that already use borders/shadows elsewhere."
+    },
+    {
+      "id": "DS-SURFACE-010",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Never use a near-black/near-white from the palette (slate-900, zinc-900, `#0a0a0a`, etc.) and never match it to the accent/ink color. A tinted outline picks up the surface color underneath and reads as dirt on the image edge."
+    },
+    {
+      "id": "DS-SURFACE-011",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Don't animate one large container on enter. Split into semantic chunks (title, description, actions) and stagger with ~100ms delay between groups. For titles, splitting into individual words with ~80ms stagger reads even better, but isn't required for routine UI."
+    },
+    {
+      "id": "DS-SURFACE-012",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Use `initial={false}` on `AnimatePresence` to skip enter animations on first page load for elements already in their default state (icon swaps, tabs, toggles). Don't apply it to staged page-hero entrances that depend on the `initial` prop to fire at all — verify on a hard refresh."
+    },
+    {
+      "id": "DS-SURFACE-013",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "Exits should be softer than enters — the user's attention is already moving to the next thing."
+    },
+    {
+      "id": "DS-SURFACE-014",
+      "category": "DS-SURFACE",
+      "category_label": "Surfaces and Motion Polish",
+      "source_file": "vois-tokens/references/surfaces.md",
+      "rule": "When an icon swaps state (play→pause, like→liked, hover-revealed actions), animate `opacity` + `scale` + `blur` instead of toggling visibility. Use exactly these values — don't deviate"
+    },
+    {
+      "id": "DS-TAILWIND-001",
+      "category": "DS-TAILWIND",
+      "category_label": "Tailwind v4",
+      "source_file": "vois-tokens/references/tailwind-v4.md",
+      "rule": "Replace `@layer base` with `@theme` for token definitions."
+    },
+    {
+      "id": "DS-TAILWIND-002",
+      "category": "DS-TAILWIND",
+      "category_label": "Tailwind v4",
+      "source_file": "vois-tokens/references/tailwind-v4.md",
+      "rule": "Use `@import \"tailwindcss\"` instead of `@tailwind base / components / utilities`."
+    },
+    {
+      "id": "DS-TAILWIND-003",
+      "category": "DS-TAILWIND",
+      "category_label": "Tailwind v4",
+      "source_file": "vois-tokens/references/tailwind-v4.md",
+      "rule": "Arbitrary values (`w-[237px]`, `mt-[13px]`) are a smell. If you need an arbitrary value, either it belongs on the spacing scale or it's a missing token. Round it or flag it."
+    },
+    {
+      "id": "DS-TAILWIND-004",
+      "category": "DS-TAILWIND",
+      "category_label": "Tailwind v4",
+      "source_file": "vois-tokens/references/tailwind-v4.md",
+      "rule": "No `!important` except for utility overrides you explicitly own and document."
+    },
+    {
+      "id": "DS-TAILWIND-005",
+      "category": "DS-TAILWIND",
+      "category_label": "Tailwind v4",
+      "source_file": "vois-tokens/references/tailwind-v4.md",
+      "rule": "Never `transition: all`. List properties explicitly: `transition: background-color 150ms ease-out, transform 150ms ease-out`."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-001",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Use no more than 3 text styles in any single component or section."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-002",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Never skip heading levels. `h1` then `h2` then `h3`. Never `h1` directly to `h3`."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-003",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Use the monospace variant for all numeric data — prices, counts, measurements, timestamps. Add `font-variant-numeric: tabular-nums` when numbers appear in columns or need to align."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-004",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Font size communicates hierarchy. If two things feel equally important, one of them should be deprioritized."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-005",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Always reference the token (`font-[var(--font-heading)]`) rather than a font name directly. If the workspace swaps the font, components update automatically without code changes."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-006",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Apply `text-wrap: balance` to all headings (H0 through H3) by default."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-007",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Apply `text-wrap: pretty` to body copy in articles, descriptions, and anywhere text wraps across multiple lines."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-008",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Cap text containers at `65ch`. The `ch` unit is relative to the current font's character width, so this stays readable at any font size."
+    },
+    {
+      "id": "DS-TYPOGRAPHY-009",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Use `…` (the ellipsis character), not `...` (three periods)"
+    },
+    {
+      "id": "DS-TYPOGRAPHY-010",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Use curly quotes `\"` `\"` not straight `\"`"
+    },
+    {
+      "id": "DS-TYPOGRAPHY-011",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Loading states end with ellipsis character: `\"Loading…\"` not `\"Loading...\"`"
+    },
+    {
+      "id": "DS-TYPOGRAPHY-012",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Active voice: \"Save changes\" not \"Changes will be saved\""
+    },
+    {
+      "id": "DS-TYPOGRAPHY-013",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Specific button labels: \"Delete project\" not \"Confirm\" or \"OK\""
+    },
+    {
+      "id": "DS-TYPOGRAPHY-014",
+      "category": "DS-TYPOGRAPHY",
+      "category_label": "Typography",
+      "source_file": "vois-tokens/references/typography.md",
+      "rule": "Error messages tell the user what to do next, not just what went wrong"
+    }
+  ]
+}

@@ -6,6 +6,19 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.5.0] - 2026-07-23
+
+### Added
+
+- **`data/patterns-rules.json`** — every `[PATH-X]`/`[PATH-X-Y]` tagged decision node (10 total) as `{ id, condition, outcome, source_file }`, for a quick lookup without reading a whole reference file. Only 10 of this skill's decision points carry an explicit tag (unlike vois-tokens' `DS-*` corpus, which tags nearly every rule) — the untagged IF/THEN branches, worked examples, and righter-routing call-outs stay in `references/*.md`.
+
+### Changed
+
+- `SKILL.md` notes the structured lookup alongside the existing decision tree and reference file table.
+- **Version bump:** `1.4.0` → `1.5.0`
+
+---
+
 ## [1.4.0] - 2026-07-21
 
 ### Changed

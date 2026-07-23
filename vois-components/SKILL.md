@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Vois Component Selection Skill
@@ -88,7 +88,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ## Job Index
 
-Each reference file has the full decision tree (with thresholds and edge cases) plus "why not X" reasoning for every alternative ruled out.
+`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 20 jobs — query it by `id` (e.g. `JOB-OVERLAY-INTERACTION`) or `number`. The reference files below are the same content in prose form; read one only if you want the narrative framing alongside the tree.
 
 | File | Jobs covered |
 |---|---|

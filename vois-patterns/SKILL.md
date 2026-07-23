@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Vois Patterns Skill
@@ -73,6 +73,8 @@ START: What is the user trying to accomplish?
 ```
 
 Read only the one reference file that matches the path you picked. Each template file is self-contained.
+
+**Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
 
 ---
 

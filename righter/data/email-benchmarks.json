@@ -1,0 +1,24 @@
+{
+  "source": "righter/references/email.md",
+  "description": "Numeric benchmarks for product transactional emails (2025 SaaS/product context). Rules and structural guidance stay in references/email.md — this file covers only the measurable targets.",
+  "context_note": "Open rates are no longer a reliable primary metric. Apple Mail Privacy Protection (MPP) pre-loads email content for ~46% of email users, inflating open rate data by up to 18 points. Track click-to-open rate (CTOR) and click-through rate (CTR) instead.",
+  "benchmarks": [
+    { "metric": "transactional_vs_marketing_performance", "target": "8x higher opens and clicks than marketing emails", "context": "Transactional emails" },
+    { "metric": "open_rate_automated_triggered", "target": "~51%", "context": "Automated/triggered emails" },
+    { "metric": "open_rate_newsletter", "target": "~40%", "context": "Newsletters, for comparison" },
+    { "metric": "click_to_open_rate", "target": "8-12%", "context": "Transactional sequences" },
+    { "metric": "click_through_rate", "target": "3-5%", "context": "Triggered product emails" },
+    { "metric": "unsubscribe_rate", "target": "below 0.1%", "context": "Gmail/Yahoo now flag senders above 0.3%" },
+    { "metric": "subject_line_length", "target": "40-50 characters", "context": "Safe zone for desktop and mobile" },
+    { "metric": "subject_line_mobile_guarantee", "target": "first 25 characters", "context": "What most mobile screens guarantee to show" },
+    { "metric": "subject_line_word_count", "target": "6-9 words", "context": "For review checklist" },
+    { "metric": "subject_line_punctuation", "target": "no more than 3 punctuation marks total, no exclamation marks", "context": "Transactional email subjects" },
+    { "metric": "preheader_length", "target": "40-75 characters", "context": "Safe range across devices" },
+    { "metric": "body_word_count", "target": "under 150 words", "context": "Most triggered emails; if over 200 words the email is trying to do too much" },
+    { "metric": "reading_level", "target": "Grade 5, ARI ≤ 6", "context": "Same as core Righter target" },
+    { "metric": "cta_word_count", "target": "2-4 words", "context": "Button copy" },
+    { "metric": "cta_count", "target": "1 primary, max 1 secondary", "context": "Per email" },
+    { "metric": "reading_time", "target": "under 30 seconds", "context": "Estimated reading time for a full email" },
+    { "metric": "one_click_unsubscribe_threshold", "target": "mandatory above 5,000 emails/day", "context": "Gmail and Yahoo enforcement" }
+  ]
+}

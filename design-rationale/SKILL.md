@@ -1,6 +1,6 @@
 ---
 name: design-rationale
-version: 1.0.0
+version: 1.1.0
 description: >
   Help designers articulate the cognitive science, behavioral psychology, and
   platform standards behind their design decisions. Use this skill when a designer
@@ -21,10 +21,12 @@ A skill for helping designers speak clearly about their decisions using cognitiv
 behavioral psychology, and platform standards as the language — not intuition or preference.
 
 **Reference files — read these before generating output:**
-- `references/principles.md` — full principle corpus across three tiers: cognitive/behavioral,
-  platform standards, and applied patterns
+- `data/principles.json` — structured principle corpus across three tiers: cognitive/behavioral,
+  platform standards, and applied patterns. Look up by principle `id` or by `moment` (Tier 3) —
+  don't read the whole corpus for a single-principle request.
 - `references/examples.md` — real-world precedents organized by moment type (onboarding,
-  navigation, conversion, errors, empty states, offboarding)
+  navigation, conversion, errors, empty states, offboarding). Stays Markdown — the "don't force
+  it" usage judgment here is load-bearing, not just data.
 
 ---
 
@@ -112,7 +114,9 @@ because it gives the designer false confidence.
 
 For a specific decision the designer has made or is considering.
 
-1. Read `references/principles.md` and identify the primary principle
+1. Query `data/principles.json` for the primary principle — filter tier1 entries
+   by matching the decision's user problem against each entry's `statement` and
+   `applies_when`, rather than reading the file start to finish
 2. Check for secondary principles — most decisions touch more than one
 3. Check for principle conflicts — flag them, don't paper over them
 4. Run the Decision Framing Check (see below)

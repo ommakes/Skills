@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Vois Tokens Skill
@@ -39,7 +39,7 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 ## Before You Write Anything
 
 1. Check the component manifest. If a component exists for what you need, use it. Do not build a new one.
-2. Check the token reference. If a token exists for the value you need, use it. Do not hardcode anything.
+2. Check `data/tokens.json` for the value you need (spacing, type scale, color, elevation, icon size, breakpoints). If a token exists, use it. Do not hardcode anything.
 3. If neither exists, flag it — don't invent values or components.
 4. If a `vois_record_rule_usage` tool is available, call it after completing any UI work with the rule IDs you applied — this feeds the self-improving design system. If you violated a rule or found a rule unclear, include it with `violated: true` or `ambiguous: true`. If the tool isn't available, this step is optional telemetry — skip it and move on.
 
@@ -47,7 +47,23 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 
 ## Reference Files
 
-Read the file(s) that match what you're building. Each file is self-contained — you don't need to read the others to use one.
+**Structured lookups — query these instead of scanning a whole reference file
+when you already know the rule ID, category, or token you need:**
+- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 12 files
+  below, keyed by `id`, with `category` for filtering. Covers spacing,
+  typography, color, components/modals, css-architecture, elevation,
+  iconography, layout/responsive, surfaces, tailwind-v4, accessibility, and
+  animation. Query by `id` for a specific rule or by `category` for a whole
+  topic — don't read a references/*.md file just to re-derive a rule statement
+  that's already indexed here.
+- `data/tokens.json` — the actual token *values* (spacing scale, type scale,
+  easing curves, elevation shadow tiers, icon sizes, breakpoints, contrast
+  minimums, touch target minimum). Rules are constraints; this file is values
+  — they're deliberately separate.
+
+**Full reference files — read these when you need the accompanying code
+examples, `tsx`/CSS snippets, and "why" explanation for a topic you're
+building fresh, not just the bare rule text:**
 
 | File | Read this when you're working on... | Rule prefix |
 |---|---|---|
@@ -56,15 +72,17 @@ Read the file(s) that match what you're building. Each file is self-contained �
 | `references/color.md` | Color tokens, OKLCH, dark mode, light-dark() | `[DS-COLOR]` |
 | `references/components.md` | Component variants, cva, modals/dialogs, accordions | `[DS-COMPONENT]` `[DS-MODAL]` |
 | `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
+| `references/elevation.md` | Shadow/elevation tiers, modal scrim, z-index pairing | `[DS-ELEVATION]` |
+| `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
-| `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse) | `[DS-SLOP]` |
+| `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |
 | `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
-**Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), read only the matching reference file plus this SKILL.md. You don't need the full set for a scoped task.
+**Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), query `data/vois-rules.json` for those rule IDs, or read only the matching reference file plus this SKILL.md if you need the examples too. You don't need the full set for a scoped task.
 
 ---
 
@@ -172,18 +190,18 @@ Run this regardless of which reference files you read — it's the universal gat
 | Image needs a subtle edge | 1px outline, pure black/white at 0.1 opacity | `references/surfaces.md` |
 | Page or section entering | Split into chunks, stagger ~100ms | `references/surfaces.md` |
 | Icon swapping state (play/pause, like) | scale 0.25→1 + opacity + blur, exact values | `references/surfaces.md` |
-| Need a color value | Check token list first | `references/color.md` |
-| Need a spacing value | Round to nearest 4 or 8 | `references/spacing.md` |
-| Need a font size | Use the type scale | `references/typography.md` |
+| Need a color value | Check `data/tokens.json` (`color`) first | `references/color.md` |
+| Need a spacing value | Round to nearest 4 or 8 — see `data/tokens.json` (`spacing_scale`) | `references/spacing.md` |
+| Need a font size | Use the type scale in `data/tokens.json` (`type_scale`) | `references/typography.md` |
 | Need full-screen height | `svh` not `vh` | `references/layout-and-responsive.md` |
-| Text container width | `max-width: 65ch` | `references/typography.md` |
+| Text container width | `max-width: 65ch` (`DS-TYPOGRAPHY-008`) | `references/typography.md` |
 | Two colors switching with theme | `light-dark()` | `references/color.md` |
 | Animating accordion height | `interpolate-size: allow-keywords` | `references/components.md` |
 | Building a modal | `inert` + `overscroll-behavior` + `scrollbar-gutter` | `references/components.md` |
 | Value doesn't exist in tokens | Flag it, don't invent it | — |
 | Animation feels off | Check `transform-origin` and slow it down | `references/animation.md` |
 | Hover on mobile | Guard with `@media (hover: hover) and (pointer: fine)` | `references/animation.md` |
-| Unsure about contrast | Measure it. 4.5:1 minimum for normal text | `references/accessibility.md` |
+| Unsure about contrast | Measure it. 4.5:1 minimum for normal text — see `data/tokens.json` (`contrast_minimums`) | `references/accessibility.md` |
 | Space between two adjacent elements | `gap` on the parent, not `padding-bottom` on the first child | `references/layout-and-responsive.md` |
 | Flex child text overflowing or not truncating | Add `min-width: 0` to the flex child | `references/layout-and-responsive.md` |
 | Fixed-size image looks stretched | Add `object-fit: cover` or `object-fit: contain` | `references/layout-and-responsive.md` |
