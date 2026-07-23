@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.4.2] — 2026-07-23
+
+### Fixed
+
+- **Tool name correction** — every reference to `record_component_choice` and `report_pattern_gap` updated to the real registered MCP tool names, `vois_record_component_choice` and `vois_report_pattern_gap`. The "optional if available" framing (added in the standalone rework) is unchanged — only the name was wrong, not the optionality. `vois_report_pattern_gap`'s example call also gains its real required arguments (`skillVersion`, `userGoal`, `attemptedFallback`, `reasoning` — not `description`/`closestPathId`/`gapDescription`).
+
+---
+
 ## [1.4.1] — 2026-07-23
 
 ### Removed
