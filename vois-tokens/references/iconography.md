@@ -24,4 +24,4 @@ Use a single stroke width across the icon set — `1.5px` for the default (lucid
 
 ## When in Doubt `[DS-ICON-002]`
 
-If an icon's surrounding text size doesn't map cleanly to one of the four sizes above, round to the nearest one rather than introducing an arbitrary size — same tolerance rule as spacing (`[DS-CSS-008]`).
+If an icon's surrounding text size doesn't map cleanly to one of the four sizes above, round to the nearest one rather than introducing an arbitrary size.
