@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Righter
@@ -14,9 +14,11 @@ version: 1.2.0
 A UX writing skill. Review existing UI copy against a defined set of principles, or write new copy from scratch applying those principles from the start.
 
 **Reference files — read these when relevant:**
-- `references/components.md` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip)
-- `references/weakeners.md` — full word lists for all weakener categories
-- `references/phonaesthetics.md` — full sound concepts and cluster table for word choice
+- `data/components.json` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip). Look up by component `id`, don't scan the whole file.
+- `references/email.md` — rules for product transactional emails (subject lines, preheaders, body, CTAs, footers, structure)
+- `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
+- `data/weakeners.json` — structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
+- `data/phonaesthetics.json` — structured sound concepts and cluster table for word choice
 
 ---
 
@@ -57,7 +59,7 @@ For each piece of content:
 ### Mode 2: Write New Copy
 1. If `get_microcopy` is available, call it with the relevant context
 2. Apply all relevant principles
-3. For labels, CTAs, and microcopy: read `references/phonaesthetics.md` and apply sound guidance
+3. For labels, CTAs, and microcopy: query `data/phonaesthetics.json` and apply sound guidance
 4. Output in the new copy format below
 
 ---
@@ -190,7 +192,10 @@ Prepositions sit between two nouns. Never start or end a sentence with one.
 ### 15. Eliminate weakeners
 Remove all hedging words, softeners, empty intensifiers, filler adverbs, throat-clearing, passive-aggressive politeness, vague quantifiers, redundant framing, weak verb phrases, and meta-commentary.
 
-> Read `references/weakeners.md` for the full word lists and examples.
+> Load `data/weakeners.json`. Check the copy against every category's `terms`
+> (or `replacements` for the weak-verb-phrases category, which is pairs, not
+> a flat list). Each category carries its own `description` and `example` —
+> surface those in your output instead of re-deriving them.
 
 Key patterns to catch immediately:
 - Hedging: maybe, probably, might be, appears to, seems like
@@ -234,7 +239,7 @@ Describe the situation, not the mistake.
 - Place errors adjacent to the element that triggered them (Law of Proximity)
 
 ### Component decision tree
-Use this before writing any error message to pick the right component. Then read `references/components.md` for full writing rules for that component.
+Use this before writing any error message to pick the right component. Then look up that component's `id` in `data/components.json` for full writing rules — a shared `shared_prefix_format` block covers the "Action Required:" / "Approval Required:" / "Review:" / "Verify Now:" prefixes used by Alert Dialog, Inline Alert, and Alert Banner.
 
 ```
 Does it block progress and require immediate action?
@@ -262,7 +267,7 @@ Is it a hover label for an icon or interactive element?
 
 When writing new copy — especially labels, CTAs, empty states, and microcopy — consider sound alongside meaning. Copy that sounds good is easier to remember and more pleasant to use.
 
-> Read `references/phonaesthetics.md` for the full concept guide and sound cluster table.
+> Query `data/phonaesthetics.json` for the full concept guide and sound cluster table.
 
 **Core rules to apply immediately:**
 - Prefer consonant-vowel alternation (CVCV) for labels — natural rhythm, easy to say
@@ -340,7 +345,7 @@ Run through this for every piece of copy before finalizing.
 **Tone**
 - [ ] Unnecessary apology?
 - [ ] Overuse of exclamation marks?
-- [ ] Any weakener words? (see `references/weakeners.md`)
+- [ ] Any weakener words? (see `data/weakeners.json`)
 
 **Mechanics**
 - [ ] Inconsistent terminology?

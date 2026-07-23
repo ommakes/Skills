@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.9.0] — 2026-07-23
+
+### Added
+
+- **`data/vois-rules.json`** — every numbered `[DS-XXX-NNN]` rule from 12 of the 14 reference files (102 rules), keyed by `id`/`category`/`source_file`, so a rule can be looked up without reading the whole reference file. Includes `DS-A11Y-*` (accessibility.md, 17 rules) and `DS-LAYOUT-COMP-*` (layout-and-responsive.md, 5 rules), which existed in source but weren't in any prior extraction. `references/anti-slop.md` (`DS-SLOP-*`) and `references/hooks.md` (`DS-HOOKS`) are intentionally excluded — judgment-only content and a tool doc, not rule data — and stay Markdown-only.
+- **`data/tokens.json`** — actual token values (spacing scale, type scale, easing curves, elevation shadow tiers, icon sizes, breakpoints, contrast minimums, touch target minimum), kept separate from `vois-rules.json` since rules are constraints and this is values.
+
+### Changed
+
+- `SKILL.md`'s Reference Files section now points to the two structured JSON files for lookups by id/category/token, ahead of the full `references/*.md` files (still there for code examples and rationale). Added missing `references/elevation.md` and `references/iconography.md` rows to the table (their rules are now indexed but the files themselves were never listed).
+- **Version bump:** `1.8.0` → `1.9.0`
+
+---
+
 ## [1.8.0] — 2026-07-21
 
 ### Changed

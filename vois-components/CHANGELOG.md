@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.4.0] — 2026-07-23
+
+### Added
+
+- **`data/components-rules.json`** — all 20 `[JOB-...]` decision trees as structured `condition → recommendation` nodes (including nested sub-branches), with every "Why not X?" explanation preserved as a `rationale` entry — the reasoning is what makes a recommendation defensible, so it isn't dropped in the conversion.
+
+### Changed
+
+- `SKILL.md`'s Job Index now points to `data/components-rules.json` for programmatic lookup by `id`/`number`, alongside the existing per-file table for prose reading.
+- **Version bump:** `1.3.0` → `1.4.0`
+
+---
+
 ## [1.3.0] — 2026-07-21
 
 ### Changed

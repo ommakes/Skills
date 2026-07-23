@@ -1,0 +1,91 @@
+{
+  "source": "vois-patterns/references/*.md",
+  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. Only 10 of the 7 reference files' decision points carry an explicit PATH- tag (unlike vois-tokens' DS- corpus, which tags nearly every rule) — the remaining untagged IF/THEN branches, worked examples, and righter-routing call-outs stay in the reference .md files. microcopy-routing.md and permissions-and-conditional-logic.md carry no PATH- tags at all (cross-cutting guidance, not a per-template decision tree) and are not represented here.",
+  "nodes": [
+    {
+      "id": "PATH-A",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-pages.md",
+      "pattern_name": "Settings Page",
+      "condition": "User is managing profile, workspace, team, billing, notifications, or members. Multiple related sections that don't need to be edited simultaneously. Changes persist immediately or on explicit save.",
+      "outcome": "Use the Settings Page pattern. Depth (shallow vs. deep) is decided by PATH-A-DEPTH-SHALLOW / PATH-A-DEPTH-DEEP. Mobile: sidebar becomes a hamburger menu that slides out and overlaps content."
+    },
+    {
+      "id": "PATH-A-DEPTH-SHALLOW",
+      "node_type": "sub_decision",
+      "parent": "PATH-A",
+      "source_file": "vois-patterns/references/settings-pages.md",
+      "condition": "2-3 sections only.",
+      "outcome": "Horizontal tabs pinned to top (single page). Structure: page title + tabs + tab content area."
+    },
+    {
+      "id": "PATH-A-DEPTH-DEEP",
+      "node_type": "sub_decision",
+      "parent": "PATH-A",
+      "source_file": "vois-patterns/references/settings-pages.md",
+      "condition": "4+ sections.",
+      "outcome": "Sidebar navigation + sub-pages. Structure: sidebar (pinned on desktop, hamburger on mobile) + main content area."
+    },
+    {
+      "id": "PATH-B",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Table/List with Details",
+      "condition": "User needs to browse, search, filter, and act on multiple items. User occasionally dives into single item details. Bulk actions might be needed.",
+      "outcome": "Use the Table/List with Details pattern. Details container: quick edit needed (checkboxes, sliders, dropdowns, a handful of fields) → right sidebar, edit-focused. Viewing details first (default view state, might edit after) → modal, view-focused, with an \"Edit\" action that navigates to a dedicated form page."
+    },
+    {
+      "id": "PATH-C",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/forms.md",
+      "pattern_name": "Form (Create/Edit)",
+      "condition": "User is creating a new item, editing an existing item, or completing a workflow/multi-step process.",
+      "outcome": "Use the Form pattern. Complexity (simple/medium/complex) is decided by field count via PATH-C-SIMPLE / PATH-C-MEDIUM / PATH-C-COMPLEX."
+    },
+    {
+      "id": "PATH-C-SIMPLE",
+      "node_type": "sub_decision",
+      "parent": "PATH-C",
+      "source_file": "vois-patterns/references/forms.md",
+      "condition": "1-6 fields (simple form).",
+      "outcome": "Single column, stack vertically. No grouping needed. Space between fields: 24px (spacing-md in vois-tokens)."
+    },
+    {
+      "id": "PATH-C-MEDIUM",
+      "node_type": "sub_decision",
+      "parent": "PATH-C",
+      "source_file": "vois-patterns/references/forms.md",
+      "condition": "7-15 fields (medium form).",
+      "outcome": "Single column OR 2 columns. Group related inputs with section headers (e.g. an address group: street, city, state, zip). Space within section: 24px between fields, 40px between sections."
+    },
+    {
+      "id": "PATH-C-COMPLEX",
+      "node_type": "sub_decision",
+      "parent": "PATH-C",
+      "source_file": "vois-patterns/references/forms.md",
+      "condition": "15+ fields OR complex relationships.",
+      "outcome": "Tabs OR 2 columns with sections. Group related fields under section headers (e.g. event creation: left = basic info, right = advanced settings)."
+    },
+    {
+      "id": "PATH-D",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Dialog / Action Sheet",
+      "condition": "Single quick input needed (amount, selection, confirmation). Simple confirmation (yes/no, approve/reject). Dropdown selection, especially on mobile.",
+      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: action sheet, slides up from bottom, covers 80-90% screen height for multi-step. Never use an action sheet if text input/keyboard is required — that needs a full modal. Footer button placement: primary right, secondary 20px left of primary, optional tertiary on the left."
+    },
+    {
+      "id": "PATH-E",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/detail-pages.md",
+      "pattern_name": "Detail Page (Read-Only / View State)",
+      "condition": "User is viewing a single record in read-only mode. No editing at this level (editing happens on a dedicated form page). User might click through to edit on a separate page.",
+      "outcome": "Header: breadcrumb above H1 title, close/back button top right if in a modal. Body: groups of related data stacked vertically, each group as label + value, status indicators/badges where relevant. Actions: no primary action in view-only state; an \"Edit\" link/button navigates to the form page if editing is available. Mobile: stacked single column, no horizontal grouping."
+    }
+  ]
+}

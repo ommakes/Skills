@@ -1,0 +1,132 @@
+{
+  "source": "righter/references/phonaesthetics.md",
+  "description": "Sound-based writing concepts for labels, CTAs, empty states, product names, and microcopy. Less relevant for error messages, which prioritize clarity over sound.",
+  "concepts": [
+    {
+      "id": "phonetic-fluency",
+      "name": "Phonetic Fluency (Ease of Mouth)",
+      "description": "The brain and mouth prefer sounds that move smoothly from one articulation point to the next.",
+      "guidance": [
+        {
+          "pattern": "Consonant-vowel alternation (CVCV)",
+          "effect": "natural rhythm, easy to say",
+          "examples": ["Coca-Cola", "TikTok", "Luna", "Milo"]
+        },
+        {
+          "pattern": "Avoid tongue twisters",
+          "effect": "words requiring back-and-forth mouth gymnastics feel clunky and hard to process",
+          "examples": ["sixth", "rural"]
+        }
+      ]
+    },
+    {
+      "id": "euphony",
+      "name": "Euphony (Sound Harmony)",
+      "description": "Some sound combinations are inherently pleasant because they're smooth, sonorous, or balanced.",
+      "guidance": [
+        {
+          "pattern": "Liquids and nasals (l, m, n, r, w, y)",
+          "effect": "feel gentle and calm",
+          "examples": ["melody", "lullaby", "dream"]
+        },
+        {
+          "pattern": "Plosives (p, b, t, d, k, g)",
+          "effect": "add bounce or punch",
+          "examples": ["Pop-Tarts", "KitKat", "Get started"]
+        },
+        {
+          "pattern": "Sibilants (s, sh, z)",
+          "effect": "add softness or sensuality",
+          "examples": ["silky", "shimmer", "serene"]
+        }
+      ],
+      "note": "Mix sound types for contrast and rhythm. Going soft → hard creates balance."
+    },
+    {
+      "id": "prosody-and-rhythm",
+      "name": "Prosody and Rhythm",
+      "description": "Humans unconsciously crave meter and stress balance.",
+      "guidance": [
+        {
+          "pattern": "Two beats",
+          "effect": "catchy and punchy",
+          "examples": ["Snapchat", "Netflix", "Submit", "Sign up"]
+        },
+        {
+          "pattern": "Three beats",
+          "effect": "melodic and memorable",
+          "examples": ["Mickey Mouse", "Coca-Cola", "Get started"]
+        },
+        {
+          "pattern": "Irregular stress",
+          "effect": "awkward and forgettable",
+          "examples": ["ParsnipCloud", "UploadNow"]
+        },
+        {
+          "pattern": "Trochaic rhythm (stress-unstress)",
+          "effect": "hits hard then glides",
+          "examples": ["Apple", "Google", "Spotify"]
+        }
+      ]
+    },
+    {
+      "id": "phonaesthesia",
+      "name": "Phonaesthesia (Sound Symbolism)",
+      "description": "Certain sound clusters carry subconscious emotional or sensory meaning.",
+      "guidance": [
+        {
+          "pattern": "gl-",
+          "effect": "light, vision, clarity",
+          "examples": ["glow", "glimmer", "glitter"]
+        },
+        {
+          "pattern": "sn-",
+          "effect": "nasal, unpleasant",
+          "examples": ["sniff", "snore", "snot"]
+        },
+        {
+          "pattern": "sl-",
+          "effect": "slippery, sly",
+          "examples": ["slide", "slip", "slick"]
+        },
+        {
+          "pattern": "gr-",
+          "effect": "heavy, rough",
+          "examples": ["grind", "growl", "grunt"]
+        }
+      ]
+    }
+  ],
+  "sound_cluster_table": [
+    { "cluster": "gl-", "feel": "Light, shine, vision, clarity", "examples": ["glow", "glimmer", "glitter", "gleam"], "best_used_for": "Illumination, beauty, clarity, design, optics" },
+    { "cluster": "fl-", "feel": "Motion, flow, softness, air", "examples": ["float", "flutter", "fly", "flow"], "best_used_for": "Ease, elegance, smooth UX, travel" },
+    { "cluster": "cr-", "feel": "Breaking, sharpness, impact", "examples": ["crack", "crunch", "crash", "crisp"], "best_used_for": "Energy, tech, bold flavors" },
+    { "cluster": "sn-", "feel": "Nose, sneaky, unpleasant", "examples": ["sniff", "snore", "snot", "sneak"], "best_used_for": "Humor, gross-cute branding (kids, comic)" },
+    { "cluster": "sl-", "feel": "Slippery, sly, smooth", "examples": ["slide", "slip", "slink", "slick"], "best_used_for": "Sleekness, modern UI, fashion" },
+    { "cluster": "br-", "feel": "Strength, force, boldness", "examples": ["break", "burst", "brave", "brawl"], "best_used_for": "Masculine energy, power, gaming" },
+    { "cluster": "gr-", "feel": "Weight, roughness, gravity", "examples": ["grind", "growl", "grit", "gravel"], "best_used_for": "Work ethic, toughness, realism" },
+    { "cluster": "cl-", "feel": "Tightness, closure, precision", "examples": ["clip", "click", "clamp", "close"], "best_used_for": "Tools, hardware, software interactions" },
+    { "cluster": "dr-", "feel": "Drive, motion, persistence", "examples": ["drive", "drag", "drone", "drip"], "best_used_for": "Movement, motivation, automotive" },
+    { "cluster": "tw-", "feel": "Turning, duality, play", "examples": ["twist", "twirl", "twee", "tweak"], "best_used_for": "Creativity, flexibility, iteration" },
+    { "cluster": "sp-", "feel": "Speed, spread, sparkle", "examples": ["spark", "spin", "splash", "sprint"], "best_used_for": "Innovation, energy, fun" },
+    { "cluster": "tr-", "feel": "Travel, transformation, track", "examples": ["trail", "trip", "trace", "transit"], "best_used_for": "Journey, progress, logistics" },
+    { "cluster": "wh-", "feel": "Airy, breathy, wonder", "examples": ["whisper", "whiff", "whirl", "whoosh"], "best_used_for": "Calm, mindfulness, ASMR" },
+    { "cluster": "bl-", "feel": "Soft burst, gentle impact", "examples": ["blow", "blush", "bloom", "blink"], "best_used_for": "Beauty, fragrance, kindness" },
+    { "cluster": "pl-", "feel": "Playful, bounce, pleasant", "examples": ["plop", "play", "plink", "plush"], "best_used_for": "Toys, humor, friendly design" },
+    { "cluster": "sh- / ch-", "feel": "Silence, hush, sharpness", "examples": ["shine", "charm", "chill", "chip"], "best_used_for": "Serenity or crispness (depends on vowel)" },
+    { "cluster": "kn-", "feel": "Knowledge, cognition", "examples": ["know", "knack", "knight"], "best_used_for": "Intelligence, wisdom, education" },
+    { "cluster": "sw-", "feel": "Smooth motion, sweep", "examples": ["swim", "sway", "sweep", "swift"], "best_used_for": "Elegance, flow, dance" },
+    { "cluster": "drip/pop/bop", "feel": "Onomatopoeic satisfaction", "examples": ["plop", "drip", "pop", "bop"], "best_used_for": "Music, snack food, delight" },
+    { "cluster": "oo/ou/aw (vowels)", "feel": "Depth, roundness, warmth", "examples": ["moon", "bloom", "flow", "sound"], "best_used_for": "Soothing, sensory branding" },
+    { "cluster": "ee/i/ai (vowels)", "feel": "Bright, energy, sharpness", "examples": ["beam", "light", "ignite", "kick"], "best_used_for": "Tech, energy, alertness" }
+  ],
+  "quick_rules": [
+    "Double syllables feel friendly and catchy",
+    "Trochaic stress (stress-unstress) sounds natural in English",
+    "Short is punchy; long is elegant",
+    "Alliteration and rhyme help phrases stick in memory",
+    "Soft vowels and liquids (l, m, n, r, w, y) for calm and elegant contexts",
+    "Hard plosives (p, b, t, d, k, g) for energetic and bold contexts",
+    "Mixed textures (soft → hard) create balance"
+  ]
+}

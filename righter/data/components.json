@@ -1,0 +1,151 @@
+{
+  "source": "righter/references/components.md",
+  "description": "Per-component UI copy writing rules. Shared prefix vocabulary is factored out once; each component references which prefixes apply.",
+  "shared_prefix_format": {
+    "description": "Prefix precedes the title, separated by a space. Applies to Alert Dialog, Inline Alert, and Alert Banner titles when the component calls for a specific user action.",
+    "prefixes": [
+      { "prefix": "Action Required:", "meaning": "user must complete a step to proceed / do something to restore full functionality / fix something in this section" },
+      { "prefix": "Approval Required:", "meaning": "a workflow gate; someone must sign off before continuing" },
+      { "prefix": "Review:", "meaning": "no hard block, but the user should look at this before moving on / before continuing" },
+      { "prefix": "Verify Now:", "meaning": "time-sensitive or security-related; reserved for genuine urgency, not a substitute for Action Required; use sparingly" }
+    ],
+    "skip_when": "Purely informational or destructive confirmation dialogs where no remediation action exists; system outages or read-only informational content; neutral or informational variants."
+  },
+  "components": [
+    {
+      "id": "alert-dialog",
+      "name": "Alert Dialog",
+      "when_to_use": "The user must acknowledge or decide before continuing. High consequence. Blocking.",
+      "golden_rule": "The user is already interrupted. Be efficient.",
+      "structure": [
+        { "field": "Title", "limit": "30–60 characters, no end punctuation, max 2 lines" },
+        { "field": "Description", "limit": "80–200 characters, max 3 sentences" },
+        { "field": "Actions", "limit": "verb-led, 2–3 words max" }
+      ],
+      "uses_shared_prefix_format": true,
+      "title_rules": [
+        "Communicate the result or the required decision — not the cause",
+        "No punctuation at the end"
+      ],
+      "title_examples": {
+        "good": ["Can't delete project", "Delete 13 files"],
+        "bad": ["Error occurred while processing"]
+      },
+      "description_rules": [
+        "No more than 2 sentences",
+        "Include error codes in parentheses at the end of the last sentence",
+        "Don't repeat the title"
+      ],
+      "action_button_rules": [
+        "Use verbs, not nouns",
+        "Prefer 2–3 words",
+        "Primary = recommended action (Confirm, Enable, Continue)",
+        "Secondary = exit or undo (Cancel, Discard changes, Skip for now, Remind me later)",
+        "Link = supplemental resource (Learn more)"
+      ],
+      "variants": [
+        { "name": "Confirmation", "description": "user confirms a choice; primary highlights preferred action" },
+        { "name": "Informative", "description": "notable info to acknowledge; use toast instead if no action needed" },
+        { "name": "Destructive", "description": "permanent, negative impact on data; primary button is red" },
+        { "name": "Warning", "description": "user should be aware but isn't blocked; yellow warning icon" },
+        { "name": "Error", "description": "user may be blocked; consider inline alert if no specific action is required" }
+      ]
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "when_to_use": "Confirming a completed action. Low priority. No required response. Auto-dismisses.",
+      "rules": [
+        "Sentence case, no period, max 90 characters, max 2 lines",
+        "Must be instantly understandable — if it needs explanation, don't use a toast",
+        "Don't use for promotional messages, upsells, or proactive/preventative information",
+        "Max 1 action (undo, fix, show, update)"
+      ],
+      "variants": [
+        { "name": "Success/Confirmation", "sentence_construction": "short past participle phrase: \"(noun) + verb-ed + (optional detail)\"", "examples": ["Policy updated successfully", "File created"] },
+        { "name": "Informative", "sentence_construction": "subject + verb phrase + optional info" },
+        { "name": "Error/Negative", "sentence_construction": "succinct statement + optional inline action", "examples": ["2 documents missing", "Payment failed"] },
+        { "name": "Neutral (gray)", "sentence_construction": "no icon; use when semantic variants don't fit" }
+      ]
+    },
+    {
+      "id": "inline-alert",
+      "name": "Inline Alert",
+      "when_to_use": "Contextual to a section of the page. The user can continue without acting. Consequence is real but not blocking.",
+      "structure": [
+        { "field": "Title", "limit": "20–50 characters" },
+        { "field": "Description", "limit": "60–180 characters, 1–2 sentences" },
+        { "field": "Link action", "limit": "optional, for additional detail in a new tab" }
+      ],
+      "uses_shared_prefix_format": true,
+      "title_examples": {
+        "good": ["Review: Premium may change", "Action Required: Coverage gap detected"],
+        "bad": ["Warning: Something to look at"]
+      },
+      "rules": [
+        "Describe what happened, why, and what they can do",
+        "Don't repeat or restate the title in the description"
+      ],
+      "example": { "title": "Premium may change", "body": "Adjusting the effective date can increase or decrease your total premium." },
+      "variants": [
+        { "name": "Neutral (gray)", "description": "reminders, lower importance", "example": "Payment information / Enter your billing address…" },
+        { "name": "Informative (blue)", "description": "notable form-related context", "example": "Accepted payment methods / Only major credit cards are accepted…" },
+        { "name": "Positive (green)", "description": "successful action confirmed", "example": "Purchase completed / You'll get a confirmation email shortly." },
+        { "name": "Notice (yellow)", "description": "risk or consequence needing attention", "example": "Update payment information / The saved credit card has expired." }
+      ]
+    },
+    {
+      "id": "helper-text",
+      "name": "Helper Text",
+      "when_to_use": "Attached directly to a form field. Instructs correct input or surfaces a field-level error.",
+      "rules": [
+        "Under 50 characters, 1 line or 1 short sentence",
+        "Neutral state: describes the solution proactively, before the user makes an error",
+        "Error state: describes the solution, not the error — tell them how to fix it, not what they did wrong",
+        "Error state uses a red warning icon"
+      ],
+      "examples": {
+        "neutral": "Password must be at least 8 characters.",
+        "negative": "Create a password with at least 8 characters. (triggered after bad input)"
+      }
+    },
+    {
+      "id": "alert-banner",
+      "name": "Alert Banner",
+      "when_to_use": "System-level message. Affects the whole app or a major capability. High visibility, persistent until resolved.",
+      "use_for": ["system outages", "role-based limitations", "account-based restrictions", "geographic restrictions"],
+      "rules": [
+        "Never auto-dismisses — persists until resolved (reappears on refresh if dismissed without fixing)",
+        "Max 1 action per banner",
+        "Max 2 lines in smaller viewports"
+      ],
+      "structure": [
+        { "field": "Title (optional)", "limit": "20–40 characters; emphasized lead-in text, flows naturally into the description" },
+        { "field": "Description", "limit": "50–140 characters, no period on short phrases; impact + consequence + connects to the action" }
+      ],
+      "uses_shared_prefix_format": true,
+      "title_examples": {
+        "good": ["Action Required: Billing information missing", "Verify Now: Two-factor authentication needed"],
+        "bad": ["Notice: Scheduled maintenance tonight"]
+      },
+      "action_types": ["Secondary button — takes user to fix the issue", "Link button — takes user to learn more"],
+      "variants": [
+        { "name": "Neutral (gray)", "description": "concise message with optional recommended action" },
+        { "name": "Informative (blue)", "description": "system-level context, include action when possible" },
+        { "name": "Error (red)", "description": "system-level failure, include action when possible" }
+      ]
+    },
+    {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "when_to_use": "Adding a label or short description to an interactive element on hover or keyboard focus.",
+      "rules": [
+        "40–60 characters max, 2 lines max",
+        "Only on interactive elements",
+        "Never duplicates the visible label of the trigger element",
+        "No actions inside tooltips",
+        "Don't use to add \"nice to have\" context — only essential labels or descriptions"
+      ]
+    }
+  ]
+}

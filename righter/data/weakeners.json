@@ -1,0 +1,245 @@
+{
+  "source": "righter/references/weakeners.md",
+  "description": "Word and phrase categories that dilute UI copy. Remove on sight.",
+  "categories": [
+    {
+      "id": "hedging-words",
+      "name": "Hedging Words",
+      "description": "Make statements feel unsure or non-committal.",
+      "type": "word_list",
+      "terms": [
+        "maybe",
+        "perhaps",
+        "possibly",
+        "probably",
+        "likely",
+        "unlikely",
+        "seem",
+        "seems",
+        "seemed",
+        "appears",
+        "apparently",
+        "suggests",
+        "can be seen as",
+        "could be",
+        "might be",
+        "may be"
+      ],
+      "example": {
+        "before": "This will probably improve performance.",
+        "after": "This will improve performance."
+      }
+    },
+    {
+      "id": "softening-phrases",
+      "name": "Softening Phrases",
+      "description": "Used to avoid sounding confident. Usually unnecessary.",
+      "type": "word_list",
+      "terms": [
+        "kind of",
+        "sort of",
+        "a little",
+        "a bit",
+        "somewhat",
+        "in a way",
+        "to some extent",
+        "more or less",
+        "almost",
+        "nearly"
+      ],
+      "example": {
+        "before": "The UI is kind of confusing.",
+        "after": "The UI is confusing."
+      }
+    },
+    {
+      "id": "empty-intensifiers",
+      "name": "Empty Intensifiers",
+      "description": "Feel emphatic but add no meaning.",
+      "type": "word_list",
+      "terms": [
+        "very",
+        "really",
+        "quite",
+        "extremely",
+        "highly",
+        "so",
+        "too",
+        "super",
+        "pretty (as adverb)",
+        "totally",
+        "completely",
+        "absolutely",
+        "entirely",
+        "fully"
+      ]
+    },
+    {
+      "id": "filler-adverbs",
+      "name": "Filler Adverbs",
+      "description": "Pad sentences without doing real work.",
+      "type": "word_list",
+      "terms": [
+        "actually",
+        "basically",
+        "literally",
+        "clearly",
+        "obviously",
+        "essentially",
+        "generally",
+        "typically",
+        "usually",
+        "normally",
+        "virtually",
+        "effectively",
+        "largely",
+        "mostly"
+      ],
+      "example": {
+        "before": "This basically means users sign in faster.",
+        "after": "This means users sign in faster."
+      }
+    },
+    {
+      "id": "authorial-throat-clearing",
+      "name": "Authorial Throat-Clearing",
+      "description": "Announces thinking instead of thinking.",
+      "type": "word_list",
+      "terms": [
+        "I think",
+        "I believe",
+        "I feel",
+        "I would say",
+        "I would argue",
+        "we think",
+        "we believe",
+        "we feel",
+        "in my opinion",
+        "from my perspective",
+        "it seems to me"
+      ],
+      "example": {
+        "before": "I think this is the best solution.",
+        "after": "This is the best solution."
+      }
+    },
+    {
+      "id": "passive-aggressive-politeness",
+      "name": "Passive-Aggressive Politeness",
+      "description": "Weakens authority and clarity.",
+      "type": "word_list",
+      "terms": [
+        "please note",
+        "just",
+        "simply",
+        "we just want to",
+        "you may want to",
+        "it would be great if",
+        "feel free to"
+      ],
+      "example": {
+        "before": "You can just click the button below.",
+        "after": "Click the button below."
+      }
+    },
+    {
+      "id": "vague-quantifiers",
+      "name": "Vague Quantifiers",
+      "description": "Avoid commitment and precision.",
+      "type": "word_list",
+      "terms": [
+        "some",
+        "several",
+        "many",
+        "few",
+        "various",
+        "a number of",
+        "a range of",
+        "a lot of",
+        "lots of",
+        "plenty of"
+      ]
+    },
+    {
+      "id": "redundant-framing-phrases",
+      "name": "Redundant Framing Phrases",
+      "description": "Delay the point instead of delivering it.",
+      "type": "word_list",
+      "terms": [
+        "it is important to note that",
+        "it should be noted that",
+        "it is worth mentioning that",
+        "the fact that",
+        "there is / there are",
+        "it can be said that"
+      ],
+      "example": {
+        "before": "It is important to note that users churn quickly.",
+        "after": "Users churn quickly."
+      }
+    },
+    {
+      "id": "over-cautious-legalese",
+      "name": "Over-Cautious Legalese",
+      "description": "Sometimes necessary, often abused.",
+      "type": "word_list",
+      "terms": [
+        "in most cases",
+        "under certain circumstances",
+        "as needed",
+        "where appropriate",
+        "if applicable",
+        "to the extent possible"
+      ]
+    },
+    {
+      "id": "weak-verb-phrases",
+      "name": "Weak Verb Phrases",
+      "description": "Hide the action behind nouns.",
+      "type": "replacement_pairs",
+      "replacements": [
+        {
+          "weak": "make a decision",
+          "strong": "decide"
+        },
+        {
+          "weak": "take action",
+          "strong": "act"
+        },
+        {
+          "weak": "give consideration to",
+          "strong": "consider"
+        },
+        {
+          "weak": "have an impact on",
+          "strong": "impact"
+        },
+        {
+          "weak": "play a role in",
+          "strong": "affect"
+        },
+        {
+          "weak": "provide an overview",
+          "strong": "overview"
+        },
+        {
+          "weak": "conduct an analysis",
+          "strong": "analyze"
+        }
+      ]
+    },
+    {
+      "id": "talking-about-talking",
+      "name": "Talking About Talking",
+      "description": "Stall momentum with meta-level commentary.",
+      "type": "word_list",
+      "terms": [
+        "this article will",
+        "this section discusses",
+        "as mentioned earlier",
+        "as stated above",
+        "below we will see"
+      ]
+    }
+  ]
+}

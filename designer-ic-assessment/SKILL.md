@@ -1,16 +1,16 @@
 ---
 name: designer-ic-assessment
-version: 1.0.0
+version: 1.1.0
 description: Facilitates a structured behavioral assessment interview for IC designer levels, incorporating AI fluency across competency areas. Use this skill when someone wants to run a designer self-assessment, a manager assessment of a designer, or set up an IC level calibration session. Trigger whenever someone mentions designer levels, IC rubric, design assessment, career calibration, manager assessment, or designer growth conversations. Also trigger if someone says they want to evaluate a designer's AI fluency, run a competency interview, or prepare for a calibration meeting.
 ---
 
 # Designer IC Assessment
 
-This skill runs a structured behavioral interview to assess an IC designer's competency across five categories and 19 competency areas. The output is a structured summary with a CSV export that feeds into a Notion page and FigJam comparison board.
+This skill runs a structured behavioral interview to assess an IC designer's competency across five categories and 23 competency areas. The output is a structured summary with a CSV export that feeds into a Notion page and FigJam comparison board.
 
 Two session types: **designer self-assessment** and **manager assessment**. Always run independently.
 
-Read `references/question-bank.md` before starting any session.
+Query `data/question-bank.json` for the per-competency questions, probes, and Likert scale before starting any session — look up by competency `number` or `category`, don't scan the whole corpus. Read `references/question-bank.md` for interview guidance and the manager-only breadth/depth assessment sequence.
 Read `references/output-format.md` before generating the final summary.
 
 ---
@@ -66,7 +66,7 @@ Confirm weights and breadth scope before proceeding.
 
 **Run this as a conversation, not a checklist.**
 
-Use questions from the question bank as guideposts. Follow the thread the person gives you. Move to a new competency when you have enough signal, not when you've asked a specific number of questions.
+Use questions from `data/question-bank.json` as guideposts — each competency entry gives you an opening prompt, a probe, and two follow threads (with their own probes). Follow the thread the person gives you. Move to a new competency when you have enough signal, not when you've asked a specific number of questions.
 
 **Relevance flagging -- listen for these signals during the session:**
 
@@ -123,5 +123,6 @@ End with:
 
 ## Reference files
 
-- `references/question-bank.md` -- All questions, probes, and level signals for all 19 competencies plus breadth and depth questions for manager sessions
+- `data/question-bank.json` -- All questions, probes, and the Likert scale for all 23 competencies. Look up by competency `number` or `category`.
+- `references/question-bank.md` -- Interview guidance, plus the manager-only breadth and depth assessment sequence (not in the JSON — this is session orchestration, not lookup data)
 - `references/output-format.md` -- Exact format for the session summary including breadth section and CSV export

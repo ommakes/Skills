@@ -1,0 +1,387 @@
+{
+  "source": "vois-components/references/*.md",
+  "description": "Every [JOB-...] tagged component-selection decision tree, one entry per job. Each node's decision tree is condition → recommended component; the accompanying 'Why not X?' explanations are preserved as rationale, not dropped, since they're what makes the recommendation defensible.",
+  "jobs": [
+    {
+      "id": "JOB-CONTEXTUAL-INFO",
+      "number": 7,
+      "title": "Provide additional context without cluttering the UI",
+      "source_file": "vois-components/references/contextual-info-and-actions.md",
+      "framing": "Something on screen needs a label or explanation that shouldn't always be visible.",
+      "decision_tree": [
+        { "condition": "Short label for an icon, control, or abbreviated text (25 words or under)", "recommendation": "Tooltip (appears on hover/focus, disappears when cursor moves)" },
+        { "condition": "Rich content — links, images, longer text, interactive elements", "sub_branches": [
+          { "condition": "Triggered by click (user controls when to see it)", "recommendation": "Popover" },
+          { "condition": "Triggered by hover (passive preview)", "recommendation": "HoverCard" }
+        ] },
+        { "condition": "Contextual preview of a linked entity (user profile, link preview)", "recommendation": "HoverCard" }
+      ],
+      "rationale": [
+        { "question": "Why not Popover for tooltips?", "answer": "Popovers require a click to open and close, which is more friction than a label needs. Tooltips are passive — they inform, they don't require action. If the content requires a click to dismiss, it's a Popover, not a Tooltip." },
+        { "question": "Why not Tooltip for interactive content?", "answer": "WCAG requires that tooltip content be accessible via keyboard. Interactive elements (links, buttons) inside a Tooltip aren't reliably reachable by keyboard users. If the content is interactive, use a Popover." }
+      ]
+    },
+    {
+      "id": "JOB-TRIGGER-ACTION",
+      "number": 8,
+      "title": "Trigger an action",
+      "source_file": "vois-components/references/contextual-info-and-actions.md",
+      "framing": "The user needs a target to tap or click to make something happen.",
+      "decision_tree": [
+        { "condition": "Action has a text label (most actions should)", "sub_branches": [
+          { "condition": "Primary, secondary, destructive, outline, ghost", "recommendation": "Button (variant handles it)" },
+          { "condition": "Action opens a menu of related choices", "recommendation": "Button + DropdownMenu (see Job 15)" }
+        ] },
+        { "condition": "Action is icon-only (constrained space, toolbar, well-understood symbol)", "sub_branches": [
+          { "condition": "Single action", "recommendation": "Button with icon and aria-label" },
+          { "condition": "Grouped with other icon actions", "recommendation": "Toggle (for on/off) or Button (for one-shot)" }
+        ] },
+        { "condition": "Action is a removable selection or filter (user created it, they can remove it)", "recommendation": "Badge with dismiss (Chip pattern) — not a Button" }
+      ],
+      "rationale": [
+        { "question": "Why not a custom div or span?", "answer": "Buttons handle keyboard focus, Enter/Space activation, disabled state, and role=\"button\" automatically. A div with onClick doesn't. Never fake a button." },
+        { "question": "Why use Button for icon-only instead of a bare icon?", "answer": "The button element provides a 44×44px minimum touch target (when styled correctly), focus ring, and accessible label via aria-label. An icon on its own has none of that." }
+      ]
+    },
+    {
+      "id": "JOB-EXPOSE-ACTIONS",
+      "number": 15,
+      "title": "Expose a set of actions",
+      "source_file": "vois-components/references/contextual-info-and-actions.md",
+      "framing": "You need to give the user access to multiple actions without cluttering the primary UI.",
+      "decision_tree": [
+        { "condition": "Actions are specific to the item on screen (row in a table, selected card)", "sub_branches": [
+          { "condition": "Triggered by a button click", "recommendation": "DropdownMenu" },
+          { "condition": "Triggered by right-click", "recommendation": "ContextMenu" }
+        ] },
+        { "condition": "Actions are global or page-level (header actions, toolbar)", "recommendation": "DropdownMenu (anchored to a trigger button)" },
+        { "condition": "Actions are searched or navigated by keyboard (power users, complex apps)", "recommendation": "Command (palette-style — see Job 6)" }
+      ],
+      "rationale": [
+        { "question": "Why not a flat list of buttons for everything?", "answer": "More than 3 visible actions overwhelms the UI. Group secondary and destructive actions inside a DropdownMenu, keep only the most important 1–2 actions as visible Buttons." },
+        { "question": "Why not ContextMenu as a primary interface?", "answer": "ContextMenu is discoverable only by users who know to right-click. It's an enhancement for power users, not a primary action surface. The same actions should be available from a visible trigger." },
+        { "question": "Why not Command for row-level actions?", "answer": "Command is a global tool. It searches across everything. Row-level actions are local to one item — a DropdownMenu keeps that scope clear." }
+      ]
+    },
+    {
+      "id": "JOB-LABEL-CONTENT",
+      "number": 11,
+      "title": "Label or categorize a piece of content",
+      "source_file": "vois-components/references/display-and-identity.md",
+      "framing": "You need to communicate metadata, status, or category attached to an item.",
+      "decision_tree": [
+        { "condition": "Status or category label, not interactive (read-only, decorative)", "recommendation": "Badge (inline, non-interactive)" },
+        { "condition": "User-created label that can be applied and removed (tags in a CRM, labels on an issue)", "recommendation": "Badge with dismiss button (Chip/Tag pattern)" },
+        { "condition": "Selected filter or active facet in a search or filter UI", "recommendation": "Badge with dismiss (dismissing removes the filter)" }
+      ],
+      "rationale": [
+        { "question": "Why not a Button for dismissible labels?", "answer": "A dismissible label communicates \"this is an attribute of the item, and you can remove it.\" A Button communicates \"click me to do something.\" The visual weight and shape differ. Use Badge-with-dismiss to keep the categorical meaning intact." },
+        { "question": "Why not a plain text label?", "answer": "Plain text can't carry visual weight, color-coding, or truncation behavior. When the label needs to be scannable at distance in a table or list, Badge handles it with appropriate contrast and padding." }
+      ]
+    },
+    {
+      "id": "JOB-REPRESENT-USER",
+      "number": 12,
+      "title": "Represent a user or group",
+      "source_file": "vois-components/references/display-and-identity.md",
+      "framing": "You need to show who is involved in something — who owns a record, who is in a conversation, who is online.",
+      "decision_tree": [
+        { "condition": "Single user", "sub_branches": [
+          { "condition": "User has a profile photo", "recommendation": "Avatar (image)" },
+          { "condition": "No photo available", "recommendation": "Avatar (initials fallback)" }
+        ] },
+        { "condition": "Multiple users, count matters (showing all members of a team)", "recommendation": "AvatarGroup (stacks avatars with overflow count: \"+4\")" },
+        { "condition": "Real-time presence (online/offline/away, active in document)", "recommendation": "Avatar + Presence indicator (colored dot, workspace-specific — check manifest)" }
+      ],
+      "rationale": [
+        { "question": "Why not AvatarGroup when count doesn't matter?", "answer": "If you're just showing that multiple people are associated with something (not how many), a single Avatar with initials or \"Team\" label may be cleaner. AvatarGroup implies the count is meaningful." }
+      ]
+    },
+    {
+      "id": "JOB-DISPLAY-DATA",
+      "number": 18,
+      "title": "Display structured data",
+      "source_file": "vois-components/references/display-and-identity.md",
+      "framing": "You need to show a collection of items with shared attributes.",
+      "decision_tree": [
+        { "condition": "Items are simple, no sorting, filtering, or bulk actions needed (notifications, activity feed)", "recommendation": "List (semantic ul/li with consistent item layout)" },
+        { "condition": "Items have multiple comparable attributes (users, orders, records)", "sub_branches": [
+          { "condition": "Under 100 rows, no column freezing, no virtualization", "recommendation": "Table" },
+          { "condition": "100+ rows, sortable columns, bulk actions, column management", "recommendation": "DataTable (check workspace manifest — typically TanStack Table based)" }
+        ] },
+        { "condition": "Items are cards in a grid (products, projects, media)", "recommendation": "Grid of Cards (not a Table — tables communicate that attributes are comparable; cards communicate that items are browsable)" }
+      ],
+      "rationale": [
+        { "question": "Why not Table for simple lists?", "answer": "Table implies the columns are meaningful for comparison. An activity feed or notification list has items but comparison between them isn't the point. A List is the correct semantic element and lighter visually." },
+        { "question": "Why not DataTable for small data sets?", "answer": "DataTable adds pagination, column visibility management, and bulk action infrastructure. For 20 rows with no sorting or bulk actions, that complexity is overhead. Use Table and add only the features you need." }
+      ]
+    },
+    {
+      "id": "JOB-CONFIRM-DESTRUCTIVE",
+      "number": 1,
+      "title": "Confirm a destructive or consequential action",
+      "source_file": "vois-components/references/feedback-and-confirmation.md",
+      "framing": "The user is about to do something that's hard or impossible to undo.",
+      "decision_tree": [
+        { "condition": "Action affects only current user, and undo is available (e.g. archive, move)", "recommendation": "Toast with undo action" },
+        { "condition": "Action is not reversible, affects only current user (delete, disconnect)", "recommendation": "AlertDialog" },
+        { "condition": "Action affects other users (revoke access, cancel shared resource)", "recommendation": "AlertDialog + post-action notification to affected users" },
+        { "condition": "Action has external consequences (publish, send email, charge)", "recommendation": "AlertDialog with explicit consequence text in body" }
+      ],
+      "rationale": [
+        { "question": "Why not Dialog?", "answer": "Dialog is for any modal interaction. AlertDialog enforces role=\"alertdialog\", which screen readers announce with higher urgency. Any time consequences exist, use AlertDialog — it's not just convention, it's an ARIA distinction." },
+        { "question": "Why not Toast for irreversible actions?", "answer": "Toasts auto-dismiss. If the user looked away or the connection dropped, they miss confirmation. Reserve Toast-with-undo for genuinely reversible actions where the undo window is at least 5 seconds." }
+      ]
+    },
+    {
+      "id": "JOB-TRANSIENT-FEEDBACK",
+      "number": 2,
+      "title": "Show transient feedback after a user action",
+      "source_file": "vois-components/references/feedback-and-confirmation.md",
+      "framing": "The user did something and the UI needs to acknowledge it.",
+      "decision_tree": [
+        { "condition": "Pure acknowledgment, no action required (saved, copied, sent)", "recommendation": "Toast" },
+        { "condition": "User needs to act on the message before continuing", "recommendation": "Alert (inline, persistent until dismissed)" },
+        { "condition": "Error tied to a specific input, field, or section", "recommendation": "Alert inline (positioned adjacent to the source — proximity = relationship)" },
+        { "condition": "System-wide announcement (maintenance, outage, account issue)", "recommendation": "Alert (sticky to top of page, not dismissible until resolved)" }
+      ],
+      "rationale": [
+        { "question": "Why not Toast for actionable messages?", "answer": "If the toast disappears before the user reads or acts, the message is lost. Anything requiring action needs a persistent surface." },
+        { "question": "Why not Toast for errors on inputs?", "answer": "Toast places feedback far from the source. Users have to read the toast, track back to the form, and figure out which field the error belongs to. Inline Alert eliminates that mapping step." }
+      ]
+    },
+    {
+      "id": "JOB-LOADING-STATE",
+      "number": 13,
+      "title": "Communicate loading state",
+      "source_file": "vois-components/references/feedback-and-confirmation.md",
+      "framing": "Something is being fetched or processed and the user needs to know.",
+      "decision_tree": [
+        { "condition": "Fetching content that will fill a known layout (page load, list load, card content)", "recommendation": "Skeleton (placeholder that matches the shape of the content coming in)" },
+        { "condition": "Short action in progress, result will appear in place (button submitting, search running)", "recommendation": "Spinner inside or replacing the trigger element (disable the trigger while loading)" },
+        { "condition": "Long operation with measurable progress (file upload, multi-step processing)", "recommendation": "Progress bar (with percentage or step count if deterministic)" }
+      ],
+      "rationale": [
+        { "question": "Why not Spinner for page loads?", "answer": "A full-page spinner with no structure gives the user no prediction about what's coming. A skeleton shows the layout shape, which reduces perceived load time and prevents layout shift when content arrives." },
+        { "question": "Why not Skeleton for action feedback?", "answer": "Skeleton is for content that will fill a known area. For a button that's waiting on a response, a Skeleton would appear in the wrong place. A Spinner inside the button keeps the feedback local and immediate." },
+        { "question": "Why not Progress for unknown-duration operations?", "answer": "An indeterminate progress bar (animated fill with no percentage) is just a spinner in a different shape. If you don't know the duration, use a Spinner. Progress is for when you have a real percentage to show." }
+      ]
+    },
+    {
+      "id": "JOB-EMPTY-CONTENT",
+      "number": 14,
+      "title": "Handle missing or empty content",
+      "source_file": "vois-components/references/feedback-and-confirmation.md",
+      "framing": "A list, table, or view has no data to show.",
+      "decision_tree": [
+        { "condition": "User has never created anything in this section (true zero state)", "sub_branches": [
+          { "condition": "User can create from this screen", "recommendation": "EmptyState with primary CTA" },
+          { "condition": "User can't create from here", "recommendation": "EmptyState with explanation (no CTA)" }
+        ] },
+        { "condition": "Filters or search removed all results (filtered empty, not true zero)", "recommendation": "Inline message + \"clear filters\" action (not a full EmptyState component — too heavy)" },
+        { "condition": "Feature hasn't been set up or unlocked yet (empty by design, not by absence of data)", "recommendation": "EmptyState with onboarding copy explaining what this section will do (no CTA if action is elsewhere)" }
+      ],
+      "rationale": [
+        { "question": "Why not skip the empty state?", "answer": "A blank area with no explanation looks broken. Users don't know if the data is loading, filtered away, or genuinely absent. Always acknowledge empty content." },
+        { "question": "Why not a full EmptyState for filtered results?", "answer": "EmptyState is a significant visual element. Using it every time a search returns zero results is disproportionate and feels like an error. A simple inline message with a \"clear filters\" link is appropriate and keeps the interaction lightweight." }
+      ]
+    },
+    {
+      "id": "JOB-MULTISTEP-GUIDE",
+      "number": 16,
+      "title": "Guide through a multi-step process",
+      "source_file": "vois-components/references/forms-and-process.md",
+      "framing": "The user needs to complete multiple steps in sequence to accomplish a larger goal.",
+      "decision_tree": [
+        { "condition": "Steps are all required, user must complete them in order, progress is visible", "sub_branches": [
+          { "condition": "2–5 steps, fits on one page with sections", "recommendation": "Stepper (inline step indicator)" },
+          { "condition": "5+ steps, each step fills the screen", "recommendation": "Wizard (full-page steps with own layout)" }
+        ] },
+        { "condition": "Steps represent phases of an ongoing process the user checks back on", "recommendation": "Progress component (read-only status tracker, not a navigation element)" },
+        { "condition": "Steps can be completed in any order, none are blocking", "recommendation": "Checklist or task list (not a Stepper — Stepper implies sequential dependency)" }
+      ],
+      "rationale": [
+        { "question": "Why not Progress for onboarding flows?", "answer": "Progress is a display component — it shows how far along something is. It doesn't provide navigation between steps or form state. A Stepper or Wizard provides the navigation scaffolding; Progress can be used inside it as a visual indicator." }
+      ]
+    },
+    {
+      "id": "JOB-DATA-ENTRY",
+      "number": 19,
+      "title": "Build a data entry surface",
+      "source_file": "vois-components/references/forms-and-process.md",
+      "framing": "You need a structured container for form fields.",
+      "decision_tree": [
+        { "condition": "Simple form, all fields in one place, one submit action", "recommendation": "Form (standard HTML form element with shadcn Form wrapper for validation)" },
+        { "condition": "Complex form with grouped sections (billing address, shipping address separately)", "recommendation": "Form with multiple FormSection/Fieldset groups inside it" },
+        { "condition": "Single field used outside a full form (inline edit, quick update)", "recommendation": "Standalone Field with its own validation state (no Form wrapper required)" }
+      ],
+      "rationale": [
+        { "question": "Why not FormProvider for everything?", "answer": "FormProvider (or shadcn's Form) sets up a react-hook-form context. For a single field with basic controlled state, that's excess infrastructure. Use it when you have 3+ fields with cross-field validation." },
+        { "question": "Why not nested Forms?", "answer": "HTML doesn't allow nested <form> elements. If you need multiple independent submission targets on one page, use <form> elements that are siblings, not nested." }
+      ]
+    },
+    {
+      "id": "JOB-SWITCH-VIEWS",
+      "number": 5,
+      "title": "Switch between views or filter to a subset",
+      "source_file": "vois-components/references/navigation-and-switching.md",
+      "framing": "The user needs to navigate between distinct views or filter content into categories.",
+      "decision_tree": [
+        { "condition": "Switching between distinct pages or major content areas (Settings: Profile, Billing, Members)", "recommendation": "Tabs (persistent selection, full content swap)" },
+        { "condition": "Filtering a list or data set to a category (All / Active / Archived)", "sub_branches": [
+          { "condition": "2–4 options, mutually exclusive", "recommendation": "Segmented Control (or Tabs styled as pills)" },
+          { "condition": "5+ options or options that change dynamically", "recommendation": "Select or Combobox (see Job 6)" }
+        ] },
+        { "condition": "Applying non-exclusive labels or types to items (tagging, multi-select filter)", "recommendation": "Checkbox group or Badge filters (not Tabs — Tabs are always mutually exclusive)" }
+      ],
+      "rationale": [
+        { "question": "Why not Segmented Control for major navigation?", "answer": "Segmented Control is for filtering, not navigation. It communicates \"I'm narrowing this view\" not \"I'm going somewhere new.\" For content areas with meaningfully different layouts or enough content to warrant their own visual space, use Tabs." },
+        { "question": "Why not Pills/Tabs for many options?", "answer": "Tabs should be visible all at once — scrolling tabs are a bad pattern. If you have more than 5–6 options, switch to a Select or Combobox so the user can find their option without horizontal scrolling." }
+      ]
+    },
+    {
+      "id": "JOB-NAVIGATION-POSITION",
+      "number": 17,
+      "title": "Indicate position in a hierarchy and enable backtracking",
+      "source_file": "vois-components/references/navigation-and-switching.md",
+      "framing": "The user has navigated into a nested view and needs to know where they are and how to get back.",
+      "decision_tree": [
+        { "condition": "User is 2+ levels deep in a hierarchy (Settings > Workspace > Members)", "recommendation": "Breadcrumb (shows full path, every item is a link)" },
+        { "condition": "User is 1 level deep, came from a specific list or context", "recommendation": "Back link (single arrow + parent page name — simpler than a breadcrumb)" },
+        { "condition": "User is on a top-level page with sibling pages", "recommendation": "Navigation (sidebar or top nav — breadcrumb isn't needed at the top level)" }
+      ],
+      "rationale": [
+        { "question": "Why not Breadcrumb for 1-level deep?", "answer": "A breadcrumb showing \"Home > Current Page\" is almost always unnecessary. A single back link is cleaner. Only use Breadcrumb when there are 3+ meaningful levels to display." },
+        { "question": "Why not a back button (browser back)?", "answer": "Relying on browser history means the back destination changes depending on how the user got there. An explicit back link always goes to the correct parent, regardless of navigation history." }
+      ]
+    },
+    {
+      "id": "JOB-OVERLAY-INTERACTION",
+      "number": 3,
+      "title": "Contain a focused overlay interaction",
+      "source_file": "vois-components/references/overlays-and-containers.md",
+      "framing": "The user needs to complete an interaction without leaving the current context.",
+      "decision_tree": [
+        { "condition": "Short, self-contained task (confirm, quick form, select one thing)", "sub_branches": [
+          { "condition": "1–4 fields or a single decision", "recommendation": "Dialog" },
+          { "condition": "Destructive or consequential", "recommendation": "AlertDialog (see Job 1)" }
+        ] },
+        { "condition": "Longer task, needs more screen space, or relates to an item in a list", "sub_branches": [
+          { "condition": "User will likely want to see the page behind it while working", "recommendation": "Sheet (right-anchored, partial overlap)" },
+          { "condition": "User needs full attention on the task", "recommendation": "Drawer (full-height, slides from bottom on mobile)" }
+        ] },
+        { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (action sheet pattern on mobile)" }
+      ],
+      "rationale": [
+        { "question": "Why not Dialog for longer tasks?", "answer": "Dialogs are centered and feel disconnected from the data they relate to. A Sheet keeps spatial proximity to the list or item that triggered it." },
+        { "question": "Why not Drawer on desktop for simple tasks?", "answer": "Drawers take up significant screen real estate. A Dialog is faster to close and draws less visual weight for simple interactions." }
+      ],
+      "at_a_glance": {
+        "title": "Dialog vs Sheet at a glance",
+        "items": [
+          "Dialog: task is self-contained, user doesn't need context from the page behind it",
+          "Sheet: task is contextual, user may want to reference the list/item that triggered it"
+        ]
+      }
+    },
+    {
+      "id": "JOB-CONTAIN-CONTENT",
+      "number": 4,
+      "title": "Contain a unit of content",
+      "source_file": "vois-components/references/overlays-and-containers.md",
+      "framing": "You need a surface to group related content or data into a discrete visual block.",
+      "decision_tree": [
+        { "condition": "Content is interactive (user can click, expand, or take action on it)", "sub_branches": [
+          { "condition": "Standard container for items", "recommendation": "Card (has header, body, optional footer)" },
+          { "condition": "The card itself is the primary action target", "recommendation": "Make the whole card clickable" }
+        ] },
+        { "condition": "Content is a named section of a larger page (not a standalone item)", "recommendation": "Use semantic HTML section + heading, not a Card" },
+        { "condition": "Content is a workspace panel, tool pane, or persistent sidebar section", "recommendation": "Surface / Panel (workspace-specific — check manifest)" }
+      ],
+      "rationale": [
+        { "question": "Why not wrap everything in a Card?", "answer": "Card implies a discrete, potentially interactive item. Using it for every group of content on a page flattens the visual hierarchy. Named sections with headings use semantic structure to create the same grouping without a card border." }
+      ]
+    },
+    {
+      "id": "JOB-SECONDARY-CONTENT",
+      "number": 20,
+      "title": "Host secondary content or persistent navigation",
+      "source_file": "vois-components/references/overlays-and-containers.md",
+      "framing": "You need a surface to contain secondary content, tools, or navigation that doesn't belong in the main content area.",
+      "decision_tree": [
+        { "condition": "Persistent navigation (app-level, always visible on desktop)", "recommendation": "Sidebar (navigation variant — always rendered, collapsible)" },
+        { "condition": "Contextual detail or tools related to a selected item (inspector, properties)", "sub_branches": [
+          { "condition": "User triggered it explicitly (clicked a button or item)", "recommendation": "Sheet (slides in from edge)" },
+          { "condition": "Always visible when an item is selected", "recommendation": "Panel (persistent secondary pane)" }
+        ] },
+        { "condition": "Temporary overlay for a task (mobile nav, filters on mobile, multi-step task)", "recommendation": "Drawer (full-height slide-in, closes when done)" }
+      ],
+      "rationale": [
+        { "question": "Why not Drawer for persistent navigation?", "answer": "Drawer is temporary — it opens for a task and closes. Navigation that the user returns to repeatedly shouldn't require reopening every time. Use a collapsible Sidebar instead." },
+        { "question": "Why not Sidebar for contextual tools?", "answer": "A Sidebar is structural — it's part of the page layout. A Sheet or Panel is contextual — it's related to whatever the user selected. Mixing these makes the layout feel unstable, as the Sidebar width would change based on user actions." }
+      ],
+      "at_a_glance": {
+        "title": "Sheet vs Drawer",
+        "items": [
+          "Sheet: slides in from the right edge, partial overlap, user can still see the page behind it",
+          "Drawer: typically from the bottom on mobile, conveys a distinct task mode"
+        ]
+      }
+    },
+    {
+      "id": "JOB-CHOOSE-FROM-LIST",
+      "number": 6,
+      "title": "Let the user choose from a known list",
+      "source_file": "vois-components/references/selection-and-input.md",
+      "framing": "The user needs to select one or more items from a predefined set.",
+      "decision_tree": [
+        { "condition": "Short list (under 8 items), no search needed, single select", "recommendation": "Select (dropdown, keyboard navigable)" },
+        { "condition": "Long list (8+ items) OR user might not know the exact option name", "recommendation": "Combobox (Select + search input, filters as user types)" },
+        { "condition": "User needs to search across multiple data types or trigger actions (not just pick a value)", "recommendation": "Command (palette-style, supports search + sections + keyboard shortcuts)" },
+        { "condition": "Only 2 options", "recommendation": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices" }
+      ],
+      "rationale": [
+        { "question": "Why not Combobox for short lists?", "answer": "Combobox adds a text input that implies searching. For short lists where all options are visible immediately, a Select is simpler and has less friction." },
+        { "question": "Why not Command for standard selection?", "answer": "Command is a power-user tool. It's appropriate for global search, action launchers, and complex filtering. Using it for a straightforward form field pick creates cognitive overhead for a task that doesn't warrant it." }
+      ]
+    },
+    {
+      "id": "JOB-ACCEPT-TEXT",
+      "number": 9,
+      "title": "Accept text input from the user",
+      "source_file": "vois-components/references/selection-and-input.md",
+      "framing": "The user needs to enter text as part of a form or interaction.",
+      "decision_tree": [
+        { "condition": "Single line of text (name, email, search, number, URL)", "recommendation": "Input" },
+        { "condition": "Multi-line text without formatting (description, notes, feedback)", "sub_branches": [
+          { "condition": "1–3 lines expected", "recommendation": "Textarea (set rows attribute to hint at expected length)" },
+          { "condition": "4+ lines expected", "recommendation": "Textarea with auto-resize or fixed height + scroll" }
+        ] },
+        { "condition": "Formatted text (bold, lists, links — where formatting matters to the user)", "recommendation": "RichTextEditor (workspace-specific — check manifest; typically Tiptap or similar)" }
+      ],
+      "rationale": [
+        { "question": "Why not Textarea for everything?", "answer": "Single-line inputs set a clear expectation for the user about what kind of response is expected. \"Email address\" in a Textarea is confusing — it implies more content is expected than an email address provides. Match the input shape to the expected content." },
+        { "question": "Why not RichTextEditor by default?", "answer": "Rich text editors are heavy, harder to validate, and produce HTML or markdown that your backend needs to handle. Only use them when the formatting itself is meaningful to the user's task — product descriptions, long-form notes, content creation." }
+      ]
+    },
+    {
+      "id": "JOB-BINARY-PREFERENCE",
+      "number": 10,
+      "title": "Capture a binary preference",
+      "source_file": "vois-components/references/selection-and-input.md",
+      "framing": "The user needs to turn something on or off, or agree or disagree.",
+      "decision_tree": [
+        { "condition": "Setting takes effect immediately (no save button required)", "recommendation": "Switch (or Toggle — same semantic, check your manifest)" },
+        { "condition": "Setting is part of a form submitted later", "sub_branches": [
+          { "condition": "One option in a group of related options", "recommendation": "Checkbox" },
+          { "condition": "Single standalone agree/consent", "recommendation": "Checkbox (not Switch — Switch implies immediate effect)" }
+        ] },
+        { "condition": "Mutually exclusive choice between two options in a form", "recommendation": "Radio buttons (not Checkbox — Checkbox implies multi-select is possible)" }
+      ],
+      "rationale": [
+        { "question": "Why not Switch for form fields?", "answer": "Switch communicates immediate effect — the moment the user flips it, something changes. In a form with a submit button, the user expects nothing to change until they submit. Using a Switch in that context sends a mixed signal." },
+        { "question": "Why not Checkbox for toggles in settings?", "answer": "Checkbox requires submitting a form or clicking a button to apply. For settings that should apply in real time (dark mode, notifications, sidebar collapsed), Switch communicates immediacy correctly." }
+      ]
+    }
+  ]
+}
