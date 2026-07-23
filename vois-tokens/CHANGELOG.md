@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.9.1] — 2026-07-23
+
+### Fixed
+
+- **`references/iconography.md` — removed a dangling cross-reference.** `DS-ICON-002` cited `[DS-CSS-008]` as "the same tolerance rule as spacing," but no `DS-CSS-008` rule exists (`css-architecture.md` tops out at `DS-CSS-007`), and `spacing.md`'s actual rule (`DS-SPACING-001`) states divisibility by 4/8 with "no exceptions" — not a rounding tolerance. The claim didn't match any real rule, in either the referenced file or the one it meant to point to, so the citation and the unsupported parallel were both removed. `DS-ICON-002`'s own instruction (round to the nearest icon size) is unaffected and stands on its own.
+
+---
+
 ## [1.9.0] — 2026-07-23
 
 ### Added
