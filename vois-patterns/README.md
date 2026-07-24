@@ -221,7 +221,10 @@ If you notice a recurring structure that's not covered:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2026-05-12 | Initial release with 5 core templates |
-| (future) | TBD | Improvements based on usage data |
+| 1.3.0 | 2026-06-17 | Split `SKILL.md` into a slim entry point plus per-topic `references/` files |
+| 1.4.0 | 2026-07-21 | Standalone-safe: MCP telemetry calls are optional; no longer assumes `vois-router` |
+| 1.5.0 | 2026-07-23 | Added `data/patterns-rules.json` structured lookup |
+| 1.5.1 | 2026-07-23 | Fixed MCP tool names and call argument shape |
 
 See `CHANGELOG.md` for detailed rationale on each update.
 
@@ -266,6 +269,6 @@ If you have questions about a pattern or need clarification:
 
 ---
 
-**Last updated:** 2026-07-21  
-**Skill version:** 1.4.0  
+**Last updated:** 2026-07-23  
+**Skill version:** 1.5.1  
 **Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`vois_record_pattern_choice`, `vois_report_pattern_gap`) are optional.
