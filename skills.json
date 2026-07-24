@@ -23,7 +23,7 @@
     {
       "name": "vois-tokens",
       "path": "vois-tokens",
-      "version": "1.9.1",
+      "version": "1.10.0",
       "author": "Personify Labs",
       "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract. Works standalone — no orchestrator required.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation"]

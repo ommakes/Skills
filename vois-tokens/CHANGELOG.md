@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.10.0] — 2026-07-24
+
+### Added
+
+- **`references/anti-slop.md` — `DS-SLOP-010` (card-ifying everything).** Wrapping every static section, list, or grouped field set in its own bordered-and-shadowed card is a default AI reach. Drop shadows are a cue for interactivity and belong on things a user picks up, hovers, or acts on — not on static page sections. Visual alignment and spacing rhythm alone are usually enough to signal grouping.
+- **`references/anti-slop.md` — `DS-SLOP-011` (over-styled active/selected states).** A colored left border plus a corner radius on an active sidebar/nav item is a combination that gets uglier the more it's compounded (a border and drop shadow stacked on top makes it worse). Hover, selected, and active navigation states rarely need more than a subtle background- or text-color shift.
+- Both rules added to the Pre-Submit Checklist in `SKILL.md` and `references/anti-slop.md`. Judgment-only, like the rest of the `DS-SLOP-*` family — not indexed in `data/vois-rules.json`.
+
+### Changed
+
+- **Version bump:** `1.9.1` → `1.10.0`
+
+---
+
 ## [1.9.1] — 2026-07-23
 
 ### Fixed

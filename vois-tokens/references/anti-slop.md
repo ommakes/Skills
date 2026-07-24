@@ -93,6 +93,27 @@ Judgment-only by design — the mechanical detector cannot tell a well-set
 editorial dash from a slop one, so it does not try. Route any copy this rule
 touches through **righter**, which owns the final call on prose.
 
+### `[DS-SLOP-010]` Card-ifying everything
+Wrapping every section, list, or grouped set of fields in its own
+bordered-and-shadowed "card" container is a default reach for structure that
+hasn't been earned. A drop shadow is a cue for *interactivity* — it belongs on
+things a user picks up, hovers, or acts on (buttons, draggable items,
+popovers, dropdown menus), not on static page sections used purely to group
+content. Visual alignment and a consistent spacing rhythm are usually enough
+to signal "these belong together" on their own. Reach for a card only when the
+content genuinely needs to look liftable or separable from the page (a
+dashboard widget, a draggable item) — not as the default container for every
+group.
+
+### `[DS-SLOP-011]` Over-styled active/selected states
+A colored left border plus a corner radius on an active sidebar or nav item is
+a combination that gets uglier the more it's compounded — stacking a border
+and a drop shadow on top of it makes it worse, not more polished. Hover,
+selected, and active navigation states rarely need more than a subtle
+background-color or text-color shift to read clearly. Reserve borders and
+shadows for cases that need a stronger, more literal separation; don't reach
+for them as the default way to mark "this one is active."
+
 ---
 
 ## Pre-submit additions
@@ -108,3 +129,5 @@ Fold these into the build's Pre-Submit pass alongside the main checklist:
 - [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
 - [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
 - [ ] Em-dash density appropriate to context (righter owns prose) `[DS-SLOP-009]`
+- [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
+- [ ] No left-border + corner-radius combo (especially with a shadow) on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
