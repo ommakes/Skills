@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
-version: 1.3.0
+version: 1.3.1
 ---
 
 # Righter
@@ -24,23 +24,29 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 
 ## How to Use This Skill
 
-**If a `get_microcopy` tool is available in your environment, call it first before writing or reviewing any copy.**
+**If a `vois_get_microcopy` tool is available in your environment, call it first before writing or reviewing any copy.**
 
-The `get_microcopy` MCP tool returns workspace-specific copy rules, approved terminology, and tone overrides that take precedence over the general principles in this skill. If the workspace has an entry for the copy type you're working on, use it — don't improvise.
+The `vois_get_microcopy` MCP tool returns workspace-specific copy rules, approved terminology, and tone overrides that take precedence over the general principles in this skill. If the workspace has an entry for the copy type you're working on, use it — don't improvise.
 
 ```
-Tool: get_microcopy
+Tool: vois_get_microcopy
 Arguments:
-  context: <what the copy is for, e.g. "empty state for token list", "error on form submit">
-  copy_type: <one of: label | cta | error | empty_state | tooltip | placeholder | helper_text | toast | modal_title | modal_body>
+  context: <description of the UI context, e.g. "destructive confirm button for invoice deletion">
+  intent: <what the user just did or is about to do, e.g. "user clicked Delete on an invoice list row">
+  constraints: <optional object>
+    maxLength: <optional positive integer — maximum character count>
+    placement: <optional one of: button | title | description | helper | toast | error | label>
+    tone: <optional one of: neutral | warning | celebratory>
 ```
 
-**Resolution order:**
-1. Workspace override (from `get_microcopy`) — use this if returned, no changes
-2. Knowledge base match (from `get_microcopy`) — apply as a strong starting point, adapt if needed
-3. LLM fallback — `get_microcopy` isn't available, or is available but returns nothing; apply the principles in this skill directly
+There is no `copy_type` argument on the real tool — `context` and `intent` are both required; `placement` (nested under `constraints`, and a different set of values than "copy type") is the closest equivalent, and it's optional.
 
-When falling back to the principles, note it at the top of your output: `Source: LLM fallback — no get_microcopy tool available, or no workspace/knowledge base match for this copy type.`
+**Resolution order (returned as `provenance` on the response):**
+1. `WORKSPACE_OVERRIDE` — use this verbatim, no changes
+2. `KNOWLEDGE_BASE` — apply as a strong starting point, adapt if needed
+3. `LLM_FALLBACK` / `NO_MATCH` / tool not available — apply the principles in this skill directly
+
+When falling back to the principles, note it at the top of your output: `Source: LLM fallback — no vois_get_microcopy tool available, or no workspace/knowledge base match for this copy type.`
 
 When the tool is available, it logs every query. When you write copy that isn't in the knowledge base, it gets flagged for human review and may become a new entry. This is how the system improves — this logging has no effect on how you should write or review copy either way.
 
@@ -50,14 +56,14 @@ When the tool is available, it logs every query. When you write copy that isn't 
 
 ### Mode 1: Review Existing Copy
 For each piece of content:
-1. If `get_microcopy` is available, call it with the relevant context
+1. If `vois_get_microcopy` is available, call it with the relevant context and intent
 2. Check against the review checklist below
 3. Identify every violation
 4. Rewrite it
 5. Output in the review format below
 
 ### Mode 2: Write New Copy
-1. If `get_microcopy` is available, call it with the relevant context
+1. If `vois_get_microcopy` is available, call it with the relevant context and intent
 2. Apply all relevant principles
 3. For labels, CTAs, and microcopy: query `data/phonaesthetics.json` and apply sound guidance
 4. Output in the new copy format below
@@ -117,7 +123,7 @@ Use this block for every piece of copy reviewed:
 
 ## UX Writing Principles
 
-Apply all of these when reviewing or writing. These are the fallback when `get_microcopy` returns no match.
+Apply all of these when reviewing or writing. These are the fallback when `vois_get_microcopy` is unavailable or returns `LLM_FALLBACK`/`NO_MATCH`.
 
 ### 1. Use active voice
 Subject → verb → object. Active voice is shorter and easier to follow.
@@ -326,7 +332,7 @@ Round to one decimal place. Always include grade and age range.
 Run through this for every piece of copy before finalizing.
 
 **Before starting**
-- [ ] If available, called `get_microcopy` and checked for workspace/knowledge base match?
+- [ ] If available, called `vois_get_microcopy` (with `context` and `intent`) and checked the returned `provenance` for a workspace/knowledge-base match?
 
 **Voice and structure**
 - [ ] Passive voice present?

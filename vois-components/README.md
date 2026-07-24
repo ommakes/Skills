@@ -19,10 +19,10 @@ The skill covers 20 high-ambiguity component pairs organized by job, with decisi
 1. After you've read `vois-patterns` and decided on a container type
 2. For each component you need to pick, find the matching job section below
 3. Walk the decision tree to a specific component name
-4. If a `record_component_choice` MCP tool is available in your environment, call it with your selection
+4. If a `vois_record_component_choice` MCP tool is available in your environment, call it with your selection
 5. Then read `vois-tokens` for implementation (tokens, spacing, accessibility)
 
-**If the `record_component_choice` tool is available, don't skip the call** — it feeds the self-improving design system. If the tool isn't available, just proceed with your selection.
+**If the `vois_record_component_choice` tool is available, don't skip the call** — it feeds the self-improving design system. If the tool isn't available, just proceed with your selection.
 
 ## The 20 Jobs Covered
 
@@ -61,7 +61,7 @@ These rubrics use standard shadcn/ui names. Your workspace may have custom or ex
 
 **Important:** Use the rubric logic (the decision tree) to make your selection. Then record the workspace-specific component name if it differs from the shadcn base.
 
-Example: your workspace has a `Banner` component instead of `Alert`. The job "Show transient feedback" still applies; you just record `Banner` instead of `Alert` when calling `record_component_choice` (if that tool is available).
+Example: your workspace has a `Banner` component instead of `Alert`. The job "Show transient feedback" still applies; you just record `Banner` instead of `Alert` when calling `vois_record_component_choice` (if that tool is available).
 
 ## Maintenance
 
@@ -73,7 +73,7 @@ When a component is deprecated in your workspace manifest, any rubric mentioning
 
 ## Instrumentation (optional)
 
-If a `record_component_choice` MCP tool is available in your environment, every component selection should emit an event through it. This data feeds:
+If a `vois_record_component_choice` MCP tool is available in your environment, every component selection should emit an event through it. This data feeds:
 - The self-improving design system reconciler
 - Quarterly rubric reviews
 - Component usage analytics
@@ -88,13 +88,13 @@ If the tool isn't available, this skill still works standalone — just make the
 
 ## Version
 
-**v1.3.0** — Works standalone; MCP telemetry calls (`record_component_choice`, `report_pattern_gap`) are optional.
+**v1.3.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 
-If a job doesn't match what you're building and a `report_pattern_gap` tool is available, call it with details — these reports feed future versions of this skill. If the tool isn't available, just note the gap yourself and proceed with the closest match.
+If a job doesn't match what you're building and a `vois_report_pattern_gap` tool is available, call it with details — these reports feed future versions of this skill. If the tool isn't available, just note the gap yourself and proceed with the closest match.
 
-If you think a decision tree is ambiguous or incomplete and `record_component_choice` is available, note it when you call it with reasoning — that feedback helps calibrate the rubrics.
+If you think a decision tree is ambiguous or incomplete and `vois_record_component_choice` is available, note it when you call it with reasoning — that feedback helps calibrate the rubrics.
 
 ---
 

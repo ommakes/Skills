@@ -268,4 +268,4 @@ If you have questions about a pattern or need clarification:
 
 **Last updated:** 2026-07-21  
 **Skill version:** 1.4.0  
-**Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`record_pattern_decision`, `report_pattern_gap`) are optional.
+**Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`vois_record_pattern_choice`, `vois_report_pattern_gap`) are optional.

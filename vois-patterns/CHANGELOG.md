@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.5.1] - 2026-07-23
+
+**Fix** | Corrected `record_pattern_decision` → `vois_record_pattern_choice` and `report_pattern_gap` → `vois_report_pattern_gap` (the real registered MCP tool names) across SKILL.md, README.md, and references/microcopy-routing.md. Also fixed the example call's argument shape — the real tool takes `skillVersion`/`pathId`/`userGoal`/`thresholdInputs`, not `pathId`/`confidence`/`reasoning` (`confidence` doesn't exist on the real tool). The "optional if available" framing is unchanged.
+
+---
+
 ## [1.5.0] - 2026-07-23
 
 ### Added

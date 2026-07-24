@@ -10,7 +10,7 @@ npx skills add ommakes/Skills
 
 ## Design System Skills (Read in Order)
 
-These four skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens, with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`record_pattern_decision`, `record_component_choice`, `vois_record_rule_usage`, `get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
+These four skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens, with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`vois_record_pattern_choice`, `vois_record_component_choice`, `vois_record_rule_usage`, `vois_get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
 
 ### Vois Patterns
 Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. 
@@ -30,7 +30,7 @@ Component selection rubrics organized by job-to-be-done. Covers 20 high-ambiguit
 
 **Read second** (after vois-patterns determines structure) to pick the right specific component for each job.
 
-**Use when:** you need to decide between similar components — which one actually fits what you're building? Optionally calls `record_component_choice` after selecting, if that tool is available.
+**Use when:** you need to decide between similar components — which one actually fits what you're building? Optionally calls `vois_record_component_choice` after selecting, if that tool is available.
 
 Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigation, display, selection, overlays, feedback) — `SKILL.md` holds the quick-reference table and job index, references hold the full decision trees.
 
@@ -54,7 +54,7 @@ Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, 
 ---
 
 ### Righter
-UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. If a `get_microcopy` MCP tool is available, calls it first to check workspace-specific overrides before writing — otherwise applies the skill's principles directly.
+UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. If a `vois_get_microcopy` MCP tool is available, calls it first to check workspace-specific overrides before writing — otherwise applies the skill's principles directly.
 
 **Read throughout.** Vois Patterns and Vois Components route to this skill for all copy — button labels, error messages, field descriptions, helper text, status labels, empty states, toasts, confirmations.
 

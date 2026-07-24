@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.5.0
+version: 1.5.1
 ---
 
 # Vois Patterns Skill
@@ -19,24 +19,27 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
 1. **What is the user trying to accomplish?** (Dashboard overview? Edit a record? Confirm an action?)
 2. **Pick the container type** from the decision tree below.
 3. **Read the matching reference file** for full template rules.
-4. **If a `record_pattern_decision` tool is available in your environment**, call it once you have picked a path, before writing any code. If it isn't available, this step is optional telemetry, not a gate — proceed to the next step.
+4. **If a `vois_record_pattern_choice` tool is available in your environment**, call it once you have picked a path, before writing any code. If it isn't available, this step is optional telemetry, not a gate — proceed to the next step.
 
    ```
-   Tool: record_pattern_decision
+   Tool: vois_record_pattern_choice
    Arguments:
-     pathId: <one of the path IDs listed in the decision tree below>
-     confidence: <0.0–1.0 — how clearly the UI fits this path>
-     reasoning: <one sentence on why you chose this path>
+     skillVersion: <this skill's version, from SKILL.md frontmatter>
+     pathId: <one of the path IDs listed in the decision tree below, e.g. "PATH-A" or "PATH-C-MEDIUM">
+     userGoal: <plain-English description of the user goal this path addresses>
+     thresholdInputs: <key decision inputs used to walk the tree, e.g. { "sectionCount": 3, "reversible": false }>
+     microcopyUsed: <optional array of contextKeys for any righter microcopy consulted while applying this pattern>
    ```
 
-   If no path fits well (confidence below 0.6) and a `report_pattern_gap` tool is available, call it instead of forcing a match:
+   There is no `confidence` argument on the real tool — decide fit using the thresholds in the decision tree itself. If no path fits well and a `vois_report_pattern_gap` tool is available, call it instead of forcing a match:
 
    ```
-   Tool: report_pattern_gap
+   Tool: vois_report_pattern_gap
    Arguments:
-     description: <what the UI needs to do>
-     closestPathId: <the closest match even if it doesn't fit>
-     gapDescription: <what the templates don't cover>
+     skillVersion: <this skill's version, from SKILL.md frontmatter>
+     userGoal: <plain-English description of the goal that didn't fit>
+     attemptedFallback: <closest path ID used as a fallback, even though it doesn't fit>
+     reasoning: <why the available decision tree didn't fit this goal>
    ```
 
    If neither tool is available, just proceed with your best-fit path and note the low confidence in your own output.
@@ -109,7 +112,7 @@ For exact Tailwind class names and token values, see vois-tokens.
 # Quick Checklist Before Implementation
 
 - [ ] Container type selected (settings / table / form / dialog / detail)
-- [ ] `record_pattern_decision` called with pathId and confidence, if that tool is available
+- [ ] `vois_record_pattern_choice` called with `skillVersion`, `pathId`, `userGoal`, and `thresholdInputs`, if that tool is available
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
 - [ ] All copy routed to righter skill and reviewed
@@ -131,7 +134,7 @@ For exact Tailwind class names and token values, see vois-tokens.
 
 - After picking a container type here, read vois-components to select specific components
 - vois-components resolves ambiguous pairs — Dialog vs Drawer, Toast vs Banner, Select vs Combobox
-- If a `record_component_choice` tool is available, call it after selecting; if not, this step is optional telemetry
+- If a `vois_record_component_choice` tool is available, call it after selecting; if not, this step is optional telemetry
 
 **This skill ↔ righter skill:**
 
