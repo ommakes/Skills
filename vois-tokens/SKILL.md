@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.9.1
+version: 1.10.0
 ---
 
 # Vois Tokens Skill
@@ -176,6 +176,8 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
 - [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
 - [ ] Em-dash density appropriate to context — righter owns prose `[DS-SLOP-009]`
+- [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
+- [ ] No left-border + corner-radius combo (especially with a shadow) on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
 
 ---
 
