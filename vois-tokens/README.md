@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.8.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.9.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
@@ -78,6 +78,8 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.9.1** — Removed a dangling cross-reference in `references/iconography.md` (`DS-ICON-002` cited a nonexistent `DS-CSS-008`).
+- **1.9.0** — `data/vois-rules.json` (structured lookup for all 102 numbered `DS-*` rules) and `data/tokens.json` (actual token values), for lookup without reading full reference files.
 - **1.8.0** — MCP telemetry (`vois_record_rule_usage`) is now optional; the no-silent-changes contract's redesign classification is self-contained instead of pointing to `vois-router`. Works fully standalone.
 - **1.7.0** — `references/anti-slop.md` DS-SLOP-* rule family, taste-dial consumption, no-silent-changes contract.
 - **1.6.0** — Deterministic `scripts/detect.mjs` detector for the mechanically-checkable subset of the Pre-Submit Checklist, plus a per-edit hook (Claude Code, Cursor, Codex) and `hook-admin.mjs` CLI. New `references/hooks.md`.

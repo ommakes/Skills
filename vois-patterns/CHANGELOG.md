@@ -180,8 +180,7 @@ All feedback feeds into the analysis loop for the next version.
 
 | Version | Status | Stability | Last Updated |
 |---------|--------|-----------|--------------|
-| 1.0.0 | Active | Stable | 2026-05-12 |
-| 1.1.0 | Planned | N/A | TBD |
+| 1.5.1 | Active | Stable | 2026-07-23 |
 
 ---
 
@@ -194,5 +193,5 @@ All feedback feeds into the analysis loop for the next version.
 
 ---
 
-**Last updated:** 2026-05-12  
-**Current version:** 1.0.0
+**Last updated:** 2026-07-23  
+**Current version:** 1.5.1
