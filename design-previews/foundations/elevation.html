@@ -1,0 +1,47 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Elevation</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .tier { border-radius: var(--radius-lg); background: var(--color-surface); padding: var(--space-24); text-align: center; }
+  .scrim-demo { position: relative; height: 160px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-muted); }
+  .scrim-demo .scrim { position: absolute; inset: 0; background: var(--shadow-scrim); display: flex; align-items: center; justify-content: center; }
+  .scrim-demo .modal-card { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-modal); padding: var(--space-16) var(--space-24); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Elevation</span>
+    <h1 class="h1">Elevation</h1>
+    <p class="text-description">Exactly four tiers. Don't invent a fifth &mdash; if something needs to feel "more elevated" than Modal, the problem is the layout, not the shadow.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-grid">
+      <div class="tier" style="box-shadow: var(--shadow-flat);"><div class="kit-panel-label">Flat</div>none &mdash; inline content</div>
+      <div class="tier" style="box-shadow: var(--shadow-raised);"><div class="kit-panel-label">Raised</div>buttons, inputs at rest</div>
+      <div class="tier" style="box-shadow: var(--shadow-overlay);"><div class="kit-panel-label">Overlay</div>popovers, dropdowns, toasts</div>
+      <div class="tier" style="box-shadow: var(--shadow-modal);"><div class="kit-panel-label">Modal</div>dialogs, sheets, drawers</div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Modal scrim</h2>
+    <div class="scrim-demo">
+      <div class="scrim"><div class="modal-card h4">Content sits above --shadow-scrim (oklch(0 0 0 / 0.4))</div></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

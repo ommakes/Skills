@@ -1,0 +1,38 @@
+<!-- @dsCard group="Patterns" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Form, simple</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern C · Form · tier 1, 1&ndash;6 fields</span>
+    <h1 class="h1">Form &mdash; simple</h1>
+    <p class="text-description">Single column, 24px between fields. No grouping, no tabs &mdash; sectioning six fields would invent structure that doesn't exist.</p>
+  </div>
+
+  <form style="max-width: 420px; display:flex; flex-direction:column; gap: var(--space-24);" onsubmit="return false;">
+    <div class="field"><label>Project name</label><input class="input" placeholder="Q3 roadmap"></div>
+    <div class="field"><label>Description</label><textarea class="textarea" placeholder="What is this project for?"></textarea></div>
+    <div class="field"><label>Owner</label><input class="input" placeholder="Ada Lovelace"></div>
+    <div class="field"><label>Visibility</label>
+      <select class="input"><option>Private</option><option>Team</option><option>Public</option></select>
+    </div>
+    <div class="dialog-footer" style="margin-top:0;">
+      <button type="button" class="btn btn-secondary">Cancel</button>
+      <button type="submit" class="btn btn-primary">Create project</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

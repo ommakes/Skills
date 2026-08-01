@@ -1,0 +1,47 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Typography</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .type-row { display: flex; align-items: baseline; gap: var(--space-24); padding: var(--space-16) 0; border-bottom: 1px solid var(--color-border); }
+  .type-meta { flex: none; width: 180px; font-family: var(--font-mono); font-size: 12px; color: var(--color-muted-foreground); }
+  .type-sample { flex: 1; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Typography</span>
+    <h1 class="h1">Typography</h1>
+    <p class="text-description">H0&ndash;H6, Body, and Description &mdash; each tied to a specific job, not a visual preference. Font family is a role token (--font-heading / --font-body / --font-mono); the workspace supplies the real family, this kit uses the system UI stack.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="type-row"><div class="type-meta">H0 &middot; 52/64 bold</div><div class="type-sample h0">Page title, once per screen</div></div>
+    <div class="type-row"><div class="type-meta">H1 &middot; 36/44 semibold</div><div class="type-sample h1">Page sections</div></div>
+    <div class="type-row"><div class="type-meta">H2 &middot; 24/32 semibold</div><div class="type-sample h2">Modal titles, core actions</div></div>
+    <div class="type-row"><div class="type-meta">H3 &middot; 18/26 semibold</div><div class="type-sample h3">Key data points, nav labels</div></div>
+    <div class="type-row"><div class="type-meta">H4 &middot; 16/24 semibold</div><div class="type-sample h4">Highlighted inline text, button labels</div></div>
+    <div class="type-row"><div class="type-meta">H5 &middot; 14/20 medium</div><div class="type-sample h5">Input labels, short descriptions</div></div>
+    <div class="type-row"><div class="type-meta">H6 &middot; 12/16 medium</div><div class="type-sample h6">Fine print, metadata</div></div>
+    <div class="type-row"><div class="type-meta">Body &middot; 16/24 normal</div><div class="type-sample" style="font-size: var(--text-body-size); line-height: var(--text-body-line);">Long-form or input content reads at Body size.</div></div>
+    <div class="type-row"><div class="type-meta">Description &middot; 14/20 normal</div><div class="type-sample text-description">Toast, alert, dialog, and popover descriptions read one step down from Body.</div></div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Mobile overrides (&le;640px)</h2>
+    <p class="kit-caption">H0 steps down to 40/56, H1 to 32/40. Resize this window below 640px to see the live change &mdash; everything else in the scale is fixed across breakpoints.</p>
+  </section>
+</div>
+</body>
+</html>

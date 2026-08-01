@@ -1,0 +1,44 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: card-ification</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .fake-card { box-shadow: var(--shadow-border); border-radius: var(--radius-lg); padding: var(--space-24); margin-bottom: var(--space-16); }
+  .plain-section { padding: var(--space-16) 0; border-bottom: 1px solid var(--color-border); }
+  .plain-section:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-010</span>
+    <h1 class="h1">Card-ifying every static section</h1>
+    <p class="text-description">Shadows are reserved for content that's interactive or genuinely discrete (Card, Job 4). Wrapping every static section in a shadowed box flattens the page's hierarchy &mdash; nothing reads as more important than anything else.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid</div>
+    <div class="fake-card"><p class="h4">About</p><p class="text-description">Static copy, no interaction &mdash; doesn't need a shadow.</p></div>
+    <div class="fake-card"><p class="h4">Team</p><p class="text-description">Also static.</p></div>
+    <div class="fake-card"><p class="h4">Contact</p><p class="text-description">Also static.</p></div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead</div>
+    <div class="plain-section"><p class="h4">About</p><p class="text-description">Semantic section + heading; spacing alone establishes hierarchy.</p></div>
+    <div class="plain-section"><p class="h4">Team</p><p class="text-description">No shadow needed &mdash; it's not a discrete, interactive unit.</p></div>
+    <div class="plain-section"><p class="h4">Contact</p><p class="text-description">The one interactive Card further down the page still stands out because it's rare.</p></div>
+  </section>
+</div>
+</body>
+</html>

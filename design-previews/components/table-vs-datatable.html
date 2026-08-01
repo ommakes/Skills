@@ -1,0 +1,83 @@
+<!-- @dsCard group="Data & Status" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Table vs DataTable</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 18 · Display data</span>
+    <h1 class="h1">Table vs DataTable</h1>
+    <p class="text-description">A plain Table implies the point is comparison across a handful of comparable attributes &mdash; under ~100 rows. Reaching for full DataTable infrastructure (sort, bulk actions, pagination) for 20 rows is overkill; reach for it once row count and interaction needs actually justify it.</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">Table &middot; &lt;100 rows, simple compare</h2>
+    <table class="kit-table">
+      <thead><tr><th>Plan</th><th>Price</th><th>Seats</th></tr></thead>
+      <tbody>
+        <tr><td>Starter</td><td>$12/mo</td><td>3</td></tr>
+        <tr><td>Team</td><td>$29/mo</td><td>10</td></tr>
+        <tr><td>Enterprise</td><td>Custom</td><td>Unlimited</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">DataTable &middot; 100+ rows, sortable, bulk actions</h2>
+    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: var(--space-12);">
+      <span class="text-description" id="selCount">0 selected</span>
+      <button class="btn btn-secondary" disabled id="bulkBtn">Archive selected</button>
+    </div>
+    <table class="kit-table" id="dt">
+      <thead><tr>
+        <th><input type="checkbox" onclick="toggleAll(this)"></th>
+        <th><button onclick="sortBy(0)">Customer &uarr;&darr;</button></th>
+        <th><button onclick="sortBy(1)">Signed up &uarr;&darr;</button></th>
+        <th><button onclick="sortBy(2)">MRR &uarr;&darr;</button></th>
+      </tr></thead>
+      <tbody id="dtBody">
+        <tr><td><input type="checkbox" onclick="updateCount()"></td><td>Acme Corp</td><td>2024-01-04</td><td>$2,400</td></tr>
+        <tr><td><input type="checkbox" onclick="updateCount()"></td><td>Globex</td><td>2023-11-19</td><td>$980</td></tr>
+        <tr><td><input type="checkbox" onclick="updateCount()"></td><td>Initech</td><td>2024-03-02</td><td>$5,120</td></tr>
+        <tr><td><input type="checkbox" onclick="updateCount()"></td><td>Umbrella</td><td>2023-08-27</td><td>$1,760</td></tr>
+      </tbody>
+    </table>
+    <p class="kit-caption">Sortable columns, row selection, bulk action &mdash; the infrastructure a &lt;100-row Table skips.</p>
+  </section>
+
+  <script>
+    function updateCount() {
+      const n = document.querySelectorAll('#dtBody input:checked').length;
+      document.getElementById('selCount').textContent = n + ' selected';
+      document.getElementById('bulkBtn').disabled = n === 0;
+    }
+    function toggleAll(box) {
+      document.querySelectorAll('#dtBody input[type=checkbox]').forEach(c => c.checked = box.checked);
+      updateCount();
+    }
+    let sortDir = {};
+    function sortBy(col) {
+      const tbody = document.getElementById('dtBody');
+      const rows = [...tbody.rows];
+      sortDir[col] = !sortDir[col];
+      rows.sort((a, b) => {
+        const av = a.cells[col + 1].textContent, bv = b.cells[col + 1].textContent;
+        return sortDir[col] ? av.localeCompare(bv) : bv.localeCompare(av);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    }
+  </script>
+</div>
+</body>
+</html>

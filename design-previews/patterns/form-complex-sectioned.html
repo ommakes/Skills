@@ -1,0 +1,58 @@
+<!-- @dsCard group="Patterns" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Form, complex sectioned</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .form-section { margin-bottom: var(--space-40); }
+  .form-section:last-of-type { margin-bottom: 0; }
+  .form-fields { display: flex; flex-direction: column; gap: var(--space-24); margin-top: var(--space-16); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern C · Form · tier 3, 15+ fields</span>
+    <h1 class="h1">Form &mdash; complex, sectioned</h1>
+    <p class="text-description">Fifteen-plus fields: grouped fieldsets, 24px within a section and 40px between sections. A nested &lt;form&gt; per section is invalid HTML &mdash; one form, several fieldsets.</p>
+  </div>
+
+  <form style="max-width: 480px;" onsubmit="return false;">
+    <fieldset class="form-section" style="border:none; padding:0; margin:0;">
+      <legend class="h4" style="margin-bottom: var(--space-8);">Company details</legend>
+      <div class="form-fields">
+        <div class="field"><label>Legal name</label><input class="input"></div>
+        <div class="field"><label>Tax ID</label><input class="input"></div>
+      </div>
+    </fieldset>
+    <fieldset class="form-section" style="border:none; padding:0; margin:0;">
+      <legend class="h4" style="margin-bottom: var(--space-8);">Billing address</legend>
+      <div class="form-fields">
+        <div class="field"><label>Street</label><input class="input"></div>
+        <div class="field"><label>City</label><input class="input"></div>
+        <div class="field"><label>Postal code</label><input class="input"></div>
+      </div>
+    </fieldset>
+    <fieldset class="form-section" style="border:none; padding:0; margin:0;">
+      <legend class="h4" style="margin-bottom: var(--space-8);">Notifications</legend>
+      <div class="form-fields">
+        <label class="switch"><input type="checkbox" checked><span class="track"></span>Invoice emails</label>
+      </div>
+    </fieldset>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

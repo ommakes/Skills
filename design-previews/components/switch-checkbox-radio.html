@@ -1,0 +1,50 @@
+<!-- @dsCard group="Selection & Input" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Switch vs Checkbox vs Radio</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 10 · Binary preference</span>
+    <h1 class="h1">Switch vs Checkbox vs Radio</h1>
+    <p class="text-description">Switch means "this changes right now" &mdash; no submit step. Checkbox means "this changes when I submit the form" or records consent. Radio means the options are mutually exclusive.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Switch &middot; takes effect immediately</div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="track"></span>
+          Email notifications
+        </label>
+        <p class="kit-caption">Toggling this fires the change now &mdash; no Save button involved.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Checkbox &middot; submitted with the form</div>
+        <div class="checkbox-row"><input type="checkbox" id="c1"><label for="c1">I agree to the terms of service</label></div>
+        <p class="kit-caption">Nothing happens until the surrounding form is submitted.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Radio &middot; mutually exclusive</div>
+        <div class="radio-row"><input type="radio" name="plan" id="r1" checked><label for="r1">Monthly billing</label></div>
+        <div class="radio-row"><input type="radio" name="plan" id="r2"><label for="r2">Annual billing</label></div>
+        <p class="kit-caption">Choosing one always deselects the other &mdash; can't hold both at once.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

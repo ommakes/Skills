@@ -1,0 +1,47 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: AI gradient hero</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .hero { border-radius: var(--radius-xl); padding: var(--space-64) var(--space-32); text-align: center; }
+  .hero-wrong { background: linear-gradient(135deg, #7c3aed, #4f46e5, #3b82f6); color: white; }
+  .hero-right { background: var(--color-surface); text-align: left; box-shadow: var(--shadow-border); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-002</span>
+    <h1 class="h1">The purple/indigo→blue "AI gradient" hero</h1>
+    <p class="text-description">This is the single anti-tell the token linter (vois-tokens/scripts/detect.mjs) mechanically detects in code. It reads as generic AI-tool output rather than a considered brand decision.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid</div>
+    <div class="hero hero-wrong">
+      <h2 class="h1">Ship faster with AI</h2>
+      <p style="margin-top: var(--space-16); opacity:.9;">The generic gradient + centered copy combo that reads as unconsidered.</p>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead</div>
+    <div class="hero hero-right">
+      <h2 class="h1">Ship faster</h2>
+      <p class="text-description" style="margin-top: var(--space-16); max-width: 480px;">A solid neutral surface, left-aligned copy, and the one accent color reserved for the actual call to action below.</p>
+      <button class="btn btn-primary" style="margin-top: var(--space-24);">Get started</button>
+    </div>
+  </section>
+</div>
+</body>
+</html>

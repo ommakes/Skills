@@ -1,0 +1,89 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Color</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .swatch { border-radius: var(--radius-lg); padding: var(--space-16); box-shadow: var(--shadow-border); }
+  .swatch-fill { height: 64px; border-radius: var(--radius-md); margin-bottom: var(--space-12); }
+  .swatch-name { font-family: var(--font-mono); font-size: 12px; }
+  .swatch-value { font-family: var(--font-mono); font-size: 11px; color: var(--color-muted-foreground); }
+  .dist-bar { display: flex; height: 40px; border-radius: var(--radius-md); overflow: hidden; }
+  .dist-bar div:nth-child(1) { flex: 60; background: var(--color-muted); }
+  .dist-bar div:nth-child(2) { flex: 30; background: var(--color-secondary); }
+  .dist-bar div:nth-child(3) { flex: 10; background: var(--color-primary); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Color</span>
+    <h1 class="h1">Color</h1>
+    <p class="text-description">OKLCH tokens. The primary pair is sourced from vois-tokens; every other swatch fills a documented gap and is illustrative, not canonical (see design-previews/README.md).</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3">60 / 30 / 10 distribution (DS-COLOR-004)</h2>
+    <div class="dist-bar"><div></div><div></div><div></div></div>
+    <p class="kit-caption">Neutral surfaces carry the screen (60%), a muted secondary tone provides structure (30%), primary is reserved for the one or two things that matter (10%).</p>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Neutrals</h2>
+    <div class="kit-grid">
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-background); box-shadow: var(--shadow-border);"></div><div class="swatch-name">--color-background</div><div class="swatch-value">oklch(1 0 0)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-surface); box-shadow: var(--shadow-border);"></div><div class="swatch-name">--color-surface</div><div class="swatch-value">oklch(0.985 0 0)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-muted);"></div><div class="swatch-name">--color-muted</div><div class="swatch-value">oklch(0.97 0 0)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-border);"></div><div class="swatch-name">--color-border</div><div class="swatch-value">oklch(0.922 0 0)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-foreground);"></div><div class="swatch-name">--color-foreground</div><div class="swatch-value">oklch(0.145 0 0)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-muted-foreground);"></div><div class="swatch-name">--color-muted-foreground</div><div class="swatch-value">oklch(0.556 0 0)</div></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Secondary</h2>
+    <div class="kit-grid">
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-secondary);"></div><div class="swatch-name">--color-secondary</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-secondary-foreground);"></div><div class="swatch-name">--color-secondary-foreground</div></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Primary / accent (sourced)</h2>
+    <div class="kit-grid">
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-primary);"></div><div class="swatch-name">--color-primary</div><div class="swatch-value">oklch(0.637 0.237 259.4)</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-accent);"></div><div class="swatch-name">--color-accent</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-ring); box-shadow: var(--shadow-border);"></div><div class="swatch-name">--color-ring</div></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Semantic</h2>
+    <div class="kit-grid">
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-destructive);"></div><div class="swatch-name">--color-destructive</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-success);"></div><div class="swatch-name">--color-success</div></div>
+      <div class="swatch"><div class="swatch-fill" style="background: var(--color-warning);"></div><div class="swatch-name">--color-warning</div></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">On a card (--shadow-border, not a stroke)</h2>
+    <p class="kit-caption">Vois uses a layered box-shadow instead of a solid 1px border for surface edges &mdash; softer separation at low elevation.</p>
+    <div class="kit-panel" style="max-width: 320px; margin-top: var(--space-16);">
+      <div class="kit-panel-label">Example surface</div>
+      <p class="h4">Quiet, correct default</p>
+      <p class="text-description">This card uses --shadow-border, not border-color.</p>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!-- @dsCard group="Overlays" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Tooltip vs Popover vs HoverCard</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 7 · Contextual info</span>
+    <h1 class="h1">Tooltip vs Popover vs HoverCard</h1>
+    <p class="text-description">WCAG requires interactive content to be reachable by keyboard &mdash; Tooltip content isn't reliably focusable, so keep it passive and under ~25 words. Popover is click-triggered and can hold rich, interactive content. HoverCard previews on hover without requiring a click.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Tooltip &middot; passive, &le;25 words</div>
+        <span class="tooltip-wrap">
+          <button class="btn btn-icon" aria-label="Info" tabindex="0">i</button>
+          <span class="tooltip-bubble">Synced 2 minutes ago</span>
+        </span>
+        <p class="kit-caption">Hover or focus the button. No interactive content lives inside.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Popover &middot; click-triggered, rich content</div>
+        <button class="btn btn-secondary" popovertarget="pop1">Share</button>
+        <div id="pop1" popover style="width: 260px;">
+          <p class="h5" style="margin-bottom: var(--space-8);">Share this document</p>
+          <input class="input" value="https://vois.app/d/4021" readonly style="margin-bottom: var(--space-8);">
+          <button class="btn btn-primary" style="width: 100%;">Copy link</button>
+        </div>
+        <p class="kit-caption">Native Popover API &mdash; keyboard-dismissible, holds a real form control.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">HoverCard &middot; hover preview</div>
+        <span class="hovercard-wrap">
+          <a href="#" tabindex="0">@ada-lovelace</a>
+          <div class="hovercard-panel">
+            <div class="avatar" style="margin-bottom: var(--space-8);">AL</div>
+            <p class="h5">Ada Lovelace</p>
+            <p class="text-description">Engineering &middot; joined 2019</p>
+          </div>
+        </span>
+        <p class="kit-caption">Preview only &mdash; the real destination is still the link itself.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

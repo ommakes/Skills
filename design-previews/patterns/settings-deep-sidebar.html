@@ -1,0 +1,60 @@
+<!-- @dsCard group="Patterns" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Settings, deep (sidebar)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .settings-shell { display: flex; gap: var(--space-32); align-items: flex-start; }
+  .settings-nav { width: 200px; flex: none; }
+  .settings-body { flex: 1; }
+  .subpanel { display: none; }
+  .subpanel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern A · Settings page · 4+ sections</span>
+    <h1 class="h1">Settings &mdash; deep</h1>
+    <p class="text-description">Four or more sections: a persistent sidebar nav with each section as its own sub-page. Tabs would overflow or scroll at this depth &mdash; the sidebar scales.</p>
+  </div>
+
+  <div class="settings-shell">
+    <nav class="settings-nav nav-list">
+      <a href="#" aria-current="page" onclick="show(this,'p1')">Profile</a>
+      <a href="#" onclick="show(this,'p2')">Notifications</a>
+      <a href="#" onclick="show(this,'p3')">Billing</a>
+      <a href="#" onclick="show(this,'p4')">Members</a>
+      <a href="#" onclick="show(this,'p5')">Integrations</a>
+      <a href="#" onclick="show(this,'p6')">API keys</a>
+    </nav>
+    <div class="settings-body">
+      <div class="subpanel active" id="p1"><h2 class="h3" style="margin-bottom: var(--space-16);">Profile</h2><div class="field" style="max-width: 360px;"><label>Full name</label><input class="input" value="Ada Lovelace"></div></div>
+      <div class="subpanel" id="p2"><h2 class="h3" style="margin-bottom: var(--space-16);">Notifications</h2><label class="switch"><input type="checkbox" checked><span class="track"></span>Product updates</label></div>
+      <div class="subpanel" id="p3"><h2 class="h3" style="margin-bottom: var(--space-16);">Billing</h2><p class="h5">Team plan &middot; $29/mo</p></div>
+      <div class="subpanel" id="p4"><h2 class="h3" style="margin-bottom: var(--space-16);">Members</h2><p class="text-description">4 members, 1 pending invite.</p></div>
+      <div class="subpanel" id="p5"><h2 class="h3" style="margin-bottom: var(--space-16);">Integrations</h2><p class="text-description">Slack connected.</p></div>
+      <div class="subpanel" id="p6"><h2 class="h3" style="margin-bottom: var(--space-16);">API keys</h2><p class="text-description">2 active keys.</p></div>
+    </div>
+  </div>
+
+  <script>
+    function show(a, id) {
+      document.querySelectorAll('.settings-nav a').forEach(x => x.removeAttribute('aria-current'));
+      a.setAttribute('aria-current', 'page');
+      document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
+</div>
+</body>
+</html>

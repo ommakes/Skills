@@ -1,0 +1,75 @@
+<!-- @dsCard group="Navigation" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Sidebar vs Sheet vs Drawer</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .mini-shell { display: flex; border-radius: var(--radius-lg); box-shadow: var(--shadow-border); overflow: hidden; height: 220px; }
+  .mini-sidebar { width: 160px; background: var(--color-surface); padding: var(--space-16); flex: none; }
+  .mini-content { flex: 1; background: var(--color-background); padding: var(--space-16); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 20 · Secondary content / nav</span>
+    <h1 class="h1">Sidebar vs Sheet vs Drawer</h1>
+    <p class="text-description">Sidebar is structural and persistent &mdash; it's part of the page's identity. Sheet is user-triggered, contextual, and closes when the task is done. Drawer is the same idea, but session-scoped and temporary rather than tied to one item.</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">Sidebar &middot; persistent structural nav</h2>
+    <div class="mini-shell">
+      <div class="mini-sidebar">
+        <nav class="nav-list">
+          <a href="#" aria-current="page">Overview</a>
+          <a href="#">Projects</a>
+          <a href="#">Members</a>
+          <a href="#">Settings</a>
+        </nav>
+      </div>
+      <div class="mini-content"><p class="h5">Page content</p><p class="text-description">Sidebar never closes &mdash; it's always part of the layout.</p></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Sheet &middot; contextual tools for one item</div>
+        <button class="btn btn-secondary" onclick="sheetDlg.showModal()">Open row tools</button>
+        <p class="kit-caption">Closes when you're done with that specific row.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Drawer &middot; temporary task, session-scoped</div>
+        <button class="btn btn-secondary" onclick="drawerDlg.showModal()">Open quick task</button>
+        <p class="kit-caption">Not tied to a specific item &mdash; closes when the session's task is done.</p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="sheetDlg" class="sheet">
+    <div class="dialog-body">
+      <h2 class="h2">Row tools</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Scoped to the single row that opened it.</p>
+      <div class="dialog-footer"><button class="btn btn-primary" onclick="sheetDlg.close()">Close</button></div>
+    </div>
+  </dialog>
+  <dialog id="drawerDlg" class="drawer">
+    <div class="dialog-body">
+      <h2 class="h2">Quick task</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Not anchored to any single item &mdash; a temporary, session-scoped surface.</p>
+      <div class="dialog-footer"><button class="btn btn-primary" onclick="drawerDlg.close()">Close</button></div>
+    </div>
+  </dialog>
+</div>
+</body>
+</html>

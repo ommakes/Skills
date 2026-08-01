@@ -1,0 +1,51 @@
+<!-- @dsCard group="Data & Status" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Skeleton vs Spinner vs Progress</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 13 · Loading state</span>
+    <h1 class="h1">Skeleton vs Spinner vs Progress</h1>
+    <p class="text-description">A full-page spinner gives no shape prediction and causes layout shift when content lands. Skeleton matches the shape of what's loading and reduces perceived wait. Spinner is for a short, inline action. Progress is for anything with a measurable duration.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Skeleton &middot; page/content load</div>
+        <div style="display:flex; gap: var(--space-12); align-items:center; margin-bottom: var(--space-12);">
+          <div class="skeleton" style="width:40px; height:40px; border-radius: var(--radius-full);"></div>
+          <div style="flex:1;">
+            <div class="skeleton" style="height:14px; width:60%; margin-bottom: var(--space-8);"></div>
+            <div class="skeleton" style="height:12px; width:40%;"></div>
+          </div>
+        </div>
+        <p class="kit-caption">Matches the shape of the content that's about to render &mdash; no layout shift on load.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Spinner &middot; inline, action in progress</div>
+        <button class="btn btn-primary" style="gap: var(--space-8);"><span class="spinner"></span>Saving&hellip;</button>
+        <p class="kit-caption">Short-lived, no shape to predict &mdash; the button itself is the anchor.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Progress &middot; measurable duration</div>
+        <div class="progress"><span style="width: 62%;"></span></div>
+        <p class="kit-caption" style="margin-top: var(--space-8);">62% &middot; 3 of 5 files uploaded</p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

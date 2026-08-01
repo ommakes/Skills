@@ -1,0 +1,47 @@
+<!-- @dsCard group="Data & Status" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Badge vs Dismissible Badge</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 11 · Label / categorize</span>
+    <h1 class="h1">Badge vs Dismissible Badge (Chip)</h1>
+    <p class="text-description">A read-only Badge is a label, not an action &mdash; it should never look clickable. A dismissible badge (Chip) carries real interaction weight and needs its own affordance; don't reach for a plain Button to represent a removable filter, it carries the wrong visual weight.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Badge &middot; read-only</div>
+        <div style="display:flex; gap: var(--space-8); flex-wrap: wrap;">
+          <span class="badge">Active</span>
+          <span class="badge" style="background: var(--color-success); color: var(--color-success-foreground);">Verified</span>
+          <span class="badge" style="background: var(--color-warning); color: var(--color-warning-foreground);">Pending</span>
+        </div>
+        <p class="kit-caption">Status labels. No dismiss control, no hover affordance.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Dismissible Badge &middot; removable filter</div>
+        <div style="display:flex; gap: var(--space-8); flex-wrap: wrap;">
+          <span class="badge badge-dismissible">Status: Active <button aria-label="Remove filter">&times;</button></span>
+          <span class="badge badge-dismissible">Owner: Ada <button aria-label="Remove filter">&times;</button></span>
+        </div>
+        <p class="kit-caption">Same visual family as Badge, but the dismiss control makes the interactivity explicit.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

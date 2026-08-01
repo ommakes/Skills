@@ -1,0 +1,50 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Radius</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .radius-box { width: 96px; height: 96px; background: var(--color-secondary); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; }
+  .concentric { display: flex; align-items: center; justify-content: center; background: var(--color-primary); border-radius: var(--radius-2xl); padding: var(--space-8); width: fit-content; }
+  .concentric-inner { background: var(--color-primary-foreground); color: var(--color-foreground); border-radius: var(--radius-lg); padding: var(--space-16) var(--space-24); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Radius (invented scale)</span>
+    <h1 class="h1">Radius</h1>
+    <p class="text-description">Only --radius-md (8px) is a sourced example from vois-tokens; the rest of this scale is invented for the kit to fill a documented gap. The concentric math rule below is sourced and load-bearing &mdash; keep it even if you retune the scale.</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3">Scale</h2>
+    <div class="kit-grid">
+      <div class="radius-box" style="border-radius: var(--radius-sm);">sm &middot; 6px</div>
+      <div class="radius-box" style="border-radius: var(--radius-md);">md &middot; 8px</div>
+      <div class="radius-box" style="border-radius: var(--radius-lg);">lg &middot; 12px</div>
+      <div class="radius-box" style="border-radius: var(--radius-xl);">xl &middot; 16px</div>
+      <div class="radius-box" style="border-radius: var(--radius-2xl);">2xl &middot; 20px</div>
+      <div class="radius-box" style="border-radius: var(--radius-full);">full</div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Concentric math (sourced rule)</h2>
+    <p class="kit-caption">outer radius = inner radius + padding. A 16px outer radius (--radius-2xl) with 8px padding (--space-8) nests an 8px inner radius (--radius-lg) &mdash; not a matching 16px, which would look loose.</p>
+    <div class="concentric">
+      <div class="concentric-inner">Inner content, rounded-lg</div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

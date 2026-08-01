@@ -1,0 +1,46 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Motion</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .ease-track { position: relative; height: 40px; background: var(--color-muted); border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--space-8); }
+  .ease-dot { position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: var(--radius-full); background: var(--color-primary); }
+  .ease-row { margin-bottom: var(--space-24); }
+  .ease-row:hover .ease-dot { left: calc(100% - 32px); }
+  .ease-label { font-family: var(--font-mono); font-size: 12px; color: var(--color-muted-foreground); margin-bottom: var(--space-8); }
+  .press-demo:active { transform: scale(0.96); }
+  .press-demo { transition: transform var(--duration-press) var(--ease-out-quart); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Motion</span>
+    <h1 class="h1">Motion</h1>
+    <p class="text-description">300ms cap for UI, up to 500ms for large surfaces (drawers/sheets/modals), 150ms for button press. Hover each track below to compare curves &mdash; never animate from scale(0).</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="ease-row"><div class="ease-label">--ease-out-quart</div><div class="ease-track" style="transition: all 500ms var(--ease-out-quart);"><div class="ease-dot" style="transition: inherit;"></div></div></div>
+    <div class="ease-row"><div class="ease-label">--ease-out-quint</div><div class="ease-track" style="transition: all 500ms var(--ease-out-quint);"><div class="ease-dot" style="transition: inherit;"></div></div></div>
+    <div class="ease-row"><div class="ease-label">--ease-out-expo</div><div class="ease-track" style="transition: all 500ms var(--ease-out-expo);"><div class="ease-dot" style="transition: inherit;"></div></div></div>
+    <div class="ease-row"><div class="ease-label">--ease-in-out-quart</div><div class="ease-track" style="transition: all 500ms var(--ease-in-out-quart);"><div class="ease-dot" style="transition: inherit;"></div></div></div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Button press (150ms, scale(0.96), never below 0.95)</h2>
+    <button class="btn btn-primary press-demo">Press and hold me</button>
+  </section>
+</div>
+</body>
+</html>

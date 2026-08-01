@@ -1,0 +1,85 @@
+<!-- @dsCard group="Selection & Input" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Select vs Combobox</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .combobox { position: relative; }
+  .combobox-list { position: absolute; top: calc(100% + var(--space-4)); left: 0; right: 0; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-overlay); max-height: 180px; overflow-y: auto; z-index: 5; }
+  .combobox-list button { display: block; width: 100%; text-align: left; font: inherit; border: none; background: none; padding: var(--space-8) var(--space-12); cursor: pointer; color: var(--color-foreground); }
+  .combobox-list button:hover { background: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 6 · Choose from a list</span>
+    <h1 class="h1">Select vs Combobox</h1>
+    <p class="text-description">Combobox on a short list adds friction the user doesn't need &mdash; typing to filter 5 options is slower than scanning them. Reach for Combobox once the list is long enough that scanning stops working (roughly 8+) or search is genuinely useful.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Select &middot; &lt; 8 items</div>
+        <div class="field">
+          <label for="sel1">Status</label>
+          <select id="sel1" class="input">
+            <option>Draft</option>
+            <option>In review</option>
+            <option>Approved</option>
+            <option>Published</option>
+          </select>
+        </div>
+        <p class="kit-caption">Four options &mdash; scanning is faster than typing.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Combobox &middot; 8+ / searchable</div>
+        <div class="field combobox">
+          <label for="combo1">Assignee</label>
+          <input id="combo1" class="input" placeholder="Search teammates&hellip;" oninput="filterCombo(this)" onfocus="filterCombo(this)">
+          <div class="combobox-list" id="comboList">
+            <button onclick="pick(this)">Ada Lovelace</button>
+            <button onclick="pick(this)">Grace Hopper</button>
+            <button onclick="pick(this)">Alan Turing</button>
+            <button onclick="pick(this)">Katherine Johnson</button>
+            <button onclick="pick(this)">Margaret Hamilton</button>
+            <button onclick="pick(this)">Radia Perlman</button>
+            <button onclick="pick(this)">Barbara Liskov</button>
+            <button onclick="pick(this)">Dennis Ritchie</button>
+          </div>
+        </div>
+        <p class="kit-caption">Eight-plus teammates &mdash; typing to narrow beats scrolling.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function filterCombo(input) {
+      const list = document.getElementById('comboList');
+      const q = input.value.toLowerCase();
+      [...list.children].forEach(btn => {
+        btn.style.display = btn.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+      });
+      list.style.display = 'block';
+    }
+    function pick(btn) {
+      document.getElementById('combo1').value = btn.textContent;
+      document.getElementById('comboList').style.display = 'none';
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.combobox')) document.getElementById('comboList').style.display = 'none';
+    });
+  </script>
+</div>
+</body>
+</html>
