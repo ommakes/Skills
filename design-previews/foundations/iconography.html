@@ -1,0 +1,58 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Iconography</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .icon-row { display: flex; align-items: center; gap: var(--space-16); padding: var(--space-16) 0; border-bottom: 1px solid var(--color-border); }
+  .icon-meta { font-family: var(--font-mono); font-size: 12px; color: var(--color-muted-foreground); width: 220px; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Iconography</span>
+    <h1 class="h1">Iconography</h1>
+    <p class="text-description">Four sizes, one stroke weight (1.5px) everywhere &mdash; never emoji as UI iconography (DS-SLOP-005).</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="icon-row">
+      <svg class="icon" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      <div class="icon-meta">16px &middot; size-4</div>
+      <span>Inline with body/label text</span>
+    </div>
+    <div class="icon-row">
+      <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      <div class="icon-meta">20px &middot; size-5</div>
+      <span>Inline with H4/H5, default button icon</span>
+    </div>
+    <div class="icon-row">
+      <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      <div class="icon-meta">24px &middot; size-6</div>
+      <span>Standalone icon buttons, nav</span>
+    </div>
+    <div class="icon-row">
+      <svg class="icon" style="width:32px;height:32px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      <div class="icon-meta">32px &middot; size-8</div>
+      <span>Empty states, feature callouts</span>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Never this (DS-SLOP-005)</h2>
+    <p class="kit-caption" style="text-decoration: line-through;">✅ Saved &nbsp; ⚠️ Warning &nbsp; 🗑️ Delete</p>
+    <p class="kit-caption">Emoji have inconsistent rendering across platforms and no stroke/size system &mdash; use the icon set above instead.</p>
+  </section>
+</div>
+</body>
+</html>

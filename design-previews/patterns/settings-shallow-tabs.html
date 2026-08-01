@@ -1,0 +1,57 @@
+<!-- @dsCard group="Patterns" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Settings, shallow (tabs)</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .tabpanel { display: none; padding-top: var(--space-24); }
+  .tabpanel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern A · Settings page · 2&ndash;3 sections</span>
+    <h1 class="h1">Settings &mdash; shallow</h1>
+    <p class="text-description">Two to three sections: horizontal tabs pinned to the top of the page, not a sidebar. A sidebar for this few sections wastes width and implies more depth than exists.</p>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" onclick="showTab(this, 'profile')">Profile</button>
+    <button role="tab" aria-selected="false" onclick="showTab(this, 'notifications')">Notifications</button>
+    <button role="tab" aria-selected="false" onclick="showTab(this, 'billing')">Billing</button>
+  </nav>
+
+  <div class="tabpanel active" id="profile">
+    <div class="field" style="max-width: 360px; margin-bottom: var(--space-24);"><label>Full name</label><input class="input" value="Ada Lovelace"></div>
+    <div class="field" style="max-width: 360px;"><label>Email</label><input class="input" value="ada@vois.app"></div>
+  </div>
+  <div class="tabpanel" id="notifications">
+    <label class="switch" style="margin-bottom: var(--space-16);"><input type="checkbox" checked><span class="track"></span>Product updates</label><br>
+    <label class="switch"><input type="checkbox"><span class="track"></span>Weekly digest</label>
+  </div>
+  <div class="tabpanel" id="billing">
+    <p class="h5">Team plan &middot; $29/mo</p>
+    <p class="text-description">Next invoice on Sep 1.</p>
+  </div>
+
+  <script>
+    function showTab(btn, id) {
+      document.querySelectorAll('[role=tab]').forEach(t => t.setAttribute('aria-selected', 'false'));
+      btn.setAttribute('aria-selected', 'true');
+      document.querySelectorAll('.tabpanel').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
+</div>
+</body>
+</html>

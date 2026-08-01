@@ -1,0 +1,62 @@
+<!-- @dsCard group="Overlays" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · AlertDialog vs Dialog</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 1 · Confirm a destructive action</span>
+    <h1 class="h1">AlertDialog vs Dialog</h1>
+    <p class="text-description">role="alertdialog" gives assistive tech a higher-urgency announcement than a plain dialog. Never use a Toast for this &mdash; it auto-dismisses, so the confirmation can be missed entirely.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Use &middot; AlertDialog</div>
+        <button class="btn btn-destructive" onclick="alertDlg.showModal()">Delete workspace</button>
+        <p class="kit-caption">Irreversible action. Requires an explicit choice before it can be dismissed.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Not &middot; plain Dialog</div>
+        <button class="btn btn-ghost" onclick="plainDlg.showModal()">Delete workspace</button>
+        <p class="kit-caption">No elevated urgency signal to screen readers &mdash; the user may not register that this is destructive.</p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="alertDlg" role="alertdialog" aria-label="Delete workspace">
+    <div class="dialog-body">
+      <h2 class="h2">Delete this workspace?</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">This removes all projects, members, and billing history. This cannot be undone.</p>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="alertDlg.close()">Cancel</button>
+        <button class="btn btn-destructive" onclick="alertDlg.close()">Delete workspace</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="plainDlg">
+    <div class="dialog-body">
+      <h2 class="h2">Delete this workspace?</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Same copy, but the dialog role carries no elevated urgency.</p>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="plainDlg.close()">Cancel</button>
+        <button class="btn btn-destructive" onclick="plainDlg.close()">Delete workspace</button>
+      </div>
+    </div>
+  </dialog>
+</div>
+</body>
+</html>

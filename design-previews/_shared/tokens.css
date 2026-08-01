@@ -1,0 +1,145 @@
+/*
+  Vois design tokens — CSS custom properties.
+
+  SOURCED from vois-tokens skill reference docs (values quoted verbatim):
+  spacing scale, type scale, elevation tiers, icon sizes, easing curves,
+  durations, the --color-primary / --color-primary-foreground pair, and
+  the --radius-md worked example.
+
+  INVENTED for this preview kit to fill documented gaps in the skill
+  (no full palette or radius scale exists yet beyond the examples above):
+  every other color token, and the rest of the radius scale. These are
+  illustrative only — do not treat them as canonical Vois spec.
+*/
+
+:root {
+  /* ---- Color: neutrals (60% of any screen, per DS-COLOR-004) ---- INVENTED */
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0 0);
+  --color-surface: oklch(0.985 0 0);
+  --color-surface-foreground: oklch(0.145 0 0);
+  --color-border: oklch(0.922 0 0);
+  --color-muted: oklch(0.97 0 0);
+  --color-muted-foreground: oklch(0.556 0 0);
+
+  /* ---- Color: secondary (30%) ---- INVENTED */
+  --color-secondary: oklch(0.94 0.01 259.4);
+  --color-secondary-foreground: oklch(0.205 0 0);
+
+  /* ---- Color: primary / accent (10%) ---- SOURCED (primary pair) + INVENTED (accent pair) */
+  --color-primary: oklch(0.637 0.237 259.4);
+  --color-primary-foreground: oklch(1 0 0);
+  --color-accent: oklch(0.94 0.03 259.4);
+  --color-accent-foreground: oklch(0.205 0 0);
+  --color-ring: oklch(0.637 0.237 259.4 / 0.5);
+
+  /* ---- Color: semantic ---- INVENTED */
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(1 0 0);
+  --color-success: oklch(0.6 0.15 145);
+  --color-success-foreground: oklch(1 0 0);
+  --color-warning: oklch(0.75 0.16 80);
+  --color-warning-foreground: oklch(0.205 0 0);
+
+  /* ---- Spacing scale (px, divisible by 4/8 — DS-SPACING-001) ---- SOURCED */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+
+  /* ---- Font role tokens — role-based, workspace supplies real family ---- SOURCED (roles) */
+  --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* ---- Type scale (desktop) ---- SOURCED */
+  --text-h0-size: 52px; --text-h0-line: 64px; --text-h0-weight: 700;
+  --text-h1-size: 36px; --text-h1-line: 44px; --text-h1-weight: 600;
+  --text-h2-size: 24px; --text-h2-line: 32px; --text-h2-weight: 600;
+  --text-h3-size: 18px; --text-h3-line: 26px; --text-h3-weight: 600;
+  --text-h4-size: 16px; --text-h4-line: 24px; --text-h4-weight: 600;
+  --text-h5-size: 14px; --text-h5-line: 20px; --text-h5-weight: 500;
+  --text-h6-size: 12px; --text-h6-line: 16px; --text-h6-weight: 500;
+  --text-body-size: 16px; --text-body-line: 24px; --text-body-weight: 400;
+  --text-description-size: 14px; --text-description-line: 20px; --text-description-weight: 400;
+
+  /* ---- Radius scale ---- --radius-md SOURCED, rest INVENTED (concentric math: outer = inner + padding) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* ---- Elevation — exactly four tiers, never a fifth ---- SOURCED */
+  --shadow-flat: none;
+  --shadow-raised: 0 1px 2px oklch(0 0 0 / 0.08);
+  --shadow-overlay: 0 4px 12px oklch(0 0 0 / 0.12);
+  --shadow-modal: 0 16px 48px oklch(0 0 0 / 0.20);
+  --shadow-scrim: oklch(0 0 0 / 0.4);
+
+  /* ---- Surface/border shadow (used instead of solid borders on cards) ---- SOURCED */
+  --shadow-border: 0px 0px 0px 1px rgba(0, 0, 0, .06), 0px 1px 2px -1px rgba(0, 0, 0, .06), 0px 2px 4px 0px rgba(0, 0, 0, .04);
+  --shadow-border-hover: 0px 0px 0px 1px rgba(0, 0, 0, .08), 0px 1px 2px -1px rgba(0, 0, 0, .08), 0px 2px 4px 0px rgba(0, 0, 0, .06);
+  --outline-image: rgba(0, 0, 0, .1);
+
+  /* ---- Icon sizes, 1.5px stroke everywhere ---- SOURCED */
+  --icon-4: 16px;
+  --icon-5: 20px;
+  --icon-6: 24px;
+  --icon-8: 32px;
+  --icon-stroke: 1.5px;
+
+  /* ---- Motion ---- SOURCED */
+  --duration-press: 150ms;
+  --duration-ui: 300ms;
+  --duration-large: 500ms;
+  --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
+  --ease-out-quint: cubic-bezier(.23, 1, .32, 1);
+  --ease-out-expo: cubic-bezier(.19, 1, .22, 1);
+  --ease-in-out-quart: cubic-bezier(.77, 0, .175, 1);
+  --ease-in-out-quint: cubic-bezier(.86, 0, .07, 1);
+  --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --text-h0-size: 40px; --text-h0-line: 56px;
+    --text-h1-size: 32px; --text-h1-line: 40px;
+  }
+}
+
+:root.dark {
+  --color-background: oklch(0.145 0 0);
+  --color-foreground: oklch(0.985 0 0);
+  --color-surface: oklch(0.205 0 0);
+  --color-surface-foreground: oklch(0.985 0 0);
+  --color-border: oklch(1 0 0 / 0.1);
+  --color-muted: oklch(0.269 0 0);
+  --color-muted-foreground: oklch(0.708 0 0);
+
+  --color-secondary: oklch(0.269 0.01 259.4);
+  --color-secondary-foreground: oklch(0.985 0 0);
+
+  --color-accent: oklch(0.28 0.06 259.4);
+  --color-accent-foreground: oklch(0.985 0 0);
+
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(1 0 0);
+  --color-success: oklch(0.6 0.15 145);
+  --color-success-foreground: oklch(1 0 0);
+  --color-warning: oklch(0.75 0.16 80);
+  --color-warning-foreground: oklch(0.145 0 0);
+
+  --shadow-border: 0 0 0 1px rgba(255, 255, 255, .08);
+  --shadow-border-hover: 0 0 0 1px rgba(255, 255, 255, .13);
+  --outline-image: rgba(255, 255, 255, .1);
+}

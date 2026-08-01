@@ -1,0 +1,50 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: nav left-border + radius</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .wrong-nav a { display:flex; padding: var(--space-8) var(--space-12); color: var(--color-muted-foreground); text-decoration:none; font-size: var(--text-h5-size); border-left: 3px solid transparent; }
+  .wrong-nav a[aria-current="page"] { border-left-color: var(--color-primary); border-radius: var(--radius-md); background: var(--color-accent); color: var(--color-accent-foreground); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-011</span>
+    <h1 class="h1">Left-border + corner-radius on active nav</h1>
+    <p class="text-description">Combining a colored left border with rounded corners on the active sidebar/nav item is a dated pattern that fights itself &mdash; the border implies a straight edge while the radius rounds it away. A subtle background color shift alone communicates "active" more cleanly.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Avoid</div>
+        <nav class="wrong-nav nav-list" style="gap:0;">
+          <a href="#" aria-current="page">Overview</a>
+          <a href="#">Projects</a>
+          <a href="#">Settings</a>
+        </nav>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Instead</div>
+        <nav class="nav-list">
+          <a href="#" aria-current="page">Overview</a>
+          <a href="#">Projects</a>
+          <a href="#">Settings</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

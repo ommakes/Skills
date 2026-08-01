@@ -1,0 +1,61 @@
+<!-- @dsCard group="Overlays" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Toast vs Alert</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .toast-host { position: fixed; bottom: var(--space-24); right: var(--space-24); z-index: 10; width: 320px; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 2 · Transient feedback</span>
+    <h1 class="h1">Toast vs Alert</h1>
+    <p class="text-description">Toast disappears before the user can necessarily act on it &mdash; use it only when there's no action to take. Alert stays on screen until dismissed, which is what an action requires.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Toast &middot; no action required</div>
+        <button class="btn btn-primary" onclick="fireToast()">Trigger save</button>
+        <p class="kit-caption">Confirms something happened. Auto-dismisses in 3s &mdash; fine, because there's nothing to do about it.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Alert &middot; action required, persistent</div>
+        <div class="alert" style="margin-top: var(--space-8);">
+          <div>
+            <p class="h5">Your card was declined</p>
+            <p class="text-description">Update your payment method to keep this subscription active.</p>
+          </div>
+          <button class="btn btn-secondary">Update</button>
+        </div>
+        <p class="kit-caption">Stays until the user acts or explicitly dismisses it &mdash; never auto-clears.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast-host" id="toastHost"></div>
+  <script>
+    function fireToast() {
+      const host = document.getElementById('toastHost');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.innerHTML = '<div><p class="h5" style="margin:0;">Saved</p><p class="text-description" style="margin:0;">Your changes were saved.</p></div>';
+      host.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+  </script>
+</div>
+</body>
+</html>

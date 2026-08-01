@@ -1,0 +1,59 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Spacing</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .ruler-row { display: flex; align-items: center; gap: var(--space-16); padding: var(--space-8) 0; }
+  .ruler-label { width: 90px; flex: none; font-family: var(--font-mono); font-size: 12px; color: var(--color-muted-foreground); }
+  .ruler-bar { height: 20px; background: var(--color-primary); border-radius: var(--radius-sm); }
+  .form-example { display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Foundations · Spacing (DS-SPACING-001)</span>
+    <h1 class="h1">Spacing</h1>
+    <p class="text-description">Every gap is 4px or 8px&ndash;divisible. No 5px, 10px, or 15px values anywhere in the system.</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3">Scale</h2>
+    <div class="ruler-row"><div class="ruler-label">4px</div><div class="ruler-bar" style="width: var(--space-4);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">8px</div><div class="ruler-bar" style="width: var(--space-8);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">12px</div><div class="ruler-bar" style="width: var(--space-12);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">16px</div><div class="ruler-bar" style="width: var(--space-16);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">20px</div><div class="ruler-bar" style="width: var(--space-20);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">24px</div><div class="ruler-bar" style="width: var(--space-24);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">32px</div><div class="ruler-bar" style="width: var(--space-32);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">40px</div><div class="ruler-bar" style="width: var(--space-40);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">48px</div><div class="ruler-bar" style="width: var(--space-48);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">64px</div><div class="ruler-bar" style="width: var(--space-64);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">80px</div><div class="ruler-bar" style="width: var(--space-80);"></div></div>
+    <div class="ruler-row"><div class="ruler-label">96px</div><div class="ruler-bar" style="width: var(--space-96);"></div></div>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Applied: form field rhythm (vois-patterns, Pattern C)</h2>
+    <p class="kit-caption">1&ndash;6 fields: single column, 24px between fields. 7&ndash;15 fields: grouped sections, 24px within a section and 40px between sections.</p>
+    <div class="kit-panel" style="max-width: 420px; margin-top: var(--space-16);">
+      <div class="form-example" style="gap: var(--space-24);">
+        <div class="field"><label>Full name</label><input class="input" placeholder="Ada Lovelace"></div>
+        <div class="field"><label>Email</label><input class="input" placeholder="ada@example.com"></div>
+        <div class="field"><label>Role</label><input class="input" placeholder="Engineer"></div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

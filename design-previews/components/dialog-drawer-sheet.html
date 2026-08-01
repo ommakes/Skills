@@ -1,0 +1,78 @@
+<!-- @dsCard group="Overlays" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Dialog vs Sheet vs Drawer</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Components · Job 3 · Focused overlay</span>
+    <h1 class="h1">Dialog vs Sheet vs Drawer</h1>
+    <p class="text-description">Same content, three shells. Dialog feels disconnected from the triggering data; Sheet preserves spatial proximity to the row/item that opened it; Drawer is the full-height mobile action-sheet equivalent.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Dialog &middot; short, self-contained task</div>
+        <button class="btn btn-primary" onclick="dlg.showModal()">Open Dialog</button>
+        <p class="kit-caption">Centered, floats above everything. Use when the task has no relationship to a specific item on the page.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Sheet &middot; contextual to one item</div>
+        <button class="btn btn-primary" onclick="sheet.showModal()">Open Sheet</button>
+        <p class="kit-caption">Slides in from the edge, partial overlap &mdash; the list stays visible behind it.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Drawer &middot; mobile action-sheet</div>
+        <button class="btn btn-primary" onclick="drawer.showModal()">Open Drawer</button>
+        <p class="kit-caption">Full-width, rises from the bottom. The default overlay shell on small viewports.</p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="dlg">
+    <div class="dialog-body">
+      <h2 class="h2">Edit profile</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Self-contained task with no anchor to a specific row.</p>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="dlg.close()">Cancel</button>
+        <button class="btn btn-primary" onclick="dlg.close()">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="sheet" class="sheet">
+    <div class="dialog-body">
+      <h2 class="h2">Invoice #4021</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Opened from a specific table row &mdash; the table stays visible to its left.</p>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="sheet.close()">Cancel</button>
+        <button class="btn btn-primary" onclick="sheet.close()">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="drawer" class="drawer">
+    <div class="dialog-body">
+      <h2 class="h2">Filters</h2>
+      <p class="text-description" style="margin-top: var(--space-8);">Mobile action-sheet equivalent &mdash; never used for text-heavy input that needs a keyboard.</p>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="drawer.close()">Reset</button>
+        <button class="btn btn-primary" onclick="drawer.close()">Apply</button>
+      </div>
+    </div>
+  </dialog>
+</div>
+</body>
+</html>

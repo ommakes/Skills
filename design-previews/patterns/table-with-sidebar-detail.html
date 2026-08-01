@@ -1,0 +1,54 @@
+<!-- @dsCard group="Patterns" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Table with sidebar detail</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern B · Table/List with details · quick-edit</span>
+    <h1 class="h1">Table with sidebar detail</h1>
+    <p class="text-description">Quick edits open in a right-side Sheet that keeps the table visible &mdash; view-first flows would instead navigate a modal to a full edit page. First column stays pinned, and no more than three hover row actions.</p>
+  </div>
+
+  <table class="kit-table">
+    <thead><tr><th>Customer</th><th>Plan</th><th>MRR</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Acme Corp</td><td>Team</td><td>$2,400</td><td><button class="btn btn-ghost" onclick="openSheet('Acme Corp')">Edit</button></td></tr>
+      <tr><td>Globex</td><td>Starter</td><td>$980</td><td><button class="btn btn-ghost" onclick="openSheet('Globex')">Edit</button></td></tr>
+      <tr><td>Initech</td><td>Enterprise</td><td>$5,120</td><td><button class="btn btn-ghost" onclick="openSheet('Initech')">Edit</button></td></tr>
+    </tbody>
+  </table>
+
+  <dialog id="detailSheet" class="sheet">
+    <div class="dialog-body">
+      <h2 class="h2" id="detailTitle">Acme Corp</h2>
+      <div class="field" style="margin-top: var(--space-16);"><label>Plan</label>
+        <select class="input"><option>Starter</option><option selected>Team</option><option>Enterprise</option></select>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-secondary" onclick="detailSheet.close()">Cancel</button>
+        <button class="btn btn-primary" onclick="detailSheet.close()">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    function openSheet(name) {
+      document.getElementById('detailTitle').textContent = name;
+      document.getElementById('detailSheet').showModal();
+    }
+  </script>
+</div>
+</body>
+</html>

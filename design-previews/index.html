@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois design previews</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<link rel="stylesheet" href="_shared/base.css">
+<style>
+  .kit-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+  .kit-list a { display:block; padding: var(--space-12) var(--space-16); border-radius: var(--radius-md); box-shadow: var(--shadow-border); color: var(--color-foreground); text-decoration: none; }
+  .kit-list a:hover { background: var(--color-muted); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <span class="text-description">Local dev index &mdash; not synced to Claude Design</span>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <h1 class="h1">Vois design previews</h1>
+    <p class="text-description">A rendered companion to the vois-tokens / vois-components / vois-patterns skills, for Claude Design. See <a href="README.md">README.md</a> for what this is and how to sync it.</p>
+  </div>
+
+  <section class="kit-section">
+    <h2 class="h3">Foundations</h2>
+    <ul class="kit-list">
+      <li><a href="foundations/colors.html">Color</a></li>
+      <li><a href="foundations/typography.html">Typography</a></li>
+      <li><a href="foundations/spacing.html">Spacing</a></li>
+      <li><a href="foundations/elevation.html">Elevation</a></li>
+      <li><a href="foundations/radius.html">Radius</a></li>
+      <li><a href="foundations/iconography.html">Iconography</a></li>
+      <li><a href="foundations/motion.html">Motion</a></li>
+    </ul>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Components</h2>
+    <ul class="kit-list">
+      <li><a href="components/dialog-drawer-sheet.html">Dialog vs Sheet vs Drawer</a></li>
+      <li><a href="components/alertdialog-vs-dialog.html">AlertDialog vs Dialog</a></li>
+      <li><a href="components/toast-vs-alert.html">Toast vs Alert</a></li>
+      <li><a href="components/select-vs-combobox.html">Select vs Combobox</a></li>
+      <li><a href="components/switch-checkbox-radio.html">Switch vs Checkbox vs Radio</a></li>
+      <li><a href="components/tooltip-popover-hovercard.html">Tooltip vs Popover vs HoverCard</a></li>
+      <li><a href="components/skeleton-spinner-progress.html">Skeleton vs Spinner vs Progress</a></li>
+      <li><a href="components/badge-vs-dismissible.html">Badge vs Dismissible Badge</a></li>
+      <li><a href="components/table-vs-datatable.html">Table vs DataTable</a></li>
+      <li><a href="components/sidebar-sheet-drawer.html">Sidebar vs Sheet vs Drawer</a></li>
+    </ul>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Patterns</h2>
+    <ul class="kit-list">
+      <li><a href="patterns/settings-shallow-tabs.html">Settings &mdash; shallow (tabs)</a></li>
+      <li><a href="patterns/settings-deep-sidebar.html">Settings &mdash; deep (sidebar)</a></li>
+      <li><a href="patterns/table-with-sidebar-detail.html">Table with sidebar detail</a></li>
+      <li><a href="patterns/form-simple.html">Form &mdash; simple</a></li>
+      <li><a href="patterns/form-complex-sectioned.html">Form &mdash; complex, sectioned</a></li>
+    </ul>
+  </section>
+
+  <section class="kit-section">
+    <h2 class="h3">Anti-patterns (avoid)</h2>
+    <ul class="kit-list">
+      <li><a href="anti-patterns/ai-gradient-hero.html">AI gradient hero (DS-SLOP-002)</a></li>
+      <li><a href="anti-patterns/card-ification.html">Card-ification (DS-SLOP-010)</a></li>
+      <li><a href="anti-patterns/nav-left-border-radius.html">Nav left-border + radius (DS-SLOP-011)</a></li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>
