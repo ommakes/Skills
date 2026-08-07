@@ -56,6 +56,8 @@ Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, 
 ### Righter
 UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. If a `vois_get_microcopy` MCP tool is available, calls it first to check workspace-specific overrides before writing — otherwise applies the skill's principles directly.
 
+Every principle and error-message rule carries a stable `id` for cross-referencing from other skills. Ships with `scripts/ari.mjs` (deterministic ARI/reading-level scoring, in place of computing the formula by hand) and `evals/cases.json` (a fixed regression corpus for checking that edits to principles or data files don't silently change what the skill flags). See [`righter/CHANGELOG.md`](./righter/CHANGELOG.md) for version history.
+
 **Read throughout.** Vois Patterns and Vois Components route to this skill for all copy — button labels, error messages, field descriptions, helper text, status labels, empty states, toasts, confirmations.
 
 **Use when:** writing, reviewing, or improving any UI copy, error messages, button labels, tooltips, empty states, onboarding copy, form text, or product emails.
@@ -162,4 +164,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-07-24
+**Last updated:** 2026-08-07
