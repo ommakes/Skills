@@ -1,5 +1,5 @@
 {
-  "source": "righter/references/weakeners.md",
+  "source": "righter/data/weakeners.json",
   "description": "Word and phrase categories that dilute UI copy. Remove on sight.",
   "categories": [
     {
@@ -72,7 +72,11 @@
         "absolutely",
         "entirely",
         "fully"
-      ]
+      ],
+      "example": {
+        "before": "This is a very important step.",
+        "after": "This step matters."
+      }
     },
     {
       "id": "filler-adverbs",
@@ -158,7 +162,11 @@
         "a lot of",
         "lots of",
         "plenty of"
-      ]
+      ],
+      "example": {
+        "before": "Several fields need your attention.",
+        "after": "3 fields need your attention."
+      }
     },
     {
       "id": "redundant-framing-phrases",
@@ -190,7 +198,11 @@
         "where appropriate",
         "if applicable",
         "to the extent possible"
-      ]
+      ],
+      "example": {
+        "before": "In most cases, changes save automatically.",
+        "after": "Changes save automatically."
+      }
     },
     {
       "id": "weak-verb-phrases",
@@ -239,7 +251,11 @@
         "as mentioned earlier",
         "as stated above",
         "below we will see"
-      ]
+      ],
+      "example": {
+        "before": "This section discusses how billing works.",
+        "after": "Billing charges on the 1st of each month."
+      }
     }
   ]
 }

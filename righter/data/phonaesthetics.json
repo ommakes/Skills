@@ -1,5 +1,5 @@
 {
-  "source": "righter/references/phonaesthetics.md",
+  "source": "righter/data/phonaesthetics.json",
   "description": "Sound-based writing concepts for labels, CTAs, empty states, product names, and microcopy. Less relevant for error messages, which prioritize clarity over sound.",
   "concepts": [
     {

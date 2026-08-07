@@ -1,5 +1,5 @@
 {
-  "source": "righter/references/components.md",
+  "source": "righter/data/components.json",
   "description": "Per-component UI copy writing rules. Shared prefix vocabulary is factored out once; each component references which prefixes apply.",
   "shared_prefix_format": {
     "description": "Prefix precedes the title, separated by a space. Applies to Alert Dialog, Inline Alert, and Alert Banner titles when the component calls for a specific user action.",
