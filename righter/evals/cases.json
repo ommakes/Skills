@@ -1,0 +1,73 @@
+{
+  "description": "Regression corpus for the righter skill. Each case is a piece of copy with the violations a correct review should find, referenced by stable rule id (see SKILL.md principle/error-rule ids, and category ids in data/weakeners.json). Use this manually when editing SKILL.md or the data files: re-review each `input`, and confirm the same ids still get flagged and the `expected_component` (if set) still matches the decision tree. Not an automated test suite — there's no scorer here, just a fixed set of known-answer cases.",
+  "cases": [
+    {
+      "id": "case-01",
+      "copy_type": "button + helper text",
+      "input": "You may want to simply click here to possibly reset your password, which should probably work in most cases.",
+      "expected_violations": [
+        "eliminate-weakeners",
+        "passive-aggressive-politeness",
+        "hedging-words",
+        "over-cautious-legalese",
+        "no-interface-references"
+      ],
+      "notes": "Stacks hedging, softening, and passive-aggressive politeness weakeners in one sentence; also names 'here' as an interface reference."
+    },
+    {
+      "id": "case-02",
+      "copy_type": "toast",
+      "input": "Your changes were saved by the system — you're all set!",
+      "expected_violations": ["active-voice", "no-em-dashes", "limit-exclamation-marks"],
+      "expected_component": "toast",
+      "notes": "Passive voice ('were saved by the system'), em dash, and a low-stakes exclamation mark on a routine confirmation."
+    },
+    {
+      "id": "case-03",
+      "copy_type": "form field error",
+      "input": "You didn't enter enough characters in this field, which is required, so please try again.",
+      "expected_violations": ["error-no-blame", "check-prepositions", "simple-sentences"],
+      "expected_component": "helper-text",
+      "notes": "Blames the user instead of describing the fix; stacked clause; ends on a preposition-adjacent filler."
+    },
+    {
+      "id": "case-04",
+      "copy_type": "alert dialog description",
+      "input": "Due to a network security issue, this action cannot be completed at this time. We apologize for any inconvenience this may have caused.",
+      "expected_violations": ["user-goal-framing", "no-unnecessary-apology", "active-voice"],
+      "expected_component": "alert-dialog",
+      "notes": "System-framed cause, hollow apology, passive construction ('cannot be completed')."
+    },
+    {
+      "id": "case-05",
+      "copy_type": "tooltip",
+      "input": "Click here to learn more about this particular setting and how it works within the application panel.",
+      "expected_violations": ["no-interface-references", "reading-level", "simple-sentences"],
+      "expected_component": "tooltip",
+      "notes": "Also violates the tooltip length rule in data/components.json (40–60 characters max) — well over."
+    },
+    {
+      "id": "case-06",
+      "copy_type": "system error",
+      "input": "An error has occurred. Please contact your system administrator if this issue persists after multiple attempts.",
+      "expected_violations": ["error-next-step", "avoid-jargon"],
+      "expected_component": "alert-banner",
+      "notes": "No concrete next step for the user (offloads to 'system administrator'); vague on what actually happened."
+    },
+    {
+      "id": "case-07",
+      "copy_type": "onboarding email subject + CTA",
+      "input": "Subject: WELCOME!!! You're going to LOVE this — act now to unlock your account!\nCTA: Click here",
+      "expected_violations": ["no-em-dashes", "limit-exclamation-marks"],
+      "notes": "Also fails references/email.md rules directly: ALL CAPS, multiple exclamation marks, spam-trigger phrase ('act now'), and 'Click here' as a standalone CTA."
+    },
+    {
+      "id": "case-08",
+      "copy_type": "inline alert (ambiguous placement)",
+      "input": "Heads up: your export finished with 2 warnings you may want to review before sharing this file.",
+      "expected_violations": ["hedging-words"],
+      "expected_component": "inline-alert",
+      "notes": "Deliberately ambiguous case for the decision tree: not blocking, not a toast (has follow-up detail), not tied to one form field — exercises the tree's ordinary Inline Alert branch, not the fallback."
+    }
+  ]
+}

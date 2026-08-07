@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
-version: 1.3.1
+version: 1.4.0
 ---
 
 # Righter
@@ -19,6 +19,9 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 - `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
 - `data/weakeners.json` — structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
 - `data/phonaesthetics.json` — structured sound concepts and cluster table for word choice
+- `scripts/ari.mjs` — computes ARI, grade level, and word/character/sentence counts exactly. Run it instead of calculating Reading Metrics by hand when Node is available: `node scripts/ari.mjs "copy text"` or `node scripts/ari.mjs --before "..." --after "..."`.
+
+Every numbered principle below and every rule in Error Message Guidelines carries a stable `id` in backticks — cite the id, not the number, when referencing a rule from outside this file (numbers shift when principles are added or reordered).
 
 ---
 
@@ -125,77 +128,77 @@ Use this block for every piece of copy reviewed:
 
 Apply all of these when reviewing or writing. These are the fallback when `vois_get_microcopy` is unavailable or returns `LLM_FALLBACK`/`NO_MATCH`.
 
-### 1. Use active voice
+### 1. Use active voice `id: active-voice`
 Subject → verb → object. Active voice is shorter and easier to follow.
 - ✗ "Rewards can be earned by clicking here."
 - ✓ "Click here to start earning rewards."
 
-### 2. Write at or below a fifth grade reading level
+### 2. Write at or below a fifth grade reading level `id: reading-level`
 Short sentences. Simple words. Clear structure. Target ARI ≤ 6.
 - ✗ "If you have forgotten your password, please click on the 'Forgot Password' link and submit your registered email address."
 - ✓ "Click 'Forgot Password'. Enter your email. Check your inbox for a reset link."
 
-### 3. Avoid jargon
+### 3. Avoid jargon `id: avoid-jargon`
 Replace technical terms with plain language. Don't assume domain knowledge.
 - ✗ "Authenticate your credentials."
 - ✓ "Log in with your username and password."
 
-### 4. Avoid complex sentence structures
+### 4. Avoid complex sentence structures `id: simple-sentences`
 One idea per sentence. Avoid dependent clauses stacked on independent clauses.
 - ✗ "The fox, which was red, over the gate jumped."
 - ✓ "The red fox jumped over the gate."
 
-### 5. Avoid double negatives
+### 5. Avoid double negatives `id: no-double-negatives`
 Double negatives increase misreads and cognitive load.
 - ✗ "Please don't fail to save your changes."
 - ✓ "Please save your changes."
 
-### 6. Use contractions
+### 6. Use contractions `id: use-contractions`
 Contractions sound human. Formal constructions feel stiff.
 - ✗ "Do not submit the form until all fields are complete."
 - ✓ "Don't submit until all fields are complete."
 
-### 7. Write in present tense
+### 7. Write in present tense `id: present-tense`
 Describe what's happening now or what the user can do.
 - ✗ "Your file was uploaded."
 - ✓ "Your file is uploading."
 
-### 8. Frame around the user's goals, not the system
+### 8. Frame around the user's goals, not the system `id: user-goal-framing`
 Users care about what they're doing, not how the system works.
 - ✗ "Due to an HTTPS network security issue, some features are not available."
 - ✓ "This site may be insecure. Some features aren't available."
 
-### 9. Avoid describing the interface
+### 9. Avoid describing the interface `id: no-interface-references`
 Don't reference UI elements like "tab," "panel," "menu," "page," or "section."
 - ✗ "Go to the Settings panel."
 - ✓ "Go to Settings."
 
-### 10. Use consistent terminology
+### 10. Use consistent terminology `id: consistent-terminology`
 Pick one word for each concept and stick to it.
 - ✗ Using "Sign Up," "Register," and "Create Account" interchangeably
 - ✓ Always "Sign up"
 
-### 11. Apply progressive disclosure
+### 11. Apply progressive disclosure `id: progressive-disclosure`
 Lead with what the user needs now. Offer detail only when needed.
 - ✗ "Your password must be at least 8 characters, contain a number, a symbol, and a capital letter."
 - ✓ "Your password must be at least 8 characters." [+ optional detail link]
 
-### 12. Don't apologize unnecessarily
+### 12. Don't apologize unnecessarily `id: no-unnecessary-apology`
 Reserve "sorry" for serious errors. Hollow apologies undermine trust.
 - ✗ "Whoops! We can't upload your picture. Try again."
 - ✓ "We couldn't upload your picture. Try again."
 
-### 13. Limit exclamation marks
+### 13. Limit exclamation marks `id: limit-exclamation-marks`
 Use words to convey energy, not punctuation. One per screen max, only for genuine celebration.
 - ✓ "Your profile has been updated!" (success state)
 - ✗ "Error! You can't submit the form! Please fix the errors!"
 
-### 14. Check prepositions
+### 14. Check prepositions `id: check-prepositions`
 Prepositions sit between two nouns. Never start or end a sentence with one.
 - ✗ "Click on the Submit button."
 - ✓ "Click Submit."
 
-### 15. Eliminate weakeners
+### 15. Eliminate weakeners `id: eliminate-weakeners`
 Remove all hedging words, softeners, empty intensifiers, filler adverbs, throat-clearing, passive-aggressive politeness, vague quantifiers, redundant framing, weak verb phrases, and meta-commentary.
 
 > Load `data/weakeners.json`. Check the copy against every category's `terms`
@@ -209,43 +212,50 @@ Key patterns to catch immediately:
 - Weak verbs: "make a decision" → decide, "conduct an analysis" → analyze
 - Throat-clearing: "I think," "we believe," "it is important to note that"
 
+### 16. Don't use em dashes `id: no-em-dashes`
+Em dashes read as a hedge in short-form UI copy and are a well-known AI writing tell. Use a period, comma, or colon instead.
+- ✗ "Your file is uploading — this may take a few minutes."
+- ✓ "Your file is uploading. This may take a few minutes."
+
 ---
 
 ## Error Message Guidelines
 
 Apply these on top of the general principles when reviewing or writing error messages.
 
-### Structure
+### Structure `id: error-structure`
 Every error must answer:
-1. What happened? (required)
-2. Why? (only if it genuinely helps)
-3. What should they do next? (required)
+1. What happened? (required) `id: error-what-happened`
+2. Why? (only if it genuinely helps) `id: error-why`
+3. What should they do next? (required) `id: error-next-step`
 
-### Voice and tone
+### Voice and tone `id: error-voice-and-tone`
 - **Instructive** — describe the issue precisely, optimize for understanding
 - **Reassuring** — no disparaging tone, no unnecessary humor
 - **Supportive** — always provide a clear next step
 
-### Mechanics
+### Mechanics `id: error-mechanics`
 - Sentence case: "This field is required." not "This Field Is Required."
 - No ALL CAPS (except real acronyms)
 - 1–2 sentences max
 
-### Don't blame the user
+### Don't blame the user `id: error-no-blame`
 Describe the situation, not the mistake.
 - ✗ "You didn't enter enough characters."
 - ✓ "This field needs 8 characters."
 
-### Form field vs system errors
+### Form field vs system errors `id: error-field-vs-system`
 - **Form field** — what's wrong and how to fix it: "Enter a valid email address."
 - **System error** — what happened and what to try next: "We couldn't connect. Check your internet or try again."
 
-### Other rules
+### Other rules `id: error-other-rules`
 - Preserve user input where possible — let users edit rather than start over
 - Place errors adjacent to the element that triggered them (Law of Proximity)
 
-### Component decision tree
+### Component decision tree `id: error-decision-tree`
 Use this before writing any error message to pick the right component. Then look up that component's `id` in `data/components.json` for full writing rules — a shared `shared_prefix_format` block covers the "Action Required:" / "Approval Required:" / "Review:" / "Verify Now:" prefixes used by Alert Dialog, Inline Alert, and Alert Banner.
+
+Walk the questions in order and stop at the first "Yes" — don't keep checking once one matches.
 
 ```
 Does it block progress and require immediate action?
@@ -265,6 +275,9 @@ Is it contextual to a page section, non-blocking?
 
 Is it a hover label for an icon or interactive element?
   └─ Yes → Tooltip
+
+None of the above?
+  └─ Default to Inline Alert — safest non-blocking option until the case is clear enough to fit one of the rows above
 ```
 
 ---
@@ -293,6 +306,8 @@ When writing new copy — especially labels, CTAs, empty states, and microcopy �
 ## Reading Metrics
 
 Calculate and show these for all reviewed and written copy.
+
+**If Node is available, run `node scripts/ari.mjs "<copy>"` (or `node scripts/ari.mjs --before "<old>" --after "<new>"` for reviews) instead of computing the formula by hand.** Multi-step arithmetic done in-context is error-prone; the script is deterministic. Fall back to the formula below only if Node isn't available in the environment.
 
 ### ARI Formula
 ```
@@ -356,8 +371,15 @@ Run through this for every piece of copy before finalizing.
 **Mechanics**
 - [ ] Inconsistent terminology?
 - [ ] Preposition starting or ending a sentence?
+- [ ] Em dashes present?
 
 **Errors (if applicable)**
 - [ ] Clear next step provided?
 - [ ] Does it blame the user?
 - [ ] Right component chosen? (use decision tree above)
+
+---
+
+## Maintaining This Skill
+
+`evals/cases.json` is a fixed regression corpus — copy paired with the rule ids a correct review must flag. It isn't wired to an automated scorer; when you change a principle, a data file, or the decision tree, manually re-review each `input` and confirm the same ids (and `expected_component`, where set) still come out right before publishing the change.
