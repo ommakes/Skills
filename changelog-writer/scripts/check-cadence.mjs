@@ -1,55 +1,65 @@
-// check-all.mjs — runs every rule checker against a draft and prints one report.
+// check-cadence.mjs — CAD-* rules
 //
-// Usage: node check-all.mjs <draft-file>
+// Verifies release-metadata hygiene: category is one of the three known
+// values, and every entry has a unique, stable (non-sequence-number) id so
+// entries can be tracked and diffed release over release.
 //
-// Exit code 0 = no FAILs (WARNs are fine, worth a look but not blocking).
-// Exit code 1 = at least one FAIL — fix and re-run before publishing.
+// Usage: node check-cadence.mjs <draft-file>
 
 import { parseDraft } from "./parse.mjs";
-import { checkStructure } from "./check-structure.mjs";
-import { checkSassBudget } from "./check-sass-budget.mjs";
-import { checkVoice } from "./check-voice.mjs";
-import { checkLength } from "./check-length.mjs";
-import { checkCadence } from "./check-cadence.mjs";
 
-const file = process.argv[2];
-if (!file) {
-  console.error("Usage: node check-all.mjs <draft-file>");
-  process.exit(2);
-}
+const RULES = {
+  "CAD-01": "category must be New, Improved, or Fixed",
+  "CAD-02": "every entry needs a unique, stable id (a slug, not a sequence number)",
+};
 
-const entries = parseDraft(file);
+const VALID_CATEGORIES = ["New", "Improved", "Fixed"];
 
-if (entries.length === 0) {
-  console.error(`No entries found in ${file}. Check the ### ENTRY / ### END format.`);
-  process.exit(2);
-}
+export function checkCadence(entries) {
+  const results = [];
+  const idCounts = new Map();
 
-const allResults = [
-  ...checkStructure(entries),
-  ...checkSassBudget(entries),
-  ...checkVoice(entries),
-  ...checkLength(entries),
-  ...checkCadence(entries),
-];
+  for (const entry of entries) {
+    if (!VALID_CATEGORIES.includes(entry.category)) {
+      results.push({
+        rule: "CAD-01", status: "FAIL", entry: entry.id,
+        detail: `category is "${entry.category ?? "missing"}" — must be one of New, Improved, or Fixed`,
+      });
+    }
 
-const fails = allResults.filter((r) => r.status === "FAIL");
-const warns = allResults.filter((r) => r.status === "WARN");
+    if (/^entry-\d+$/.test(entry.id)) {
+      results.push({
+        rule: "CAD-02", status: "WARN", entry: entry.id,
+        detail: `id "${entry.id}" looks like an auto-generated sequence number — use a stable slug derived from the feature name instead`,
+      });
+    }
 
-console.log(`Checked ${entries.length} entr${entries.length === 1 ? "y" : "ies"} from ${file}\n`);
-
-if (allResults.length === 0) {
-  console.log("All clear. Nothing flagged.");
-} else {
-  if (fails.length > 0) {
-    console.log(`FAILS (${fails.length}) — fix before publishing:`);
-    for (const r of fails) console.log(`  [${r.rule}] (${r.entry}) ${r.detail}`);
-    console.log("");
+    idCounts.set(entry.id, (idCounts.get(entry.id) ?? 0) + 1);
   }
-  if (warns.length > 0) {
-    console.log(`WARNINGS (${warns.length}) — worth a look:`);
-    for (const r of warns) console.log(`  [${r.rule}] (${r.entry}) ${r.detail}`);
+
+  for (const [id, count] of idCounts) {
+    if (count > 1) {
+      results.push({
+        rule: "CAD-02", status: "WARN", entry: id,
+        detail: `id "${id}" is used by ${count} entries — ids must be unique so entries can be tracked release over release`,
+      });
+    }
   }
+
+  return results;
 }
 
-process.exit(fails.length > 0 ? 1 : 0);
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const file = process.argv[2];
+  if (!file) {
+    console.error("Usage: node check-cadence.mjs <draft-file>");
+    process.exit(2);
+  }
+  const entries = parseDraft(file);
+  const results = checkCadence(entries);
+  for (const r of results) {
+    console.log(`[${r.status}] ${r.rule} (${r.entry}): ${r.detail}`);
+  }
+  if (results.length === 0) console.log("CAD: all clear.");
+  process.exit(results.some((r) => r.status === "FAIL") ? 1 : 0);
+}
