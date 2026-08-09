@@ -1,0 +1,37 @@
+name: Design System Checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "vois-tokens/**"
+      - "vois-patterns/**"
+      - "vois-components/**"
+      - "scripts/**"
+      - "skills.json"
+  pull_request:
+    paths:
+      - "vois-tokens/**"
+      - "vois-patterns/**"
+      - "vois-components/**"
+      - "scripts/**"
+      - "skills.json"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Detector regression suite (vois-tokens)
+        run: node vois-tokens/scripts/detect.test.mjs
+
+      - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
+        run: node scripts/check-rule-sync.mjs
+
+      - name: SKILL.md frontmatter validation
+        run: bash scripts/validate-skills.sh

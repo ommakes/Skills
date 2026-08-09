@@ -4,6 +4,8 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 
 **This is purely additive.** It catches violations the instant they're written — seconds after generation, inside the same harness that wrote the code. It does not replace this checklist (most rules still require visual/layout judgment an LLM provides), and it does not touch, call, or compete with the separate GitHub-integrated token-drift app that reconciles raw values against the live token list on its own schedule. The hook only ever writes new files under the consumer project's `.vois/` directory; it never edits token source files and never calls GitHub.
 
+**Two different `severity` fields exist in this skill — they answer different questions.** `data/vois-rules.json` carries `severity` (`required`/`recommended`/`preferred`) and `enforcement` (`blocking`/`advisory`) on every rule — the corpus-wide, normative-weight signal. `scripts/registry.mjs`'s `severity` (`quality`/`slop`) is a narrower, detector-specific tier that only exists to decide hook-blocking behavior for the 18 rules below. They agree where it matters: `enforcement: "blocking"` in `vois-rules.json` is set on exactly the two rules marked "blockable" here.
+
 ## What's auto-verified vs. judgment-only
 
 | `[DS-*]` ID | Mechanically checked? | Notes |
@@ -26,7 +28,7 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `DS-CSS-002` | Yes | `#id` selector used for styling. |
 | `DS-CSS-007` | Yes | Hand-authored `@media` query in `px`. |
 | `DS-MODAL-001`/`002` | Yes | Custom (non-Radix) Dialog/Modal missing `inert` or `overscroll-behavior: contain`. |
-| `DS-SLOP-002` | Yes — advisory only | Purple/indigo→blue "AI gradient" (Tailwind `from-*`/`to-*` or CSS `linear-gradient`). Heuristic — a genuine brand can waive it; the other `DS-SLOP-*` rules stay judgment-only. |
+| `DS-SLOP-002` | Yes — advisory only | Purple/indigo→blue "AI gradient" (Tailwind `from-*`/`to-*` or CSS `linear-gradient`). Heuristic — a genuine brand can waive it; the other `DS-SLOP-*` rules stay judgment-only. **Known gap:** the pattern matches named hue keywords/Tailwind palette classes only — the same gradient spelled with arbitrary hex values (`from-[#7c3aed] to-[#3b82f6]`) bypasses it. Documented, not fixed, in `scripts/__fixtures__/adversarial.{tsx,css}` and `detect.test.mjs` — recognizing hue family from raw hex needs color-space math this zero-dependency detector doesn't do. |
 | Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. Keep grading these by reading the code, the way this skill always has. |
 
 ## Setup

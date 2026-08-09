@@ -45,3 +45,22 @@ for (const rule of RULES) {
 test("good.tsx triggers no findings", () => {
   assert.deepEqual(goodTsxFindings, [], `expected no findings, got: ${JSON.stringify(goodTsxFindings, null, 2)}`);
 });
+
+// Adversarial: known bypasses of the DS-SLOP-002 (AI-gradient) regex.
+// These assert *current* (non-)behavior to document a real gap, not a
+// requirement — see adversarial.tsx/.css for why each one bypasses the
+// detector. If registry.mjs's DS-SLOP-002 pattern is ever taught to
+// recognize arbitrary hex values, these assertions should flip to expect a
+// finding, not be deleted.
+const adversarialTsxFindings = findingsFor("adversarial.tsx");
+const adversarialCssFindings = findingsFor("adversarial.css");
+
+test("KNOWN GAP: DS-SLOP-002 does not catch arbitrary-hex Tailwind gradients", () => {
+  const hit = adversarialTsxFindings.some((f) => f.ruleId === "DS-SLOP-002");
+  assert.equal(hit, false, "if this now fires, registry.mjs's regex was extended to hex values — update this test to assert a finding instead");
+});
+
+test("KNOWN GAP: DS-SLOP-002 does not catch arbitrary-hex CSS linear-gradient()", () => {
+  const hit = adversarialCssFindings.some((f) => f.ruleId === "DS-SLOP-002");
+  assert.equal(hit, false, "if this now fires, registry.mjs's regex was extended to hex values — update this test to assert a finding instead");
+});

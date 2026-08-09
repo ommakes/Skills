@@ -1,6 +1,6 @@
 {
   "source": "vois-patterns/references/*.md",
-  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. Only 10 of the 7 reference files' decision points carry an explicit PATH- tag (unlike vois-tokens' DS- corpus, which tags nearly every rule) — the remaining untagged IF/THEN branches, worked examples, and righter-routing call-outs stay in the reference .md files. microcopy-routing.md and permissions-and-conditional-logic.md carry no PATH- tags at all (cross-cutting guidance, not a per-template decision tree) and are not represented here.",
+  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here.",
   "nodes": [
     {
       "id": "PATH-A",
@@ -86,6 +86,60 @@
       "pattern_name": "Detail Page (Read-Only / View State)",
       "condition": "User is viewing a single record in read-only mode. No editing at this level (editing happens on a dedicated form page). User might click through to edit on a separate page.",
       "outcome": "Header: breadcrumb above H1 title, close/back button top right if in a modal. Body: groups of related data stacked vertically, each group as label + value, status indicators/badges where relevant. Actions: no primary action in view-only state; an \"Edit\" link/button navigates to the form page if editing is available. Mobile: stacked single column, no horizontal grouping."
+    },
+    {
+      "id": "PATH-PERM-HIDE-BY-ROLE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Hide Page Elements by Role",
+      "condition": "User role doesn't have permission to see an element (e.g. non-admin viewing a Members section, non-owner viewing Billing, unpermitted user viewing a Delete account button).",
+      "outcome": "Hide the element entirely — it never renders in the DOM. This is deletion, not disabling. Check role at render time; don't render the element at all."
+    },
+    {
+      "id": "PATH-PERM-DISABLE-BY-CONDITION",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Disable Controls by Permission or Condition",
+      "condition": "Content the user cannot update due to an org admin setting or a cascading choice condition (e.g. a workspace admin disabled this setting, the record is archived).",
+      "outcome": "Keep the element visible but disabled, in a view-only/disabled state, so the user can visually map the cause/effect relationship. Route the disabled-state explanation (tooltip or helper text) to righter skill."
+    },
+    {
+      "id": "PATH-COND-PARENT-CHILD",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Parent/Child Input Dependencies",
+      "condition": "A group of related inputs has a conditional relationship — a child input's valid options or availability depend on a parent input's value.",
+      "outcome": "Disable the affected child inputs until the parent input is updated/selected with a valid value. Show them disabled but visible, not hidden, so the relationship stays legible. Route the explanation to righter skill."
+    },
+    {
+      "id": "PATH-COND-PRIMARY-BUTTON",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Primary Button State",
+      "condition": "A form has a primary submit action gated on required fields.",
+      "outcome": "The primary button is disabled until all required fields have been filled with valid responses. Route the disabled-state tooltip (e.g. \"Fill in all required fields to continue\") to righter skill."
+    },
+    {
+      "id": "PATH-COND-ACCORDION-EXCLUSIVE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Cascading Accordion/Expansion",
+      "condition": "A layout contains multiple expandable/accordion forms.",
+      "outcome": "Only one form can remain expanded at a time. Auto-collapse the previously expanded one when the user opens a new one."
+    },
+    {
+      "id": "PATH-COND-CALC-TABLE-ROWS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Simple Calculation Tables",
+      "condition": "A calculation dynamically updates a final value from inline input fields and dropdowns (e.g. quantity × unit price).",
+      "outcome": "Use a simple table layout: header row acts as the field label, inline inputs and dropdowns, and never stack more than 4 rows."
     }
   ]
 }

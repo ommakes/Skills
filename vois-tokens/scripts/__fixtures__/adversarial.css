@@ -1,0 +1,8 @@
+/* Adversarial fixtures — see adversarial.tsx for why these exist. */
+
+.hero {
+  /* Same purple->blue AI gradient as bad.css's DS-SLOP-002 case, spelled
+     with hex values instead of the named CSS color keywords the regex
+     looks for (`\b(violet|purple|indigo|fuchsia|blue|sky|cyan)\b`). */
+  background-image: linear-gradient(to right, #7c3aed, #3b82f6);
+}
