@@ -4,6 +4,23 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.11.0] — 2026-08-09
+
+### Added
+
+- **`severity` (`required`/`recommended`/`preferred`) and `enforcement` (`blocking`/`advisory`) fields on all 102 rules in `data/vois-rules.json`.** Previously this tiering only existed for the 18 rules `scripts/registry.mjs` covers, and only there — every other rule had no machine-readable weight at all. `enforcement: "blocking"` is set on exactly the two rules `references/hooks.md` already documented as blockable in Cursor (`DS-TAILWIND-004`, `DS-ANIMATION-005`) — this codifies current behavior, it doesn't invent new blocking. `severity` follows what each source file already asserts (e.g. all `DS-A11Y-*` — accessibility.md opens "These are not optional" — and all `DS-MODAL-*` are `required`; punctuation/selector-style rules are `preferred`; everything else defaults to `recommended`).
+- **`applies_when`/`does_not_apply_when` on 7 rules with a real, already-documented condition**: `DS-MODAL-001/002/003`, `DS-ANIMATION-003`, `DS-ANIMATION-009`, `DS-A11Y-013`, `DS-SURFACE-002`. E.g. the `DS-MODAL-*` condition ("custom, non-Radix implementations only") already existed as logic in `registry.mjs`'s `usesRadix` check but wasn't visible to anyone reading just the rule data. Deliberately selective — most of the 102 rules have no real conditional scope and don't get this field.
+- **`scripts/__fixtures__/adversarial.{tsx,css}` + two documenting tests in `detect.test.mjs`** for a known `DS-SLOP-002` gap: the same purple→blue AI gradient spelled with arbitrary hex values (`from-[#7c3aed]`) bypasses the named-hue regex. Documented in `references/hooks.md` as a known limitation rather than fixed — recognizing hue family from raw hex needs color-space math this zero-dependency detector doesn't do.
+- **`scripts/check-rule-sync.mjs` (repo root, not skill-scoped)** — a cross-reference integrity checker confirming every `[DS-*]` tag cited in `references/*.md` resolves to a real `vois-rules.json` entry and vice versa. Exists because this exact bug already shipped once (see `[1.9.1]` below, `DS-CSS-008`) with nothing in place to catch a repeat. Wired into new repo-level CI (`.github/workflows/design-system-checks.yml`), which also now runs the existing `detect.test.mjs` regression suite automatically for the first time — it previously only ran by hand.
+
+### Changed
+
+- **Source-of-truth note added to `SKILL.md`**: `data/vois-rules.json` is canonical for rule statements/severity/enforcement; `references/*.md` may restate for readability but the JSON wins on conflict.
+- **`scripts/registry.mjs`** gains a comment clarifying that its own `severity` field (`quality`/`slop`, a detector-blocking tier) is a different, narrower vocabulary from `vois-rules.json`'s new `severity`/`enforcement` fields — they answer different questions and aren't accidental duplication. `references/hooks.md` gets the same clarification plus a note on the `DS-SLOP-002` hex-gradient gap.
+- **Version bump:** `1.10.0` → `1.11.0`
+
+---
+
 ## [1.10.0] — 2026-07-24
 
 ### Added

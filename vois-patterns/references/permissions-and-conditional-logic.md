@@ -4,7 +4,7 @@ Cross-cutting behavior rules that apply across container types — not tied to o
 
 ## Permissions & Visibility Rules
 
-### Rule 1: Hide Page Elements by Role
+### Rule 1: Hide Page Elements by Role `[PATH-PERM-HIDE-BY-ROLE]`
 
 Hide page elements entirely if user role doesn't have permission to see them.
 
@@ -18,7 +18,7 @@ This is deletion, not disabling—elements never appear in DOM.
 
 → **Implementation note:** Check role at render time; don't render the element at all.
 
-### Rule 2: Disable Controls by Permission or Condition
+### Rule 2: Disable Controls by Permission or Condition `[PATH-PERM-DISABLE-BY-CONDITION]`
 
 For content user cannot update due to org admin settings OR cascading choice conditions:
 
@@ -45,7 +45,7 @@ Helper text (righter): "Edit your billing plan to change payment method"
 
 ## Conditional Logic Rules
 
-### Parent/Child Input Dependencies
+### Parent/Child Input Dependencies `[PATH-COND-PARENT-CHILD]`
 
 In a group of related inputs, if there is a conditional relationship:
 
@@ -53,7 +53,7 @@ In a group of related inputs, if there is a conditional relationship:
 - Show them disabled but visible (so user understands the relationship)
 - → **For disabled state explanations, use righter skill** (tooltip or helper text: "Select a payment method first", etc.)
 
-### Primary Button State
+### Primary Button State `[PATH-COND-PRIMARY-BUTTON]`
 
 The primary button on a form should be disabled until all required fields have been filled with valid responses.
 
@@ -64,7 +64,7 @@ Button state: disabled
 Hover state: show tooltip (righter): "Fill in all required fields to continue"
 ```
 
-### Cascading Accordion/Expansion
+### Cascading Accordion/Expansion `[PATH-COND-ACCORDION-EXCLUSIVE]`
 
 If there are multiple expandable forms in a layout:
 
@@ -88,7 +88,7 @@ If a form element has accordion properties (expand/collapse):
 - Greater fidelity of detail on what buttons will do
 - → **For button labels when expanded, use righter skill** (e.g., "Edit section", "Remove item")
 
-## Simple Calculation Tables
+## Simple Calculation Tables `[PATH-COND-CALC-TABLE-ROWS]`
 
 Use simple table layouts with inline input fields and dropdowns for calculations that dynamically update a final value.
 

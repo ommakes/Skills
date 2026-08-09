@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.10.0
+version: 1.11.0
 ---
 
 # Vois Tokens Skill
@@ -83,6 +83,8 @@ building fresh, not just the bare rule text:**
 | `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
 **Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), query `data/vois-rules.json` for those rule IDs, or read only the matching reference file plus this SKILL.md if you need the examples too. You don't need the full set for a scoped task.
+
+**Source of truth:** `data/vois-rules.json` is canonical for rule statements, `severity`, and `enforcement`. `references/*.md` may restate a rule for readability and carries the code examples and rationale JSON doesn't — but if the two ever disagree, the JSON wins. `scripts/check-rule-sync.mjs` (repo root) checks in CI that every `[DS-*]` tag cited in `references/*.md` resolves to a real entry in `vois-rules.json` and vice versa, so the two can't silently drift out of sync.
 
 ---
 

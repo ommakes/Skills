@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.5.1
+version: 1.6.0
 ---
 
 # Vois Patterns Skill
@@ -79,6 +79,8 @@ Read only the one reference file that matches the path you picked. Each template
 
 **Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
 
+**Source of truth:** `data/patterns-rules.json` is canonical for a path's `condition`/`outcome`. `references/*.md` may restate a path for readability and carries the worked examples JSON doesn't — but if the two ever disagree, the JSON wins. `scripts/check-rule-sync.mjs` (repo root) checks in CI that every `[PATH-*]` tag cited in `references/*.md` resolves to a real entry in `patterns-rules.json` and vice versa.
+
 ---
 
 ## Reference Files
@@ -90,7 +92,7 @@ Read only the one reference file that matches the path you picked. Each template
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
-| `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | — (cross-cutting) |
+| `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/microcopy-routing.md` | Full list of what counts as UI copy and must route to righter | — (cross-cutting) |
 
 ---

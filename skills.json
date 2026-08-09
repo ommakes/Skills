@@ -7,7 +7,7 @@
     {
       "name": "vois-patterns",
       "path": "vois-patterns",
-      "version": "1.5.1",
+      "version": "1.6.0",
       "author": "Personify Labs",
       "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Works standalone — telemetry tool calls are optional. Use when building pages, forms, features, workflows.",
       "tags": ["design", "vois", "design-system", "patterns"]
@@ -23,7 +23,7 @@
     {
       "name": "vois-tokens",
       "path": "vois-tokens",
-      "version": "1.10.0",
+      "version": "1.11.0",
       "author": "Personify Labs",
       "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract. Works standalone — no orchestrator required.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation"]

@@ -2,6 +2,17 @@
 // subset of vois-tokens' [DS-*] rules. No parser dependency by design — see
 // vois-tokens/references/hooks.md for which rules are intentionally NOT here
 // (they require AST/layout/contrast computation and stay LLM-judgment-only).
+//
+// Note on `severity` below: this is a narrower, detector-specific vocabulary
+// ("quality" | "slop") that only exists to decide hook-blocking behavior for
+// the ~18 rules covered here. It's a different axis from the `severity`
+// ("required"/"recommended"/"preferred") and `enforcement`
+// ("blocking"/"advisory") fields on every rule in ../data/vois-rules.json —
+// that pair is the corpus-wide, normative-weight signal; this one is
+// "how confident is a regex check, and should Cursor deny the edit."
+// `enforcement: "blocking"` in vois-rules.json is set on exactly the two
+// rules marked "blockable" here (DS-TAILWIND-004, DS-ANIMATION-005) — the
+// two vocabularies agree on those, they just answer different questions.
 
 const CSS_EXT = [".css", ".scss"];
 const CODE_EXT = [".tsx", ".jsx", ".ts", ".js"];

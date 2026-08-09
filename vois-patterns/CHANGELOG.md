@@ -6,6 +6,16 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.6.0] - 2026-08-09
+
+**Add** | Tagged `references/permissions-and-conditional-logic.md`'s ~6 binary, checkable rules with stable IDs (`PATH-PERM-HIDE-BY-ROLE`, `PATH-PERM-DISABLE-BY-CONDITION`, `PATH-COND-PARENT-CHILD`, `PATH-COND-PRIMARY-BUTTON`, `PATH-COND-ACCORDION-EXCLUSIVE`, `PATH-COND-CALC-TABLE-ROWS`) and added matching entries to `data/patterns-rules.json`. This file previously carried no PATH- tags at all — rules like "never stack more than 4 rows" and "primary button disabled until all required fields are valid" existed only as prose, invisible to anything querying the corpus by ID. A new `node_type: "cross_cutting_rule"` distinguishes these from the per-template decision-tree nodes (`top_level_pattern`/`sub_decision`): they apply across templates rather than nesting under one PATH, so `parent` is `null`, same as a top-level pattern.
+
+**Add** | Source-of-truth note in `SKILL.md`: `data/patterns-rules.json` is canonical for a path's condition/outcome, `references/*.md` may restate for readability, JSON wins on conflict — now enforced in CI by the new repo-level `scripts/check-rule-sync.mjs`.
+
+**Change** | `patterns-rules.json`'s top-level `description` updated (previously said `permissions-and-conditional-logic.md` "carries no PATH- tags at all... not represented here" — no longer accurate). `microcopy-routing.md` stays untagged — it's a routing checklist to righter, not a testable requirement. `SKILL.md`'s reference-file table row for `permissions-and-conditional-logic.md` now lists its Path IDs instead of "— (cross-cutting)".
+
+---
+
 ## [1.5.1] - 2026-07-23
 
 **Fix** | Corrected `record_pattern_decision` → `vois_record_pattern_choice` and `report_pattern_gap` → `vois_report_pattern_gap` (the real registered MCP tool names) across SKILL.md, README.md, and references/microcopy-routing.md. Also fixed the example call's argument shape — the real tool takes `skillVersion`/`pathId`/`userGoal`/`thresholdInputs`, not `pathId`/`confidence`/`reasoning` (`confidence` doesn't exist on the real tool). The "optional if available" framing is unchanged.
