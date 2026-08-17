@@ -1,7 +1,7 @@
 ---
 name: metrics-tagging
-version: 1.0.0
-description: Analyze UI mockups, screenshots, or prototype frames to identify all trackable interactions and generate a complete analytics event taxonomy table. Use this skill whenever a designer uploads a screen, mockup, prototype screenshot, or UI frame and wants to know what should be tagged, what events to fire, or how to document analytics for handoff. Also trigger when someone asks to "tag this screen," "identify events," "create a tagging spec," "what should we track," or "build an event table" for any UI. If a designer shares any visual of a UI and mentions analytics, tracking, tagging, GTM, events, or metrics — use this skill.
+version: 1.1.0
+description: Analyze UI mockups, screenshots, or prototype frames to identify all trackable interactions and generate a complete analytics event taxonomy table, including multi-step task/flow completion events. Use this skill whenever a designer uploads a screen, mockup, prototype screenshot, or UI frame and wants to know what should be tagged, what events to fire, or how to document analytics for handoff. Also trigger when someone asks to "tag this screen," "identify events," "create a tagging spec," "what should we track," "build an event table," or "tag this flow/task" for any UI. If a designer shares any visual of a UI and mentions analytics, tracking, tagging, GTM, events, funnels, or metrics — use this skill.
 ---
 
 # Metrics Tagging Skill
@@ -59,10 +59,10 @@ Use camelCase. Follow this pattern: `noun + Verb`
 
 ## Output: Event Taxonomy Table
 
-Produce a markdown table with exactly these five columns:
+Produce a markdown table with exactly these six columns:
 
-| # | Event or Action | ID or Variable | Definition | Purpose | Event Name |
-|---|----------------|----------------|------------|---------|------------|
+| # | Event or Action | ID or Variable | Definition | Properties | Purpose | Event Name |
+|---|----------------|----------------|------------|------------|---------|------------|
 
 ### Column definitions:
 
@@ -80,6 +80,15 @@ Produce a markdown table with exactly these five columns:
 - `billing-frequency-radio`
 
 **Definition** — When exactly does this event fire? Be precise. Start with "When the user..." or "The moment the page..."
+
+**Properties** — The contextual data that rides along on the event payload, not the event name itself. This is where variation belongs — do NOT create a separate event for every possible value. Examples:
+- `planSelected` → properties: `plan_type` (starter/pro/enterprise)
+- `personaCreateBtnClicked` → properties: `flow_id` (see Task-Level Events below)
+- `formSubmitted` → properties: `error_code` (if validation failed)
+
+If a field has no meaningful downstream property (e.g. a static page load), write "—".
+
+Never put PII in a property — no email, name, phone, or address. Reference a user/account ID instead and let the backend join it if needed.
 
 **Purpose** — Which business question does tracking this answer? Connect to a KPI. If flow context was provided, map directly to a stated KPI. If not, use the most likely KPI for that element type:
 - Submit buttons → task completion rate
@@ -149,6 +158,56 @@ When analyzing a screen, systematically check for all of these. Do not skip any 
 - Multi-step flows where the same element appears across steps
 - Any input whose cascade behavior cannot be determined from the mockup alone
 
+## Task-Level Events (Flow Completion)
+
+Individual click events tell you what happened at one moment. They don't tell you whether the user actually finished what they set out to do. That requires a second, higher-level layer: pairing a **start event** with an **end event** to measure completion of a whole task, not just a single interaction.
+
+**When to generate this table:** any time the screen (or set of screens) contains a create/edit/delete/setup pattern where a user initiates an action and completes it one or more steps later — e.g. `personaCreateBtnClicked` (start) → `personaSaveBtnClicked` (end) = "Add New Persona" task. If the flow spans multiple screens and only one has been shared, generate the table with the available half and flag the missing screen in Coverage Gaps.
+
+**How linking actually works:** analytics tools (Amplitude, Mixpanel, GA4) don't have a native "paired event" object. They stitch a start and end event together via a shared property fired on both — typically a `flow_id` (a UUID generated the moment the start event fires, attached to every event in that task until it ends). Always specify this linking property; without it, "task completion rate" isn't computable, just a hopeful correlation.
+
+Produce a second markdown table:
+
+| Task Name | Start Event | End Event | Linking Property | Success Definition | Abandonment Rule | Purpose |
+|-----------|-------------|-----------|-------------------|---------------------|-------------------|---------|
+
+- **Task Name** — camelCase, describes the outcome, not the click (`addNewPersona`, not `saveBtnClicked`)
+- **Start Event / End Event** — must be Event Names already defined in the main taxonomy table above
+- **Linking Property** — almost always `flow_id`, unless the product already uses something else (e.g. `session_id`, `draft_id`) — check existing conventions first
+- **Success Definition** — the end event must fire with no error state; state this explicitly
+- **Abandonment Rule** — what counts as giving up: navigating away, closing the modal, or a timeout (state a specific duration if known, otherwise flag it in Coverage Gaps for the designer/PM to define)
+- **Purpose** — usually task completion rate or time-on-task; note if multiple task rows roll up into one funnel
+
+**Edge cases to flag, not silently resolve:**
+- Retries (user starts, cancels, starts again) — the flow_id must regenerate on each new start, or completion rate gets inflated
+- Two starts before one end — decide whether that's "abandon + restart" or an invalid state, and flag it if unclear from the mockup
+
+## Avoiding Taxonomy Bloat
+
+More events isn't better tracking — it's noise that makes funnels unreadable. Before finalizing:
+- Never create a separate event for each option of a dropdown/radio/toggle. Use one event with a Properties value instead (`billingFrequencyChanged` + `frequency: monthly/annual`, not `billingFrequencyMonthlySelected` and `billingFrequencyAnnualSelected`).
+- If the main taxonomy table exceeds roughly 25-30 rows for a single screen, that's a signal to consolidate similar interactions into fewer events with more properties, and to say so in the output rather than shipping the sprawl silently.
+- Before naming a new event, scan the table so far for something that already covers the same action — duplicate near-identical events are the most common cause of taxonomy drift over time.
+
+## Cross-Session Consistency (Event Registry)
+
+Every run of this skill invents event names and selector IDs fresh, with no memory of what got named last time. Left unchecked, that's how the same "Save" button pattern ends up as `saveBtn` on one screen and `saveChangesBtn` on another a few weeks later — the exact naming-drift problem the Quality Check dedup rule above is trying to catch within a single run, extended across runs.
+
+Fix: maintain a running ledger at `references/event-registry.md` (in the same repo/workspace as this skill, not bundled with it — it's project-specific, not skill-specific).
+
+**Before tagging a new screen:**
+1. Read `references/event-registry.md` if it exists.
+2. Check whether any element on the new screen matches (or closely resembles) an already-registered pattern — same interaction type, same rough purpose. If so, reuse its Event Name and ID convention exactly, even if your first instinct would've named it slightly differently.
+3. If the file doesn't exist yet, this is the first run for this project — proceed normally and create it at the end.
+
+**After finalizing output:**
+Append one row per new event (skip ones reused from the registry) to a table with this shape:
+
+| Event Name | ID or Variable | Screen/Flow | Date Added |
+|------------|-----------------|-------------|------------|
+
+Don't rewrite history — only add rows for genuinely new events. If naming conventions in the registry conflict with this skill's default pattern (e.g. the project already uses snake_case), follow the registry, not the skill defaults, and note that in the Naming Convention Reference block.
+
 ## Coverage Gap Section
 
 After the table, always output a Coverage Gaps section:
@@ -189,8 +248,9 @@ Common KPIs by product type to map to:
 
 1. Start with a brief **Screen Summary** (1-2 sentences: what screen is this, what flow is it part of)
 2. Output the **Event Taxonomy Table** in full
-3. Output the **Coverage Gaps** section
-4. End with a **Naming Convention Reference** block showing the pattern used and any conventions observed or inferred
+3. Output the **Task-Level Events** table if the screen contains any multi-step create/edit/delete pattern (omit this step entirely if none exist — don't force it)
+4. Output the **Coverage Gaps** section
+5. End with a **Naming Convention Reference** block showing the pattern used and any conventions observed or inferred
 
 ## Example Output Structure
 
@@ -200,10 +260,13 @@ Before finalizing output, verify:
 - Every visible interactive element is in the table
 - No event name is duplicated
 - All event names follow the camelCase `nounVerb` pattern
-- Every row has all 5 columns populated
+- Every row has all 6 columns populated (use "—" for Properties when there's genuinely none)
 - Cancel/close/dismiss buttons are included
 - Cascading inputs are flagged [CASCADE] in the Purpose column
 - High-impact inputs are flagged [HIGH IMPACT] in the Purpose column
+- No two events describe the same underlying action (check for near-duplicates before finalizing)
+- If `references/event-registry.md` exists, it was checked for reusable names before new ones were invented, and new events were appended to it after finalizing
+- Every Task-Level Events row references Start/End events that actually exist in the main table, and specifies a Linking Property
 - Coverage gaps section calls out all missing screen states
 - Any input whose cascade behavior is unclear is flagged in Coverage Gaps
 - If no flow context was provided, the output notes that Purpose column accuracy is limited and prompts the designer to re-run with context
