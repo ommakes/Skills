@@ -71,9 +71,11 @@ Every principle and error-message rule carries a stable `id` for cross-referenci
 ## Auxiliary Skills
 
 ### Metrics Tagging
-Analyzes UI mockups or screenshots and generates a complete analytics event taxonomy table for handoff to a tag implementation team. Identifies cascading inputs, high-impact fields, and coverage gaps across screen states.
+Analyzes UI mockups or screenshots and generates a complete analytics event taxonomy table for handoff to a tag implementation team — including task-level flow completion events (start/end event pairs linked by a shared `flow_id`), cascading and high-impact input flagging, and coverage gaps across screen states.
 
-**Use when:** planning what to track in a flow, creating a tagging spec for handoff, or auditing a screen for analytics coverage.
+**Use when:** planning what to track in a flow, creating a tagging spec for handoff, tagging a multi-step create/edit/delete task, or auditing a screen for analytics coverage.
+
+Ships as `SKILL.md` plus a `references/event-registry.md` starter template — a project-local ledger the skill reads from and appends to so event names stay consistent across sessions instead of drifting screen to screen. See [`metrics-tagging/CHANGELOG.md`](./metrics-tagging/CHANGELOG.md) for version history.
 
 → [`metrics-tagging/`](./metrics-tagging/)
 
