@@ -1,12 +1,14 @@
 ---
 name: vois-tokens
-description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.11.0
+description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
+version: 1.12.0
 ---
 
 # Vois Tokens Skill
 
-You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4**, and **Motion**. This skill defines the rules, constraints, and patterns you must follow. Deviation from these rules produces inconsistent, unmaintainable UI.
+You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4 or StyleX**, and **Motion**. This skill defines the rules, constraints, and patterns you must follow. Deviation from these rules produces inconsistent, unmaintainable UI.
+
+**Determine the styling engine before applying implementation-layer rules.** Check `package.json` for `tailwindcss` vs `@stylexjs/stylex`, or look for existing `stylex.create()` usage; ask if genuinely ambiguous. Everything in this skill except `references/tailwind-v4.md` and `references/stylex.md` (and the handful of rules tagged `engines` in `data/vois-rules.json`) applies identically regardless of engine.
 
 This SKILL.md is the entry point. Detailed rules for each topic live in `references/` — read only the file(s) relevant to what you're building, not all of them every time.
 
@@ -49,13 +51,15 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 
 **Structured lookups — query these instead of scanning a whole reference file
 when you already know the rule ID, category, or token you need:**
-- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 12 files
+- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 13 files
   below, keyed by `id`, with `category` for filtering. Covers spacing,
   typography, color, components/modals, css-architecture, elevation,
-  iconography, layout/responsive, surfaces, tailwind-v4, accessibility, and
+  iconography, layout/responsive, surfaces, tailwind-v4, stylex, accessibility, and
   animation. Query by `id` for a specific rule or by `category` for a whole
   topic — don't read a references/*.md file just to re-derive a rule statement
-  that's already indexed here.
+  that's already indexed here. Rules scoped to one styling engine carry an
+  `engines` field (`["tailwind"]` or `["stylex"]`); no field means the rule
+  applies under either.
 - `data/tokens.json` — the actual token *values* (spacing scale, type scale,
   easing curves, elevation shadow tiers, icon sizes, breakpoints, contrast
   minimums, touch target minimum). Rules are constraints; this file is values
@@ -76,6 +80,7 @@ building fresh, not just the bare rule text:**
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
+| `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
@@ -167,6 +172,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
 - [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
+- [ ] StyleX projects only: build plugin confirmed wired up `[DS-STYLEX-001]`, tokens sourced from `defineVars()` not literals `[DS-STYLEX-002]`
 
 **Anti-slop** (see `references/anti-slop.md` — read it before flagging; several are dial-gated)
 - [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
@@ -213,6 +219,7 @@ Run this regardless of which reference files you read — it's the universal gat
 | Group of radio or checkbox inputs | Wrap in `<fieldset>` with `<legend>` | `references/accessibility.md` |
 | Date or time in content | `<time datetime="...">` | `references/accessibility.md` |
 | Hand-authoring a media query | Use `em` not `px` for the breakpoint value | `references/css-architecture.md` |
+| Project uses StyleX instead of Tailwind | Confirm the build plugin is wired up first, then use `defineVars`/`createTheme`/`stylex.create` | `references/stylex.md` |
 | Selector getting hard to override | You've gone too deep — add a class instead | `references/css-architecture.md` |
 | Layout keeps landing on a centered hero | Above `VARIANCE 4`, break it — split/asymmetric/offset | `references/anti-slop.md` |
 | Reaching for a purple→blue gradient | Stop — that's the AI-slop signature; use accent tokens | `references/anti-slop.md` |

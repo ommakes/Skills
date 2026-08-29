@@ -38,7 +38,7 @@ Don't apply this to sections visible on initial load.
 
 ## Responsive Behavior `[DS-RESPONSIVE]`
 
-- **Mobile-first.** No prefix = mobile baseline. `md:`, `lg:` are progressive enhancements. `[DS-RESPONSIVE-001]`
+- **Mobile-first.** The unprefixed/base style is the mobile baseline; breakpoint-scoped styles layer on as progressive enhancements — Tailwind's `md:`/`lg:` prefixes, or a `stylex.defineConsts()` breakpoint used as a conditional key in `stylex.create()` (see `[DS-STYLEX-006]`). `[DS-RESPONSIVE-001]`
 - Test at `sm` (640px), `md` (768px), `lg` (1024px) before considering a component done. `[DS-RESPONSIVE-002]`
 - Use **container queries** for component-level responsiveness. Use **breakpoints** for layout-level responsiveness. `[DS-RESPONSIVE-003]`
 - Touch targets, font sizes, and contrast ratios must meet minimums at every breakpoint. `[DS-RESPONSIVE-004]`

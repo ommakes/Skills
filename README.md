@@ -45,7 +45,7 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 **Read third** (after patterns and components are locked in) to implement with the correct tokens, spacing, and styling rules.
 
-**Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4, and Motion.
+**Use when:** building components or pages that should conform to a design system using shadcn/ui, Tailwind v4 or StyleX, and Motion.
 
 Tunes within the design system's guardrails using taste dials (VARIANCE/MOTION/DENSITY, 1–10, defaulting to 5/4/5 if none are supplied) — dials adjust degree, never override safety, accessibility, or hard token rules. Flags DS-SLOP-* anti-tells (centered-hero, AI-gradient backgrounds, uniform three-card grids, eyebrow overuse, zigzag sections, spec-sheet tables) as advisory warnings, and enforces the redesign no-silent-changes contract when working on existing UI.
 

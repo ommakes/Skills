@@ -1,5 +1,9 @@
 # CSS Architecture `[DS-CSS]`
 
+How token definitions and global setup are structured depends on the project's styling engine. Both are shown below; a project uses one, not both. No inline styles for values that have token equivalents, under either engine. `[DS-CSS-001]`
+
+## Tailwind v4
+
 ```css
 /* Import */
 @import "tailwindcss";
@@ -27,9 +31,33 @@ html {
 }
 ```
 
-No inline styles for values that have token equivalents. `[DS-CSS-001]`
+## StyleX
+
+Token definitions live in `defineVars()`, not a CSS `@theme` block — see `references/stylex.md` for the full setup. Global base rules (`color-scheme`, `scrollbar-gutter`) and any `@font-face`/reset CSS a StyleX project still needs stay in a small hand-authored global stylesheet, since StyleX itself only ever emits scoped, per-component styles:
+
+```ts
+// tokens.stylex.ts
+import * as stylex from "@stylexjs/stylex";
+
+export const colors = stylex.defineVars({
+  primary: "oklch(...)",
+  background: "oklch(...)",
+});
+export const radii = stylex.defineVars({ md: "0.5rem" });
+export const space = stylex.defineVars({ componentSm: "0.5rem" });
+```
+
+```css
+/* global.css — everything that isn't a component style */
+html {
+  color-scheme: light dark;
+  scrollbar-gutter: stable;
+}
+```
 
 ## Selectors and Specificity `[DS-CSS-SELECTORS]`
+
+These rules govern hand-authored CSS selectors. Under StyleX, most conditional styling is expressed as pseudo-selector object keys inside `stylex.create()` (`":hover"`, `":focus-visible"`) rather than literal CSS selectors, so `DS-CSS-002`/`003` mainly apply to whatever global stylesheet a StyleX project still hand-authors for resets and `@font-face`.
 
 **Don't fight specificity — avoid creating it.**
 
@@ -101,4 +129,4 @@ Common breakpoint values in `em`:
 | lg | 64em | 1024px |
 | xl | 80em | 1280px |
 
-Note: Tailwind's built-in breakpoints use `px` internally, so this rule applies primarily to any hand-authored `@media` queries outside Tailwind utilities.
+Note: Tailwind's built-in breakpoints use `px` internally, so this rule applies primarily to any hand-authored `@media` queries outside Tailwind utilities. Under StyleX, define breakpoints once with `stylex.defineConsts()` in `em` and reference the constant — see `[DS-STYLEX-006]` in `references/stylex.md`.

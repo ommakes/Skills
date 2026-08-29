@@ -69,12 +69,25 @@ Custom easing curves (Benjamin De Cock, used in Linear):
 
 ## Touch and Hover
 
-Tailwind v4's `hover:` only fires on devices that support hover. If writing raw CSS: `[DS-ANIMATION-007]`
+Guard hover effects so they don't stick on touch devices. `[DS-ANIMATION-007]`
+
+Tailwind v4's `hover:` modifier does this automatically — it only fires on devices that support hover, no manual guard needed. If writing raw CSS, or a StyleX `:hover` pseudo-key (which has no built-in hover-capability gate), wrap it explicitly:
 
 ```css
 @media (hover: hover) and (pointer: fine) {
   .card:hover { transform: scale(1.02); }
 }
+```
+
+```ts
+// StyleX — same guard, expressed as a pseudo-key nested inside a media condition
+const styles = stylex.create({
+  card: {
+    "@media (hover: hover) and (pointer: fine)": {
+      ":hover": { transform: "scale(1.02)" },
+    },
+  },
+});
 ```
 
 ## Tooltips
@@ -99,6 +112,18 @@ button:active {
 <button className="transition-transform duration-150 ease-out active:scale-[0.96]">
   Click me
 </button>
+```
+
+```ts
+// StyleX
+const styles = stylex.create({
+  button: {
+    transitionProperty: "scale",
+    transitionDuration: "150ms",
+    transitionTimingFunction: "ease-out",
+    ":active": { scale: 0.96 },
+  },
+});
 ```
 
 Not every button needs this. Add a `static` prop to disable it on buttons where the motion would be distracting (e.g. inside a list with frequent clicks).

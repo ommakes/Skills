@@ -1,14 +1,14 @@
 ---
 name: vois-tokens
-description: Rules and patterns for building UI with shadcn/ui, Tailwind v4, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS patterns.
-version: 1.11.0
+description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
+version: 1.12.0
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
 
 > Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-tokens/SKILL.md — the full version adds a live per-edit checker hook (`scripts/`) for Claude Code, Cursor, and Codex, and a "Reviewing Existing UI" workflow for auditing code diffs. Both are code-editing features with no Figma equivalent, so this edition presents the design rules and token values as an adoptable reference implementation instead. Vois's Figma plugin syncs these tokens into your file as real variables if you want to adopt the system rather than just read about it.
 
-You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4**, and **Motion**. This skill defines the rules, constraints, and patterns to follow. Deviation produces inconsistent, unmaintainable UI.
+You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4 or StyleX**, and **Motion**. This skill defines the rules, constraints, and patterns to follow. Deviation produces inconsistent, unmaintainable UI. Determine which styling engine the project uses (check `package.json` for `tailwindcss` vs `@stylexjs/stylex`, or ask) before applying the Tailwind- or StyleX-specific sections below — everything else applies either way.
 
 ## Taste dials
 
@@ -35,6 +35,7 @@ If your workspace defines **VARIANCE** (layout asymmetry), **MOTION** (animation
 | Iconography | `[DS-ICON]` |
 | Layout & responsive | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
 | Tailwind v4 | `[DS-TAILWIND]` |
+| StyleX (alternative to Tailwind) | `[DS-STYLEX]` |
 | Animation | `[DS-ANIMATION]` |
 | Accessibility | `[DS-A11Y]` |
 | CSS architecture | `[DS-CSS]` |
@@ -116,6 +117,7 @@ Run this before calling anything done.
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
 - [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
+- [ ] StyleX projects only: build plugin wired up `[DS-STYLEX-001]`, tokens from `defineVars()` not literals `[DS-STYLEX-002]`
 
 **Anti-slop** (see Anti-Slop section — several are dial-gated)
 - [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
@@ -251,6 +253,23 @@ For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on 
 ## Tailwind v4 `[DS-TAILWIND]`
 
 Replace `@layer base` with `@theme` `[DS-TAILWIND-001]`; use `@import "tailwindcss"` instead of the separate base/components/utilities imports `[DS-TAILWIND-002]`. Container queries are built in — use `@container` and `@min-`/`@max-` variants. `hover:` only applies on hover-capable devices in v4, but verify on touch anyway. Arbitrary values (`w-[237px]`) are a smell — round to the scale or flag a missing token `[DS-TAILWIND-003]`. No `!important` except explicitly-owned, documented overrides `[DS-TAILWIND-004]`. Never `transition: all` — list properties explicitly `[DS-TAILWIND-005]`.
+
+## StyleX `[DS-STYLEX]`
+
+Alternative to Tailwind: a compile-time CSS-in-JS system, styles authored as typed JS objects and compiled by a Babel/SWC/bundler plugin into static atomic CSS. A workspace uses one engine or the other, not both. Everything above except the Tailwind v4 section applies identically under StyleX.
+
+Confirm the build plugin is wired in before writing any StyleX styles — they're inert without it `[DS-STYLEX-001]`. Define tokens with `stylex.defineVars()` and reference them from `stylex.create()`; never a literal value where a token exists `[DS-STYLEX-002]`. Use `stylex.createTheme()` to override a `defineVars()` group for theme variants (dark mode, brand variants) rather than a second token set `[DS-STYLEX-003]`. Compose variants from multiple `stylex.create()` keys merged in `stylex.props()`, most-specific override last — the StyleX equivalent of `cva` `[DS-STYLEX-004]`. Don't use an inline `style={{}}` prop where a `stylex.create()` key already covers the value — inline styles win the cascade over any StyleX class `[DS-STYLEX-005]`. Use `stylex.defineConsts()` for breakpoints and other compile-time constants, in `em` not `px` `[DS-STYLEX-006]`.
+
+```ts
+import * as stylex from "@stylexjs/stylex";
+
+const colors = stylex.defineVars({ primary: "oklch(0.637 0.237 259.4)" });
+const styles = stylex.create({
+  button: { backgroundColor: colors.primary, borderRadius: 6 },
+});
+```
+
+Full version & code examples: `references/stylex.md` in the main skill.
 
 ## Animation `[DS-ANIMATION]`
 

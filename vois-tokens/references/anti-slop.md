@@ -36,7 +36,11 @@ on because nothing pushed you off it.
 Purple/violet/indigo → blue/indigo/cyan gradients — as backgrounds, as
 `bg-clip-text` gradient headline text, or as CSS `linear-gradient()` between two
 of those hues — are the visual signature of template output. The detector flags
-the common Tailwind and CSS forms. A brand that genuinely owns this gradient can
+the common Tailwind and CSS forms; its `linear-gradient()` check is a plain
+text match, so it also catches the same gradient written as a StyleX
+`backgroundImage` string (StyleX has no `bg-clip-text`/`from-*`/`to-*`
+equivalent to match — a hand-written `linear-gradient()` value is the only
+form to watch for there). A brand that genuinely owns this gradient can
 waive it (`ignore-rule DS-SLOP-002` or an inline disable), but it is never a
 default reach. If color needs to do work, use the workspace's own accent tokens.
 
