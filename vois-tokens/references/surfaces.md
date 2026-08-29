@@ -35,6 +35,14 @@ If padding between the two surfaces is larger than `24px`, treat them as indepen
 </div>
 ```
 
+```ts
+// StyleX — same math, expressed as style keys
+const styles = stylex.create({
+  outer: { borderRadius: 16, padding: 8 },
+  inner: { borderRadius: 8 },              // 8 = 16 - 8 ✓
+});
+```
+
 ---
 
 ## Optical Over Geometric Alignment `[DS-SURFACE-ALIGN]`

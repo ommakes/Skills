@@ -4,6 +4,22 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.12.0] — 2026-08-29
+
+### Added
+
+- **StyleX support alongside Tailwind v4.** This skill now covers two implementation engines for the same design system — a workspace uses one, not both. New `references/stylex.md` (`[DS-STYLEX]`, rules `001`–`006`) covers build-plugin setup, `defineVars`/`createTheme` tokens and theming, the `stylex.create()`/`stylex.props()` variant-composition pattern that replaces `cva`, why an inline `style={{}}` prop is unsafe under StyleX, and `defineConsts` for breakpoints. `data/vois-rules.json` gains a new optional `engines` field (`["tailwind"]` or `["stylex"]`) on the handful of rules that are genuinely engine-specific (all `DS-TAILWIND-*`, `DS-COLOR-002`, the six new `DS-STYLEX-*`) — every other rule has no field and applies under either engine unchanged. `SKILL.md`'s framing, reference table, Pre-Submit Checklist, and Quick Reference are all updated to route to the right engine's reference file; the "12 files" rule-source count is now 13.
+- **`scripts/registry.mjs` detects StyleX object-literal syntax alongside the existing Tailwind/CSS-string checks** for `DS-SPACING-001` (arbitrary `padding`/`margin`/`gap` values), `DS-TAILWIND-005` (`transitionProperty: "all"`), `DS-ANIMATION-001` (`transitionDuration: "Nms"`/`"Ns"`), `DS-ANIMATION-008` (a `":active"` scale key), and `DS-ANIMATION-009` (`willChange: "..."`) — these rules were previously silent on StyleX files since their regexes only matched Tailwind/hand-authored-CSS syntax. New fixture `scripts/__fixtures__/bad-stylex.tsx` and five new tests in `detect.test.mjs` cover the added branches. `references/hooks.md`'s coverage table is updated to describe what's now checked per engine.
+- **`figma-editions/vois-tokens.md`** gains a condensed StyleX section and topic-index/checklist entries, matching this repo's own StyleX additions.
+
+### Changed
+
+- **`references/components.md`** (`DS-COMPONENT-002`, `DS-COMPONENT-005`) and their `vois-rules.json` entries reworded to name both engines' variant/architecture pattern instead of assuming Tailwind + cva.
+- **`references/css-architecture.md`, `color.md`, `spacing.md`, `animation.md`, `surfaces.md`, `layout-and-responsive.md`, `tailwind-v4.md`, `anti-slop.md`** each gain a StyleX-equivalent code sample or cross-reference next to their existing Tailwind-specific example, without changing the underlying rule.
+- **Version bump:** `1.11.0` → `1.12.0`
+
+---
+
 ## [1.11.0] — 2026-08-09
 
 ### Added

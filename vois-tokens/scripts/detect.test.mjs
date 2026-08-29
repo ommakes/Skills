@@ -46,6 +46,18 @@ test("good.tsx triggers no findings", () => {
   assert.deepEqual(goodTsxFindings, [], `expected no findings, got: ${JSON.stringify(goodTsxFindings, null, 2)}`);
 });
 
+// StyleX object-literal syntax for rules whose Tailwind/CSS-string detection
+// is covered above by bad.tsx/bad.css — see bad-stylex.tsx for why each one
+// fires under StyleX's camelCase, quoted-string property syntax.
+const badStylexFindings = findingsFor("bad-stylex.tsx");
+const STYLEX_RULE_IDS = ["DS-SPACING-001", "DS-TAILWIND-005", "DS-ANIMATION-001", "DS-ANIMATION-008", "DS-ANIMATION-009"];
+
+for (const ruleId of STYLEX_RULE_IDS) {
+  test(`${ruleId} fires on bad-stylex.tsx (StyleX syntax)`, () => {
+    assert.ok(badStylexFindings.some((f) => f.ruleId === ruleId), `expected ${ruleId} to fire on bad-stylex.tsx`);
+  });
+}
+
 // Adversarial: known bypasses of the DS-SLOP-002 (AI-gradient) regex.
 // These assert *current* (non-)behavior to document a real gap, not a
 // requirement — see adversarial.tsx/.css for why each one bypasses the

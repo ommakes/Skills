@@ -11,25 +11,25 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `[DS-*]` ID | Mechanically checked? | Notes |
 |---|---|---|
 | `DS-COLOR-001` | Yes — advisory only | Hardcoded hex. Tiered `quality`, never blocks — overlaps with the token-drift app's job; this hook just flags fast mid-generation. |
-| `DS-COLOR-002` | Yes — advisory only | Raw Tailwind palette class. Same advisory-only reasoning as `DS-COLOR-001`. |
+| `DS-COLOR-002` | Yes — advisory only | Raw Tailwind palette class. Tailwind-only — StyleX has no built-in palette to match against, so its equivalent (`DS-STYLEX-002`, a literal color in `stylex.create()`) is judgment-only. Same advisory-only reasoning as `DS-COLOR-001`. |
 | `DS-A11Y-003` | Yes | `outline: none`/`outline-none` without a nearby `:focus-visible`. |
 | `DS-A11Y-010` | Yes | `<img>` missing `alt`. |
 | `DS-A11Y-012` | Yes | Consecutive `<br>` used for spacing. |
-| `DS-SPACING-001` | Yes | Arbitrary bracket value (`p-[13px]`) not divisible by 4. |
+| `DS-SPACING-001` | Yes | Arbitrary bracket value (`p-[13px]`) not divisible by 4, or a StyleX `stylex.create()` spacing property (`padding: 11`) not divisible by 4. |
 | `DS-TAILWIND-004` | Yes — blockable | `!important`. High-confidence enough to deny in Cursor. |
-| `DS-TAILWIND-005` | Yes | `transition: all` / `transition-all`. |
-| `DS-ANIMATION-001` | Yes | Duration over 300ms (500ms ceiling). |
+| `DS-TAILWIND-005` | Yes | `transition: all` / `transition-all`, including StyleX's `transitionProperty: "all"`. Filed under `DS-TAILWIND` for historical reasons but checked across both engines' syntax — see `references/stylex.md`. |
+| `DS-ANIMATION-001` | Yes | Duration over 300ms (500ms ceiling), including StyleX's `transitionDuration: "Nms"`/`"Ns"`. |
 | `DS-ANIMATION-004` | Yes | Animation/transition present with no `prefers-reduced-motion` anywhere in the file. |
 | `DS-ANIMATION-005` | Yes — blockable | Animating from `scale(0)`. High-confidence enough to deny in Cursor. |
-| `DS-ANIMATION-008` | Yes | Press/active scale below `0.95`. |
-| `DS-ANIMATION-009` | Yes | `will-change` on a disallowed property. |
+| `DS-ANIMATION-008` | Yes | Press/active scale below `0.95`, including a StyleX `":active": { scale: N }` key. |
+| `DS-ANIMATION-009` | Yes | `will-change` on a disallowed property, including StyleX's `willChange: "..."`. |
 | `DS-LAYOUT-001` | Yes | `vh`/`h-screen` instead of `svh`/`dvh`/`lvh`. |
 | `DS-TYPOGRAPHY-009` | Yes | Three-period ellipsis instead of `…`. |
 | `DS-CSS-002` | Yes | `#id` selector used for styling. |
 | `DS-CSS-007` | Yes | Hand-authored `@media` query in `px`. |
 | `DS-MODAL-001`/`002` | Yes | Custom (non-Radix) Dialog/Modal missing `inert` or `overscroll-behavior: contain`. |
 | `DS-SLOP-002` | Yes — advisory only | Purple/indigo→blue "AI gradient" (Tailwind `from-*`/`to-*` or CSS `linear-gradient`). Heuristic — a genuine brand can waive it; the other `DS-SLOP-*` rules stay judgment-only. **Known gap:** the pattern matches named hue keywords/Tailwind palette classes only — the same gradient spelled with arbitrary hex values (`from-[#7c3aed] to-[#3b82f6]`) bypasses it. Documented, not fixed, in `scripts/__fixtures__/adversarial.{tsx,css}` and `detect.test.mjs` — recognizing hue family from raw hex needs color-space math this zero-dependency detector doesn't do. |
-| Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. Keep grading these by reading the code, the way this skill always has. |
+| Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*` and all of `DS-STYLEX-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. The `DS-STYLEX-*` rules (build-plugin wiring, `createTheme` usage, variant composition) similarly require knowing what's configured/imported, not just what's on the page — keep grading these by reading the code, the way this skill always has. |
 
 ## Setup
 

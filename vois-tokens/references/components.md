@@ -3,16 +3,16 @@
 ## Rules
 
 - **Check the manifest first.** If `<Button>`, `<AlertBanner>`, or `<DataTable>` exists, use it. Don't rebuild it. `[DS-COMPONENT-001]`
-- Use **Class Variance Authority (cva)** for all variant styling. No ad-hoc className ternaries. `[DS-COMPONENT-002]`
+- Use a typed, centralized variant-authorship mechanism for all variant styling — **Class Variance Authority (cva)** under Tailwind, composed `stylex.create()` keys under StyleX. No ad-hoc className/style ternaries. `[DS-COMPONENT-002]`
 - Use `data-slot` attributes for styling component internals — don't reach into component children with arbitrary CSS selectors. `[DS-COMPONENT-003]`
 - **New-York style** is the default for shadcn. The "default" style is deprecated. `[DS-COMPONENT-004]`
-- Components use a 2-layer architecture: Radix UI for structure/behavior, Tailwind for style. Don't collapse these. `[DS-COMPONENT-005]`
+- Components use a 2-layer architecture: Radix UI (or another unstyled primitive library) for structure/behavior, the project's styling engine — Tailwind or StyleX — for style. Don't collapse these. `[DS-COMPONENT-005]`
 
 ## Component Variants
 
 When using a component with variants, use the most semantically appropriate variant. Don't default to `default` when `destructive`, `ghost`, or `outline` is more correct. `[DS-COMPONENT-006]`
 
-When building a new component:
+When building a new component (Tailwind + cva shown below — under StyleX, see the variant-composition pattern in `references/stylex.md`):
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority"

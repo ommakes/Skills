@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.6.1] - 2026-08-29
+
+**Change** | The "For exact Tailwind class names and token values, see vois-tokens" pointer now reads "For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tokens" — vois-tokens added StyleX as a second implementation engine alongside Tailwind v4 in its own `1.12.0`; this file's structural decision trees were already engine-agnostic and needed only this wording fix.
+
+---
+
 ## [1.6.0] - 2026-08-09
 
 **Add** | Tagged `references/permissions-and-conditional-logic.md`'s ~6 binary, checkable rules with stable IDs (`PATH-PERM-HIDE-BY-ROLE`, `PATH-PERM-DISABLE-BY-CONDITION`, `PATH-COND-PARENT-CHILD`, `PATH-COND-PRIMARY-BUTTON`, `PATH-COND-ACCORDION-EXCLUSIVE`, `PATH-COND-CALC-TABLE-ROWS`) and added matching entries to `data/patterns-rules.json`. This file previously carried no PATH- tags at all — rules like "never stack more than 4 rows" and "primary button disabled until all required fields are valid" existed only as prose, invisible to anything querying the corpus by ID. A new `node_type: "cross_cutting_rule"` distinguishes these from the per-template decision-tree nodes (`top_level_pattern`/`sub_decision`): they apply across templates rather than nesting under one PATH, so `parent` is `null`, same as a top-level pattern.

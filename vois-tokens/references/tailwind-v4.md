@@ -1,5 +1,7 @@
 # Tailwind v4 `[DS-TAILWIND]`
 
+Tailwind-specific implementation rules. If this project uses StyleX instead, see `references/stylex.md` — the value-level rules elsewhere in this skill (spacing, color, animation, accessibility) apply to both engines identically.
+
 ## Key Changes from v3
 
 Replace `@layer base` with `@theme`: `[DS-TAILWIND-001]`

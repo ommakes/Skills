@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.6.0
+version: 1.6.1
 ---
 
 # Vois Patterns Skill
@@ -107,7 +107,7 @@ These are implemented via vois-tokens; listed here for context.
 - 20px horizontal: between primary/secondary buttons (bottom right anchored)
 - Use gap tokens on container div instead of margin-bottom on elements
 
-For exact Tailwind class names and token values, see vois-tokens.
+For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tokens.
 
 ---
 

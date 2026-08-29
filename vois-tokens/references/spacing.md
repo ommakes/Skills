@@ -13,4 +13,6 @@ Use `gap` for layout spacing between elements. Use padding for internal componen
 
 **Tailwind v4 note:** Dynamic spacing utilities accept any value without arbitrary syntax. This makes it easy to accidentally use off-grid values. Don't. Stay on the scale. `[DS-SPACING-003]`
 
+**StyleX note:** `stylex.create()` spacing properties (`padding`, `gap`, `marginTop`, etc.) are plain numbers or strings with no arbitrary-value guard at all — nothing stops you from writing `padding: 11`. The same discipline applies, just with less of a syntactic nudge to break it: reference a spacing token from `defineVars()` rather than a bare number.
+
 Verify spacing holds at every responsive breakpoint before considering a component done. `[DS-SPACING-004]`

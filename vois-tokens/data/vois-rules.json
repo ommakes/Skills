@@ -1,6 +1,6 @@
 {
-  "source": "vois-tokens/references/*.md (12 files; excludes anti-slop.md and hooks.md — see note)",
-  "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown.",
+  "source": "vois-tokens/references/*.md (13 files; excludes anti-slop.md and hooks.md — see note)",
+  "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either.",
   "categories": {
     "DS-A11Y": "Accessibility",
     "DS-ANIMATION": "Animation",
@@ -13,6 +13,7 @@
     "DS-LAYOUT": "Layout, Viewport, and Responsive Behavior",
     "DS-RESPONSIVE": "Layout, Viewport, and Responsive Behavior",
     "DS-SPACING": "Spacing",
+    "DS-STYLEX": "StyleX",
     "DS-SURFACE": "Surfaces and Motion Polish",
     "DS-TAILWIND": "Tailwind v4",
     "DS-TYPOGRAPHY": "Typography"
@@ -271,7 +272,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Never use Tailwind's built-in color palette (`blue-500`, `red-400`, etc.) if a token exists for it. The token is always preferred.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-COLOR-003",
@@ -332,7 +334,7 @@
       "category": "DS-COMPONENT",
       "category_label": "Components",
       "source_file": "vois-tokens/references/components.md",
-      "rule": "Use Class Variance Authority (cva) for all variant styling. No ad-hoc className ternaries.",
+      "rule": "Use a typed, centralized variant-authorship mechanism for all variant styling — Class Variance Authority (cva) under Tailwind, composed `stylex.create()` keys under StyleX (see `[DS-STYLEX-004]`). No ad-hoc className/style ternaries.",
       "severity": "recommended",
       "enforcement": "advisory"
     },
@@ -359,7 +361,7 @@
       "category": "DS-COMPONENT",
       "category_label": "Components",
       "source_file": "vois-tokens/references/components.md",
-      "rule": "Components use a 2-layer architecture: Radix UI for structure/behavior, Tailwind for style. Don't collapse these.",
+      "rule": "Components use a 2-layer architecture: Radix UI (or another unstyled primitive library) for structure/behavior, the project's styling engine — Tailwind or StyleX — for style. Don't collapse these.",
       "severity": "recommended",
       "enforcement": "advisory"
     },
@@ -773,13 +775,74 @@
       "enforcement": "advisory"
     },
     {
+      "id": "DS-STYLEX-001",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "StyleX requires the official Babel plugin (or the equivalent bundler/SWC plugin) wired into the build before any `stylex.create()` call does anything — styles are inert without it. Confirm the plugin is configured before writing StyleX styles in a project.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
+      "id": "DS-STYLEX-002",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "Define tokens with `stylex.defineVars()` and reference them from `stylex.create()`. Never use a literal value in `stylex.create()` where a defined token exists — the StyleX-side version of `[DS-CSS-001]`/`[DS-COLOR-001]`.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
+      "id": "DS-STYLEX-003",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "Use `stylex.createTheme()` to override a `defineVars()` group for theme variants (dark mode, brand variants). Don't hand-roll a second, parallel token set.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
+      "id": "DS-STYLEX-004",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "Compose variant styling from multiple `stylex.create()` keys merged in `stylex.props()`, most-specific override passed last. This is StyleX's equivalent of `[DS-COMPONENT-002]`'s variant-authorship requirement — no ad-hoc conditional style objects.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
+      "id": "DS-STYLEX-005",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "Don't use an inline `style={{}}` prop where a `stylex.create()` key already covers the value. Inline styles have higher specificity than any StyleX-generated class and silently win over intended variant styling.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
+      "id": "DS-STYLEX-006",
+      "category": "DS-STYLEX",
+      "category_label": "StyleX",
+      "source_file": "vois-tokens/references/stylex.md",
+      "rule": "Use `stylex.defineConsts()` for breakpoints and other compile-time constants instead of repeating literal media-query strings. Author breakpoint values in `em`, not `px` — same rule as `[DS-CSS-007]`.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "engines": ["stylex"]
+    },
+    {
       "id": "DS-TAILWIND-001",
       "category": "DS-TAILWIND",
       "category_label": "Tailwind v4",
       "source_file": "vois-tokens/references/tailwind-v4.md",
       "rule": "Replace `@layer base` with `@theme` for token definitions.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-TAILWIND-002",
@@ -788,7 +851,8 @@
       "source_file": "vois-tokens/references/tailwind-v4.md",
       "rule": "Use `@import \"tailwindcss\"` instead of `@tailwind base / components / utilities`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-TAILWIND-003",
@@ -797,7 +861,8 @@
       "source_file": "vois-tokens/references/tailwind-v4.md",
       "rule": "Arbitrary values (`w-[237px]`, `mt-[13px]`) are a smell. If you need an arbitrary value, either it belongs on the spacing scale or it's a missing token. Round it or flag it.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-TAILWIND-004",
@@ -806,7 +871,8 @@
       "source_file": "vois-tokens/references/tailwind-v4.md",
       "rule": "No `!important` except for utility overrides you explicitly own and document.",
       "severity": "required",
-      "enforcement": "blocking"
+      "enforcement": "blocking",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-TAILWIND-005",
@@ -815,7 +881,8 @@
       "source_file": "vois-tokens/references/tailwind-v4.md",
       "rule": "Never `transition: all`. List properties explicitly: `transition: background-color 150ms ease-out, transform 150ms ease-out`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "engines": ["tailwind"]
     },
     {
       "id": "DS-TYPOGRAPHY-001",
