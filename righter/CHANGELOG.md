@@ -4,6 +4,20 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.5.0] — 2026-09-08
+
+### Added
+
+- **`data/rhetorical-devices.json`** — 9 literary/rhetorical devices (metaphor, simile, personification, epithet, metonymy/synecdoche, anaphora/epistrophe, allusion, paradox, anastrophe) curated for copy that's allowed personality: taglines, feature names, empty states, onboarding. Deliberately excludes idiom, invective, hyperbole, euphemism, pun, foreshadowing, oxymoron, apostrophe, and symploce — narrative/fiction devices, or too easy to overuse in short-form product copy.
+- **Principle 17, `rhetorical-devices`.** Query the new data file for personality-bearing surfaces only; explicitly out of scope for error messages, form fields, and system copy. Max one device per surface.
+- **"Rhetorical device" line** added to both the review and new-copy output formats, and a "Personality" section added to the Review Checklist.
+
+### Changed
+
+- **Version bump:** `1.4.0` → `1.5.0`
+
+---
+
 ## [1.4.0] — 2026-08-07
 
 ### Added
