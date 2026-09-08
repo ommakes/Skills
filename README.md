@@ -58,7 +58,7 @@ Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, 
 ### Righter
 UX writing skill. Reviews existing UI copy or writes new copy from scratch applying a defined set of principles. Covers UI components, error messages, microcopy, and transactional product emails. If a `vois_get_microcopy` MCP tool is available, calls it first to check workspace-specific overrides before writing — otherwise applies the skill's principles directly.
 
-Every principle and error-message rule carries a stable `id` for cross-referencing from other skills. Ships with `scripts/ari.mjs` (deterministic ARI/reading-level scoring, in place of computing the formula by hand) and `evals/cases.json` (a fixed regression corpus for checking that edits to principles or data files don't silently change what the skill flags). See [`righter/CHANGELOG.md`](./righter/CHANGELOG.md) for version history.
+Every principle and error-message rule carries a stable `id` for cross-referencing from other skills. Ships with `scripts/ari.mjs` (deterministic ARI/reading-level scoring, in place of computing the formula by hand), `data/rhetorical-devices.json` (9 literary/rhetorical devices scoped to copy that's allowed personality — marketing surfaces, taglines, empty states, feature names — never error messages or system copy), and `evals/cases.json` (a fixed regression corpus for checking that edits to principles or data files don't silently change what the skill flags). See [`righter/CHANGELOG.md`](./righter/CHANGELOG.md) for version history.
 
 **Read throughout.** Vois Patterns and Vois Components route to this skill for all copy — button labels, error messages, field descriptions, helper text, status labels, empty states, toasts, confirmations.
 
@@ -105,6 +105,17 @@ Framework for B2B product positioning, GTM strategy selection, and website messa
 **Use when:** positioning a product, choosing a GTM motion, writing homepage or website copy, crafting messaging for different buyer personas, planning content by awareness stage, or writing ads and landing page copy.
 
 → [`gtm-positioning/`](./gtm-positioning)
+
+---
+
+### Longform
+Applies a consistent persona and voice to long-form writing: essays, blog posts, LinkedIn and newsletter pieces, and the narrative sections of a GTM page. Built on Nancy Duarte's storytelling structure (contrast, audience-as-hero, "what is" to "what could be") fused with Wes Kao's operator-voice frameworks (BLUF, Minimum Viable Backstory, signposting, Most Obvious Objection, named frameworks). A third reference file maps rhetorical devices (metaphor, anaphora, epithet, etc.) onto those structural beats and extends phonaesthetics from word-level sound (Righter's job) to sentence- and paragraph-level rhythm.
+
+Three-layer split with the other writing skills: **gtm-positioning** owns page/asset structure, **this skill** owns how the argument builds, **Righter** owns sentence mechanics. Hands the finished draft to Righter's `scripts/ari.mjs` and `data/weakeners.json` check before calling a piece done.
+
+**Use when:** writing, drafting, editing, or reviewing an essay, blog post, thought leadership piece, LinkedIn post, or newsletter, or writing the Problem/Benefit sections of a GTM page.
+
+→ [`longform/`](./longform)
 
 ---
 
@@ -168,4 +179,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-08-09
+**Last updated:** 2026-09-08

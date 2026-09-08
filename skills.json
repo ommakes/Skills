@@ -31,10 +31,18 @@
     {
       "name": "righter",
       "path": "righter",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "author": "Personify Labs",
       "description": "Apply UX content writing principles to review existing UI copy or write new UI copy from scratch. Use this skill whenever someone asks you to review, audit, critique, or improve UI text, error messages, button labels, tooltips, empty states, onboarding copy, or any software interface copy.",
       "tags": ["design", "content", "ux-writing", "copy"]
+    },
+    {
+      "name": "longform",
+      "path": "longform",
+      "version": "1.2.0",
+      "author": "Personify Labs",
+      "description": "Write or review long-form thought-leadership content: Medium/blog posts, LinkedIn essays, newsletter pieces, and the narrative sections of a deck or GTM page. Uses a persona and voice blended from Nancy Duarte's storytelling structure and Wes Kao's operator-voice frameworks.",
+      "tags": ["content", "writing", "essay", "blog", "narrative"]
     },
     {
       "name": "design-ask",
