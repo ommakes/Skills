@@ -1,0 +1,79 @@
+{
+  "source": "righter/data/rhetorical-devices.json",
+  "description": "Literary/rhetorical devices for copy that's allowed to have personality — marketing headlines, taglines, empty states, onboarding, feature names. NOT for error messages, form fields, or system copy, where clarity beats cleverness. Pair with phonaesthetics.json: a device picks the figure of speech, phonaesthetics picks the sounds that carry it.",
+  "note_on_scope": "Trimmed from a broader literary-terms list down to what earns its place in short-form product copy. Left out on purpose: idiom, invective, hyperbole, euphemism, pun, foreshadowing, oxymoron, apostrophe, symploce — either too narrative/fiction-oriented, too easy to overuse, or too risky (idiom breaks in translation, hyperbole undercuts trust, puns split a room). If a case comes up where one of these earns its place, add it deliberately rather than reaching for the full literary list by default.",
+  "devices": [
+    {
+      "id": "metaphor",
+      "name": "Metaphor",
+      "description": "States one thing is another to carry over a quality, without 'like' or 'as'.",
+      "good_for": ["feature names", "product taglines", "empty states"],
+      "example": "\"Your inbox, zero.\" — states the goal as the state, doesn't describe getting there",
+      "caution": "One metaphor per surface. Mixing two in the same sentence reads as confused, not clever."
+    },
+    {
+      "id": "simile",
+      "name": "Simile",
+      "description": "A lighter-touch comparison using 'like' or 'as' — commits less than a metaphor, so it's safer for copy that needs to stay literal-adjacent.",
+      "good_for": ["onboarding copy", "one-off comparisons in tooltips or empty states"],
+      "example": "\"Set up in minutes, not like the old way.\"",
+      "caution": "Weaker than metaphor. Use metaphor if you can commit; use simile if the comparison is a side note."
+    },
+    {
+      "id": "personification",
+      "name": "Personification",
+      "description": "Gives the system, a feature, or an abstract process human agency or feeling.",
+      "good_for": ["empty states", "loading/processing states", "error framing where a system, not the user, is at fault"],
+      "example": "\"Your dashboard is still waking up.\"",
+      "caution": "Keep it to one beat. A whole screen of a chatty personified system reads as gimmicky."
+    },
+    {
+      "id": "epithet",
+      "name": "Epithet",
+      "description": "A short, descriptive nickname for a feature or concept that makes it memorable and referenceable later.",
+      "good_for": ["naming a feature, mode, or internal concept that needs to be talked about repeatedly"],
+      "example": "\"Focus Mode\", \"Zen Inbox\"",
+      "caution": "Once named, that name is the permanent term — see `id: consistent-terminology` in SKILL.md. Don't rename it later."
+    },
+    {
+      "id": "metonymy-synecdoche",
+      "name": "Metonymy / Synecdoche",
+      "description": "Metonymy: an associated thing stands in for the whole (\"the cloud\" for remote servers). Synecdoche: a literal part stands in for the whole (\"seats\" for user licenses).",
+      "good_for": ["compressing a technical concept into one familiar word"],
+      "example": "\"Add more seats\" instead of \"add more user licenses\"",
+      "caution": "Only works if the substitute term is already familiar to the audience. Don't invent a new one and expect it to land."
+    },
+    {
+      "id": "anaphora-epistrophe",
+      "name": "Anaphora / Epistrophe",
+      "description": "Repeating the same word or phrase at the start (anaphora) or end (epistrophe) of consecutive short lines — usually a feature list or a 3-step onboarding flow.",
+      "good_for": ["feature lists", "step sequences", "pricing tier taglines"],
+      "example": "\"No setup fees. No hidden costs. No surprises.\" (anaphora)",
+      "caution": "Needs 3 short parallel lines minimum to land. Two doesn't read as a pattern; four+ gets tedious."
+    },
+    {
+      "id": "allusion",
+      "name": "Allusion",
+      "description": "A brief indirect reference to something the audience already recognizes.",
+      "good_for": ["marketing copy for a specific, known audience"],
+      "example": "\"Your Swiss Army knife for spreadsheets.\"",
+      "caution": "Audience-dependent by definition. Wrong for anything localized or for an audience you can't assume shares the reference. Skip for anything global or enterprise-formal."
+    },
+    {
+      "id": "paradox",
+      "name": "Paradox",
+      "description": "A statement that looks contradictory on the surface but resolves into a real insight.",
+      "good_for": ["a single punchy line — hero headline, section title"],
+      "example": "\"Do more by doing less.\"",
+      "caution": "One per piece, max. It's a mic-drop device — it stops working if you keep dropping the mic."
+    },
+    {
+      "id": "anastrophe",
+      "name": "Anastrophe",
+      "description": "Inverted word order for emphasis.",
+      "good_for": ["a single memorable closing line"],
+      "example": "\"Powerful, this update is.\" (use sparingly — very Yoda, very noticeable)",
+      "caution": "Extremely high-visibility device. Almost always reads as try-hard outside of one deliberate, load-bearing line."
+    }
+  ]
+}

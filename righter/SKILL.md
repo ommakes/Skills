@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software — use this skill.
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Righter
@@ -19,6 +19,7 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 - `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
 - `data/weakeners.json` — structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
 - `data/phonaesthetics.json` — structured sound concepts and cluster table for word choice
+- `data/rhetorical-devices.json` — literary/rhetorical devices (metaphor, personification, epithet, anaphora, etc.) for copy that's allowed to have personality — marketing surfaces, taglines, empty states, feature names. Not for error messages or system copy.
 - `scripts/ari.mjs` — computes ARI, grade level, and word/character/sentence counts exactly. Run it instead of calculating Reading Metrics by hand when Node is available: `node scripts/ari.mjs "copy text"` or `node scripts/ari.mjs --before "..." --after "..."`.
 
 Every numbered principle below and every rule in Error Message Guidelines carries a stable `id` in backticks — cite the id, not the number, when referencing a rule from outside this file (numbers shift when principles are added or reordered).
@@ -69,7 +70,8 @@ For each piece of content:
 1. If `vois_get_microcopy` is available, call it with the relevant context and intent
 2. Apply all relevant principles
 3. For labels, CTAs, and microcopy: query `data/phonaesthetics.json` and apply sound guidance
-4. Output in the new copy format below
+4. For copy that's allowed personality (marketing surfaces, taglines, empty states, feature names — not error messages or system copy): query `data/rhetorical-devices.json` and consider one device before settling for plain phrasing
+5. Output in the new copy format below
 
 ---
 
@@ -93,6 +95,9 @@ Use this block for every piece of copy reviewed:
 **Phonaesthetics:**
 - Note any sound improvements made (rhythm, stress pattern, sound cluster choices, ease of mouth). If phonaesthetics wasn't a factor (e.g. error messages), write "Not applicable for this copy type."
 
+**Rhetorical device:**
+- Note any device applied (`id` from `data/rhetorical-devices.json`) and why. If not applicable (error messages, system copy), write "Not applicable for this copy type."
+
 **Reading metrics (Before → After):**
 - Word count: X → Y
 - ARI score: X.X → Y.Y
@@ -114,6 +119,9 @@ Use this block for every piece of copy reviewed:
 
 **Phonaesthetics:**
 - Explain the sound choices made — rhythm, stress, clusters, ease of mouth. If not applicable, say so.
+
+**Rhetorical device:**
+- Note any device applied (`id` from `data/rhetorical-devices.json`) and why. If not applicable, say so.
 
 **Reading metrics:**
 - Word count: X
@@ -216,6 +224,14 @@ Key patterns to catch immediately:
 Em dashes read as a hedge in short-form UI copy and are a well-known AI writing tell. Use a period, comma, or colon instead.
 - ✗ "Your file is uploading — this may take a few minutes."
 - ✓ "Your file is uploading. This may take a few minutes."
+
+### 17. Reach for a rhetorical device before settling for plain phrasing `id: rhetorical-devices`
+Applies only to copy that's allowed personality: marketing surfaces, taglines, feature names, empty states, onboarding. Skip entirely for error messages, form fields, and system copy — there, plain and literal beats clever every time.
+
+> Query `data/rhetorical-devices.json`. Pick at most one device per surface — stacking two reads as trying too hard, not as clever.
+
+- ✗ "No setup required. Start immediately."
+- ✓ "No setup. No waiting. No excuses." (`anaphora-epistrophe`)
 
 ---
 
@@ -372,6 +388,10 @@ Run through this for every piece of copy before finalizing.
 - [ ] Inconsistent terminology?
 - [ ] Preposition starting or ending a sentence?
 - [ ] Em dashes present?
+
+**Personality (marketing/taglines/empty states/feature names only)**
+- [ ] Could a rhetorical device sharpen this? (see `data/rhetorical-devices.json`)
+- [ ] More than one device stacked on the same surface?
 
 **Errors (if applicable)**
 - [ ] Clear next step provided?
