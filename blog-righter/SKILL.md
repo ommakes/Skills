@@ -1,5 +1,5 @@
 ---
-name: thought-leadership-writer
+name: blog-righter
 description: >
   Write or review long-form thought-leadership content: Medium/blog posts, LinkedIn essays,
   newsletter pieces, and the narrative sections of a deck or GTM page. Uses a persona and voice
@@ -13,7 +13,7 @@ description: >
 version: 1.2.0
 ---
 
-# Thought Leadership Writer
+# Blog Righter
 
 Applies a consistent persona and voice to long-form writing: essays, blog posts, LinkedIn and newsletter pieces, and the narrative sections of GTM pages. Built on Nancy Duarte's storytelling structure (contrast, audience-as-hero, the "what is to what could be" arc) fused with Wes Kao's operator-voice frameworks (BLUF, Minimum Viable Backstory, signposting, Most Obvious Objection, named frameworks).
 
