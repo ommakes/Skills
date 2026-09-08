@@ -109,7 +109,7 @@ Framework for B2B product positioning, GTM strategy selection, and website messa
 ---
 
 ### Longform
-Applies a consistent persona and voice to long-form writing: essays, blog posts, LinkedIn and newsletter pieces, and the narrative sections of a GTM page. Built on Nancy Duarte's storytelling structure (contrast, audience-as-hero, "what is" to "what could be") fused with Wes Kao's operator-voice frameworks (BLUF, Minimum Viable Backstory, signposting, Most Obvious Objection, named frameworks). A third reference file maps rhetorical devices (metaphor, anaphora, epithet, etc.) onto those structural beats and extends phonaesthetics from word-level sound (Righter's job) to sentence- and paragraph-level rhythm.
+Applies a consistent persona and voice to long-form writing: essays, blog posts, LinkedIn and newsletter pieces, and the narrative sections of a GTM page. Built on Nancy Duarte's storytelling structure (contrast, audience-as-hero, "what is" to "what could be") fused with Wes Kao's operator-voice frameworks (BLUF, Minimum Viable Backstory, signposting, Most Obvious Objection, named frameworks). A third reference file maps rhetorical devices (metaphor, anaphora, epithet, etc.) onto those structural beats and extends phonaesthetics from word-level sound (Righter's job) to sentence- and paragraph-level rhythm. See [`longform/README.md`](./longform/README.md) for the full breakdown and [`longform/CHANGELOG.md`](./longform/CHANGELOG.md) for version history.
 
 Three-layer split with the other writing skills: **gtm-positioning** owns page/asset structure, **this skill** owns how the argument builds, **Righter** owns sentence mechanics. Hands the finished draft to Righter's `scripts/ari.mjs` and `data/weakeners.json` check before calling a piece done.
 
