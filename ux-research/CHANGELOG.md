@@ -4,6 +4,26 @@ All four skills (`survey-architect`, `feedback-synthesizer`,
 `research-reporter`, `research-loop`) are versioned independently; this
 file tracks all of them together since they shipped as one system.
 
+## 2026-09-12
+
+### survey-architect 1.1.1
+
+Made the skill product-agnostic. Step 0's intake question named a fixed
+list of internal products (Personify, Vois, Righter, Unsoku, Localwolla,
+Smileframe, Uslo) as examples of what to ask for — replaced with a
+generic instruction to name the product or surface specifically. The
+Step 4 output section's "In-app" bullet similarly assumed a
+Personify/Vois/Unsoku stack by default; it now describes matching
+whatever UI conventions the target product actually uses, with the
+vois-tokens/righter routing kept as conditional (only when the target
+happens to use the Vois design system) rather than assumed.
+
+No change to instrument selection, sample-size, or output logic — this
+is example/framing text only. Eval fixtures across all four skills that
+referenced the same named products in example inputs (`qualitative_cases.md`
+in each skill, plus one changelog entry above) were swapped to a generic
+placeholder product for consistency.
+
 ## 2026-09-11
 
 ### feedback-synthesizer 1.2.0, survey-architect 1.1.0, research-reporter 1.1.0, research-loop 1.1.0
@@ -36,7 +56,7 @@ re-reading the file cold, not an independently spawned model instance.
 
 ### feedback-synthesizer 1.1.0
 
-Fixed a real bug found during a synthetic pilot test (simulated Unsoku
+Fixed a real bug found during a synthetic pilot test (simulated
 signup-flow SEQ study, n=14): severity tiering measured a theme's
 frequency against the whole sample, which diluted a theme that was
 mentioned by 75% of low scorers (but only 21% of the full sample) down

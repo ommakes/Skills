@@ -95,7 +95,7 @@
     {
       "name": "survey-architect",
       "path": "ux-research/survey-architect",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "Personify Labs",
       "description": "Turns a research question into a validated, deploy-ready survey. Runs a short intake to establish product context and learning goal, selects the right instrument (SEQ, SUS, UMUX-Lite, SUPR-Q, NPS, CSAT, CES, PSSUQ, or a custom item set), and outputs a platform-native file ready for Qualtrics, Typeform, or an in-app survey component. Entry point 1 of the research loop (see research-loop).",
       "tags": ["research", "ux-research", "surveys", "qualtrics", "nps", "sus", "supr-q"]

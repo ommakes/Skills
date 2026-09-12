@@ -27,7 +27,7 @@ without surfacing the mismatch.
 
 ## Case 2: Intake answers don't line up with each other
 
-**Input:** Product = Unsoku. Learning goal = "is the onboarding flow
+**Input:** Product = Acme. Learning goal = "is the onboarding flow
 easy to complete." Where it sits (Q3 answer) = "the ongoing relationship
 with the product."
 
@@ -44,8 +44,8 @@ ever surfacing that the two answers pointed in different directions.
 
 ## Case 3: Existing benchmark series should constrain the choice
 
-**Input:** Product = Unsoku, which already has one prior wave in
-`/research/_benchmarks/unsoku.md` using SEQ for the signup flow. New
+**Input:** Product = Acme, which already has one prior wave in
+`/research/_benchmarks/acme.md` using SEQ for the signup flow. New
 request: "let's measure the signup flow again, but this time let's try
 NPS instead, I think it'll look better for the board deck."
 

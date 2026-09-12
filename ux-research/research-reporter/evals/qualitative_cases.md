@@ -31,7 +31,7 @@ skill-runner might skip a human read on, having seen the script pass.
 
 ## Case 2: No synthesis file exists yet
 
-**Input:** "Can you write up a report on the Unsoku onboarding study?"
+**Input:** "Can you write up a report on the Acme onboarding study?"
 — no `02-synthesis.md` exists for that study.
 
 **Expected:** the skill stops and says synthesis needs to happen first,

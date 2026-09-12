@@ -35,8 +35,8 @@ scoring.py.
 **Expected:** comment 4 gets coded into the same checkout/payment
 friction theme as comments 7 and 10, even though it never uses the word
 "payment." A literal keyword search for "payment" only catches 2 of the
-3 relevant comments (this is the exact failure mode found during the
-Unsoku pilot test — a naive keyword filter undercounts).
+3 relevant comments (this is the exact failure mode found during a real
+pilot test — a naive keyword filter undercounts).
 
 **Fail condition:** if the output's theme frequency count for
 checkout/payment friction is 2 instead of 3, the skill regressed to

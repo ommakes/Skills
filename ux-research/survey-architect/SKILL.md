@@ -1,6 +1,6 @@
 ---
 name: survey-architect
-version: 1.1.0
+version: 1.1.1
 author: Personify Labs
 description: >
   Turns a research question into a validated, deploy-ready survey. Runs a
@@ -43,8 +43,8 @@ the wrong instrument answers a question nobody asked.
 Before picking an instrument, ask (as a short back-and-forth, not a form
 dump):
 
-1. **What product or surface is this for?** (Personify, Vois, Righter,
-   Unsoku, Localwolla, Smileframe, Uslo, or something outside that set)
+1. **What product or surface is this for?** Name it specifically — a
+   product, a feature area, or a defined surface within one.
 2. **What decision will this survey inform?** Not "understand users" —
    something a stakeholder will actually do differently based on the
    answer (ship/hold a feature, fix a flow, report a trend, justify
@@ -149,9 +149,9 @@ matched to how it'll actually be shipped:
 - **Qualtrics** → QSF-importable question block (question text, response
   scale, scoring formula as a note)
 - **Typeform** → JSON matching Typeform's question schema
-- **In-app (Personify/Vois/Unsoku stack)** → a small React component using
-  the existing Vois design system conventions (route through
-  vois-tokens/righter if UI copy beyond the validated item wording is
+- **In-app** → a small component matching the product's existing UI
+  conventions (route through vois-tokens/righter if the target uses the
+  Vois design system and UI copy beyond the validated item wording is
   needed — e.g., intro screen, thank-you screen)
 - **Unspecified platform** → ask which one before generating, don't
   default silently
