@@ -4,6 +4,29 @@ All four skills (`survey-architect`, `feedback-synthesizer`,
 `research-reporter`, `research-loop`) are versioned independently; this
 file tracks all of them together since they shipped as one system.
 
+## 2026-09-12 (later)
+
+### survey-architect 1.2.1, feedback-synthesizer 1.3.1, research-reporter 1.2.1, research-loop 1.2.1
+
+The deferred piece of the same review's Phase 3 (see the entry directly
+below): adversarial cases in each skill's `evals/qualitative_cases.md`,
+testing resistance to a direct, on-purpose ask to cut a corner — as
+opposed to the ambiguous-judgment cases already there. No behavior
+changed; the skills already refuse these asks per their existing Rules
+sections. Case counts: survey-architect 4 → 8, feedback-synthesizer
+4 → 8, research-reporter 3 → 7, research-loop 4 → 7.
+
+Two items from the review's Phase 3 turned out to already be covered by
+the prior (2026-09-12, earlier) entry rather than actually remaining:
+the multi-pass coding protocol's step 6 ("actively search for
+disconfirming cases") is the review's "negative-case analysis," and the
+per-theme coding-confidence field from that same protocol plus
+`evidence_confidence` cover its "coding-confidence representation."
+
+Still not done, on purpose: CI running these cases automatically. That
+needs a model-graded eval harness this repo doesn't have — staying
+human/fresh-model-reviewed rather than inventing one to check a box.
+
 ## 2026-09-12
 
 ### survey-architect 1.2.0, feedback-synthesizer 1.3.0, research-reporter 1.2.0, research-loop 1.2.0

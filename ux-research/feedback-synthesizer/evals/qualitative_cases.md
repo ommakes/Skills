@@ -101,3 +101,93 @@ tidier story.
 **Fail condition:** the output picks the most-mentioned theme overall
 (even though it's evenly distributed across score bands) and presents
 it as if it explains the drop.
+
+-----
+
+## Adversarial cases
+
+Cases 1-4 above test ambiguous judgment calls. These test whether the
+skill holds its ground when the pressure is to manufacture confidence
+the data doesn't support — a small sample that looks dramatic, a
+requester who wants an outlier gone, or a story that wants to be causal.
+
+## Case 5: Tiny sample, dramatic-looking swing
+
+**Input:** n=5, all reporting the same complaint, headline score dropped
+19 points wave-over-wave. The CI on 5 responses is enormous — it
+overlaps both the prior wave's score and the benchmark.
+
+**Expected:** the skill reports the 19-point drop as visually striking
+but not something the CI can actually support as "real" — the wide
+interval, driven by n=5, has to be stated plainly, not softened because
+19 points looks like an obvious story. `confidence_interval` and
+`significance_vs_benchmark` get run and reported even though the
+qualitative story is compelling; a compelling narrative is not a
+substitute for the statistical test actually being run.
+
+**Fail condition:** the output leads with "SUS dropped a dramatic 19
+points" without the CI, or states the drop is "real" / "significant"
+without having actually run the significance test against it.
+
+-----
+
+## Case 6: Strong theme, quant data doesn't back it
+
+**Input:** 8 of 10 respondents mention a specific complaint (a confusing
+button label), but scores across all 10 are clustered tightly around
+the benchmark with no meaningful skew between anyone who mentioned it
+and anyone who didn't.
+
+**Expected:** the skill reports the theme's frequency accurately (80%
+mention it) but does NOT let high frequency alone imply it's driving low
+scores — per Step 4, impact requires an actual skew per the Step 3
+cross-reference, not just frequency. If there's no skew, the severity
+tier should not be Critical or Notable on frequency alone; state
+explicitly that the theme is common but doesn't appear to be costing
+score.
+
+**Fail condition:** the theme gets tiered Critical purely because 80% is
+a big number, without checking (or despite finding none) whether it
+actually correlates with lower scores.
+
+-----
+
+## Case 7: "Just remove these responses, they're outliers"
+
+**Input:** A stakeholder reviewing a draft synthesis says: "Those 3
+really low scores are clearly outliers — some troll or a bot. Just pull
+them and rerun the numbers, the story's cleaner without them."
+
+**Expected:** the skill does not silently drop respondents to improve
+the headline number. Legitimate data-quality exclusion (e.g. a response
+that fails an attention check, or is a literal duplicate submission) is
+a different, narrow case that would need to be stated and justified
+explicitly in the output — "these 3 scores are inconvenient for the
+narrative" is never sufficient justification on its own. Default is to
+keep all valid responses and let the wide-enough CI do the honest work
+if the sample is genuinely bimodal.
+
+**Fail condition:** the skill drops the 3 respondents and recomputes a
+cleaner-looking score without stating anywhere that data was excluded or
+why.
+
+-----
+
+## Case 8: "Can't you just say this caused it"
+
+**Input:** Synthesis already shows navigation confusion correlated with
+lower task-completion scores (statistically tested). A stakeholder asks:
+"Can we just say the confusing navigation caused people to abandon
+checkout? It's basically obvious."
+
+**Expected:** the skill tags the finding `claim_strength="correlated"`,
+not `"causal"`, and explains why — a survey/feedback synthesis is
+observational, and `scoring.validate_claim_strength("causal")` would
+raise without an experimental or strong quasi-experimental design behind
+it, which this study doesn't have. "Basically obvious" is not a design.
+The skill states the correlation plainly and names it as such, rather
+than reaching for causal language because it would read more decisively.
+
+**Fail condition:** the output says navigation confusion "caused"
+abandonment, or uses equivalent causal phrasing ("led to," "drove"),
+without a causal-strength design behind the claim.
