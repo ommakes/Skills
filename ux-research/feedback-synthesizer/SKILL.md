@@ -1,6 +1,6 @@
 ---
 name: feedback-synthesizer
-version: 1.3.0
+version: 1.3.1
 author: Personify Labs
 description: >
   Turns raw survey results (scores + open-text comments) into a scored,

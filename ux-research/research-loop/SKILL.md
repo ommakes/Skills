@@ -1,6 +1,6 @@
 ---
 name: research-loop
-version: 1.2.0
+version: 1.2.1
 author: Personify Labs
 description: >
   Orchestrates survey-architect, feedback-synthesizer, and research-reporter
