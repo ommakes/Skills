@@ -56,6 +56,48 @@
     <p class="kit-caption">Sortable columns, row selection, bulk action &mdash; the infrastructure a &lt;100-row Table skips.</p>
   </section>
 
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">States &middot; render, don't redecide (JOB-LOADING-STATE, JOB-EMPTY-CONTENT)</h2>
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Loading</div>
+        <table class="kit-table">
+          <thead><tr><th>Customer</th><th>Signed up</th><th>MRR</th></tr></thead>
+          <tbody>
+            <tr><td><div class="skeleton" style="height:14px; width:80%;"></div></td><td><div class="skeleton" style="height:14px; width:60%;"></div></td><td><div class="skeleton" style="height:14px; width:40%;"></div></td></tr>
+            <tr><td><div class="skeleton" style="height:14px; width:70%;"></div></td><td><div class="skeleton" style="height:14px; width:60%;"></div></td><td><div class="skeleton" style="height:14px; width:40%;"></div></td></tr>
+          </tbody>
+        </table>
+        <p class="kit-caption">Skeleton rows match the table's real shape &mdash; column widths don't jump when data lands.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Error &middot; failed to load</div>
+        <div class="empty-state" style="padding: var(--space-32) var(--space-24);">
+          <p class="h5">Couldn't load customers</p>
+          <p class="kit-caption">Check your connection and try again.</p>
+          <button class="btn btn-secondary" style="margin-top: var(--space-8);">Retry</button>
+        </div>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Empty &middot; true zero state, can create here</div>
+        <div class="empty-state" style="padding: var(--space-32) var(--space-24);">
+          <p class="h5">No customers yet</p>
+          <p class="kit-caption">Add your first customer to start tracking revenue.</p>
+          <button class="btn btn-primary" style="margin-top: var(--space-8);">Add customer</button>
+        </div>
+        <p class="kit-caption">User has never created anything here and can create from this screen &rarr; EmptyState with a primary CTA.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Empty &middot; filters removed all results</div>
+        <div style="padding: var(--space-24) 0; text-align:center;">
+          <p class="text-description">No customers match "acme, status: churned".</p>
+          <button class="btn btn-ghost" style="margin-top: var(--space-8);">Clear filters</button>
+        </div>
+        <p class="kit-caption">Filtered-empty, not true zero &mdash; a lightweight inline message, not a full EmptyState (too heavy for "zero results this search").</p>
+      </div>
+    </div>
+  </section>
+
   <script>
     function updateCount() {
       const n = document.querySelectorAll('#dtBody input:checked').length;

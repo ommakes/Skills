@@ -129,6 +129,11 @@ h1, h2, h3, h4, h5, h6, p { margin: 0; }
 }
 .textarea { min-height: 96px; resize: vertical; }
 .input:focus, .textarea:focus, select.input:focus { border-color: var(--color-primary); }
+.input:disabled, .textarea:disabled, select.input:disabled { opacity: .6; cursor: not-allowed; background: var(--color-muted); }
+.input[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--color-destructive); }
+.field-error { color: var(--color-destructive); font-size: var(--text-h6-size); margin-top: calc(var(--space-8) * -1); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:disabled:active { transform: none; }
 
 /* ---- Switch / Checkbox / Radio ---- */
 .switch { position: relative; display: inline-flex; align-items: center; gap: var(--space-8); cursor: pointer; }
