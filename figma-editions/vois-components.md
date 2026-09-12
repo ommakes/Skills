@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.4.2
+version: 1.5.0
 ---
 
 # Vois Component Selection Skill
@@ -34,8 +34,9 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Confirm destructive action | AlertDialog | Dialog, Toast |
 | Transient feedback, no action needed | Toast | Alert, Banner |
 | Transient feedback, action required | Alert (persistent) | Toast |
+| Focused overlay, exactly one field anchored to a row/item | Popover | Sheet, Dialog |
 | Focused overlay, short task | Dialog | Drawer, Sheet |
-| Focused overlay, contextual to a list item | Sheet | Dialog |
+| Focused overlay, a handful of fields or more, contextual to a list item | Sheet | Dialog, Popover |
 | Group content, interactive item | Card | div, Surface |
 | Switch between major content areas | Tabs | Segmented Control |
 | Filter a list, 2–4 options | Segmented Control | Tabs |
@@ -108,14 +109,15 @@ Why not skip the empty state? A blank area with no explanation looks broken. Why
 
 **Job 3 — Contain a focused overlay interaction** `JOB-OVERLAY-INTERACTION`
 *The user needs to complete an interaction without leaving the current context.*
+- Editing exactly one field/value, anchored to the specific row/item that triggered it → Popover (anchored to the trigger, no Dialog/Sheet/Drawer chrome)
 - Short, self-contained task, 1–4 fields or a single decision → Dialog
 - Short, self-contained, destructive/consequential → AlertDialog (see Job 1)
-- Longer task or relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap)
+- Task touches a handful of fields or more, needs more screen space, or otherwise relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap)
 - Longer task needing full attention → Drawer (full-height, slides from bottom on mobile)
 - Simple contextual input on mobile (quick select, number entry) → Drawer (action sheet pattern)
 
-Why not Dialog for longer tasks? Centered dialogs feel disconnected from the data they relate to — Sheet keeps spatial proximity. Why not Drawer on desktop for simple tasks? Takes up too much screen real estate; Dialog is faster to close.
-*At a glance:* Dialog = task is self-contained. Sheet = task is contextual, user may want to reference the triggering item.
+Why not Dialog for longer tasks? Centered dialogs feel disconnected from the data they relate to — Sheet keeps spatial proximity. Why not Drawer on desktop for simple tasks? Takes up too much screen real estate; Dialog is faster to close. Why not Sheet for a single-field inline edit (e.g. one row's status)? Sheet's own header/footer chrome is more than one field needs and visually detaches the edit from the exact cell it changes — anchor it as a Popover instead. Why not Popover once more than one field is involved? Labels, inputs, and validation for multiple fields don't fit a small anchored panel — move to Sheet.
+*At a glance:* Popover = exactly one field, anchored to the trigger. Dialog = task is self-contained (1-4 fields). Sheet = a handful of fields or more, contextual, user may want to reference the triggering item.
 
 **Job 4 — Contain a unit of content** `JOB-CONTAIN-CONTENT`
 *You need a surface to group related content into a discrete visual block.*

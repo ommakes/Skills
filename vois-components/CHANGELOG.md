@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.5.0] — 2026-09-12
+
+### Added
+
+- **`JOB-OVERLAY-INTERACTION` gains an explicit Popover branch** for editing exactly one field/value anchored to the specific row/item that triggered it (e.g. changing one row's status inline from a table). Previously, a single-field edit that also "related to an item in a list" satisfied both the Dialog branch's condition (1-4 fields, self-contained) and the Sheet branch's condition (relates to a list item) with nothing to disambiguate them — confirmed as a real gap by running `vois-eval`'s scenario set blind against a fresh agent, which reasoned its way to a defensible third answer (Popover, via `JOB-CONTEXTUAL-INFO` + `JOB-DATA-ENTRY`) that the decision tree never explicitly ruled in or out. Sheet's condition is now scoped to "a handful of fields or more" so the two branches no longer overlap. Two new rationale Q&As explain the Popover/Sheet boundary in both directions. `SKILL.md`'s Quick Reference table, `README.md`'s job-pairs table, and the Figma edition all updated to match.
+
+---
+
 ## [1.4.2] — 2026-07-23
 
 ### Fixed

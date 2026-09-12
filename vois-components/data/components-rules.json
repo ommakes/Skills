@@ -262,11 +262,12 @@
       "source_file": "vois-components/references/overlays-and-containers.md",
       "framing": "The user needs to complete an interaction without leaving the current context.",
       "decision_tree": [
+        { "condition": "Editing or acting on exactly one field or value, anchored to the specific row/item that triggered it (not a multi-field task)", "recommendation": "Popover (anchored to the trigger element, no Dialog/Sheet/Drawer chrome)" },
         { "condition": "Short, self-contained task (confirm, quick form, select one thing)", "sub_branches": [
           { "condition": "1–4 fields or a single decision", "recommendation": "Dialog" },
           { "condition": "Destructive or consequential", "recommendation": "AlertDialog (see Job 1)" }
         ] },
-        { "condition": "Longer task, needs more screen space, or relates to an item in a list", "sub_branches": [
+        { "condition": "Task touches more than one field (a handful or more), needs more screen space, or otherwise relates to an item in a list", "sub_branches": [
           { "condition": "User will likely want to see the page behind it while working", "recommendation": "Sheet (right-anchored, partial overlap)" },
           { "condition": "User needs full attention on the task", "recommendation": "Drawer (full-height, slides from bottom on mobile)" }
         ] },
@@ -274,13 +275,16 @@
       ],
       "rationale": [
         { "question": "Why not Dialog for longer tasks?", "answer": "Dialogs are centered and feel disconnected from the data they relate to. A Sheet keeps spatial proximity to the list or item that triggered it." },
-        { "question": "Why not Drawer on desktop for simple tasks?", "answer": "Drawers take up significant screen real estate. A Dialog is faster to close and draws less visual weight for simple interactions." }
+        { "question": "Why not Drawer on desktop for simple tasks?", "answer": "Drawers take up significant screen real estate. A Dialog is faster to close and draws less visual weight for simple interactions." },
+        { "question": "Why not Sheet for a single-field inline edit (e.g. changing one row's status from a table)?", "answer": "Sheet implies enough content to warrant its own header, footer, and dedicated panel. For exactly one field, that's more chrome than the task needs, and it also visually detaches the edit from the exact cell it changes. Reserve Sheet for edits touching a handful of fields or more; anchor a true single-field edit as a Popover directly at the trigger instead, so the row's context and the edit surface stay visually connected." },
+        { "question": "Why not Popover once more than one field is involved?", "answer": "A Popover has no real room for more than one field's worth of label, input, and validation — they stack awkwardly in a small anchored panel. Once an edit needs a handful of fields or more, move to Sheet so the row's context stays visible without cramming multiple inputs into a tooltip-sized surface." }
       ],
       "at_a_glance": {
-        "title": "Dialog vs Sheet at a glance",
+        "title": "Popover vs Dialog vs Sheet at a glance",
         "items": [
-          "Dialog: task is self-contained, user doesn't need context from the page behind it",
-          "Sheet: task is contextual, user may want to reference the list/item that triggered it"
+          "Popover: exactly one field/value, anchored to the exact row or item that triggered it",
+          "Dialog: task is self-contained (1-4 fields or a single decision), user doesn't need context from the page behind it",
+          "Sheet: a handful of fields or more, task is contextual, user may want to reference the list/item that triggered it"
         ]
       }
     },
