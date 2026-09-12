@@ -38,10 +38,14 @@ Every preview file:
 
 ## Syncing to a live Claude Design project
 
-This kit is built and committed here, but pushing it into an actual `claude.ai/design` project is a separate, interactive step — it needs your live project choice and an approved write plan, so it isn't automated:
+This kit is built and committed here, but pushing it into an actual `claude.ai/design` project is a separate, interactive step — it needs your live project choice and an approved write plan, so it isn't automated. Either invoke this through the `/design-sync` skill if one is set up in your environment, or call the `DesignSync` tool directly:
 
-1. `DesignSync.list_projects` — see which design-system projects you can write to (or `create_project` if starting fresh)
-2. `DesignSync.finalize_plan` — writes: `design-previews/**/*.html`, `design-previews/**/*.css` (skip `index.html`, it's dev-only)
-3. `DesignSync.write_files` — push the approved plan
+1. `DesignSync.list_projects` — see which projects you can write to, or `create_project` if starting fresh. **This only lists projects typed as design-system, not regular claude.ai projects.** If your target project doesn't show up, confirm it's typed correctly before assuming something's broken — this has bitten a first sync attempt before.
+2. `DesignSync.finalize_plan` — writes: `design-previews/**/*.html`, `design-previews/**/*.css` (skip `index.html`, it's dev-only). Locks the write scope and returns a `planId` that needs your approval before the next step.
+3. `DesignSync.write_files` — push the approved plan.
 
 `register_assets` isn't needed — the pane builds its card index from each file's `@dsCard` marker automatically.
+
+**Two open questions, unresolved as of this writing — check them before your first live sync, not before:**
+- Does the pane need a static thumbnail/screenshot per card, or does it render the live HTML for the card preview itself? Confirm against what `DesignSync` actually expects rather than assuming the `@dsCard` marker alone is sufficient.
+- Should `index.html` stay dev-only now that dark mode actually works, or is a working nav page worth syncing too? No technical constraint either way — it's a call to make once you're looking at a live project, not before.
