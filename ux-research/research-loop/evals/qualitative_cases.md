@@ -9,7 +9,7 @@ the skills it orchestrates.
 
 ## Case 1: Standalone feedback should not be forced through survey-architect
 
-**Input:** "Here's a spreadsheet of 40 app store reviews for Smileframe,
+**Input:** "Here's a spreadsheet of 40 app store reviews for Acme,
 can you find the patterns?" — no prior study, no learning goal stated,
 no survey involved at all.
 

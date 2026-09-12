@@ -140,7 +140,7 @@ class TestCheckNoUnsupportedCausalLanguage(unittest.TestCase):
 class TestValidateReportJson(unittest.TestCase):
     def _complete_report(self):
         return {
-            "study": "x", "product": "unsoku", "audience": "internal",
+            "study": "x", "product": "acme", "audience": "internal",
             "format": "markdown", "executive_summary": "x", "methodology": "x",
             "benchmark_comparison": "x", "findings": [], "recommendations": [],
         }

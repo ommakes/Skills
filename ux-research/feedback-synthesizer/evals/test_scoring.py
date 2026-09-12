@@ -126,7 +126,7 @@ class TestSuprQ(unittest.TestCase):
 
 class TestConfidenceInterval(unittest.TestCase):
     def test_pilot_data_matches_manual_calc(self):
-        """Regression test locking in the exact numbers from the Unsoku
+        """Regression test locking in the exact numbers from a
         signup-flow pilot test run, verified independently during that
         test (n=14, mean=5.64, 90% CI=[4.89, 6.40])."""
         scores = [7, 6, 7, 3, 6, 7, 2, 6, 7, 4, 6, 7, 5, 6]
@@ -159,7 +159,7 @@ class TestSignificance(unittest.TestCase):
 
 class TestSeverityTier(unittest.TestCase):
     """This is the regression suite for the exact bug found during the
-    Unsoku pilot test: a theme with low OVERALL frequency but high
+    pilot test: a theme with low OVERALL frequency but high
     WITHIN-BAND frequency and a clear skew must tier as Critical, not
     get diluted down by the whole-sample percentage."""
 
@@ -264,7 +264,7 @@ class TestValidateClaimStrength(unittest.TestCase):
 class TestValidateSynthesis(unittest.TestCase):
     def _complete_synthesis(self):
         return {
-            "study": "x", "product": "unsoku", "instrument": "SUS", "n": 42,
+            "study": "x", "product": "acme", "instrument": "SUS", "n": 42,
             "score": {"value": 74.2, "ci_low": 70.1, "ci_high": 78.3},
             "significance": {"vs_benchmark": {"significant": True}},
             "low_confidence_flag": False,

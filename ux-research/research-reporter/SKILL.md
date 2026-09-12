@@ -1,6 +1,6 @@
 ---
 name: research-reporter
-version: 1.2.1
+version: 1.2.2
 author: Personify Labs
 description: >
   Turns a feedback-synthesizer output into a stakeholder-ready report —

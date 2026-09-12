@@ -84,14 +84,14 @@ class TestRequiredSampleSize(unittest.TestCase):
 class TestValidateSurveySpec(unittest.TestCase):
     def test_complete_spec_has_no_missing_fields(self):
         spec = {
-            "study": "x", "product": "unsoku", "instrument": "SEQ",
+            "study": "x", "product": "acme", "instrument": "SEQ",
             "items": [], "trigger_event": "x", "frequency_cap": "x",
             "required_n": 20, "scoring_formula": "mean",
         }
         self.assertEqual(selection.validate_survey_spec(spec), [])
 
     def test_incomplete_spec_lists_missing_fields(self):
-        spec = {"study": "x", "product": "unsoku"}
+        spec = {"study": "x", "product": "acme"}
         missing = selection.validate_survey_spec(spec)
         self.assertIn("instrument", missing)
         self.assertIn("required_n", missing)
@@ -101,14 +101,14 @@ class TestValidateSurveySpec(unittest.TestCase):
 class TestValidateIntakeSpec(unittest.TestCase):
     def test_complete_intake_has_no_missing_fields(self):
         intake = {
-            "study": "x", "product": "unsoku", "learning_goal": "x",
+            "study": "x", "product": "acme", "learning_goal": "x",
             "experience_moment": "task", "decision_type": "task_completion",
             "instrument": "SEQ", "required_n": 20,
         }
         self.assertEqual(selection.validate_intake_spec(intake), [])
 
     def test_incomplete_intake_lists_missing_fields(self):
-        intake = {"study": "x", "product": "unsoku"}
+        intake = {"study": "x", "product": "acme"}
         missing = selection.validate_intake_spec(intake)
         self.assertIn("decision_type", missing)
         self.assertIn("required_n", missing)
@@ -118,7 +118,7 @@ class TestValidateIntakeSpec(unittest.TestCase):
         # Only meaningful when Step 0 Q4 found an existing series — its
         # absence on a first-ever study is not a validation failure.
         intake = {
-            "study": "x", "product": "unsoku", "learning_goal": "x",
+            "study": "x", "product": "acme", "learning_goal": "x",
             "experience_moment": "task", "decision_type": "task_completion",
             "instrument": "SEQ", "required_n": 20,
         }

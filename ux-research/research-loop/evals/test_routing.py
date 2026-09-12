@@ -81,12 +81,12 @@ class TestShouldEscalate(unittest.TestCase):
 
 class TestPathHelpers(unittest.TestCase):
     def test_study_dir_format(self):
-        self.assertEqual(routing.study_dir("unsoku-signup-flow-seq"),
-                          "/research/unsoku-signup-flow-seq/")
+        self.assertEqual(routing.study_dir("acme-signup-flow-seq"),
+                          "/research/acme-signup-flow-seq/")
 
     def test_benchmark_path_format(self):
-        self.assertEqual(routing.benchmark_path("unsoku"),
-                          "/research/_benchmarks/unsoku.md")
+        self.assertEqual(routing.benchmark_path("acme"),
+                          "/research/_benchmarks/acme.md")
 
 
 class TestNextState(unittest.TestCase):

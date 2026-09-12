@@ -1,6 +1,6 @@
 ---
 name: survey-architect
-version: 1.2.1
+version: 1.2.2
 author: Personify Labs
 description: >
   Turns a research question into a validated, deploy-ready survey. Runs a

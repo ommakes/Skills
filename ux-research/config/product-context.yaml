@@ -10,14 +10,11 @@
 # validate a study's stated product against a known list) and
 # `benchmarks_root` (to build /research/_benchmarks/<product>.md paths).
 
+# Replace this placeholder list with your own products/surfaces.
 products:
-  - Personify
-  - Vois
-  - Righter
-  - Unsoku
-  - Localwolla
-  - Smileframe
-  - Uslo
+  - Acme
+  - Contoso
+  - Fabrikam
 
 # If a requester names a product outside this list, don't reject it —
 # ask whether it's a new product to track (add it here) or a typo of an

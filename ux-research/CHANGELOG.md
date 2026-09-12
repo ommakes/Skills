@@ -4,6 +4,26 @@ All four skills (`survey-architect`, `feedback-synthesizer`,
 `research-reporter`, `research-loop`) are versioned independently; this
 file tracks all of them together since they shipped as one system.
 
+## 2026-09-12 (later still)
+
+### survey-architect 1.2.2, feedback-synthesizer 1.3.2, research-reporter 1.2.2, research-loop 1.2.2
+
+Finished the product-agnostic pass this system started earlier today
+(see the entry below, and the prior "make survey-architect
+product-agnostic" work it superseded): `config/product-context.yaml`'s
+`products:` default list still named real internal products (Personify,
+Vois, Righter, Unsoku, Localwolla, Smileframe, Uslo) even after they
+were moved out of SKILL.md prose. Replaced with a placeholder list
+(Acme, Contoso, Fabrikam) and an explicit "replace this" comment, so the
+shipped default doesn't name any specific org's products.
+
+Also swapped the same handful of hardcoded example product names
+(`"unsoku"`, lowercase) out of the new `evals/test_*.py` fixtures added
+in the entry below — arbitrary example strings passed to
+`study_dir()`/`benchmark_path()`/etc., not tied to any special-cased
+behavior. All four eval suites re-run clean after the swap (40/19/20/25
+tests passing).
+
 ## 2026-09-12 (later)
 
 ### survey-architect 1.2.1, feedback-synthesizer 1.3.1, research-reporter 1.2.1, research-loop 1.2.1
@@ -157,7 +177,7 @@ re-reading the file cold, not an independently spawned model instance.
 
 ### feedback-synthesizer 1.1.0
 
-Fixed a real bug found during a synthetic pilot test (simulated Unsoku
+Fixed a real bug found during a synthetic pilot test (simulated
 signup-flow SEQ study, n=14): severity tiering measured a theme's
 frequency against the whole sample, which diluted a theme that was
 mentioned by 75% of low scorers (but only 21% of the full sample) down
