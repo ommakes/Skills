@@ -98,5 +98,32 @@ class TestValidateSurveySpec(unittest.TestCase):
         self.assertNotIn("study", missing)
 
 
+class TestValidateIntakeSpec(unittest.TestCase):
+    def test_complete_intake_has_no_missing_fields(self):
+        intake = {
+            "study": "x", "product": "unsoku", "learning_goal": "x",
+            "experience_moment": "task", "decision_type": "task_completion",
+            "instrument": "SEQ", "required_n": 20,
+        }
+        self.assertEqual(selection.validate_intake_spec(intake), [])
+
+    def test_incomplete_intake_lists_missing_fields(self):
+        intake = {"study": "x", "product": "unsoku"}
+        missing = selection.validate_intake_spec(intake)
+        self.assertIn("decision_type", missing)
+        self.assertIn("required_n", missing)
+        self.assertNotIn("study", missing)
+
+    def test_missing_prior_benchmark_reused_is_not_an_error(self):
+        # Only meaningful when Step 0 Q4 found an existing series — its
+        # absence on a first-ever study is not a validation failure.
+        intake = {
+            "study": "x", "product": "unsoku", "learning_goal": "x",
+            "experience_moment": "task", "decision_type": "task_completion",
+            "instrument": "SEQ", "required_n": 20,
+        }
+        self.assertNotIn("prior_benchmark_reused", selection.validate_intake_spec(intake))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,6 +1,6 @@
 ---
 name: survey-architect
-version: 1.1.0
+version: 1.2.0
 author: Personify Labs
 description: >
   Turns a research question into a validated, deploy-ready survey. Runs a
@@ -12,10 +12,13 @@ description: >
   X," "what should I ask users after they do Y," "build me an NPS survey,"
   "help me measure usability of Z," or pastes a vague research need and
   wants it turned into an actual instrument. Entry point 1 of the research
-  loop (see research-loop). Bundles scripts/selection.py for the
-  deterministic instrument lookup, sample-size floor, and spec validation
-  (run it, don't eyeball the table) and evals/ for regression testing —
-  run evals/test_selection.py after touching selection.py, and check
+  loop (see research-loop). Product/org-specific facts (which products
+  exist, benchmark root path) live in ../config/product-context.yaml, not
+  in this file — read it during intake rather than assuming a fixed
+  product list. Bundles scripts/selection.py for the deterministic
+  instrument lookup, sample-size floor, and intake/spec validation (run
+  it, don't eyeball the table) and evals/ for regression testing — run
+  evals/test_selection.py after touching selection.py, and check
   evals/qualitative_cases.md after touching this file's prose.
 tags:
   - user-research
@@ -43,8 +46,13 @@ the wrong instrument answers a question nobody asked.
 Before picking an instrument, ask (as a short back-and-forth, not a form
 dump):
 
-1. **What product or surface is this for?** (Personify, Vois, Righter,
-   Unsoku, Localwolla, Smileframe, Uslo, or something outside that set)
+1. **What product or surface is this for?** Check `../config/product-context.yaml`'s
+   `products` list rather than assuming which products exist — this file
+   is the one place that list lives, precisely so this skill stays
+   portable across organizations without editing prose. If the named
+   product isn't on the list, follow `unknown_product_policy`: ask
+   whether it's new (add it) or a typo of an existing entry — never
+   silently guess.
 2. **What decision will this survey inform?** Not "understand users" —
    something a stakeholder will actually do differently based on the
    answer (ship/hold a feature, fix a flow, report a trend, justify
@@ -149,37 +157,56 @@ matched to how it'll actually be shipped:
 - **Qualtrics** → QSF-importable question block (question text, response
   scale, scoring formula as a note)
 - **Typeform** → JSON matching Typeform's question schema
-- **In-app (Personify/Vois/Unsoku stack)** → a small React component using
-  the existing Vois design system conventions (route through
-  vois-tokens/righter if UI copy beyond the validated item wording is
-  needed — e.g., intro screen, thank-you screen)
+- **In-app** (a product from `../config/product-context.yaml`'s stack) → a
+  small React component using the existing Vois design system
+  conventions (route through vois-tokens/righter if UI copy beyond the
+  validated item wording is needed — e.g., intro screen, thank-you
+  screen)
 - **Unspecified platform** → ask which one before generating, don't
   default silently
 
 Along with the deployable file, always also write the structured handoff
-file (see research-loop for schema) to `/research/<study-name>/00-intake.md`
-and `/research/<study-name>/01-survey-spec.json`, containing: product,
-learning goal, instrument chosen, item text, scoring formula, required n,
-trigger/frequency rules. Before writing it, run
-`scripts/selection.py`'s `validate_survey_spec(spec)` — if it returns
-any missing fields, fill them in before writing the file. This is what
-feedback-synthesizer reads later — it should never have to re-derive the
-instrument from the raw data alone, and it shouldn't hit a missing field
-that a two-line check would have caught.
+files (see research-loop for the full file structure) to
+`/research/<study-name>/00-intake.md` + `00-intake.json`, and
+`01-survey-spec.json`. The `.json` files are the canonical,
+machine-readable versions — the `.md` is the human-readable copy of the
+same facts, never a source of additional information the `.json`
+doesn't have. Before writing them, run `scripts/selection.py`'s
+`validate_intake_spec(intake)` and `validate_survey_spec(spec)` — if
+either returns any missing fields, fill them in before writing the
+files. This is what feedback-synthesizer and research-loop's state file
+read later — they should never have to re-derive the instrument from
+raw data or prose alone, and shouldn't hit a missing field that a
+two-line check would have caught.
+
+`00-intake.json` shape: `study`, `product`, `learning_goal`,
+`experience_moment`, `decision_type`, `instrument`, `required_n`, plus
+`prior_benchmark_reused` when Step 0's Q4 applies.
 
 -----
 
-## What this skill never does
+## Rules
 
-- Skips intake because the requester named an instrument already
-- Modifies validated item wording to "sound more natural"
-- Recommends an instrument the intake answers don't support (e.g., NPS
-  for a single-task usability question)
-- Launches a study without stating the required sample size up front
-- Outputs a generic text spec when a platform was named
-- Picks a survey platform without asking, when none was specified
-- Introduces a new instrument for a product with an existing benchmark
-  series, without flagging the break in comparability
+Priority when rules interact: **STOP** > **MUST NOT** > **MUST** >
+**SHOULD** > **MAY** — see `ux-research/README.md` for the full
+precedence explanation. A lower-priority rule never overrides a
+higher-priority one.
+
+- **STOP** if the answers to Step 0's Q2 and Q3 don't line up — surface
+  the mismatch before picking an instrument, don't silently pick one.
+- **MUST NOT** skip intake because the requester already named an
+  instrument.
+- **MUST NOT** modify validated item wording (SUS, SUPR-Q, UMUX,
+  UMUX-Lite, PSSUQ) to "sound more natural."
+- **MUST NOT** recommend an instrument the intake answers don't support
+  (e.g., NPS for a single-task usability question).
+- **MUST NOT** introduce a new instrument for a product with an existing
+  benchmark series without flagging the break in comparability.
+- **MUST** state the required sample size before a study launches.
+- **MUST** produce a platform-native artifact, never a generic text spec,
+  once a platform is named.
+- **SHOULD** ask which platform to target when none was specified,
+  rather than defaulting silently.
 
 -----
 

@@ -199,6 +199,110 @@ class TestSeverityTier(unittest.TestCase):
         )
         self.assertEqual(result.tier, "Notable")
 
+    def test_no_override_leaves_computed_tier_unchanged(self):
+        result = scoring.severity_tier(
+            affected_band_theme_count=1, affected_band_n=10,
+            unaffected_band_theme_count=1, unaffected_band_n=10,
+        )
+        self.assertEqual(result.tier, "Minor")
+        self.assertEqual(result.computed_tier, "Minor")
+        self.assertIsNone(result.override_reason)
+
+    def test_valid_override_bumps_minor_to_critical(self):
+        # A low-frequency accessibility barrier should be able to outrank
+        # a high-frequency cosmetic complaint — that's the whole point of
+        # an override.
+        result = scoring.severity_tier(
+            affected_band_theme_count=1, affected_band_n=10,
+            unaffected_band_theme_count=1, unaffected_band_n=10,
+            override="accessibility",
+        )
+        self.assertEqual(result.tier, "Critical")
+        self.assertEqual(result.computed_tier, "Minor")
+        self.assertEqual(result.override_reason, "accessibility")
+
+    def test_override_on_already_critical_is_a_no_op(self):
+        result = scoring.severity_tier(
+            affected_band_theme_count=3, affected_band_n=4,
+            unaffected_band_theme_count=0, unaffected_band_n=10,
+            override="safety",
+        )
+        self.assertEqual(result.tier, "Critical")
+        self.assertEqual(result.computed_tier, "Critical")
+
+    def test_invalid_override_reason_raises(self):
+        # An override is for a legitimate outside consideration, not
+        # stakeholder preference — an unrecognized reason must fail
+        # loudly rather than silently accepting any string.
+        with self.assertRaises(ValueError):
+            scoring.severity_tier(
+                affected_band_theme_count=1, affected_band_n=10,
+                unaffected_band_theme_count=1, unaffected_band_n=10,
+                override="stakeholder_wants_it_higher",
+            )
+
+
+class TestValidateClaimStrength(unittest.TestCase):
+    def test_observed_is_always_valid(self):
+        scoring.validate_claim_strength("observed")  # should not raise
+
+    def test_correlated_is_valid_without_causal_design(self):
+        scoring.validate_claim_strength("correlated", has_causal_design=False)
+
+    def test_causal_without_causal_design_raises(self):
+        with self.assertRaises(ValueError):
+            scoring.validate_claim_strength("causal")
+
+    def test_causal_with_causal_design_is_allowed(self):
+        scoring.validate_claim_strength("causal", has_causal_design=True)
+
+    def test_unrecognized_level_raises(self):
+        with self.assertRaises(ValueError):
+            scoring.validate_claim_strength("definitely_true")
+
+
+class TestValidateSynthesis(unittest.TestCase):
+    def _complete_synthesis(self):
+        return {
+            "study": "x", "product": "unsoku", "instrument": "SUS", "n": 42,
+            "score": {"value": 74.2, "ci_low": 70.1, "ci_high": 78.3},
+            "significance": {"vs_benchmark": {"significant": True}},
+            "low_confidence_flag": False,
+            "themes": [
+                {"id": "T-01", "severity": {"tier": "Critical"}, "claim_strength": "observed"},
+            ],
+            "cross_references": [],
+            "evidence_confidence": {"overall": "MEDIUM"},
+            "alternative_explanations": [],
+            "cannot_determine": [],
+        }
+
+    def test_complete_synthesis_has_no_problems(self):
+        self.assertEqual(scoring.validate_synthesis(self._complete_synthesis()), [])
+
+    def test_missing_top_level_fields_are_listed(self):
+        problems = scoring.validate_synthesis({"study": "x"})
+        self.assertTrue(any("evidence_confidence" in p or p == "evidence_confidence" for p in problems))
+        self.assertTrue(any(p == "themes" for p in problems))
+
+    def test_invalid_evidence_confidence_value_is_flagged(self):
+        synthesis = self._complete_synthesis()
+        synthesis["evidence_confidence"] = {"overall": "PRETTY_SURE"}
+        problems = scoring.validate_synthesis(synthesis)
+        self.assertTrue(any("evidence_confidence" in p for p in problems))
+
+    def test_invalid_severity_tier_on_a_theme_is_flagged(self):
+        synthesis = self._complete_synthesis()
+        synthesis["themes"][0]["severity"]["tier"] = "Super Critical"
+        problems = scoring.validate_synthesis(synthesis)
+        self.assertTrue(any("severity tier" in p for p in problems))
+
+    def test_invalid_claim_strength_on_a_theme_is_flagged(self):
+        synthesis = self._complete_synthesis()
+        synthesis["themes"][0]["claim_strength"] = "definitely"
+        problems = scoring.validate_synthesis(synthesis)
+        self.assertTrue(any("claim_strength" in p for p in problems))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
