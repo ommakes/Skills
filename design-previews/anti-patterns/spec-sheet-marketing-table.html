@@ -1,0 +1,57 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: spec-sheet table for marketing</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .spec-table { width: 100%; border-collapse: collapse; }
+  .spec-table td { padding: var(--space-12) 0; border-bottom: 1px solid var(--color-border); }
+  .spec-table td:last-child { text-align: right; color: var(--color-muted-foreground); }
+  .pill-row { display: flex; gap: var(--space-12); overflow-x: auto; padding-bottom: var(--space-8); }
+  .pill { flex: none; padding: var(--space-8) var(--space-16); border-radius: var(--radius-full); background: var(--color-muted); font-size: var(--text-h5-size); white-space: nowrap; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-24); text-align: center; }
+  @media (max-width: 640px) { .stat-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-007</span>
+    <h1 class="h1">Spec-sheet tables for marketing</h1>
+    <p class="text-description">A multi-row table with a label column and a value column, used to present features or plans on a marketing surface, is boilerplate. Use grouped 2-column cards, scroll-snap pills, or clustered stats instead. (This doesn't apply to genuine data tables in product UI — those are governed by vois-patterns table/list patterns.)</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid</div>
+    <div class="kit-panel">
+      <table class="spec-table">
+        <tbody>
+          <tr><td>Projects</td><td>Unlimited</td></tr>
+          <tr><td>Team members</td><td>Up to 50</td></tr>
+          <tr><td>Storage</td><td>1 TB</td></tr>
+          <tr><td>Support</td><td>Priority</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead — clustered stats</div>
+    <div class="stat-grid">
+      <div><p class="h1">∞</p><p class="text-description">Projects</p></div>
+      <div><p class="h1">50</p><p class="text-description">Team members</p></div>
+      <div><p class="h1">1TB</p><p class="text-description">Storage</p></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

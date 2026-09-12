@@ -1,0 +1,44 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: eyebrow overuse</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .eyebrow { display: block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--color-primary); margin-bottom: var(--space-8); }
+  .fake-section { padding: var(--space-24) 0; border-bottom: 1px solid var(--color-border); }
+  .fake-section:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-004</span>
+    <h1 class="h1">Eyebrow overuse</h1>
+    <p class="text-description">The uppercase, letter-spaced "eyebrow" label above a heading is fine once. It becomes a tell when it sits above every section. Cap it at roughly one per three sections — if every section has one, they've stopped meaning anything.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid — every section gets one</div>
+    <div class="fake-section"><span class="eyebrow">Platform</span><p class="h3">Built for scale</p></div>
+    <div class="fake-section"><span class="eyebrow">Security</span><p class="h3">Enterprise-grade controls</p></div>
+    <div class="fake-section"><span class="eyebrow">Integrations</span><p class="h3">Connects to your stack</p></div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead — reserved for the section it actually earns</div>
+    <div class="fake-section"><span class="eyebrow">New</span><p class="h3">Built for scale</p></div>
+    <div class="fake-section"><p class="h3">Enterprise-grade controls</p></div>
+    <div class="fake-section"><p class="h3">Connects to your stack</p></div>
+  </section>
+</div>
+</body>
+</html>

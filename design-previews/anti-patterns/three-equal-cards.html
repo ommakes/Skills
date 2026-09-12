@@ -1,0 +1,54 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: three equal feature cards</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .equal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-24); }
+  .equal-grid .kit-panel { text-align: center; }
+  .equal-grid .icon-dot { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-accent); margin: 0 auto var(--space-16); }
+  .bento-grid { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: auto auto; gap: var(--space-24); }
+  .bento-grid .kit-panel:first-child { grid-row: span 2; }
+  @media (max-width: 640px) { .equal-grid, .bento-grid { grid-template-columns: 1fr; } .bento-grid .kit-panel:first-child { grid-row: auto; } }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-003</span>
+    <h1 class="h1">Three identical feature cards</h1>
+    <p class="text-description">The three-identical-cards-in-a-row grid — same icon slot, same title length, same body, same everything — is a tell. Real feature sets are uneven: vary card sizes, promote the primary one, use a bento/asymmetric grid, or drop the grid entirely if there are only three things to say.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid</div>
+    <div class="equal-grid">
+      <div class="kit-panel"><div class="icon-dot"></div><p class="h4">Fast</p><p class="text-description">Built for speed.</p></div>
+      <div class="kit-panel"><div class="icon-dot"></div><p class="h4">Secure</p><p class="text-description">Built for trust.</p></div>
+      <div class="kit-panel"><div class="icon-dot"></div><p class="h4">Simple</p><p class="text-description">Built for ease.</p></div>
+    </div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead</div>
+    <div class="bento-grid">
+      <div class="kit-panel">
+        <p class="h3">The feature that actually differentiates</p>
+        <p class="text-description" style="margin-top: var(--space-12);">Given the most space because it's the reason someone picks this product over another — not because a grid needed a first cell.</p>
+      </div>
+      <div class="kit-panel"><p class="h5">Secure by default</p><p class="text-description">Supporting detail, smaller footprint.</p></div>
+      <div class="kit-panel"><p class="h5">Works with your stack</p><p class="text-description">Supporting detail, smaller footprint.</p></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

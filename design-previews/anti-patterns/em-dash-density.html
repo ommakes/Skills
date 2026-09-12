@@ -1,0 +1,39 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: em-dash density</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-009 · judgment-only, scoped</span>
+    <h1 class="h1">Em-dash as an AI tell</h1>
+    <p class="text-description">Not a blanket ban — in typographic UI and editorial/prose content where punctuation is set with care, the em-dash is correct and encouraged. The tell is specific to generated marketing/body copy: a high density of em-dashes, used as the default connector for nearly every clause. Route any copy this touches through the righter skill, which owns the final call on prose.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-compare">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Avoid — em-dash as the default connector</div>
+        <p>Our platform scales with you — from your first user to your millionth — no migrations, no rewrites, no surprises. Every feature is built to grow — quietly, reliably — so your team can focus on what matters — the product, not the plumbing.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Instead — restructured with varied punctuation</div>
+        <p>Our platform scales with you, from your first user to your millionth. No migrations. No rewrites. No surprises. Every feature is built to grow quietly and reliably, so your team can focus on the product instead of the plumbing.</p>
+      </div>
+    </div>
+    <p class="kit-caption" style="margin-top: var(--space-24);">Contrast: an editorial em-dash, used with care, is still correct here — this sentence keeps one on purpose, the way <code>references/typography.md</code> already allows.</p>
+  </section>
+</div>
+</body>
+</html>

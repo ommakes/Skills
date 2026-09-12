@@ -1,0 +1,47 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: symmetry as the only rhythm</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .uniform-section { padding: var(--space-32); background: var(--color-muted); border-radius: var(--radius-lg); margin-bottom: var(--space-16); text-align: center; }
+  .uniform-section:last-child { margin-bottom: 0; }
+  .varied-section { padding: var(--space-32); background: var(--color-muted); border-radius: var(--radius-lg); margin-bottom: var(--space-16); text-align: center; }
+  .varied-section:last-child { margin-bottom: 0; }
+  .varied-section.tight { padding: var(--space-16); max-width: 420px; margin-left: auto; margin-right: auto; background: transparent; }
+  .varied-section.bleed { border-radius: 0; margin-left: calc(var(--space-24) * -1); margin-right: calc(var(--space-24) * -1); background: var(--color-accent); color: var(--color-accent-foreground); padding: var(--space-64) var(--space-32); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-008</span>
+    <h1 class="h1">Symmetry as the only rhythm</h1>
+    <p class="text-description">Every section the same width, same padding, same alignment, same vertical rhythm, top to bottom. Even at low VARIANCE, a page needs some change in pace — a full-bleed break, a tighter cluster, a wider gutter. Uniformity from top to bottom is a tell even when each individual section is fine.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid — identical rhythm throughout</div>
+    <div class="uniform-section"><p class="h4">Section one</p><p class="text-description">Same padding, same width, same alignment as every other section.</p></div>
+    <div class="uniform-section"><p class="h4">Section two</p><p class="text-description">Same padding, same width, same alignment as every other section.</p></div>
+    <div class="uniform-section"><p class="h4">Section three</p><p class="text-description">Same padding, same width, same alignment as every other section.</p></div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead — a change in pace</div>
+    <div class="varied-section"><p class="h4">Section one</p><p class="text-description">Standard width and padding.</p></div>
+    <div class="varied-section tight"><p class="h5">A tighter, narrower cluster</p><p class="text-description">Deliberately smaller to signal a supporting aside, not a peer section.</p></div>
+    <div class="varied-section bleed"><p class="h2">A full-bleed break</p><p style="margin-top: var(--space-12); opacity:.9;">Escapes the page gutter entirely — the one place the rhythm changes on purpose.</p></div>
+  </section>
+</div>
+</body>
+</html>
