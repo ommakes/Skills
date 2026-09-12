@@ -170,6 +170,14 @@ Read them in order. Each skill assumes you've read the previous one and points f
 
 ---
 
+## Evaluation Harness
+
+[`vois-eval/`](./vois-eval) is a set of scenarios for checking whether a screen an agent generates with these skills actually followed the decision layer — `vois-components`' job trees and `vois-patterns`' path trees — not just whether it used the right tokens. Each scenario is drawn from an existing decision tree's condition/recommendation rather than a new invented format; there's no automated runner yet, and score categories are defined without weights until scenarios have actually been run enough to know where drift concentrates. See [`vois-eval/README.md`](./vois-eval/README.md).
+
+**This is also not a skill**, for the same reason `design-previews/` isn't — it's a testing artifact for the skills above, not instructions an agent reads mid-build.
+
+---
+
 ## Quick Links
 
 - **Contributing:** See CONTRIBUTING.md (in progress)
