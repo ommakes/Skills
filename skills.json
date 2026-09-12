@@ -7,7 +7,7 @@
     {
       "name": "vois-patterns",
       "path": "vois-patterns",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "author": "Personify Labs",
       "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Works standalone — telemetry tool calls are optional. Use when building pages, forms, features, workflows.",
       "tags": ["design", "vois", "design-system", "patterns"]

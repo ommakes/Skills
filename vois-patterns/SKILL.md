@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.7.0
+version: 1.8.0
 ---
 
 # Vois Patterns Skill
@@ -100,6 +100,7 @@ existing paths.
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |
+| `references/content-density.md` | Deciding how much breathing room a screen should have — admin grid vs. everyday form vs. onboarding/confirmation moment | `[PATH-DENSITY-*]` (cross-cutting) |
 | `references/microcopy-routing.md` | Full list of what counts as UI copy and must route to righter | — (cross-cutting) |
 
 ---
@@ -121,6 +122,7 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 # Quick Checklist Before Implementation
 
 - [ ] Container type selected (settings / table / form / dialog / detail) — or, if the brief didn't map directly, checked `references/composition.md` for a fit or combination before designing new structure
+- [ ] Content density tier picked deliberately (dense / standard / spacious) — see `references/content-density.md`, not defaulted to whatever the mid-range spacing tokens produce
 - [ ] `vois_record_pattern_choice` called with `skillVersion`, `pathId`, `userGoal`, and `thresholdInputs`, if that tool is available
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
