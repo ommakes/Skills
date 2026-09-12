@@ -46,6 +46,7 @@ This kit is built and committed here, but pushing it into an actual `claude.ai/d
 
 `register_assets` isn't needed — the pane builds its card index from each file's `@dsCard` marker automatically.
 
-**Two open questions, unresolved as of this writing — check them before your first live sync, not before:**
+**One open question, unresolved as of this writing — check it before your first live sync:**
 - Does the pane need a static thumbnail/screenshot per card, or does it render the live HTML for the card preview itself? Confirm against what `DesignSync` actually expects rather than assuming the `@dsCard` marker alone is sufficient.
-- Should `index.html` stay dev-only now that dark mode actually works, or is a working nav page worth syncing too? No technical constraint either way — it's a call to make once you're looking at a live project, not before.
+
+**Resolved:** `index.html` used to be dev-only, since every preview's `../index.html` back-link only worked when browsing this folder directly. Once osuthar.com started embedding these previews on the skill pages (see that repo's `scripts/fetch-design-previews.mjs`), the same back-link 404'd there because `index.html` wasn't part of the sync. Fixed by adding `index.html` to what gets synced instead of touching the 34 individual back-links — kept it current (all 11 anti-patterns; the earlier version only listed 3) and pointed its README link at GitHub instead of a local `README.md` that also isn't published.
