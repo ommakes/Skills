@@ -30,7 +30,7 @@ The skill covers 20 high-ambiguity component pairs organized by job, with decisi
 |-----|---|
 | Confirm a destructive action | AlertDialog vs Dialog vs Toast with undo |
 | Show transient feedback | Toast vs Banner vs Alert |
-| Contain a focused overlay | Dialog vs Drawer vs Sheet |
+| Contain a focused overlay | Popover vs Dialog vs Drawer vs Sheet |
 | Contain a unit of content | Card vs Panel vs Surface |
 | Switch between views | Tabs vs Segmented Control vs Pills |
 | Choose from a list | Select vs Combobox vs Command |

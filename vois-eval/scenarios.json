@@ -75,15 +75,17 @@
     {
       "id": "EVAL-006",
       "source_job": "JOB-OVERLAY-INTERACTION",
-      "user_prompt": "Let a user edit a single row's status inline from a data table, without losing their place in the table.",
-      "condition": "Longer task, needs more screen space, or relates to an item in a list; user will likely want to see the page behind it while working",
+      "user_prompt": "Let a user edit a row's assignee, due date, and priority inline from a data table, without losing their place in the table.",
+      "condition": "Task touches more than one field (a handful or more), needs more screen space, or otherwise relates to an item in a list; user will likely want to see the page behind it while working",
       "expected_outcome": "Sheet (right-anchored, partial overlap)",
       "forbidden_outcomes": [
         "Dialog (centered, feels disconnected from the row that triggered it)",
-        "Drawer (full-height, more screen weight than a single-row edit needs)",
+        "Drawer (full-height, more screen weight than this edit needs)",
+        "Popover (three fields' worth of labels/inputs/validation don't fit a small anchored panel)",
         "Full navigation to a separate edit page (loses the table context entirely)"
       ],
-      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "revision_note": "Originally worded as a single-field edit ('a row's status'), which run 1 (2026-09-12) showed was genuinely ambiguous against the then-current decision tree -- a fresh agent chose Popover, a defensible answer the tree didn't rule out. Reworded to an unambiguous multi-field edit so this scenario tests the Sheet branch as originally intended; the single-field case now has its own scenario (EVAL-011) testing the Popover branch added to JOB-OVERLAY-INTERACTION in response."
     },
     {
       "id": "EVAL-007",
@@ -132,6 +134,20 @@
         "Silently rendering an empty table with no message at all"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-011",
+      "source_job": "JOB-OVERLAY-INTERACTION",
+      "user_prompt": "Let a user change a single row's status inline from a data table, without leaving the table view.",
+      "condition": "Editing or acting on exactly one field or value, anchored to the specific row/item that triggered it (not a multi-field task)",
+      "expected_outcome": "Popover (anchored to the trigger element, no Dialog/Sheet/Drawer chrome)",
+      "forbidden_outcomes": [
+        "Sheet (its own header/footer chrome is more than one field needs, and visually detaches the edit from the exact cell it changes)",
+        "Dialog (centered, feels disconnected from the row that triggered it)",
+        "Full navigation to a separate edit page (loses the table context entirely)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result."
     }
   ]
 }
