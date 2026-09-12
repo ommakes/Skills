@@ -95,33 +95,33 @@
     {
       "name": "survey-architect",
       "path": "ux-research/survey-architect",
-      "version": "1.1.1",
+      "version": "1.2.2",
       "author": "Personify Labs",
-      "description": "Turns a research question into a validated, deploy-ready survey. Runs a short intake to establish product context and learning goal, selects the right instrument (SEQ, SUS, UMUX-Lite, SUPR-Q, NPS, CSAT, CES, PSSUQ, or a custom item set), and outputs a platform-native file ready for Qualtrics, Typeform, or an in-app survey component. Entry point 1 of the research loop (see research-loop).",
+      "description": "Turns a research question into a validated, deploy-ready survey. Runs a short intake to establish product context and learning goal, selects the right instrument (SEQ, SUS, UMUX-Lite, SUPR-Q, NPS, CSAT, CES, PSSUQ, or a custom item set), and outputs a platform-native file ready for Qualtrics, Typeform, or an in-app survey component. Product/org facts live in config/product-context.yaml, not hardcoded. Entry point 1 of the research loop (see research-loop).",
       "tags": ["research", "ux-research", "surveys", "qualtrics", "nps", "sus", "supr-q"]
     },
     {
       "name": "feedback-synthesizer",
       "path": "ux-research/feedback-synthesizer",
-      "version": "1.2.0",
+      "version": "1.3.2",
       "author": "Personify Labs",
-      "description": "Turns raw survey results (scores + open-text comments) into a scored, statistically-tested, thematically-coded synthesis, and connects the two. Computes instrument-correct scores, confidence intervals, and significance testing; codes qualitative themes by judgment (not keyword matching); owns severity/priority scoring. Works standalone on any pile of feedback. Entry point 2 of the research loop (see research-loop).",
+      "description": "Turns raw survey results (scores + open-text comments) into a scored, statistically-tested, thematically-coded synthesis, and connects the two. Computes instrument-correct scores, confidence intervals, and significance testing; codes qualitative themes through a multi-pass protocol (not keyword matching); owns severity/priority scoring with named override reasons; rates evidence confidence separately from statistical confidence; tags findings on a claim-strength ladder (observed/associated/correlated/causal), refusing causal language without an experimental design. Works standalone on any pile of feedback. Entry point 2 of the research loop (see research-loop).",
       "tags": ["research", "ux-research", "qualitative-analysis", "statistics", "thematic-coding"]
     },
     {
       "name": "research-reporter",
       "path": "ux-research/research-reporter",
-      "version": "1.1.0",
+      "version": "1.2.2",
       "author": "Personify Labs",
-      "description": "Turns a feedback-synthesizer output into a stakeholder-ready report — exec summary, methodology, benchmark comparison, prioritized recommendations — formatted for the audience reading it (internal markdown/Notion vs. formal docx). Never re-derives scores, themes, or severity. Entry point 3 of the research loop (see research-loop).",
+      "description": "Turns a feedback-synthesizer output into a stakeholder-ready report — exec summary, methodology, benchmark comparison, prioritized recommendations — formatted for the audience reading it (internal markdown/Notion vs. formal docx). Never re-derives or upgrades scores, themes, severity, evidence confidence, or claim-strength levels; checks for unsupported causal language before finalizing. Entry point 3 of the research loop (see research-loop).",
       "tags": ["research", "ux-research", "reporting", "stakeholder-communication"]
     },
     {
       "name": "research-loop",
       "path": "ux-research/research-loop",
-      "version": "1.1.0",
+      "version": "1.2.2",
       "author": "Personify Labs",
-      "description": "Orchestrates survey-architect, feedback-synthesizer, and research-reporter as an iterative research loop with kickback, not a one-way pipeline. Detects entry point, maintains the per-study file structure and per-product longitudinal benchmark, and caps loop-backs at 2 before surfacing to the researcher. Single entry point for any UX research task.",
+      "description": "Orchestrates survey-architect, feedback-synthesizer, and research-reporter as an iterative research loop with kickback, not a one-way pipeline. Detects entry point, maintains an explicit per-study state (00-state.json against a fixed transition graph) alongside the file structure and per-product longitudinal benchmark, checks benchmark comparability before implying a trend, and caps loop-backs at 2 before surfacing to the researcher. Single entry point for any UX research task.",
       "tags": ["research", "ux-research", "orchestration", "router"]
     }
   ]

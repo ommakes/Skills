@@ -1,6 +1,6 @@
 ---
 name: research-reporter
-version: 1.1.0
+version: 1.2.2
 author: Personify Labs
 description: >
   Turns a feedback-synthesizer output into a stakeholder-ready report —
@@ -10,14 +10,17 @@ description: >
   get a Word document. Routes UI-facing or public-facing copy through
   righter or thought-leadership-writer where relevant. Never re-derives
   scores, themes, or severity — those come from feedback-synthesizer as
-  given. Trigger when someone has synthesis output ready and wants it
-  turned into something shareable, says "write this up," "make me a
-  report," or "turn these findings into something I can send to
-  leadership." Entry point 3 of the research loop (see research-loop).
-  Bundles scripts/report_checks.py for audience-format lookup, section
-  completeness, and verbatim-preservation checks (run it before
-  finalizing, but note it can't catch a subtly reframed caveat — that
-  still needs a human read) and evals/ for regression testing.
+  given, including its evidence-confidence rating and claim-strength
+  ladder, which this skill can present but never upgrade (a correlational
+  finding never becomes causal language here). Trigger when someone has
+  synthesis output ready and wants it turned into something shareable,
+  says "write this up," "make me a report," or "turn these findings into
+  something I can send to leadership." Entry point 3 of the research loop
+  (see research-loop). Bundles scripts/report_checks.py for audience-
+  format lookup, section completeness, verbatim-preservation, causal-
+  language, and report.json validation (run it before finalizing, but
+  note it can't catch a subtly reframed caveat — that still needs a human
+  read) and evals/ for regression testing.
 tags:
   - user-research
   - ux-research
@@ -68,6 +71,16 @@ recap of the method. State the headline score with its CI in plain
 language ("SUS came in at 74, meaningfully above our 68 benchmark — not
 just noise, the confidence interval doesn't overlap").
 
+Keep three things distinct and never let one stand in for another:
+**statistical significance** (did synthesizer's test actually return
+significant?), **practical significance** (does the size of the
+difference matter for the decision this study was run for — a
+statistically significant 2-point movement on a huge sample may not be
+worth acting on; say so when it applies), and **evidence confidence**
+(how much to trust the conclusion overall, carried forward from
+synthesis — see Step 3). A narrow CI is not evidence of high confidence;
+a significant result is not automatically an important one.
+
 ### Methodology
 Instrument used, n, collection window, and the low-confidence flag if
 feedback-synthesizer raised one — carry that flag forward, never drop it
@@ -77,8 +90,14 @@ it).
 
 ### Benchmark comparison
 Pull the product's history from `/research/_benchmarks/<product>.md` and
-show the trend, not just this wave's number in isolation. A single score
-with no trend line is a weak report.
+show the trend, not just this wave's number in isolation — but only once
+research-loop's `check_benchmark_comparability` (or feedback-synthesizer,
+if it already ran this check) confirms the waves being compared actually
+measured the same thing. When it reports a mismatch, present the waves
+side by side with the mismatched fields named, instead of a trend line
+that implies more comparability than the measurement conditions support.
+A single score with no trend line is a weak report; a trend line built
+on an apples-to-oranges comparison is a misleading one.
 
 ### Findings
 Present the synthesis's qual-quant cross-references as-is — don't
@@ -122,39 +141,70 @@ file:
 - The headline score and its confidence interval
 - Whether a difference was statistically significant
 - The low-confidence flag, if one was raised
-- Severity tier assignments
-- Any "no clear theme found" statements
+- Severity tier assignments, **including a stated override reason** when
+  `override_reason` is set — never present just the final "Critical"
+  label as if the frequency math alone produced it
+- Evidence confidence (the categorical rating, not a re-derived number)
+- Each finding's claim-strength level — never let "correlated" read as
+  "caused" in the prose, even when the report's tone is more confident
+  than the synthesis's
+- Any "no clear theme found" / "cannot determine" statements
 
 Reformatting for readability is fine. Softening a caveat, dropping a CI
-because it "clutters" the exec summary, or upgrading "directional" to
-"confirmed" is not.
+because it "clutters" the exec summary, upgrading "directional" to
+"confirmed," or upgrading a claim-strength level, is not.
 
-**Before finalizing, run two checks from `scripts/report_checks.py`:**
+**Before finalizing, run these checks from `scripts/report_checks.py`:**
 `validate_report_structure(report_text)` to confirm all five required
-sections are present, and `check_preserved_values(synthesis, report_text)`
-to confirm the CI, low-confidence flag, and severity tiers survived
-into the text unchanged. Both are structural/textual checks — they
-catch a dropped number or missing section, but **they cannot catch a
-report that keeps every number yet quietly reframes "directional" as
-"confirmed" in prose.** That specific failure mode needs an actual
+sections are present; `check_preserved_values(synthesis, report_text)`
+to confirm the CI, low-confidence flag, severity tiers, evidence
+confidence, and claim-strength labels survived into the text unchanged;
+`check_no_unsupported_causal_language(synthesis, report_text)` to catch
+causal-sounding verbs ("caused," "led to," "drove") appearing without a
+theme that actually carries `claim_strength="causal"`. All three are
+structural/textual checks — they catch a dropped number, a missing
+section, or an unsupported causal verb, but **they cannot catch a report
+that keeps every number yet quietly reframes "directional" as
+"confirmed" in prose, or "correlated" as "clearly caused by" without
+using the word "caused."** That specific failure mode needs an actual
 read-through; don't treat a clean script pass as proof the report is
-honest, only as proof it isn't missing pieces.
+honest, only as proof it isn't missing pieces or an obviously upgraded
+verb.
+
+Write `/research/<study-name>/03-report.json` alongside the `.md`/
+`.docx` — run `validate_report_json(report)` first and fill in anything
+it reports missing. The `.json` is canonical, same convention as every
+other artifact in this system.
 
 -----
 
-## What this skill never does
+## Rules
 
-- Re-scores, re-tests, or re-themes anything — that's synthesizer's job
-- Drops a confidence interval or low-confidence flag to make the report
-  cleaner
-- Builds a report with no synthesis file behind it
-- Re-orders severity tiers based on its own judgment
-- Presents a single wave's score without the benchmark trend, when
-  prior waves exist
-- Writes UI or public-facing copy without routing through righter or
-  thought-leadership-writer as appropriate
-- Manufactures a narrative explanation for a score movement synthesis
-  explicitly said was unexplained
+Priority when rules interact: **STOP** > **MUST NOT** > **MUST** >
+**SHOULD** > **MAY** — see `ux-research/README.md` for the full
+precedence explanation.
+
+- **STOP** if there's no synthesis file to point to and someone asks for
+  a report from scratch — say synthesis needs to happen first, don't
+  fabricate scores or themes to fill a report shape.
+- **MUST NOT** re-score, re-test, or re-theme anything — that's
+  synthesizer's job.
+- **MUST NOT** drop a confidence interval, low-confidence flag, evidence
+  confidence rating, or claim-strength label to make the report cleaner.
+- **MUST NOT** upgrade a claim-strength level in prose (e.g. "correlated"
+  read as "caused") — `check_no_unsupported_causal_language` is the
+  enforcement point; don't work around it by rewording instead of fixing
+  the substance.
+- **MUST NOT** re-order severity tiers based on its own judgment, or
+  present an overridden tier without its override reason.
+- **MUST NOT** present a benchmark trend when the waves aren't
+  comparable — present them side by side instead.
+- **MUST NOT** write UI or public-facing copy without routing through
+  righter or thought-leadership-writer as appropriate.
+- **MUST NOT** manufacture a narrative explanation for a score movement
+  synthesis explicitly said was unexplained.
+- **MUST** present a benchmark trend, not just this wave's score in
+  isolation, when comparable prior waves exist.
 
 -----
 

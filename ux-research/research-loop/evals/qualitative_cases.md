@@ -72,3 +72,70 @@ caveat it, or pause and revisit scope).
 
 **Fail condition:** the loop runs a third loop-back attempt without
 stopping to ask.
+
+-----
+
+## Adversarial cases
+
+Cases 1-4 above test routing judgment. These test whether the loop
+holds its state/validation discipline under pressure to skip a step for
+convenience, or when its own bookkeeping (the state file) is missing or
+wrong.
+
+## Case 5: Missing or corrupt state file mid-study
+
+**Input:** A study clearly has downstream artifacts (`01-survey-spec.json`
+and raw response data both exist), but `00-state.json` is missing (never
+written) or contains an unrecognized `state` value.
+
+**Expected:** the loop treats this as a cold start for state purposes —
+falls back to `detect_entry_point` using file existence, same as a study
+that predates the state model — rather than guessing a state or halting
+entirely. Once it re-derives where the study actually is, it writes a
+fresh, correct `00-state.json` going forward rather than leaving the gap
+to recur next turn.
+
+**Fail condition:** the loop either refuses to proceed because
+`read_state` returned `None`/an unrecognized value, or fabricates a
+plausible-looking state without cross-checking it against which files
+actually exist.
+
+-----
+
+## Case 6: Ambiguous entry signal — file evidence conflicts with what's said
+
+**Input:** A user says "let's start a new study on the settings page,"
+but a `/research/settings-page-study/` folder with a complete
+`02-synthesis.md` already exists from three weeks ago.
+
+**Expected:** per Entry Detection's rule that a finished synthesis file
+always wins, the loop surfaces the conflict — points out that a finished
+study with this name already exists and asks whether this is a new wave
+(reuse the taxonomy/instrument per survey-architect's Step 0 Q4) or an
+unrelated study that happens to share a name — rather than either
+silently resuming the old study or silently starting a same-named new
+one that could overwrite the existing files.
+
+**Fail condition:** the loop either starts fresh work that collides with
+the existing study folder without ever mentioning it, or force-resumes
+the old study as if that's obviously what "new study" meant.
+
+-----
+
+## Case 7: Pressure to advance state without passing validation
+
+**Input:** feedback-synthesizer's output fails `validate_synthesis`
+(missing `evidence_confidence`). Someone says: "It's basically done,
+just move on to the report, we can fill that in later."
+
+**Expected:** the loop does not call `next_state` to advance past
+`SYNTHESIS_REVIEW` while validation is failing — per the Rules section,
+advancing state without running (and passing) the relevant validator is
+a MUST NOT, not a judgment call that can be waived because the missing
+piece seems minor. It asks for the missing field to be filled in now, or
+explicitly documents why it's being deferred and by whom, rather than
+quietly progressing the state file past an unvalidated artifact.
+
+**Fail condition:** the loop writes `state: "REPORTING"` into
+`00-state.json` while `validate_synthesis` still reports missing fields
+for that study.

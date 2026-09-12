@@ -4,25 +4,146 @@ All four skills (`survey-architect`, `feedback-synthesizer`,
 `research-reporter`, `research-loop`) are versioned independently; this
 file tracks all of them together since they shipped as one system.
 
+## 2026-09-12 (later still)
+
+### survey-architect 1.2.2, feedback-synthesizer 1.3.2, research-reporter 1.2.2, research-loop 1.2.2
+
+Finished the product-agnostic pass this system started earlier today
+(see the entry below, and the prior "make survey-architect
+product-agnostic" work it superseded): `config/product-context.yaml`'s
+`products:` default list still named real internal products (Personify,
+Vois, Righter, Unsoku, Localwolla, Smileframe, Uslo) even after they
+were moved out of SKILL.md prose. Replaced with a placeholder list
+(Acme, Contoso, Fabrikam) and an explicit "replace this" comment, so the
+shipped default doesn't name any specific org's products.
+
+Also swapped the same handful of hardcoded example product names
+(`"unsoku"`, lowercase) out of the new `evals/test_*.py` fixtures added
+in the entry below — arbitrary example strings passed to
+`study_dir()`/`benchmark_path()`/etc., not tied to any special-cased
+behavior. All four eval suites re-run clean after the swap (40/19/20/25
+tests passing).
+
+## 2026-09-12 (later)
+
+### survey-architect 1.2.1, feedback-synthesizer 1.3.1, research-reporter 1.2.1, research-loop 1.2.1
+
+The deferred piece of the same review's Phase 3 (see the entry directly
+below): adversarial cases in each skill's `evals/qualitative_cases.md`,
+testing resistance to a direct, on-purpose ask to cut a corner — as
+opposed to the ambiguous-judgment cases already there. No behavior
+changed; the skills already refuse these asks per their existing Rules
+sections. Case counts: survey-architect 4 → 8, feedback-synthesizer
+4 → 8, research-reporter 3 → 7, research-loop 4 → 7.
+
+Two items from the review's Phase 3 turned out to already be covered by
+the prior (2026-09-12, earlier) entry rather than actually remaining:
+the multi-pass coding protocol's step 6 ("actively search for
+disconfirming cases") is the review's "negative-case analysis," and the
+per-theme coding-confidence field from that same protocol plus
+`evidence_confidence` cover its "coding-confidence representation."
+
+Still not done, on purpose: CI running these cases automatically. That
+needs a model-graded eval harness this repo doesn't have — staying
+human/fresh-model-reviewed rather than inventing one to check a box.
+
 ## 2026-09-12
 
-### survey-architect 1.1.1
+### survey-architect 1.2.0, feedback-synthesizer 1.3.0, research-reporter 1.2.0, research-loop 1.2.0
 
-Made the skill product-agnostic. Step 0's intake question named a fixed
-list of internal products (Personify, Vois, Righter, Unsoku, Localwolla,
-Smileframe, Uslo) as examples of what to ask for — replaced with a
-generic instruction to name the product or surface specifically. The
-Step 4 output section's "In-app" bullet similarly assumed a
-Personify/Vois/Unsoku stack by default; it now describes matching
-whatever UI conventions the target product actually uses, with the
-vois-tokens/righter routing kept as conditional (only when the target
-happens to use the Vois design system) rather than assumed.
+Hardening pass following an external review of the v1 system (see PR
+discussion). The review's central recommendation was "make the workflow
+more explicit, structured, testable, and machine-readable" rather than
+adding more prose — implemented as a scoped subset of its 15
+recommendations (Phase 1 + 2 of the resulting plan; qualitative/
+adversarial-eval-suite work deferred to a later phase):
 
-No change to instrument selection, sample-size, or output logic — this
-is example/framing text only. Eval fixtures across all four skills that
-referenced the same named products in example inputs (`qualitative_cases.md`
-in each skill, plus one changelog entry above) were swapped to a generic
-placeholder product for consistency.
+**Architecture / portability**
+- `config/product-context.yaml` — the product list and research/
+  benchmark root paths, previously hardcoded in survey-architect's
+  intake, now live in one file so the skill family is portable across
+  organizations. `routing.study_dir()`/`benchmark_path()` take these as
+  optional overrides (defaults unchanged, so existing callers are
+  unaffected).
+- `## Rules` sections (replacing "What this skill never does") tag every
+  bullet with MUST / MUST NOT / SHOULD / STOP, with the precedence
+  legend centralized in `ux-research/README.md` rather than repeated in
+  all four files.
+- CI (`.github/workflows/ux-research-checks.yml`) now runs all four
+  eval suites plus SKILL.md frontmatter validation on every push/PR
+  touching `ux-research/**`.
+
+**Canonical JSON contracts**
+- `00-intake.json`, `02-synthesis.json`, and `03-report.json` join the
+  existing `01-survey-spec.json` as canonical, machine-readable
+  artifacts — the `.md` files are now explicitly the human-readable copy
+  of the same facts, never an independent source of information.
+- New validators: `selection.validate_intake_spec`,
+  `scoring.validate_synthesis`, `report_checks.validate_report_json`,
+  `routing.validate_benchmark` — same structural-check pattern as the
+  existing `validate_survey_spec`/`validate_report_structure`.
+- Deliberately *not* done: a separate `schemas/*.schema.json` directory
+  with a JSON Schema library dependency. The validators above are the
+  single source of truth for required shape, in the same
+  dependency-free-Python style as the rest of `scripts/`, to avoid the
+  three-way duplication (schema file + validator + SKILL.md prose) the
+  review itself warned against.
+
+**Research rigor**
+- **Evidence confidence** (`HIGH`/`MEDIUM`/`LOW`/`INSUFFICIENT`,
+  `scoring.EVIDENCE_CONFIDENCE_LEVELS`) is now tracked separately from
+  any confidence interval — a narrow CI no longer doubles as "the
+  conclusion is trustworthy."
+- **Claim-strength ladder** (`observed` → `associated` → `correlated` →
+  `causal`, `scoring.CLAIM_STRENGTH_LEVELS`) tags every finding.
+  `scoring.validate_claim_strength()` raises if `causal` is used without
+  an experimental design behind it — a survey/feedback synthesis never
+  has one, so this is the enforcement point for never letting
+  correlational data quietly become causal language. research-reporter's
+  new `report_checks.check_no_unsupported_causal_language()` catches the
+  same failure mode surfacing later, in report prose.
+- **Severity overrides** — `scoring.severity_tier()` takes an optional
+  `override` (one of `VALID_OVERRIDE_REASONS`: safety, accessibility,
+  legal_compliance, severe_user_harm, critical_task_blockage) that can
+  bump the frequency-based tier to Critical. Always reported alongside
+  `computed_tier`, never silently.
+- **Alternative explanations / "cannot determine"** — required fields on
+  findings above Minor severity, so a single plausible reading of the
+  data doesn't stand in as the only one.
+- **Multi-pass qualitative coding** — feedback-synthesizer's Step 2 is
+  now a 10-step protocol (read everything first → initial codes →
+  consistency review → merge/split → candidate themes → actively search
+  for disconfirming cases → test against the full dataset → quantify
+  only once stable → per-theme coding confidence → cross-reference),
+  replacing a single read-and-label pass.
+- **Statistical policy centralization** — `DEFAULT_CONFIDENCE_LEVEL` and
+  `SMALL_SAMPLE_POLICY` are now named constants in `scoring.py`
+  (previously the same 0.90 value was a literal default on three
+  separate functions). research-reporter's SKILL.md now explicitly
+  distinguishes statistical significance, practical significance, and
+  evidence confidence as three separate questions.
+- **Benchmark comparability** — `routing.check_benchmark_comparability()`
+  compares instrument/wording-version/scale/population/sampling-method/
+  trigger between two waves before a trend line is allowed; research-
+  reporter reports incomparable waves side by side instead.
+
+**State**
+- research-loop maintains an explicit per-study `00-state.json`
+  (`routing.STATES`, `read_state`/`write_state`/`next_state` against a
+  fixed transition graph) once a study is underway, replacing repeated
+  file-existence sniffing on every turn. `detect_entry_point` remains
+  the cold-start path for a study with no state file yet. This is
+  deliberately a flat file plus a small graph, not a workflow engine —
+  the review's own "don't over-engineer the state machine" guidance was
+  followed by keeping it to 8 states and 3 kickback edges rather than a
+  fully general one.
+
+Deferred to a later pass (the review's Phase 3): formal adversarial eval
+suites per skill (the "just call this significant," "make the summary
+more upbeat," "remove the outliers" class of cases) and CI running the
+qualitative cases via a model-graded harness — this repo has no such
+harness yet, so those cases stay human/fresh-model-reviewed, same as
+before.
 
 ## 2026-09-11
 

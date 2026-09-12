@@ -1,6 +1,6 @@
 ---
 name: feedback-synthesizer
-version: 1.2.0
+version: 1.3.2
 author: Personify Labs
 description: >
   Turns raw survey results (scores + open-text comments) into a scored,
@@ -10,13 +10,19 @@ description: >
   waves or segments. Codes qualitative comments into themes (emergent per
   study, converging toward a fixed taxonomy per product over time) and
   cross-references low scorers against recurring themes. Owns
-  severity/priority scoring. Can run standalone on any pile of feedback
-  (reviews, support tickets, open-ended comments) — doesn't require a
-  survey-architect-built survey as input. Trigger when someone pastes raw
-  survey data, a CSV of responses, or a pile of qualitative feedback and
-  wants it turned into findings. Entry point 2 of the research loop (see
-  research-loop). Bundles scripts/scoring.py for deterministic
-  instrument math (run it, don't calculate by hand) and evals/ for
+  severity/priority scoring, with named override reasons (safety,
+  accessibility, legal/compliance) that can outrank the frequency-based
+  tier, plus a separate evidence-confidence rating and a claim-strength
+  ladder (observed/associated/correlated/causal) so statistical
+  significance, practical significance, and overall trust in a finding
+  stay three distinct things, never conflated. Can run standalone on any
+  pile of feedback (reviews, support tickets, open-ended comments) —
+  doesn't require a survey-architect-built survey as input. Trigger when
+  someone pastes raw survey data, a CSV of responses, or a pile of
+  qualitative feedback and wants it turned into findings. Entry point 2 of
+  the research loop (see research-loop). Bundles scripts/scoring.py for
+  deterministic instrument math, the centralized statistical policy, and
+  synthesis validation (run it, don't calculate by hand) and evals/ for
   regression testing after any edit — run evals/test_scoring.py after
   touching scoring.py, and check evals/qualitative_cases.md after
   touching this file's prose.
@@ -85,11 +91,34 @@ Also not optional, also run through the script — call
 or prior wave, `significance_vs_benchmark(scores, benchmark)` or
 `compare_waves(scores_a, scores_b)`. Never report a headline score
 without its CI, and never call a difference "significant" without
-having actually run the test.
+having actually run the test. The confidence level itself
+(`scoring.DEFAULT_CONFIDENCE_LEVEL`, currently 90%) is centralized in
+the script, not restated here — if it ever changes, it changes in one
+place.
 
 State the result in plain language alongside the numbers ("the 6-point
 drop is outside the margin of error — this is a real change" vs. "the
 3-point drop is within the CI — could be noise").
+
+**Three separate questions, never collapsed into one:**
+
+- **Statistical significance** — did `significance_vs_benchmark` /
+  `compare_waves` actually return `significant=True`? This is the only
+  question those functions answer.
+- **Practical significance** — does the *size* of the difference matter
+  for the decision the study was run for? A statistically significant
+  2-point SUS movement on an n=400 study is real but may not be worth
+  acting on; state this explicitly when it applies, don't let a small
+  p-value stand in for "this matters."
+- **Evidence confidence** — see the dedicated section below. A narrow CI
+  does not by itself mean the overall conclusion is trustworthy, and a
+  wide CI does not by itself mean it isn't.
+
+A statistically significant result is not automatically important. A
+non-significant result — especially at a small n — is not automatically
+"no real difference"; it may just mean the study was underpowered to
+detect one. Say which situation you're in rather than defaulting to
+either reading.
 
 If `scripts/scoring.py` isn't available in the execution environment for
 some reason, say so explicitly before falling back to manual
@@ -115,6 +144,33 @@ below the general rule-of-thumb minimums if there's no spec file):
 
 ## Step 2: Qualitative coding
 
+Treat this as a protocol, not a single read-through-and-label pass —
+initial impressions from comment 1 shouldn't silently become the frame
+everything else gets sorted into:
+
+1. **Read the full dataset once before coding anything.** Don't start
+   labeling on comment 1.
+2. **Generate initial codes** — short, descriptive, close to the data.
+3. **Review code consistency** — the same underlying complaint shouldn't
+   end up under two different code names.
+4. **Merge/split codes** where the initial pass was too fine- or
+   coarse-grained.
+5. **Identify candidate themes** by grouping related codes.
+6. **Actively look for disconfirming cases** — comments that don't fit
+   the emerging theme, or that would complicate it. Don't just note
+   supporting examples.
+7. **Test each theme against the full dataset**, not just the comments
+   that inspired it.
+8. **Quantify themes only after coding has stabilized** — counting
+   before the taxonomy settles bakes in whatever grouping happened to
+   come first.
+9. **Assign a per-theme coding confidence** (see the Evidence Confidence
+   section below) — some themes are obvious, some rest on a handful of
+   ambiguous comments; say which.
+10. **Cross-reference against the quantitative data** (Step 3).
+
+Taxonomy source:
+
 - **New product or first study:** code comments with an emergent/open
   approach — let themes surface from the data, don't force them into a
   predefined bucket.
@@ -125,7 +181,8 @@ below the general rule-of-thumb minimums if there's no spec file):
   taxonomy converges over time instead of resetting every study.
 - For each theme, report: frequency (n and %), representative
   paraphrased examples (never verbatim quotes — see copyright note
-  below), and whether it skews toward low or high scorers.
+  below), whether it skews toward low or high scorers, and the coding
+  confidence from step 9 above.
 
 **Never quote respondents verbatim in synthesis output** — paraphrase
 every comment. This matters for two reasons: respondent privacy in
@@ -198,6 +255,19 @@ the within-band and overall frequency numbers — don't just output the
 label, and don't let a low overall frequency read as an argument against
 a tier the within-band numbers support.
 
+**The frequency/skew tier is a default, not a law.** Pass
+`scoring.severity_tier`'s `override` argument (one of
+`scoring.VALID_OVERRIDE_REASONS`: `safety`, `accessibility`,
+`legal_compliance`, `severe_user_harm`, `critical_task_blockage`) when
+one of those considerations should outrank the computed tier — e.g. a
+low-frequency accessibility barrier can legitimately outrank a
+high-frequency cosmetic complaint. An override is never silent: report
+both `computed_tier` (what the frequency math actually produced) and the
+override reason side by side, never just the final "Critical" label. An
+override is for one of those five named reasons — not for a stakeholder
+who'd simply prefer a different number. `severity_tier` raises on any
+other reason string rather than accepting it.
+
 **Coding themes from judgment, not keyword matching.** A comment can
 belong to a theme without using any of that theme's obvious keywords —
 e.g., "had to re-enter my card info twice" belongs in a payment/checkout
@@ -208,39 +278,104 @@ themes and produce frequency numbers that look lower than reality.
 
 -----
 
-## Step 5: Output
+## Step 4.5: Evidence confidence, claim strength, and uncertainty
 
-Write `/research/<study-name>/02-synthesis.md` (or `.json` for the
-machine-readable version consumed by research-reporter) containing:
-scores + CIs + significance results, theme list with frequency/severity,
-qual-quant cross-references, and the low-confidence flag if triggered.
+Three fields belong on every finding, distinct from anything computed
+above:
 
-Append the wave's headline score(s) to
-`/research/_benchmarks/<product>.md` so the next study's comparison has
-something to compare against. Include date, instrument, score, CI, and n.
+**Evidence confidence** — how much to trust the *overall conclusion*,
+not any one statistic. One of `scoring.EVIDENCE_CONFIDENCE_LEVELS`:
+`HIGH`, `MEDIUM`, `LOW`, `INSUFFICIENT`. Base it on sample quality,
+source quality, per-theme coding confidence (Step 2), and whether
+qual and quant actually triangulate (Step 3) — not on how narrow the CI
+happens to be. State the drivers, not just the label, e.g.:
+`{"overall": "MEDIUM", "drivers": {"sample_quality": "high", "coding_confidence": "medium", "triangulation": "low"}}`.
+Don't collapse these into a single number — a category is honest about
+how fuzzy this judgment is; a number pretends otherwise.
+
+**Claim strength** — tag each finding with one rung of
+`scoring.CLAIM_STRENGTH_LEVELS`: `observed` (reported/measured, no
+relationship claimed), `associated` (co-occurs with something else,
+direction untested), `correlated` (a statistical relationship was
+actually tested), or `causal` (one thing was shown to produce another).
+**Run `scoring.validate_claim_strength(level)` before writing a claim
+down** — it raises if `causal` is used without an experimental or
+strong quasi-experimental design behind it, which a survey/feedback
+synthesis never has. Default to `correlated` when tempted to say
+`causal`.
+
+**Alternative explanations and "cannot determine."** For findings above
+`Minor` severity, name at least one plausible alternative reading of the
+same data (e.g. "navigation terminology may be unfamiliar" as an
+alternative to "navigation is broken") — this is what stops a single
+plausible story from being reported as the only one. Separately, list
+anything the data genuinely can't answer (e.g. "whether this causes
+account abandonment") rather than implying an answer the evidence
+doesn't support.
 
 -----
 
-## What this skill never does
+## Step 5: Output
 
-- Reports a score without its confidence interval
-- Calls a numeric difference "significant" without running the actual
-  test
-- Refuses to score a small sample — flags it loudly and proceeds instead
-- Silently proceeds when the sample is so small the stated learning
-  goal can't be answered — kicks back to survey-architect instead
-- Quotes respondents verbatim
-- Forces new data into an existing theme taxonomy when it genuinely
-  doesn't fit
-- Reports a score movement and a theme in the same study without
-  checking whether they're actually connected
-- Assigns severity/priority without stating the frequency + impact
-  reasoning behind the tier
-- Codes themes by keyword/string matching instead of reading each
-  comment for what it actually describes
-- Measures a theme's frequency only against the whole sample when
-  deciding severity — always check frequency within the affected score
-  band first, since that's what a diluted overall % can hide
+Write `/research/<study-name>/02-synthesis.md` **and**
+`02-synthesis.json` — the `.json` is the canonical, machine-readable
+artifact research-reporter consumes; the `.md` is the human-readable
+copy of the same facts. Before writing, run `scoring.validate_synthesis(synthesis)`
+and fill in anything it reports missing. Required shape: `study`,
+`product`, `instrument`, `n`, `score` (value + CI), `significance`,
+`low_confidence_flag`, `themes` (each with frequency, `severity`
+[`tier`, `computed_tier`, `override_reason`], `claim_strength`),
+`cross_references`, `evidence_confidence`, `alternative_explanations`,
+`cannot_determine`.
+
+Before appending to the benchmark file, check comparability against the
+prior wave's recorded instrument/wording/scale/population/sampling
+method/trigger (see research-loop's `check_benchmark_comparability`) —
+if they don't match closely enough, report the two waves separately
+rather than implying a trend. When they do, append the wave's headline
+score to `/research/_benchmarks/<product>.md`: date, instrument, score,
+CI, n, and the same measurement-condition fields, so the *next* study's
+comparability check has something to check against.
+
+-----
+
+## Rules
+
+Priority when rules interact: **STOP** > **MUST NOT** > **MUST** >
+**SHOULD** > **MAY** — see `ux-research/README.md` for the full
+precedence explanation.
+
+- **STOP** if the sample is so small the stated learning goal can't be
+  answered at all — kick back to survey-architect instead of proceeding.
+- **MUST NOT** report a score without its confidence interval.
+- **MUST NOT** call a numeric difference "significant" without having
+  run the actual test.
+- **MUST NOT** refuse to score a small sample — flag it loudly and
+  proceed instead.
+- **MUST NOT** quote respondents verbatim.
+- **MUST NOT** force new data into an existing theme taxonomy when it
+  genuinely doesn't fit.
+- **MUST NOT** code themes by keyword/string matching instead of reading
+  each comment for what it actually describes.
+- **MUST NOT** measure a theme's frequency only against the whole sample
+  when deciding severity — check frequency within the affected score
+  band first.
+- **MUST NOT** label a finding `causal` without an experimental or
+  strong quasi-experimental design — `validate_claim_strength` enforces
+  this; don't work around it by skipping the call.
+- **MUST NOT** apply a severity override for a reason outside
+  `scoring.VALID_OVERRIDE_REASONS`, or apply one silently without
+  stating `computed_tier` alongside the override.
+- **MUST NOT** treat two benchmark waves as a trend without checking
+  comparability first.
+- **MUST** report a score movement and a theme together only after
+  checking (Step 3) whether they're actually connected — an unexplained
+  movement is itself a finding, never papered over.
+- **MUST** state the frequency + impact reasoning behind every severity
+  tier, not just the label.
+- **SHOULD** name at least one alternative explanation for any finding
+  above Minor severity, and list what genuinely cannot be determined
+  from the data.
 
 -----
 

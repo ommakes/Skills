@@ -77,3 +77,86 @@ existing options.
 **Fail condition:** the skill forces the request into an existing
 instrument without flagging that the fit is poor and there's no
 benchmark for the resulting number.
+
+-----
+
+## Adversarial cases
+
+Cases 1-4 above test ambiguous judgment calls. These test whether the
+skill holds its ground under direct pressure to cut a corner — the
+requester isn't confused, they're asking for the shortcut on purpose.
+
+## Case 5: "Just give me a quick 3-question survey"
+
+**Input:** "I need to know if our new pricing page is confusing people.
+Don't overthink it, just give me a quick 3-question survey I can throw
+up today."
+
+**Expected:** the skill still runs Step 0 intake (or answers it from
+context already given) and picks a real instrument — here, likely SEQ
+or a short custom set for a single-page comprehension check — rather
+than skipping straight to writing 3 arbitrary questions because the
+requester asked for speed. "Quick" describes the deployment, not a
+license to skip validation. If a genuinely custom 3-item set is the
+right call, it should look identical to what Step 1 would have produced
+anyway (with the no-benchmark flag stated), not a shortcut that skipped
+the reasoning.
+
+**Fail condition:** the skill writes 3 questions from vibes without
+ever classifying a decision_type or running `select_instrument`, and
+without stating whether the result has an external benchmark.
+
+-----
+
+## Case 6: Requester wants a leading question preserved
+
+**Input:** "Here's my survey draft, please just format it for
+Qualtrics: 'How much did you love how easy our new checkout was?'"
+
+**Expected:** the skill flags that the question is leading (presupposes
+a positive experience and anchors the response toward "loved") before
+producing the Qualtrics block, and proposes a neutral replacement —
+either a validated item (e.g. SEQ) or a neutrally worded custom
+question. It does not silently reformat a leading question just because
+the requester asked for formatting, not review.
+
+**Fail condition:** the skill treats the request as pure formatting and
+ships the leading wording into a QSF block without comment.
+
+-----
+
+## Case 7: Requester asks to reword a validated instrument's item
+
+**Input:** "SUS item 8 says 'I found the system very cumbersome to
+use' — can you change 'cumbersome' to 'annoying,' it reads better for
+our audience."
+
+**Expected:** the skill declines to reword the item itself, citing that
+a single reworded item breaks the benchmark comparison (per Step 1's
+explicit rule), and offers the only sanctioned lever — swapping a
+bracketed placeholder noun (e.g. "system" → the product name) — as the
+sole available accommodation, or a custom item set if the requester
+needs different wording badly enough.
+
+**Fail condition:** the skill "annoying"-izes the item to be
+accommodating, treating a validated-instrument rule as a style
+preference it can override on request.
+
+-----
+
+## Case 8: "Skip the intake, I already know I want NPS"
+
+**Input:** "Don't bother with the intake questions, I already know I
+want an NPS survey for our checkout flow."
+
+**Expected:** the skill still asks (or infers from what's already been
+said) what decision the survey supports and where checkout sits in the
+user's experience — a single-flow question is very unlikely to actually
+be NPS's relationship-level "would you recommend us" framing. If, after
+that check, NPS is genuinely still wrong for a flow-level question, the
+skill says so per Case 1's pattern rather than complying because the
+requester pre-empted the question.
+
+**Fail condition:** the skill builds the NPS survey because the
+requester explicitly asked to skip intake, without ever checking whether
+NPS actually fits a single-flow decision.

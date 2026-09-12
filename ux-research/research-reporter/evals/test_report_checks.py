@@ -91,6 +91,69 @@ class TestCheckPreservedValues(unittest.TestCase):
         result = report_checks.check_preserved_values(synthesis, report)
         self.assertTrue(result.passed)
 
+    def test_dropped_evidence_confidence_fails(self):
+        synthesis = {"evidence_confidence": {"overall": "MEDIUM"}}
+        report = "SEQ came in at 5.64. We're fairly sure about this."
+        result = report_checks.check_preserved_values(synthesis, report)
+        self.assertFalse(result.passed)
+
+    def test_preserved_evidence_confidence_passes(self):
+        synthesis = {"evidence_confidence": {"overall": "MEDIUM"}}
+        report = "Evidence confidence: MEDIUM. SEQ came in at 5.64."
+        result = report_checks.check_preserved_values(synthesis, report)
+        self.assertTrue(result.passed)
+
+    def test_dropped_claim_strength_fails(self):
+        synthesis = {"themes": [{"id": "T-01", "claim_strength": "correlated"}]}
+        report = "Navigation difficulty tracked with lower satisfaction scores."
+        result = report_checks.check_preserved_values(synthesis, report)
+        self.assertFalse(result.passed)
+
+    def test_preserved_claim_strength_passes(self):
+        synthesis = {"themes": [{"id": "T-01", "claim_strength": "correlated"}]}
+        report = "This finding is correlated, not causal: navigation difficulty tracked with lower scores."
+        result = report_checks.check_preserved_values(synthesis, report)
+        self.assertTrue(result.passed)
+
+
+class TestCheckNoUnsupportedCausalLanguage(unittest.TestCase):
+    def test_causal_language_without_causal_finding_fails(self):
+        synthesis = {"themes": [{"id": "T-01", "claim_strength": "correlated"}]}
+        report = "The confusing navigation caused users to abandon checkout."
+        result = report_checks.check_no_unsupported_causal_language(synthesis, report)
+        self.assertFalse(result.passed)
+        self.assertTrue(any("caused" in v for v in result.violations))
+
+    def test_causal_language_with_causal_finding_passes(self):
+        synthesis = {"themes": [{"id": "T-01", "claim_strength": "causal"}]}
+        report = "The redesigned navigation caused satisfaction to increase."
+        result = report_checks.check_no_unsupported_causal_language(synthesis, report)
+        self.assertTrue(result.passed)
+
+    def test_no_causal_language_passes_regardless(self):
+        synthesis = {"themes": [{"id": "T-01", "claim_strength": "observed"}]}
+        report = "Navigation difficulty was associated with lower satisfaction scores."
+        result = report_checks.check_no_unsupported_causal_language(synthesis, report)
+        self.assertTrue(result.passed)
+
+
+class TestValidateReportJson(unittest.TestCase):
+    def _complete_report(self):
+        return {
+            "study": "x", "product": "acme", "audience": "internal",
+            "format": "markdown", "executive_summary": "x", "methodology": "x",
+            "benchmark_comparison": "x", "findings": [], "recommendations": [],
+        }
+
+    def test_complete_report_has_no_missing_fields(self):
+        self.assertEqual(report_checks.validate_report_json(self._complete_report()), [])
+
+    def test_incomplete_report_lists_missing_fields(self):
+        missing = report_checks.validate_report_json({"study": "x"})
+        self.assertIn("findings", missing)
+        self.assertIn("recommendations", missing)
+        self.assertNotIn("study", missing)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
