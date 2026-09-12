@@ -139,6 +139,29 @@ Help designers articulate their design decisions using cognitive science, behavi
 
 ---
 
+## UX Research Skills
+
+Four skills that work together as a research team — programming
+surveys, synthesizing quant + qual feedback, and writing stakeholder
+reports — plus a router that orchestrates the loop between them. Unlike
+the design system stack below, this one includes an actual orchestrator
+skill (`research-loop`) that can route backward when a downstream skill
+can't proceed cleanly, not just forward.
+
+Full breakdown, the file structure it maintains, and testing
+instructions: [`ux-research/README.md`](./ux-research/README.md).
+Version history: [`ux-research/CHANGELOG.md`](./ux-research/CHANGELOG.md).
+
+- [`ux-research/survey-architect/`](./ux-research/survey-architect) — turns a research question into a validated, deploy-ready survey
+- [`ux-research/feedback-synthesizer/`](./ux-research/feedback-synthesizer) — scores + confidence intervals + significance testing + qualitative theming, cross-referenced
+- [`ux-research/research-reporter/`](./ux-research/research-reporter) — audience-formatted stakeholder report
+- [`ux-research/research-loop/`](./ux-research/research-loop) — the orchestrator; **use this as the entry point**
+
+**Use when:** programming a survey, making sense of raw survey/feedback
+data, or writing up UX research findings for stakeholders.
+
+---
+
 ## The Design System Stack
 
 The four design system skills form a complete pipeline:
@@ -187,4 +210,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-12
