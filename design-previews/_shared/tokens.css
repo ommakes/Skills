@@ -12,10 +12,22 @@
   (no full palette or radius scale exists yet beyond the examples above):
   every other color token, and the rest of the radius scale. These are
   illustrative only — do not treat them as canonical Vois spec.
+
+  Each token group below also carries a `status:` tag alongside its
+  SOURCED/INVENTED label — `canonical` (quoted from vois-tokens, safe to
+  treat as spec), `illustrative` (this kit's own placeholder, expect it to
+  change), `experimental` or `deprecated` (unused today, reserved for when
+  a token moves through those states). SOURCED maps to canonical and
+  INVENTED maps to illustrative one-for-one right now; the two labels
+  exist separately because a token's origin (sourced/invented) and its
+  current status can diverge later — e.g. a sourced value vois-tokens
+  later deprecates would flip to `status: deprecated` while staying
+  SOURCED. No tooling parses this yet; it's here so the shape is ready
+  when something needs to.
 */
 
 :root {
-  /* ---- Color: neutrals (60% of any screen, per DS-COLOR-004) ---- INVENTED */
+  /* ---- Color: neutrals (60% of any screen, per DS-COLOR-004) ---- INVENTED · status: illustrative */
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.145 0 0);
   --color-surface: oklch(0.985 0 0);
@@ -24,18 +36,18 @@
   --color-muted: oklch(0.97 0 0);
   --color-muted-foreground: oklch(0.556 0 0);
 
-  /* ---- Color: secondary (30%) ---- INVENTED */
+  /* ---- Color: secondary (30%) ---- INVENTED · status: illustrative */
   --color-secondary: oklch(0.94 0.01 259.4);
   --color-secondary-foreground: oklch(0.205 0 0);
 
   /* ---- Color: primary / accent (10%) ---- SOURCED (primary pair) + INVENTED (accent pair) */
-  --color-primary: oklch(0.637 0.237 259.4);
-  --color-primary-foreground: oklch(1 0 0);
-  --color-accent: oklch(0.94 0.03 259.4);
-  --color-accent-foreground: oklch(0.205 0 0);
-  --color-ring: oklch(0.637 0.237 259.4 / 0.5);
+  --color-primary: oklch(0.637 0.237 259.4); /* status: canonical */
+  --color-primary-foreground: oklch(1 0 0); /* status: canonical */
+  --color-accent: oklch(0.94 0.03 259.4); /* status: illustrative */
+  --color-accent-foreground: oklch(0.205 0 0); /* status: illustrative */
+  --color-ring: oklch(0.637 0.237 259.4 / 0.5); /* status: illustrative — derived from the canonical primary, but the ring treatment itself isn't sourced */
 
-  /* ---- Color: semantic ---- INVENTED */
+  /* ---- Color: semantic ---- INVENTED · status: illustrative */
   --color-destructive: oklch(0.577 0.245 27.325);
   --color-destructive-foreground: oklch(1 0 0);
   --color-success: oklch(0.6 0.15 145);
@@ -43,7 +55,7 @@
   --color-warning: oklch(0.75 0.16 80);
   --color-warning-foreground: oklch(0.205 0 0);
 
-  /* ---- Spacing scale (px, divisible by 4/8 — DS-SPACING-001) ---- SOURCED */
+  /* ---- Spacing scale (px, divisible by 4/8 — DS-SPACING-001) ---- SOURCED · status: canonical */
   --space-4: 4px;
   --space-8: 8px;
   --space-12: 12px;
@@ -57,12 +69,12 @@
   --space-80: 80px;
   --space-96: 96px;
 
-  /* ---- Font role tokens — role-based, workspace supplies real family ---- SOURCED (roles) */
+  /* ---- Font role tokens — role-based, workspace supplies real family ---- SOURCED (roles) · status: canonical */
   --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* ---- Type scale (desktop) ---- SOURCED */
+  /* ---- Type scale (desktop) ---- SOURCED · status: canonical */
   --text-h0-size: 52px; --text-h0-line: 64px; --text-h0-weight: 700;
   --text-h1-size: 36px; --text-h1-line: 44px; --text-h1-weight: 600;
   --text-h2-size: 24px; --text-h2-line: 32px; --text-h2-weight: 600;
@@ -74,33 +86,33 @@
   --text-description-size: 14px; --text-description-line: 20px; --text-description-weight: 400;
 
   /* ---- Radius scale ---- --radius-md SOURCED, rest INVENTED (concentric math: outer = inner + padding) */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
-  --radius-full: 9999px;
+  --radius-sm: 6px; /* status: illustrative */
+  --radius-md: 8px; /* status: canonical */
+  --radius-lg: 12px; /* status: illustrative */
+  --radius-xl: 16px; /* status: illustrative */
+  --radius-2xl: 20px; /* status: illustrative */
+  --radius-full: 9999px; /* status: illustrative */
 
-  /* ---- Elevation — exactly four tiers, never a fifth ---- SOURCED */
+  /* ---- Elevation — exactly four tiers, never a fifth ---- SOURCED · status: canonical */
   --shadow-flat: none;
   --shadow-raised: 0 1px 2px oklch(0 0 0 / 0.08);
   --shadow-overlay: 0 4px 12px oklch(0 0 0 / 0.12);
   --shadow-modal: 0 16px 48px oklch(0 0 0 / 0.20);
   --shadow-scrim: oklch(0 0 0 / 0.4);
 
-  /* ---- Surface/border shadow (used instead of solid borders on cards) ---- SOURCED */
+  /* ---- Surface/border shadow (used instead of solid borders on cards) ---- SOURCED · status: canonical */
   --shadow-border: 0px 0px 0px 1px rgba(0, 0, 0, .06), 0px 1px 2px -1px rgba(0, 0, 0, .06), 0px 2px 4px 0px rgba(0, 0, 0, .04);
   --shadow-border-hover: 0px 0px 0px 1px rgba(0, 0, 0, .08), 0px 1px 2px -1px rgba(0, 0, 0, .08), 0px 2px 4px 0px rgba(0, 0, 0, .06);
   --outline-image: rgba(0, 0, 0, .1);
 
-  /* ---- Icon sizes, 1.5px stroke everywhere ---- SOURCED */
+  /* ---- Icon sizes, 1.5px stroke everywhere ---- SOURCED · status: canonical */
   --icon-4: 16px;
   --icon-5: 20px;
   --icon-6: 24px;
   --icon-8: 32px;
   --icon-stroke: 1.5px;
 
-  /* ---- Motion ---- SOURCED */
+  /* ---- Motion ---- SOURCED · status: canonical */
   --duration-press: 150ms;
   --duration-ui: 300ms;
   --duration-large: 500ms;
