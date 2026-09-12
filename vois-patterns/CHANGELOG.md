@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.7.0] - 2026-09-12
+
+**Add** | New `references/composition.md`: a cross-cutting rule set for briefs that name a product-specific feature ("approval queue", "impersonate a user") instead of one of the five container types. `PATH-COMPOSITION-CHECK-FIRST` (translate the brief into a job and re-check the decision tree), `PATH-COMPOSITION-COMBINE` (compose two existing paths before inventing a third, with worked examples), and `PATH-COMPOSITION-INVENT-LAST` (invent new structure only as a last resort, and say what didn't fit) — added to `data/patterns-rules.json` as `cross_cutting_rule` nodes, same shape as the existing permissions/conditional-logic rules. `SKILL.md` gains a pointer to this file right after the decision tree, a Reference Files row, and a checklist item.
+
+**Why now** | Confirmed via a gap-check read of all 7 `references/*.md` files before writing anything: no existing file states a general "compose before inventing" principle. The closest analogue, `vois-components`' `JOB-CONTAIN-CONTENT` ("why not wrap everything in a Card?"), is narrower and component-level, not page-composition guidance — `composition.md` cross-references it rather than restating it.
+
+---
+
 ## [1.6.1] - 2026-08-29
 
 **Change** | The "For exact Tailwind class names and token values, see vois-tokens" pointer now reads "For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tokens" — vois-tokens added StyleX as a second implementation engine alongside Tailwind v4 in its own `1.12.0`; this file's structural decision trees were already engine-agnostic and needed only this wording fix.

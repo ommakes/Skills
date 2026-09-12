@@ -140,6 +140,33 @@
       "rule_name": "Simple Calculation Tables",
       "condition": "A calculation dynamically updates a final value from inline input fields and dropdowns (e.g. quantity × unit price).",
       "outcome": "Use a simple table layout: header row acts as the field label, inline inputs and dropdowns, and never stack more than 4 rows."
+    },
+    {
+      "id": "PATH-COMPOSITION-CHECK-FIRST",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/composition.md",
+      "rule_name": "Check for a Direct Fit First",
+      "condition": "A feature brief names its own product-specific job (e.g. \"approval queue\", \"impersonate a user\") rather than one of the five container types.",
+      "outcome": "Translate the brief into a plain job-to-be-done and re-check it against the SKILL.md decision tree before assuming it needs new structure. Most briefs that sound novel because of their product-specific name are a direct fit for an existing path once translated."
+    },
+    {
+      "id": "PATH-COMPOSITION-COMBINE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/composition.md",
+      "rule_name": "Combine Existing Patterns Before Inventing a Third",
+      "condition": "A brief needs more than one container type's job done at once (e.g. browse-and-approve, multi-step form with a review step, bulk edit from a list).",
+      "outcome": "Compose the existing container types that each cover part of the job (e.g. PATH-B + PATH-D for an approval queue; PATH-C + PATH-E for a form with a review step) instead of designing one bespoke hybrid container. If you can't name which existing pattern is doing each part of the job, that's the signal to check PATH-COMPOSITION-INVENT-LAST instead."
+    },
+    {
+      "id": "PATH-COMPOSITION-INVENT-LAST",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/composition.md",
+      "rule_name": "Invent New Structure Only As a Last Resort, and Say So",
+      "condition": "The job doesn't fit any existing container type directly (PATH-COMPOSITION-CHECK-FIRST) or as a composition of existing ones (PATH-COMPOSITION-COMBINE).",
+      "outcome": "Build new structure, but name which existing patterns were considered and why they didn't fit — the same reasoning vois_report_pattern_gap asks for, called if available, stated in your own output if not. A new pattern invented this way is a one-off for the brief in front of you, not automatically a new entry in this skill; promoting it to a sixth container type requires the same deliberate review (SKILL.md + patterns-rules.json) every existing path already had."
     }
   ]
 }
