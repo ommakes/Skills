@@ -114,4 +114,73 @@ def check_preserved_values(synthesis: dict, report_text: str) -> PreservationRes
         if tier.lower() not in lowered:
             violations.append(f"Severity tier '{tier}' for theme '{theme}' not found in report")
 
+    ec = synthesis.get("evidence_confidence")
+    if ec is not None:
+        level = ec.get("overall") if isinstance(ec, dict) else ec
+        if level and level.lower() not in lowered:
+            violations.append(f"Evidence confidence '{level}' not found in report")
+
+    for theme in synthesis.get("themes", []):
+        claim_strength = theme.get("claim_strength")
+        if claim_strength and claim_strength.lower() not in lowered:
+            violations.append(
+                f"Claim strength '{claim_strength}' for theme "
+                f"'{theme.get('id', '?')}' not found in report"
+            )
+
     return PreservationResult(violations=violations, passed=len(violations) == 0)
+
+
+_CAUSAL_LANGUAGE = ("caused", "causes", "resulted in", "led to", "drove", "produced")
+
+
+def check_no_unsupported_causal_language(synthesis: dict, report_text: str) -> PreservationResult:
+    """
+    Flags causal-sounding verbs in `report_text` ("caused", "led to",
+    "drove", ...) unless at least one theme in `synthesis` actually
+    carries `claim_strength == "causal"`. This is the guard against a
+    correlational finding quietly becoming a causal claim during report
+    writing — the claim-strength ladder should only ever move in the
+    direction the evidence supports, never up, and reporting is exactly
+    the step where that kind of silent upgrade tends to happen (a
+    stakeholder asks for a punchier exec summary, "associated with" turns
+    into "drove").
+
+    Like the other checks here, this is textual, not semantic: it can
+    catch the word "caused" appearing without backing, but a report that
+    says "strongly suggests" about a merely-observed finding needs a
+    human read, same as the docstring above notes for "directional" vs
+    "confirmed."
+    """
+    has_causal_claim = any(
+        theme.get("claim_strength") == "causal" for theme in synthesis.get("themes", [])
+    )
+    if has_causal_claim:
+        return PreservationResult(violations=[], passed=True)
+
+    lowered = report_text.lower()
+    hits = [verb for verb in _CAUSAL_LANGUAGE if verb in lowered]
+    violations = [
+        f"causal language '{verb}' used, but no theme in the synthesis "
+        f"has claim_strength='causal'"
+        for verb in hits
+    ]
+    return PreservationResult(violations=violations, passed=len(violations) == 0)
+
+
+_REQUIRED_REPORT_FIELDS = [
+    "study", "product", "audience", "format", "executive_summary",
+    "methodology", "benchmark_comparison", "findings", "recommendations",
+]
+
+
+def validate_report_json(report: dict) -> list[str]:
+    """
+    Checks a research-reporter output (the dict that would become
+    03-report.json) for required top-level fields. Returns a list of
+    missing field names — empty means valid. Structural only, same as
+    validate_report_structure() above for the prose version — it can't
+    judge whether the prose is honest, only whether the shape is
+    complete.
+    """
+    return [f for f in _REQUIRED_REPORT_FIELDS if f not in report]

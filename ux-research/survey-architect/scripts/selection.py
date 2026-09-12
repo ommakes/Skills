@@ -141,3 +141,26 @@ def validate_survey_spec(spec: dict) -> list[str]:
     feedback-synthesizer to consume without guessing.
     """
     return [f for f in _REQUIRED_SPEC_FIELDS if f not in spec]
+
+
+_REQUIRED_INTAKE_FIELDS = [
+    "study", "product", "learning_goal", "experience_moment",
+    "decision_type", "instrument", "required_n",
+]
+
+
+def validate_intake_spec(intake: dict) -> list[str]:
+    """
+    Checks a Step 0 intake record (the dict that would become
+    00-intake.json) for required fields. Returns a list of missing field
+    names — empty list means valid.
+
+    This is what research-loop's state file and feedback-synthesizer's
+    "read the spec, don't re-derive" step both depend on being complete
+    — a missing `decision_type` or `required_n` here is exactly the kind
+    of gap that used to only surface downstream as a confusing question
+    from the next skill. `prior_benchmark_reused` is intentionally not
+    required: it's only meaningful when Step 0's Q4 found an existing
+    benchmark series, so its absence isn't itself an error.
+    """
+    return [f for f in _REQUIRED_INTAKE_FIELDS if f not in intake]

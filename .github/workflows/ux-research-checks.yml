@@ -1,0 +1,46 @@
+name: UX Research Checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ux-research/**"
+      - "skills.json"
+  pull_request:
+    paths:
+      - "ux-research/**"
+      - "skills.json"
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        skill:
+          - survey-architect
+          - feedback-synthesizer
+          - research-reporter
+          - research-loop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install scipy (feedback-synthesizer only)
+        if: matrix.skill == 'feedback-synthesizer'
+        run: pip install scipy
+
+      - name: Run ${{ matrix.skill }} evals
+        run: python3 -m unittest discover -s evals -v
+        working-directory: ux-research/${{ matrix.skill }}
+
+  frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SKILL.md frontmatter validation
+        run: bash ../scripts/validate-skills.sh
+        working-directory: ux-research

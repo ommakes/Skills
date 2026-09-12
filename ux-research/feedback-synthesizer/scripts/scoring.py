@@ -36,6 +36,64 @@ except ImportError as e:  # pragma: no cover
 
 
 # ---------------------------------------------------------------------------
+# Statistical policy — the one place these numbers live. SKILL.md refers
+# to this module rather than restating the values, so a policy change
+# (e.g. moving to 95% CIs) happens in exactly one place.
+# ---------------------------------------------------------------------------
+
+DEFAULT_CONFIDENCE_LEVEL = 0.90  # matches MeasuringU's UX-research convention
+SMALL_SAMPLE_POLICY = "conservative"  # widen CI + flag loudly, never refuse
+
+EVIDENCE_CONFIDENCE_LEVELS = ("HIGH", "MEDIUM", "LOW", "INSUFFICIENT")
+"""
+Evidence confidence is a *different question* from a confidence interval.
+A CI describes uncertainty around one statistic. Evidence confidence
+describes how much to trust the overall conclusion — sample quality,
+source quality, coding confidence, and triangulation across methods all
+factor in. A narrow CI does not, by itself, justify "high" evidence
+confidence; a wide CI does not, by itself, justify "low." Keep the two
+vocabularies separate in synthesis output.
+"""
+
+CLAIM_STRENGTH_LEVELS = ("observed", "associated", "correlated", "causal")
+"""
+Ladder for how strongly a finding's evidence supports its language:
+  observed   — this was reported/measured, no relationship claimed
+  associated — co-occurs with another variable, direction not tested
+  correlated — a statistical relationship was actually tested
+  causal     — one thing was shown to produce the other
+
+Only survey/feedback data (observational by construction) backs this
+skill's findings — see validate_claim_strength() below, which is the
+enforcement point for never letting "causal" appear without a design
+that can support it.
+"""
+
+
+def validate_claim_strength(level: str, has_causal_design: bool = False) -> None:
+    """
+    Raises ValueError if `level` isn't a recognized rung, or if "causal"
+    is claimed without `has_causal_design=True` (an actual experiment,
+    randomized test, or strong quasi-experimental design — never true for
+    a plain survey/feedback synthesis, which is why the default is
+    False). This is the guard against observational research quietly
+    becoming causal language during synthesis or reporting.
+    """
+    if level not in CLAIM_STRENGTH_LEVELS:
+        raise ValueError(
+            f"'{level}' isn't a recognized claim-strength level. Valid: "
+            f"{CLAIM_STRENGTH_LEVELS}"
+        )
+    if level == "causal" and not has_causal_design:
+        raise ValueError(
+            "claim_strength='causal' requires has_causal_design=True — a "
+            "survey/feedback synthesis is observational by construction. "
+            "Use 'correlated' instead unless this study actually ran an "
+            "experiment or a strong quasi-experimental design."
+        )
+
+
+# ---------------------------------------------------------------------------
 # Instrument scoring
 # ---------------------------------------------------------------------------
 
@@ -224,7 +282,7 @@ class CiResult:
     confidence: float
 
 
-def confidence_interval(scores: Sequence[float], confidence: float = 0.90) -> CiResult:
+def confidence_interval(scores: Sequence[float], confidence: float = DEFAULT_CONFIDENCE_LEVEL) -> CiResult:
     """
     Confidence interval around a mean, via the t-distribution (correct
     for small samples — this is the UX-research-standard approach,
@@ -255,7 +313,7 @@ class SigTestResult:
 
 
 def significance_vs_benchmark(scores: Sequence[float], benchmark: float,
-                                confidence: float = 0.90) -> SigTestResult:
+                                confidence: float = DEFAULT_CONFIDENCE_LEVEL) -> SigTestResult:
     """One-sample t-test against a published benchmark (e.g. SUS's 68,
     SEQ's ~5.5). Use this instead of eyeballing whether a score is
     'above' or 'below' benchmark."""
@@ -265,7 +323,7 @@ def significance_vs_benchmark(scores: Sequence[float], benchmark: float,
 
 
 def compare_waves(scores_a: Sequence[float], scores_b: Sequence[float],
-                   paired: bool = False, confidence: float = 0.90) -> SigTestResult:
+                   paired: bool = False, confidence: float = DEFAULT_CONFIDENCE_LEVEL) -> SigTestResult:
     """Compare two waves of the same instrument. Use paired=True only if
     the same respondents were measured both times (rare for UX surveys —
     default False, independent samples)."""
@@ -284,6 +342,23 @@ def compare_waves(scores_a: Sequence[float], scores_b: Sequence[float],
 # not whole-sample frequency)
 # ---------------------------------------------------------------------------
 
+SEVERITY_TIERS = ("Critical", "Notable", "Minor")
+
+VALID_OVERRIDE_REASONS = (
+    "safety", "accessibility", "legal_compliance", "severe_user_harm",
+    "critical_task_blockage",
+)
+"""
+The only reasons `severity_tier`'s `override` argument will accept. This
+is deliberately a closed list, not a free-text field: an override exists
+to let a legitimate outside consideration (a safety issue, an
+accessibility barrier, a legal exposure) outrank a frequency-based tier
+— e.g. a low-frequency accessibility barrier can still outrank a
+high-frequency cosmetic complaint. It is not a way to bump a tier
+because a stakeholder would prefer a different number.
+"""
+
+
 @dataclass
 class SeverityResult:
     tier: str  # "Critical" | "Notable" | "Minor"
@@ -291,11 +366,14 @@ class SeverityResult:
     unaffected_band_frequency_pct: float
     overall_frequency_pct: float
     reasoning: str
+    computed_tier: str  # the tier the frequency/skew heuristic alone produced
+    override_reason: str | None = None  # None unless an override was applied
 
 
 def severity_tier(affected_band_theme_count: int, affected_band_n: int,
                    unaffected_band_theme_count: int, unaffected_band_n: int,
-                   critical_within_band_threshold: float = 0.50) -> SeverityResult:
+                   critical_within_band_threshold: float = 0.50,
+                   override: str | None = None) -> SeverityResult:
     """
     Computes a theme's severity tier from raw counts — this is the exact
     logic described in feedback-synthesizer's Step 4, made deterministic
@@ -304,9 +382,26 @@ def severity_tier(affected_band_theme_count: int, affected_band_n: int,
     `affected_band_*` = the score band you're investigating (e.g.
     respondents who scored <= 5).
     `unaffected_band_*` = everyone else.
+
+    The frequency/skew heuristic below is a default, not a law: pass
+    `override` (one of VALID_OVERRIDE_REASONS) to force the result to
+    "Critical" regardless of what the heuristic computes — e.g. a
+    low-frequency accessibility barrier that the frequency math alone
+    would tier as "Minor." `computed_tier` on the result always reports
+    what the heuristic actually produced, so an override is never silent
+    — state both the computed tier and the override reason in synthesis
+    output, never just the final label.
     """
     if affected_band_n == 0:
         raise ValueError("affected_band_n must be > 0")
+    if override is not None and override not in VALID_OVERRIDE_REASONS:
+        raise ValueError(
+            f"'{override}' isn't a recognized override reason. Valid: "
+            f"{VALID_OVERRIDE_REASONS}. An override exists for a "
+            f"legitimate outside consideration, not stakeholder "
+            f"preference — if none of these reasons apply, don't "
+            f"override the computed tier."
+        )
 
     within_band_pct = affected_band_theme_count / affected_band_n * 100
     unaffected_pct = (unaffected_band_theme_count / unaffected_band_n * 100
@@ -319,25 +414,84 @@ def severity_tier(affected_band_theme_count: int, affected_band_n: int,
     clear_skew = within_band_pct > unaffected_pct * 1.5 or (unaffected_pct == 0 and within_band_pct > 0)
 
     if high_within_band and clear_skew:
-        tier = "Critical"
+        computed_tier = "Critical"
         reasoning = (f"{within_band_pct:.0f}% of the affected band mentioned this "
                      f"(>= {critical_within_band_threshold*100:.0f}% threshold) and it's "
                      f"clearly skewed vs. the unaffected band ({unaffected_pct:.0f}%), "
                      f"even though overall frequency is only {overall_pct:.0f}%.")
     elif high_within_band or clear_skew:
-        tier = "Notable"
+        computed_tier = "Notable"
         reasoning = (f"Meets one of two Critical conditions, not both — "
                      f"within-band {within_band_pct:.0f}%, unaffected-band {unaffected_pct:.0f}%, "
                      f"overall {overall_pct:.0f}%.")
     else:
-        tier = "Minor"
+        computed_tier = "Minor"
         reasoning = (f"Low within-band frequency ({within_band_pct:.0f}%) with no "
                      f"meaningful skew vs. unaffected band ({unaffected_pct:.0f}%).")
 
+    final_tier = computed_tier
+    if override is not None and computed_tier != "Critical":
+        final_tier = "Critical"
+        reasoning = (f"{reasoning} Overridden to Critical: {override.replace('_', ' ')} "
+                     f"outranks the frequency-based tier.")
+
     return SeverityResult(
-        tier=tier,
+        tier=final_tier,
         within_band_frequency_pct=within_band_pct,
         unaffected_band_frequency_pct=unaffected_pct,
         overall_frequency_pct=overall_pct,
         reasoning=reasoning,
+        computed_tier=computed_tier,
+        override_reason=override,
     )
+
+
+# ---------------------------------------------------------------------------
+# Synthesis artifact validation
+# ---------------------------------------------------------------------------
+
+_REQUIRED_SYNTHESIS_FIELDS = [
+    "study", "product", "instrument", "n", "score", "significance",
+    "low_confidence_flag", "themes", "cross_references",
+    "evidence_confidence", "alternative_explanations", "cannot_determine",
+]
+
+
+def validate_synthesis(synthesis: dict) -> list[str]:
+    """
+    Checks a feedback-synthesizer output (the dict that would become
+    02-synthesis.json) for required top-level fields and for the two
+    enumerated values (evidence_confidence, and each theme's
+    claim_strength/severity tier) actually being one of the allowed
+    options. Returns a list of problem strings — empty means valid.
+
+    This is structural, like survey-architect's validate_survey_spec: it
+    can catch a missing field or an invalid enum value, but it can't
+    judge whether the *content* is right (whether a theme's severity
+    should really be Critical, whether the alternative explanations are
+    the real ones). That's still your judgment call.
+    """
+    problems = [f for f in _REQUIRED_SYNTHESIS_FIELDS if f not in synthesis]
+
+    ec = synthesis.get("evidence_confidence")
+    if ec is not None:
+        level = ec.get("overall") if isinstance(ec, dict) else ec
+        if level not in EVIDENCE_CONFIDENCE_LEVELS:
+            problems.append(
+                f"evidence_confidence '{level}' not one of {EVIDENCE_CONFIDENCE_LEVELS}"
+            )
+
+    for theme in synthesis.get("themes", []):
+        tier = (theme.get("severity") or {}).get("tier")
+        if tier is not None and tier not in SEVERITY_TIERS:
+            problems.append(
+                f"theme '{theme.get('id', '?')}' severity tier '{tier}' not one of {SEVERITY_TIERS}"
+            )
+        claim_strength = theme.get("claim_strength")
+        if claim_strength is not None and claim_strength not in CLAIM_STRENGTH_LEVELS:
+            problems.append(
+                f"theme '{theme.get('id', '?')}' claim_strength '{claim_strength}' "
+                f"not one of {CLAIM_STRENGTH_LEVELS}"
+            )
+
+    return problems
