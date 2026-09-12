@@ -1,5 +1,7 @@
 /*
   Vois design tokens — CSS custom properties.
+  Sourced against vois-tokens v1.12.0 — bump this line whenever someone
+  re-verifies these values against a newer vois-tokens release.
 
   SOURCED from vois-tokens skill reference docs (values quoted verbatim):
   spacing scale, type scale, elevation tiers, icon sizes, easing curves,
@@ -117,6 +119,12 @@
   }
 }
 
+/*
+  Dark mode overrides — DS-COLOR-006 requires every color token to have a
+  dark value. No dark palette exists yet in vois-tokens (color.md defines
+  the light side only), so every value below is INVENTED for this kit,
+  same as the invented light values above — illustrative, not canonical.
+*/
 :root.dark {
   --color-background: oklch(0.145 0 0);
   --color-foreground: oklch(0.985 0 0);
@@ -131,6 +139,12 @@
 
   --color-accent: oklch(0.28 0.06 259.4);
   --color-accent-foreground: oklch(0.985 0 0);
+
+  /* Brand color, held constant across themes on purpose — still stated
+     explicitly per DS-COLOR-006 rather than left to fall through. */
+  --color-primary: oklch(0.637 0.237 259.4);
+  --color-primary-foreground: oklch(1 0 0);
+  --color-ring: oklch(0.637 0.237 259.4 / 0.5);
 
   --color-destructive: oklch(0.577 0.245 27.325);
   --color-destructive-foreground: oklch(1 0 0);
