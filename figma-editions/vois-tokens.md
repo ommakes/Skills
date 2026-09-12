@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.12.0
+version: 1.13.0
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -109,6 +109,7 @@ Run this before calling anything done.
 **Layout**
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
 - [ ] Tested at sm, md, lg breakpoints `[DS-RESPONSIVE-002]`
+- [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — not shrunk to fit `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
@@ -247,6 +248,8 @@ Stop using `vh` — mobile browser chrome changes available height as you scroll
 For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on sections far below the fold to skip rendering until they approach the viewport `[DS-LAYOUT-002]` — not on anything visible on initial load.
 
 **Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at sm (640px), md (768px), lg (1024px) `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
+
+**Judgment under constraint:** when content doesn't fit, the default move of shrinking everything proportionally is usually wrong. Preserve task hierarchy first — keep the primary content/task at a comfortable, legible size at every breakpoint, and let secondary/tertiary content (metadata, supporting stats, decorative elements) absorb the constraint `[DS-RESPONSIVE-006]`. When something doesn't fit, prefer reflow (grid to single column), then collapse (a filter bar into a "Filters" button + sheet), then hide (a column or hint that only matters at a glance on larger screens) — shrinking text or spacing to cram the same layout into less room is the last resort, and never overrides the `[DS-RESPONSIVE-004]` minimums `[DS-RESPONSIVE-007]`.
 
 **Component-level:** no `padding-bottom`/`margin-top` for sibling spacing — use `gap` on the parent `[DS-LAYOUT-COMP-001]`. No purposeless wrapper divs `[DS-LAYOUT-COMP-002]`. `min-width: 0` on flex children with text/overflow-prone content `[DS-LAYOUT-COMP-003]`. `object-fit` on images with set dimensions `[DS-LAYOUT-COMP-006]`. `aspect-ratio` instead of the padding-top percentage hack `[DS-LAYOUT-COMP-005]`.
 

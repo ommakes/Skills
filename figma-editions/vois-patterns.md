@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.6.0
+version: 1.8.0
 ---
 
 # Vois Patterns Skill
@@ -158,6 +158,26 @@ Cross-cutting rules that apply across every container type above.
 
 ---
 
+## Composing Existing Primitives
+
+Before designing new structure for a brief that names its own feature ("approval queue," "impersonate a user," "bulk edit") instead of one of the five container types above:
+
+1. **Check for a direct fit first.** Translate the brief into a plain job-to-be-done and re-check it against the decision tree — most briefs that sound novel because of their product-specific name are a direct fit once translated (an "approval queue" is PATH-B: browse/filter/act on a list).
+2. **Combine two existing patterns before inventing a third.** A brief needing more than one container type's job at once should compose the existing ones: an approval queue is PATH-B (browse) + PATH-D (approve/reject dialog from a row); a multi-step form with a review step is PATH-C (input steps) + PATH-E (a read-only review step); bulk edit from a list is PATH-B (selection) + PATH-C-SIMPLE (shared-field form) + PATH-D (dialog). If you can't name which existing pattern is doing each part of the job, that's the signal for step 3.
+3. **Invent new structure only as a last resort, and say so.** Name which existing patterns were considered and why they didn't fit. A pattern invented this way is a one-off for the brief in front of you, not automatically a new entry in this skill.
+
+## Content Density: Dense, Standard, Spacious
+
+How much breathing room a screen should have is a decision, not a default — pick a tier deliberately rather than letting every screen land on the same mid-range spacing.
+
+- **Dense** — power users/admins doing this repeatedly, scanning or comparing many rows at once, screen real estate at a premium (admin data grids, analytics tables, dashboards, log views). Lean toward the tighter end of the spacing scale, more columns/metrics visible, smaller non-body type sizes where typography rules still allow it.
+- **Standard** — the default for most product surfaces: forms, settings pages, typical list/detail views. Mid spacing scale (24px between fields, 40px between sections) — this is correct absent a specific reason to reach for dense or spacious.
+- **Spacious** — low-frequency, high-stakes, or attention-focusing moments: onboarding/first-run, empty states, a destructive-confirmation dialog, marketing/landing surfaces. Looser spacing, fewer things visible at once, more whitespace around the one thing that matters — optimizing for focus, not efficiency.
+
+This is a different decision from the card-ification anti-pattern (wrapping every static section in an unearned bordered card, see `vois-tokens`) — density is about spacing and information-per-screen, independent of which container is used.
+
+---
+
 ## Spacing Quick Reference
 
 Implemented via `vois-tokens`; listed here for context.
@@ -174,7 +194,8 @@ For exact class names and token values, see `vois-tokens`.
 
 ## Quick Checklist Before Implementation
 
-- [ ] Container type selected (settings / table / form / dialog / detail)
+- [ ] Container type selected (settings / table / form / dialog / detail) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
+- [ ] Content density tier picked deliberately (dense / standard / spacious), not defaulted to whatever mid-range spacing produces
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see Permissions section above)
 - [ ] All copy written with Righter (or the fallback conventions), not guessed
