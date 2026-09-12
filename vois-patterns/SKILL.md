@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.6.1
+version: 1.8.0
 ---
 
 # Vois Patterns Skill
@@ -77,6 +77,12 @@ START: What is the user trying to accomplish?
 
 Read only the one reference file that matches the path you picked. Each template file is self-contained.
 
+**If the brief doesn't name a container type directly** (it names a
+product-specific feature instead — "approval queue," "impersonate a user,"
+"bulk edit"), read `references/composition.md` before assuming it needs new
+structure. Most of those translate to a direct fit or a combination of two
+existing paths.
+
 **Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
 
 **Source of truth:** `data/patterns-rules.json` is canonical for a path's `condition`/`outcome`. `references/*.md` may restate a path for readability and carries the worked examples JSON doesn't — but if the two ever disagree, the JSON wins. `scripts/check-rule-sync.mjs` (repo root) checks in CI that every `[PATH-*]` tag cited in `references/*.md` resolves to a real entry in `patterns-rules.json` and vice versa.
@@ -93,6 +99,8 @@ Read only the one reference file that matches the path you picked. Each template
 | `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
+| `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |
+| `references/content-density.md` | Deciding how much breathing room a screen should have — admin grid vs. everyday form vs. onboarding/confirmation moment | `[PATH-DENSITY-*]` (cross-cutting) |
 | `references/microcopy-routing.md` | Full list of what counts as UI copy and must route to righter | — (cross-cutting) |
 
 ---
@@ -113,7 +121,8 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 
 # Quick Checklist Before Implementation
 
-- [ ] Container type selected (settings / table / form / dialog / detail)
+- [ ] Container type selected (settings / table / form / dialog / detail) — or, if the brief didn't map directly, checked `references/composition.md` for a fit or combination before designing new structure
+- [ ] Content density tier picked deliberately (dense / standard / spacious) — see `references/content-density.md`, not defaulted to whatever the mid-range spacing tokens produce
 - [ ] `vois_record_pattern_choice` called with `skillVersion`, `pathId`, `userGoal`, and `thresholdInputs`, if that tool is available
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)

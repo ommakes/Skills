@@ -44,6 +44,30 @@ Don't apply this to sections visible on initial load.
 - Touch targets, font sizes, and contrast ratios must meet minimums at every breakpoint. `[DS-RESPONSIVE-004]`
 - Don't build desktop-first and assume it'll work on mobile. It won't. `[DS-RESPONSIVE-005]`
 
+### Judgment Under Constraint
+
+The rules above are mechanical — they tell you *how* to test responsiveness.
+They don't tell you what to do when content genuinely doesn't fit at a
+breakpoint. That's a judgment call, and the default AI move (scale
+everything down proportionally until it fits) is usually the wrong one:
+
+- **Preserve task hierarchy before shrinking type.** Identify what the user
+  is actually on the screen to do — the primary task or piece of content —
+  and keep it at a comfortable, legible size at every breakpoint. Let
+  secondary and tertiary content (metadata, supporting stats, decorative
+  elements) absorb the constraint first. A dashboard card losing its
+  helper caption on mobile is fine; its headline metric shrinking below
+  `--text-h2` so the caption can keep its size is backwards. `[DS-RESPONSIVE-006]`
+- **Reflow, then collapse, then hide, then shrink — in that order.** When
+  something doesn't fit: first try reflowing it (grid to single column,
+  row to stack); then collapsing it (a filter bar into a "Filters" button
+  with a sheet, a toolbar into an overflow menu); then hiding it if it's
+  truly secondary (a column, a badge, a hint that only matters at a glance
+  on larger screens). Shrinking text or spacing to cram the same layout
+  into less room is the last resort, not the first move — and it never
+  overrides the type-scale, touch-target, or contrast minimums in
+  `[DS-RESPONSIVE-004]`. `[DS-RESPONSIVE-007]`
+
 ## Component-Level Layout Rules `[DS-LAYOUT-COMP]`
 
 - No `padding-bottom`/`margin-top` used to space siblings — use `gap` on the parent. `[DS-LAYOUT-COMP-001]`

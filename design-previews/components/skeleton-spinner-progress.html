@@ -46,6 +46,29 @@
       </div>
     </div>
   </section>
+
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">Progress &middot; terminal states</h2>
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Disabled &middot; queued, not started</div>
+        <div class="progress" style="opacity:.5;"><span style="width: 0%;"></span></div>
+        <p class="kit-caption" style="margin-top: var(--space-8);">Queued &middot; waiting for the upload ahead of it</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Success &middot; complete</div>
+        <div class="progress"><span style="width: 100%; background: var(--color-success);"></span></div>
+        <p class="kit-caption" style="margin-top: var(--space-8); color: var(--color-success);">5 of 5 files uploaded</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Error &middot; upload failed</div>
+        <div class="progress"><span style="width: 40%; background: var(--color-destructive);"></span></div>
+        <p class="kit-caption" style="margin-top: var(--space-8); color: var(--color-destructive);">Upload failed at 2 of 5 files</p>
+        <button class="btn btn-secondary" style="margin-top: var(--space-8);">Retry</button>
+      </div>
+    </div>
+    <p class="kit-caption" style="margin-top: var(--space-16);">The bar's fill color carries the terminal state so it reads at a glance without waiting for the caption &mdash; but color is never the only signal (DS-COLOR-003): the caption and, on error, the Retry button say the same thing in words.</p>
+  </section>
 </div>
 </body>
 </html>

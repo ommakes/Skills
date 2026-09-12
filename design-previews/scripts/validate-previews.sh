@@ -40,6 +40,38 @@ for file in foundations/*.html components/*.html patterns/*.html anti-patterns/*
 done
 
 echo ""
+echo "🔍 Checking tokens.css light/dark color pairing..."
+echo ""
+
+tokens_file="_shared/tokens.css"
+light_colors=$(awk '/:root\.dark/{exit} /--color-[a-zA-Z0-9-]+:/{print}' "$tokens_file" | grep -oE -- '--color-[a-zA-Z0-9-]+' | sort -u)
+dark_colors=$(awk '/:root\.dark/{f=1} f' "$tokens_file" | grep -oE -- '--color-[a-zA-Z0-9-]+' | sort -u)
+
+missing_dark=()
+for c in $light_colors; do
+  if ! grep -qx -- "$c" <<< "$dark_colors"; then
+    missing_dark+=("$c")
+  fi
+done
+
+if [ ${#missing_dark[@]} -gt 0 ]; then
+  echo "❌ $tokens_file"
+  for c in "${missing_dark[@]}"; do
+    echo "   └─ $c has a light value but no override inside :root.dark (violates DS-COLOR-006)"
+  done
+  ((failed++))
+else
+  echo "✅ $tokens_file — every --color-* token has a dark override"
+  ((success++))
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "File counts (spot-check against README claims):"
+for dir in foundations components patterns anti-patterns; do
+  count=$(ls "$dir"/*.html 2>/dev/null | wc -l | tr -d ' ')
+  echo "  $dir: $count"
+done
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Valid previews:   $success"
 echo "Invalid previews: $failed"

@@ -1,0 +1,53 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: emoji as UI iconography</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .emoji-glyph { font-size: 24px; line-height: 1; }
+  .feature-row { display: flex; align-items: center; gap: var(--space-16); padding: var(--space-16) 0; border-bottom: 1px solid var(--color-border); }
+  .feature-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-005</span>
+    <h1 class="h1">Emoji as UI iconography</h1>
+    <p class="text-description">Emoji standing in for real icons — as feature-card glyphs, list bullets, or button affordances — reads as placeholder work. Use the icon set instead (see <code>references/iconography.md</code>). Emoji in content the user authored is fine; emoji the interface ships as its own chrome is not.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid</div>
+    <div class="feature-row"><span class="emoji-glyph">🚀</span><div><p class="h5">Fast deploys</p><p class="text-description">Ship in seconds.</p></div></div>
+    <div class="feature-row"><span class="emoji-glyph">🔒</span><div><p class="h5">Secure by default</p><p class="text-description">Encrypted everywhere.</p></div></div>
+    <div class="feature-row"><span class="emoji-glyph">⚡</span><div><p class="h5">Realtime sync</p><p class="text-description">Updates instantly.</p></div></div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead — the icon set, 1.5px stroke</div>
+    <div class="feature-row">
+      <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+      <div><p class="h5">Fast deploys</p><p class="text-description">Ship in seconds.</p></div>
+    </div>
+    <div class="feature-row">
+      <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div><p class="h5">Secure by default</p><p class="text-description">Encrypted everywhere.</p></div>
+    </div>
+    <div class="feature-row">
+      <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <div><p class="h5">Realtime sync</p><p class="text-description">Updates instantly.</p></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

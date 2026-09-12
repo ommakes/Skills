@@ -30,9 +30,39 @@
     </div>
     <div class="dialog-footer" style="margin-top:0;">
       <button type="button" class="btn btn-secondary">Cancel</button>
-      <button type="submit" class="btn btn-primary">Create project</button>
+      <button type="submit" class="btn btn-primary" disabled>Create project</button>
     </div>
   </form>
+  <p class="kit-caption" style="max-width: 420px; margin-top: var(--space-8);">Primary action disabled above until every required field is valid (PATH-COND-PRIMARY-BUTTON) &mdash; shown mid-fill here, not because this is its own separate state to design.</p>
+
+  <section class="kit-section" style="margin-top: var(--space-48);">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">Field states</h2>
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Focused</div>
+        <div class="field">
+          <label>Project name</label>
+          <input class="input" value="Q3 roadmap" style="border-color: var(--color-primary); outline: 2px solid var(--color-ring); outline-offset: 2px;">
+        </div>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Error &middot; invalid</div>
+        <div class="field">
+          <label>Project name</label>
+          <input class="input" aria-invalid="true" value="">
+          <span class="field-error">Project name is required.</span>
+        </div>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Disabled &middot; inherited, not editable here</div>
+        <div class="field">
+          <label>Owner</label>
+          <input class="input" value="Ada Lovelace" disabled>
+          <span class="hint">Set by the workspace default &mdash; change it from Workspace settings.</span>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 </body>
 </html>

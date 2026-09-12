@@ -164,9 +164,17 @@ Read them in order. Each skill assumes you've read the previous one and points f
 
 ## Design Previews (for Claude Design)
 
-[`design-previews/`](./design-previews) is a rendered, static HTML/CSS companion to the four design system skills — 25 self-contained preview files (foundations, highest-confusion component pairs, page-level patterns, and anti-pattern demonstrations) built for **Claude Design** (claude.ai/design), a visual design-system browser, not a coding agent.
+[`design-previews/`](./design-previews) is a rendered, static HTML/CSS companion to the four design system skills — 33 self-contained preview files (foundations, highest-confusion component pairs, page-level patterns, and anti-pattern demonstrations) built for **Claude Design** (claude.ai/design), a visual design-system browser, not a coding agent. Run `design-previews/scripts/validate-previews.sh` for the current per-folder counts rather than trusting this prose as file counts change.
 
 **This is not a skill.** It has no `SKILL.md` and isn't listed in `skills.json` or installed via `npx skills add` — it's a rendered artifact derived from the skill content above, kept in this repo because it's versioned alongside it. See [`design-previews/README.md`](./design-previews/README.md) for what's sourced directly from the skills vs. invented to fill a documented gap, and how to sync it into a live Claude Design project.
+
+---
+
+## Evaluation Harness
+
+[`vois-eval/`](./vois-eval) is a set of scenarios for checking whether a screen an agent generates with these skills actually followed the decision layer — `vois-components`' job trees and `vois-patterns`' path trees — not just whether it used the right tokens. Each scenario is drawn from an existing decision tree's condition/recommendation rather than a new invented format; there's no automated runner yet, and score categories are defined without weights until scenarios have actually been run enough to know where drift concentrates. See [`vois-eval/README.md`](./vois-eval/README.md).
+
+**This is also not a skill**, for the same reason `design-previews/` isn't — it's a testing artifact for the skills above, not instructions an agent reads mid-build.
 
 ---
 

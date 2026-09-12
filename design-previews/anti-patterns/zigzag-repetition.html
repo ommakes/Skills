@@ -1,0 +1,47 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: zigzag repetition</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .zig-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-24); align-items: center; padding: var(--space-24) 0; }
+  .zig-row.reverse { direction: rtl; }
+  .zig-row.reverse > * { direction: ltr; }
+  .zig-art { border-radius: var(--radius-lg); background: var(--color-muted); aspect-ratio: 4/3; }
+  @media (max-width: 640px) { .zig-row, .zig-row.reverse { grid-template-columns: 1fr; direction: ltr; } }
+  .full-bleed { background: var(--color-accent); color: var(--color-accent-foreground); border-radius: var(--radius-lg); padding: var(--space-48) var(--space-32); text-align: center; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-48);">
+    <span class="kit-rule">Anti-pattern · DS-SLOP-006</span>
+    <h1 class="h1">Zigzag repetition</h1>
+    <p class="text-description">Alternating image-left / image-right "zigzag" content sections are fine up to two in a row. A third consecutive one must break the pattern — change the layout family, go full-bleed, or cluster differently. Endless zigzag is what an agent produces when it has one layout idea and N sections to fill.</p>
+  </div>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Avoid — a third zigzag in a row</div>
+    <div class="zig-row"><div class="zig-art" aria-hidden="true"></div><div><p class="h4">Section one</p><p class="text-description">Image left, copy right.</p></div></div>
+    <div class="zig-row reverse"><div class="zig-art" aria-hidden="true"></div><div><p class="h4">Section two</p><p class="text-description">Image right, copy left.</p></div></div>
+    <div class="zig-row"><div class="zig-art" aria-hidden="true"></div><div><p class="h4">Section three</p><p class="text-description">Same pattern again — nothing signals this section is different from the last two.</p></div></div>
+  </section>
+
+  <section class="kit-section">
+    <div class="kit-panel-label" style="margin-bottom: var(--space-12);">Instead — the third section breaks the pattern</div>
+    <div class="zig-row"><div class="zig-art" aria-hidden="true"></div><div><p class="h4">Section one</p><p class="text-description">Image left, copy right.</p></div></div>
+    <div class="zig-row reverse"><div class="zig-art" aria-hidden="true"></div><div><p class="h4">Section two</p><p class="text-description">Image right, copy left.</p></div></div>
+    <div class="full-bleed"><p class="h2">Section three goes full-bleed instead</p><p style="margin-top: var(--space-12); opacity:.9;">A genuine break in rhythm, not a third repetition.</p></div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.12.0
+version: 1.13.0
 ---
 
 # Vois Tokens Skill
@@ -162,6 +162,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
 - [ ] Long pages use `content-visibility: auto` on off-screen sections `[DS-LAYOUT-002]`
 - [ ] Tested at sm, md, lg breakpoints `[DS-RESPONSIVE-002]`
+- [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — text wasn't shrunk to fit before those were tried `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] No wrapper divs that serve no layout purpose `[DS-LAYOUT-COMP-002]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
@@ -204,6 +205,7 @@ Run this regardless of which reference files you read — it's the universal gat
 | Need a spacing value | Round to nearest 4 or 8 — see `data/tokens.json` (`spacing_scale`) | `references/spacing.md` |
 | Need a font size | Use the type scale in `data/tokens.json` (`type_scale`) | `references/typography.md` |
 | Need full-screen height | `svh` not `vh` | `references/layout-and-responsive.md` |
+| Layout doesn't fit at a breakpoint | Reflow, then collapse, then hide — shrinking type is the last resort | `references/layout-and-responsive.md` |
 | Text container width | `max-width: 65ch` (`DS-TYPOGRAPHY-008`) | `references/typography.md` |
 | Two colors switching with theme | `light-dark()` | `references/color.md` |
 | Animating accordion height | `interpolate-size: allow-keywords` | `references/components.md` |

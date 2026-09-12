@@ -6,6 +6,22 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.8.0] - 2026-09-12
+
+**Add** | New `references/content-density.md`: a three-tier framework (dense / standard / spacious) for how much breathing room a screen should have, picked from who's using it and how often rather than defaulted to the mid-range spacing tokens everywhere. `PATH-DENSITY-DENSE` (admin grids, comparison-heavy scanning), `PATH-DENSITY-STANDARD` (the default — forms, settings, everyday detail views), `PATH-DENSITY-SPACIOUS` (onboarding, empty states, destructive confirmations, marketing) — added to `data/patterns-rules.json` as `cross_cutting_rule` nodes. Explicitly distinguished from `[DS-SLOP-010]` (card-ification is a container-choice anti-pattern; density is a spacing/information-per-screen decision, independent of it) and related to `vois-tokens`' `DENSITY` taste dial (the dial tunes within a tier, it doesn't pick the tier). `SKILL.md` gains a Reference Files row and checklist item.
+
+**Why now** | Confirmed via the same gap-check as `composition.md` (1.7.0): `forms.md` and `table-list.md` set fixed thresholds for their own template, but nothing in the 7 reference files offered a reusable density framework independent of the card anti-pattern.
+
+---
+
+## [1.7.0] - 2026-09-12
+
+**Add** | New `references/composition.md`: a cross-cutting rule set for briefs that name a product-specific feature ("approval queue", "impersonate a user") instead of one of the five container types. `PATH-COMPOSITION-CHECK-FIRST` (translate the brief into a job and re-check the decision tree), `PATH-COMPOSITION-COMBINE` (compose two existing paths before inventing a third, with worked examples), and `PATH-COMPOSITION-INVENT-LAST` (invent new structure only as a last resort, and say what didn't fit) — added to `data/patterns-rules.json` as `cross_cutting_rule` nodes, same shape as the existing permissions/conditional-logic rules. `SKILL.md` gains a pointer to this file right after the decision tree, a Reference Files row, and a checklist item.
+
+**Why now** | Confirmed via a gap-check read of all 7 `references/*.md` files before writing anything: no existing file states a general "compose before inventing" principle. The closest analogue, `vois-components`' `JOB-CONTAIN-CONTENT` ("why not wrap everything in a Card?"), is narrower and component-level, not page-composition guidance — `composition.md` cross-references it rather than restating it.
+
+---
+
 ## [1.6.1] - 2026-08-29
 
 **Change** | The "For exact Tailwind class names and token values, see vois-tokens" pointer now reads "For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tokens" — vois-tokens added StyleX as a second implementation engine alongside Tailwind v4 in its own `1.12.0`; this file's structural decision trees were already engine-agnostic and needed only this wording fix.

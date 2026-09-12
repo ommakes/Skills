@@ -1,0 +1,137 @@
+{
+  "source": "vois-components/data/components-rules.json",
+  "description": "Evaluation scenarios for checking whether a generated screen follows the Vois design system's decision layer, not just its tokens. Each scenario's condition and expected_outcome are quoted from an existing components-rules.json decision tree rather than invented for this file — a scenario is just a job's condition paired with an expected outcome and the near-miss outcomes its own rationale rules out. Scenario source_job values name the components-rules.json job whose decision_tree/rationale this scenario was drawn from; read that job there for the full tree if a scenario's outcome is disputed.",
+  "how_to_run": "There is no automated runner yet (deliberately -- see score_categories note below). To run a scenario by hand: give an agent with the vois-* skills active the scenario's user_prompt as if it were a real feature request, let it build the screen, then check the result against expected_outcome and forbidden_outcomes. A pass means the expected outcome is present and none of the forbidden outcomes appear; a partial/fail should note which score_categories the miss falls under.",
+  "score_categories": [
+    "token_adherence",
+    "component_selection",
+    "pattern_adherence",
+    "visual_fidelity",
+    "decision_layer_adherence",
+    "anti_pattern_avoidance",
+    "accessibility_adherence"
+  ],
+  "score_categories_note": "Categories are defined so a run can be scored consistently, but no weighting between them is assigned yet -- that would be inventing numbers with zero measurement behind them, the same mistake this whole project exists to stop Claude from making with invented token values. Run the 10 scenarios below at least once, look at where drift actually concentrates, then set weights informed by that -- not before.",
+  "scenarios": [
+    {
+      "id": "EVAL-001",
+      "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "user_prompt": "Add a way to archive a project from the projects list. Archiving just hides it from the active list; the user can restore it later from an Archived filter.",
+      "condition": "Action affects only current user, and undo is available (e.g. archive, move)",
+      "expected_outcome": "Toast with undo action",
+      "forbidden_outcomes": [
+        "AlertDialog (over-escalates a reversible, undoable action -- see 'Why not Toast for irreversible actions?', which only rules Toast out the other direction)",
+        "A blocking confirm dialog of any kind before the archive happens"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-002",
+      "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "user_prompt": "Add a 'Delete account' button to account settings. This permanently deletes the account and all its data.",
+      "condition": "Action is not reversible, affects only current user (delete, disconnect)",
+      "expected_outcome": "AlertDialog",
+      "forbidden_outcomes": [
+        "Plain Dialog (no role=\"alertdialog\" urgency semantics for screen readers)",
+        "Toast with undo (irreversible action, no undo window exists to offer)"
+      ],
+      "score_categories_checked": ["component_selection", "accessibility_adherence"]
+    },
+    {
+      "id": "EVAL-003",
+      "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "user_prompt": "Let a workspace admin revoke another member's access to the workspace.",
+      "condition": "Action affects other users (revoke access, cancel shared resource)",
+      "expected_outcome": "AlertDialog + post-action notification to affected users",
+      "forbidden_outcomes": [
+        "AlertDialog with no notification to the removed member",
+        "Toast (no urgency signal for an action affecting someone other than the actor)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence", "pattern_adherence"]
+    },
+    {
+      "id": "EVAL-004",
+      "source_job": "JOB-TRANSIENT-FEEDBACK",
+      "user_prompt": "Show confirmation after a user copies an invite link to their clipboard.",
+      "condition": "Pure acknowledgment, no action required (saved, copied, sent)",
+      "expected_outcome": "Toast",
+      "forbidden_outcomes": [
+        "Inline persistent Alert (disproportionate for a trivial, non-actionable acknowledgment)"
+      ],
+      "score_categories_checked": ["component_selection"]
+    },
+    {
+      "id": "EVAL-005",
+      "source_job": "JOB-TRANSIENT-FEEDBACK",
+      "user_prompt": "Show a validation error under the email field on a signup form when the address is malformed.",
+      "condition": "Error tied to a specific input, field, or section",
+      "expected_outcome": "Alert inline, positioned adjacent to the source field",
+      "forbidden_outcomes": [
+        "Toast (places feedback far from the source -- see 'Why not Toast for errors on inputs?')",
+        "A single generic 'form has errors' banner at the top of the page with no per-field message"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-006",
+      "source_job": "JOB-OVERLAY-INTERACTION",
+      "user_prompt": "Let a user edit a single row's status inline from a data table, without losing their place in the table.",
+      "condition": "Longer task, needs more screen space, or relates to an item in a list; user will likely want to see the page behind it while working",
+      "expected_outcome": "Sheet (right-anchored, partial overlap)",
+      "forbidden_outcomes": [
+        "Dialog (centered, feels disconnected from the row that triggered it)",
+        "Drawer (full-height, more screen weight than a single-row edit needs)",
+        "Full navigation to a separate edit page (loses the table context entirely)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-007",
+      "source_job": "JOB-OVERLAY-INTERACTION",
+      "user_prompt": "Add a confirmation step before a user deletes a single project from the projects list.",
+      "condition": "Short, self-contained task; destructive or consequential",
+      "expected_outcome": "AlertDialog (see JOB-CONFIRM-DESTRUCTIVE)",
+      "forbidden_outcomes": [
+        "Plain Dialog",
+        "Sheet or Drawer (over-scoped shell for a single yes/no decision)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-008",
+      "source_job": "JOB-LOADING-STATE",
+      "user_prompt": "Show feedback while a projects list is fetching from the API on the page's initial load.",
+      "condition": "Fetching content that will fill a known layout (page load, list load, card content)",
+      "expected_outcome": "Skeleton matching the shape of the incoming list",
+      "forbidden_outcomes": [
+        "A full-page spinner with no structure (gives no shape prediction, causes layout shift on arrival)",
+        "A progress bar (no measurable percentage exists for this fetch)"
+      ],
+      "score_categories_checked": ["component_selection", "visual_fidelity", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-009",
+      "source_job": "JOB-LOADING-STATE",
+      "user_prompt": "Show feedback on a 'Save' button while the save request is in flight.",
+      "condition": "Short action in progress, result will appear in place (button submitting, search running)",
+      "expected_outcome": "Spinner inside or replacing the button's label, trigger disabled while loading",
+      "forbidden_outcomes": [
+        "Skeleton (wrong location for an in-place action result)",
+        "A full-page loading overlay for a single button's request"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    },
+    {
+      "id": "EVAL-010",
+      "source_job": "JOB-EMPTY-CONTENT",
+      "user_prompt": "A projects table returns zero rows because the user's search query didn't match anything.",
+      "condition": "Filters or search removed all results (filtered empty, not true zero)",
+      "expected_outcome": "Inline message + \"clear filters\" action, not a full EmptyState component",
+      "forbidden_outcomes": [
+        "A full EmptyState illustration/CTA block (disproportionate for a zero-result search -- see 'Why not a full EmptyState for filtered results?')",
+        "Silently rendering an empty table with no message at all"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+    }
+  ]
+}

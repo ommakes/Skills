@@ -567,6 +567,24 @@
       "enforcement": "advisory"
     },
     {
+      "id": "DS-RESPONSIVE-006",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Preserve task hierarchy before shrinking type. Identify the primary task/content on the screen and keep it at a comfortable, legible size at every breakpoint; let secondary and tertiary content absorb the constraint first.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-RESPONSIVE-007",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "When content doesn't fit, prefer reflow, then collapse, then hide, in that order, before shrinking text or spacing to cram the same layout into less room. Shrinking is the last resort and never overrides the DS-RESPONSIVE-004 minimums.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
       "id": "DS-LAYOUT-COMP-001",
       "category": "DS-LAYOUT",
       "category_label": "Layout, Viewport, and Responsive Behavior",

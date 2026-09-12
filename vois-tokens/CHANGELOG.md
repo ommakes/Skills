@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.13.0] — 2026-09-12
+
+### Added
+
+- **`references/layout-and-responsive.md`** gains a "Judgment Under Constraint" subsection under `[DS-RESPONSIVE]`: `DS-RESPONSIVE-006` (preserve task hierarchy — keep primary content full-size, let secondary content absorb the constraint first) and `DS-RESPONSIVE-007` (reflow, then collapse, then hide, then shrink — in that order, never below the `DS-RESPONSIVE-004` minimums). The existing `[DS-RESPONSIVE]` rules were purely mechanical (breakpoints, touch targets, container queries); nothing addressed what to actually do when content doesn't fit. Matching entries added to `data/vois-rules.json`, and the Pre-Submit Checklist / Quick Reference in `SKILL.md` gain corresponding rows.
+- **Version bump:** `1.12.0` → `1.13.0`
+
+---
+
 ## [1.12.0] — 2026-08-29
 
 ### Added

@@ -4,7 +4,7 @@ A rendered, static HTML/CSS companion to the `vois-tokens`, `vois-components`, a
 
 ## Why this exists
 
-The Vois skills in this repo (`SKILL.md` + `references/` + `data/`) are instructions an AI coding agent reads before writing UI code. They don't render anything themselves. Claude Design is a different consumer: a visual design-system browser that's populated by pushing real, rendered component previews via the `DesignSync` tool (paired with a `/design-sync` skill). This folder is that rendered artifact — 25 self-contained `.html` files demonstrating the foundations, the highest-confusion component pairs, and the page-level patterns the skills describe.
+The Vois skills in this repo (`SKILL.md` + `references/` + `data/`) are instructions an AI coding agent reads before writing UI code. They don't render anything themselves. Claude Design is a different consumer: a visual design-system browser that's populated by pushing real, rendered component previews via the `DesignSync` tool (paired with a `/design-sync` skill). This folder is that rendered artifact — self-contained `.html` files demonstrating the foundations, the highest-confusion component pairs, the page-level patterns, and the anti-patterns the skills describe. Run `scripts/validate-previews.sh` for the current per-folder counts instead of trusting a hardcoded number here — it prints them on every run specifically so this file doesn't have to.
 
 **This is not a skill.** It has no `SKILL.md`, isn't listed in `skills.json`, and isn't installed via `npx skills add`. It's a visual reference, kept in this repo because it's derived directly from the Vois skill content and versioned alongside it.
 
@@ -25,7 +25,7 @@ foundations/           color, typography, spacing, elevation, radius, iconograph
 components/            10 highest-confusion component-pair comparisons, sourced from
                         vois-components/data/components-rules.json's "why not X" reasoning
 patterns/               5 full-page layouts from vois-patterns' container types
-anti-patterns/          3 DS-SLOP-* anti-tells from vois-tokens, wrong vs. right
+anti-patterns/          DS-SLOP-* anti-tells from vois-tokens, wrong vs. right
 index.html              local nav for browsing the kit in a browser (not synced)
 scripts/validate-previews.sh   checks every preview's @dsCard marker + no external URLs
 ```

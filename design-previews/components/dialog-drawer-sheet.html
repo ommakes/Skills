@@ -41,6 +41,51 @@
     </div>
   </section>
 
+  <section class="kit-section">
+    <h2 class="h3" style="margin-bottom: var(--space-16);">States &middot; same footer, different moments</h2>
+    <div class="kit-grid">
+      <div class="kit-panel">
+        <div class="kit-panel-label">Disabled &middot; required field not filled</div>
+        <div class="field" style="margin-bottom: var(--space-16);">
+          <label>Project name</label>
+          <input class="input" placeholder="Required" aria-invalid="false">
+        </div>
+        <div class="dialog-footer" style="margin-top:0;">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-primary" disabled>Save</button>
+        </div>
+        <p class="kit-caption">Primary action stays disabled until required fields are valid, not clickable-then-erroring.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Busy &middot; save in progress</div>
+        <div class="field" style="margin-bottom: var(--space-16);">
+          <label>Project name</label>
+          <input class="input" value="Q3 roadmap" disabled>
+        </div>
+        <div class="dialog-footer" style="margin-top:0;">
+          <button class="btn btn-secondary" disabled>Cancel</button>
+          <button class="btn btn-primary" disabled style="gap: var(--space-8);"><span class="spinner"></span>Saving&hellip;</button>
+        </div>
+        <p class="kit-caption">Whole form disables while the save is in flight &mdash; not just the button that was clicked.</p>
+      </div>
+      <div class="kit-panel">
+        <div class="kit-panel-label">Error &middot; save failed</div>
+        <div class="field" style="margin-bottom: var(--space-12);">
+          <label>Project name</label>
+          <input class="input" value="Q3 roadmap">
+        </div>
+        <div class="alert" style="border-color: var(--color-destructive); margin-bottom: var(--space-16);">
+          <span class="text-description" style="color: var(--color-destructive);">Couldn't save changes. Check your connection and try again.</span>
+        </div>
+        <div class="dialog-footer" style="margin-top:0;">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-primary">Retry</button>
+        </div>
+        <p class="kit-caption">Input stays editable and the entered value is preserved &mdash; a failed save never discards what the user typed.</p>
+      </div>
+    </div>
+  </section>
+
   <dialog id="dlg">
     <div class="dialog-body">
       <h2 class="h2">Edit profile</h2>
