@@ -1,27 +1,16 @@
 ---
 name: research-loop
-version: 1.2.2
+version: 1.2.3
 author: Personify Labs
 description: >
   Orchestrates survey-architect, feedback-synthesizer, and research-reporter
-  as an iterative research loop — not a one-way pipeline. Detects when a
-  downstream skill can't proceed cleanly (data too thin to trust, wrong
-  instrument for the stated goal) and routes back upstream instead of
-  producing a shaky output. Maintains an explicit per-study state
-  (00-state.json, against a fixed transition graph — not a full workflow
-  engine) alongside the per-study file structure at
-  /research/<study-name>/ and the per-product longitudinal benchmark at
-  /research/_benchmarks/<product>.md, and checks benchmark comparability
-  (same instrument/wording/scale/population/sampling/trigger) before
-  letting two waves imply a trend. Use this as the single entry point
-  for any UX research task — a new study, raw data to make sense of, or a
-  report to write — rather than calling the three skills directly. Trigger
-  when someone starts a new research study, pastes raw feedback/survey
-  data without a study already in motion, or asks to "run the research
-  loop." Bundles scripts/routing.py for deterministic entry detection,
-  state transitions, the loop-back ceiling, and benchmark validation (run
-  it, don't count loop-backs or eyeball comparability by hand) and evals/
-  for regression testing.
+  as an iterative research loop that routes back upstream when a downstream
+  step can't proceed cleanly, with per-study state and a per-product
+  longitudinal benchmark. Use this as the single entry point for any UX
+  research task — a new study, raw data to make sense of, or a report to
+  write — rather than calling the three skills directly. Trigger when
+  someone starts a new research study, pastes raw feedback/survey data
+  without a study already in motion, or asks to "run the research loop."
 tags:
   - user-research
   - ux-research
@@ -314,3 +303,10 @@ every skill's Rules section just tags bullets with these keywords).
 | 2 kickbacks, still unresolved | Surface to researcher, stop |
 | Two waves, measurement conditions differ | Report side by side, not as a trend |
 | Loop complete | Completion block, update benchmark file |
+
+## Maintaining this skill
+
+`evals/` is the regression suite. After touching `scripts/routing.py`, run
+`python3 -m unittest discover -s evals -v` (CI runs the same). After
+touching this file's prose, re-check the cases in
+`evals/qualitative_cases.md` by hand.

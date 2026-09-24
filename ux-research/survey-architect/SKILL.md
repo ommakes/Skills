@@ -1,25 +1,17 @@
 ---
 name: survey-architect
-version: 1.2.2
+version: 1.2.3
 author: Personify Labs
 description: >
-  Turns a research question into a validated, deploy-ready survey. Runs a
-  short intake to establish product context and learning goal, selects the
-  right instrument (SEQ, SUS, UMUX-Lite, SUPR-Q, NPS, CSAT, CES, PSSUQ, or a
-  custom item set) based on what's actually being measured, and outputs a
-  platform-native file ready to paste into Qualtrics, Typeform, or an in-app
-  survey component. Trigger when someone says "I need to survey users about
-  X," "what should I ask users after they do Y," "build me an NPS survey,"
-  "help me measure usability of Z," or pastes a vague research need and
-  wants it turned into an actual instrument. Entry point 1 of the research
-  loop (see research-loop). Product/org-specific facts (which products
-  exist, benchmark root path) live in ../config/product-context.yaml, not
-  in this file — read it during intake rather than assuming a fixed
-  product list. Bundles scripts/selection.py for the deterministic
-  instrument lookup, sample-size floor, and intake/spec validation (run
-  it, don't eyeball the table) and evals/ for regression testing — run
-  evals/test_selection.py after touching selection.py, and check
-  evals/qualitative_cases.md after touching this file's prose.
+  Turns a research question into a validated, deploy-ready survey: a short
+  intake, the right instrument for what's being measured (SEQ, SUS,
+  UMUX-Lite, SUPR-Q, NPS, CSAT, CES, PSSUQ, or a custom item set), and a
+  platform-native file for Qualtrics, Typeform, or an in-app survey. Trigger
+  when someone says "I need to survey users about X," "what should I ask
+  users after they do Y," "build me an NPS survey," "help me measure
+  usability of Z," or pastes a vague research need and wants it turned into
+  an actual instrument. Entry point 1 of the research loop (see
+  research-loop).
 tags:
   - user-research
   - ux-research
@@ -221,3 +213,10 @@ higher-priority one.
 | "How do we compare to competitors' UX?" | Relationship, benchmarked | SUPR-Q |
 | "Will people actually use this feature?" | Pre-launch | TAM / UMUX-Lite |
 | Nothing above fits | Custom, one-off | Custom item set, no benchmark |
+
+## Maintaining this skill
+
+`evals/` is the regression suite. After touching `scripts/selection.py`,
+run `python3 -m unittest discover -s evals -v` (CI runs the same). After
+touching this file's prose, re-check the cases in
+`evals/qualitative_cases.md` by hand.

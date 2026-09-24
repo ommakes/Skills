@@ -4,6 +4,23 @@ All four skills (`survey-architect`, `feedback-synthesizer`,
 `research-reporter`, `research-loop`) are versioned independently; this
 file tracks all of them together since they shipped as one system.
 
+## 2026-09-24
+
+### survey-architect 1.2.3, feedback-synthesizer 1.3.3, research-reporter 1.2.3, research-loop 1.2.3
+
+Trimmed all four frontmatter `description`s back to what the skill does,
+when to trigger it, and its place in the loop. They had grown to
+1,200–1,500 characters by carrying maintainer instructions ("run
+evals/test_scoring.py after touching scoring.py"), bundled-script usage,
+and behavioral rules (claim-strength ladder, "never re-derives scores").
+A description is loaded into every session that has the skill installed,
+whether or not it triggers, so that text cost tokens everywhere and was
+aimed at maintainers, not the model routing the request. The behavioral
+rules and script usage were already stated in each body; the maintainer
+notes (the only content that lived nowhere else) moved to a new
+"Maintaining this skill" section at the end of each SKILL.md. No behavior
+change.
+
 ## 2026-09-12 (later still)
 
 ### survey-architect 1.2.2, feedback-synthesizer 1.3.2, research-reporter 1.2.2, research-loop 1.2.2

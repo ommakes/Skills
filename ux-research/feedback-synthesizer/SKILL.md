@@ -1,31 +1,15 @@
 ---
 name: feedback-synthesizer
-version: 1.3.2
+version: 1.3.3
 author: Personify Labs
 description: >
-  Turns raw survey results (scores + open-text comments) into a scored,
-  statistically-tested, thematically-coded synthesis — and connects the two.
-  Computes instrument-correct scores (SUS formula, NPS calc, SUPR-Q
-  percentile), real confidence intervals, and significance testing across
-  waves or segments. Codes qualitative comments into themes (emergent per
-  study, converging toward a fixed taxonomy per product over time) and
-  cross-references low scorers against recurring themes. Owns
-  severity/priority scoring, with named override reasons (safety,
-  accessibility, legal/compliance) that can outrank the frequency-based
-  tier, plus a separate evidence-confidence rating and a claim-strength
-  ladder (observed/associated/correlated/causal) so statistical
-  significance, practical significance, and overall trust in a finding
-  stay three distinct things, never conflated. Can run standalone on any
-  pile of feedback (reviews, support tickets, open-ended comments) —
-  doesn't require a survey-architect-built survey as input. Trigger when
-  someone pastes raw survey data, a CSV of responses, or a pile of
-  qualitative feedback and wants it turned into findings. Entry point 2 of
-  the research loop (see research-loop). Bundles scripts/scoring.py for
-  deterministic instrument math, the centralized statistical policy, and
-  synthesis validation (run it, don't calculate by hand) and evals/ for
-  regression testing after any edit — run evals/test_scoring.py after
-  touching scoring.py, and check evals/qualitative_cases.md after
-  touching this file's prose.
+  Turns raw survey results (scores + open-text comments) or any pile of
+  qualitative feedback (reviews, support tickets, open-ended comments) into
+  a scored, statistically-tested, thematically-coded synthesis with
+  severity-ranked findings. Trigger when someone pastes raw survey data, a
+  CSV of responses, or a pile of qualitative feedback and wants it turned
+  into findings. Entry point 2 of the research loop (see research-loop);
+  also runs standalone without a survey-architect-built survey.
 tags:
   - user-research
   - ux-research
@@ -390,3 +374,10 @@ precedence explanation.
 | New product, first study | Emergent coding |
 | Existing product with prior studies | Reuse taxonomy from benchmark file, extend only if needed |
 | Standalone data, no spec file | Say so explicitly, identify instrument from data structure |
+
+## Maintaining this skill
+
+`evals/` is the regression suite. After touching `scripts/scoring.py`, run
+`python3 -m unittest discover -s evals -v` (CI runs the same). After
+touching this file's prose, re-check the cases in
+`evals/qualitative_cases.md` by hand.

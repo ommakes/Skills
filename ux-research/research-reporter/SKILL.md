@@ -1,26 +1,16 @@
 ---
 name: research-reporter
-version: 1.2.2
+version: 1.2.3
 author: Personify Labs
 description: >
   Turns a feedback-synthesizer output into a stakeholder-ready report —
   exec summary, methodology, benchmark comparison, and prioritized
-  recommendations — formatted for the audience reading it. Internal/quick
-  audiences get a markdown or Notion-ready doc; formal/external stakeholders
-  get a Word document. Routes UI-facing or public-facing copy through
-  righter or thought-leadership-writer where relevant. Never re-derives
-  scores, themes, or severity — those come from feedback-synthesizer as
-  given, including its evidence-confidence rating and claim-strength
-  ladder, which this skill can present but never upgrade (a correlational
-  finding never becomes causal language here). Trigger when someone has
-  synthesis output ready and wants it turned into something shareable,
-  says "write this up," "make me a report," or "turn these findings into
-  something I can send to leadership." Entry point 3 of the research loop
-  (see research-loop). Bundles scripts/report_checks.py for audience-
-  format lookup, section completeness, verbatim-preservation, causal-
-  language, and report.json validation (run it before finalizing, but
-  note it can't catch a subtly reframed caveat — that still needs a human
-  read) and evals/ for regression testing.
+  recommendations — formatted for the audience reading it (markdown or
+  Notion for internal readers, Word for formal/external stakeholders).
+  Trigger when someone has synthesis output ready and wants it turned into
+  something shareable, says "write this up," "make me a report," or "turn
+  these findings into something I can send to leadership." Entry point 3 of
+  the research loop (see research-loop).
 tags:
   - user-research
   - ux-research
@@ -217,3 +207,10 @@ precedence explanation.
 | Report going external/public | Docx + thought-leadership-writer pass | Narrative voice |
 | Findings reference UI copy | Route through righter | Copy standard consistency |
 | No synthesis file exists | Stop, redirect to feedback-synthesizer | — |
+
+## Maintaining this skill
+
+`evals/` is the regression suite. After touching
+`scripts/report_checks.py`, run `python3 -m unittest discover -s evals -v`
+(CI runs the same). After touching this file's prose, re-check the cases
+in `evals/qualitative_cases.md` by hand.
