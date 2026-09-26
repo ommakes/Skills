@@ -2,8 +2,8 @@
   "rules": [
     {
       "id": "UNIV-001",
-      "condition": "A screen has more than one call-to-action.",
-      "outcome": "Exactly one primary action per screen. Every other action must be visually and verbally subordinate (text link, not a second button of equal weight).",
+      "condition": "A screen presents one decision or step for the user to act on.",
+      "outcome": "Give that decision exactly one primary action. Every other action on the screen must be visually and verbally subordinate (text link, not a second button of equal weight). Doesn't apply to a checklist's per-item CTAs (SAAS-003) or a legally required consent screen's equal-weight buttons (CONSUMER-007) — those are independent items, not competing actions for one decision.",
       "source_file": "SKILL.md"
     },
     {
@@ -21,7 +21,7 @@
     {
       "id": "UNIV-004",
       "condition": "The flow asks the user a personalization question (goal, interest, role, etc.).",
-      "outcome": "The next screen the user sees must visibly use that answer. If it won't, cut the question instead of asking it for no reason.",
+      "outcome": "The payoff must visibly appear within one or two screens after the answer is collected. If it won't, cut the question instead of asking it for no reason.",
       "source_file": "SKILL.md"
     },
     {

@@ -7,7 +7,7 @@
 // Exit code 0 = in sync, 1 = drift found (prints what's missing on which side).
 
 import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const skillRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -31,7 +31,10 @@ function idsTaggedInMarkdown() {
     const text = readFileSync(file, "utf8");
     for (const match of text.matchAll(ID_TAG)) {
       const id = match[1];
-      const rel = file.replace(skillRoot + "/", "");
+      // Normalize to forward slashes so this matches data/onboarding-rules.json's
+      // source_file values ("references/foo.md") even when path.relative emits
+      // backslashes, as it does on Windows.
+      const rel = relative(skillRoot, file).split(sep).join("/");
       if (!found.has(id)) found.set(id, []);
       found.get(id).push(rel);
     }

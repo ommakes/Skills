@@ -1,6 +1,6 @@
 ---
 name: onboarding-flow
-version: 1.1.0
+version: 1.1.1
 author: Personify Labs
 description: >
   Design new onboarding flows or evaluate/critique existing ones — signup sequences, setup
@@ -143,9 +143,12 @@ These held across every real flow pulled for this skill, SaaS and consumer alike
 below carries a stable `id` in backticks — cite the id, not the bullet position, when referencing
 a rule from outside this file.
 
-- **One primary action per screen** `id: UNIV-001`. If a screen has two competing CTAs, one is
-  winning by accident. Make the secondary action visually and verbally subordinate (text link,
-  not a second button of equal weight).
+- **One primary action per screen** `id: UNIV-001`. For a screen presenting a single decision,
+  give it exactly one primary action — if a screen has two competing CTAs for the same decision,
+  one is winning by accident. Make the secondary action visually and verbally subordinate (text
+  link, not a second button of equal weight). This doesn't apply to a checklist's per-item CTAs
+  (`SAAS-003` — each item is its own independent action, not competitors) or a legally required
+  consent screen's equal-weight buttons (`CONSUMER-007`).
 - **Progress must be honest and visible** `id: UNIV-002`. A progress bar, step count ("Step 3 of
   4"), or fraction ("3/8 completed") should reflect real remaining effort, not motivate through
   vagueness. Never show progress that doesn't move.
@@ -153,8 +156,8 @@ a rule from outside this file.
   — except the single final confirmation screen. A flow with no exit reads as coercive, not
   confident.
 - **Ask before you tell** `id: UNIV-004`. If you collect a preference (goal, interest, role), the
-  next screen the user sees should visibly reflect that answer. If it doesn't, cut the question
-  — asking without using it just adds friction for nothing.
+  payoff must visibly appear within one or two screens after that answer. If it won't, cut the
+  question — asking without using it just adds friction for nothing.
 - **Route every word to righter, every layout decision to vois-patterns** `id: UNIV-005`. Don't
   write filler copy "for now" and don't eyeball spacing. It compounds into rework.
 
