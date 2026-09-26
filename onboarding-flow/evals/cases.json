@@ -1,0 +1,61 @@
+{
+  "description": "Regression corpus for the onboarding-flow skill. Each case is a worked flow (screen-by-screen) with the rule ids a correct Mode 1 review should flag, and — where relevant — ids it should explicitly NOT flag. Use this manually when editing SKILL.md, data/onboarding-rules.json, or the reference files: re-walk each case's `scenario` against the current rules and confirm the same ids still come out. Not an automated test suite — there's no scorer here, just a fixed set of known-answer cases.",
+  "cases": [
+    {
+      "id": "saas-good-checklist",
+      "shape": "SHAPE-SAAS",
+      "scenario": "A CRM. On signup, the user lands in the real product with full nav visible. A home-screen card shows an 8-item setup checklist: '3/8 completed' plus a filled progress bar at the top. Each item is one line with a single CTA button ('Connect Stripe', 'Invite your team', 'Import contacts', ...). Completed items stay visible with a checkmark and muted text. An 'Upcoming live trainings' link sits below the checklist, not inside it. None of the product's real functionality is disabled before the checklist is done.",
+      "expected_violations": [],
+      "must_not_flag": ["UNIV-001", "SAAS-003"],
+      "notes": "The regression case for the Bugbot-found false positive: eight equal-weight checklist buttons on one screen must not trip UNIV-001, since SAAS-003's per-item CTAs are independent actions, not competitors for one decision."
+    },
+    {
+      "id": "saas-blocking-wizard",
+      "shape": "SHAPE-SAAS",
+      "scenario": "A project management tool. On signup, the user is dropped into a 5-screen full-screen wizard (workspace name, invite teammates, pick a template, connect a calendar, confirm) before they can see any real project data. No step is a genuine functional dependency — the product works fine without a connected calendar.",
+      "expected_violations": ["SAAS-001"],
+      "must_not_flag": [],
+      "notes": "Full-screen wizard blocking the product with no genuine functional dependency — the named exception in SAAS-001 doesn't apply."
+    },
+    {
+      "id": "saas-gated-functionality",
+      "shape": "SHAPE-SAAS",
+      "scenario": "An analytics tool. The dashboard is visible on signup, but every chart is blurred with an overlay: 'Complete setup to unlock your dashboard.' The checklist items are gating real functionality, not just guiding the user toward it.",
+      "expected_violations": ["SAAS-006"],
+      "must_not_flag": [],
+      "notes": "SAAS-006 is a MUST — there's no legitimate-exception framing for gating real functionality behind checklist completion."
+    },
+    {
+      "id": "consumer-good-flow",
+      "shape": "SHAPE-CONSUMER",
+      "scenario": "A budgeting app. Screen 1: value prop. Screen 2: one question ('What's your main money goal?', 4 radio options, back arrow + X visible, thin progress bar). Screen 3: account creation. Screen 4: a screen headlined 'Your goal: Save for a trip' showing a recommended savings plan built from the screen 2 answer. Screen 5: paywall pairing 'Subscribe' with a visible 'Continue without subscribing' link, price and cancellation terms shown on the same screen. Screen 6: one-line confirmation, single CTA into the app.",
+      "expected_violations": [],
+      "must_not_flag": ["CONSUMER-001", "UNIV-001"],
+      "notes": "A clean flow across every consumer rule, including a personalization payoff that lands within two screens and a paywall with a real non-paying path."
+    },
+    {
+      "id": "consumer-unused-personalization",
+      "shape": "SHAPE-CONSUMER",
+      "scenario": "A news app. Screen 2 asks the user to pick 3 topics of interest. Screens 3 through 6 are account creation, a generic paywall, a generic confirmation, and a home screen with the same default top-stories feed every user gets — none of it reflects the topics picked in screen 2.",
+      "expected_violations": ["CONSUMER-004", "UNIV-004"],
+      "must_not_flag": [],
+      "notes": "The payoff never appears at all, well past the one-or-two-screen tolerance both rules now share post-fix."
+    },
+    {
+      "id": "consumer-forced-paywall",
+      "shape": "SHAPE-CONSUMER",
+      "scenario": "A fitness app. After account creation, a full-screen paywall shows only a 'Start My Free Trial' button and a tiny X in the corner that exits the app entirely — there's no way to continue into the app without either subscribing or leaving.",
+      "expected_violations": ["CONSUMER-006"],
+      "must_not_flag": [],
+      "notes": "No visible non-paying path into the product itself — closing the paywall closes the app, which isn't a de-emphasized continue-without-subscribing option."
+    },
+    {
+      "id": "consumer-disguised-consent",
+      "shape": "SHAPE-CONSUMER",
+      "scenario": "A shopping app. A tracking-consent screen shows a single large 'OK, got it!' button. A 'manage options' link in small grey text sits below it, and tapping the big button accepts all tracking without a separate choice ever being presented.",
+      "expected_violations": ["CONSUMER-007"],
+      "must_not_flag": [],
+      "notes": "Disguises the choice as a single option with a small manage link — exactly the pattern CONSUMER-007 (a MUST) prohibits."
+    }
+  ]
+}

@@ -27,7 +27,7 @@ Not every app uses every screen, but this is the order real flows follow:
    notifications to level up faster," with a fake preview of the notification above it. IMDb:
    explains exactly why it wants the ad ID and reassures it's changeable later. Never let the
    native OS permission dialog be the user's first exposure to *why* you're asking.
-   `id: CONSUMER-005`
+   `id: CONSUMER-005` (SHOULD)
 5. **Account creation** — usually the shortest screen, often just email/social login.
 6. **Paywall / subscribe** — see pattern below. Can appear before or after the personalization
    payoff depending on how much value has been demonstrated yet.
@@ -38,18 +38,18 @@ Not every app uses every screen, but this is the order real flows follow:
 
 Consent/tracking screens (Tubi's "We and our 311 partners...") are legally required in many
 jurisdictions and use plain, undisguised buttons: Accept All / No Thanks / Manage Preferences —
-never trick the user into thinking there's only one option. `id: CONSUMER-007`
+never trick the user into thinking there's only one option. `id: CONSUMER-007` (MUST)
 
 ## Personalization quiz pattern (the highest-leverage screen type)
 
 Every quiz screen pulled for this skill shares the same bones:
 
-- **One question per screen.** Never stack two questions on one screen. `id: CONSUMER-001`
+- **One question per screen.** Never stack two questions on one screen. `id: CONSUMER-001` (SHOULD)
 - **Progress shown as a thin bar at the top**, or an explicit step count ("Step 3 of 4",
   numbered dots "1 ● 2"). Rocket Money and MacroFactor use a thin filled bar; Cleo and Brilliant
-  use it too, sometimes paired with a number. `id: CONSUMER-002`
+  use it too, sometimes paired with a number. `id: CONSUMER-002` (SHOULD)
 - **Back arrow top-left, X to close/skip top-right** (Rocket Money). Never remove the exit.
-  `id: CONSUMER-003`
+  `id: CONSUMER-003` (MUST)
 - **Card-style single-select options with a radio indicator**, 3–6 options, each with a short
   label and sometimes a one-line description ("Based off your current savings and account
   balance" — Rocket Money's recommended option).
@@ -62,7 +62,7 @@ Every quiz screen pulled for this skill shares the same bones:
   Cleo choose the best way for you to save." ABY Journal: "It's really great to meet you,
   Alex... What brings you here?" — the app is having a conversation, not administering a form.
 
-## The personalization payoff — don't skip this `id: CONSUMER-004`
+## The personalization payoff — don't skip this `id: CONSUMER-004` (SHOULD)
 
 The quiz is wasted effort if the next screens don't visibly use the answer. Real examples:
 NYTimes shows a notification-preference *screen* keyed to interests right after account
@@ -86,7 +86,7 @@ hesitation is highest, not at the very start where it has no context yet.
   obvious without any setup.
 - **Always offer a visible non-paying path**, even if de-emphasized: NYTimes pairs "Subscribe
   Now" (primary, filled) with "Continue without subscribing" (secondary, outlined) on the same
-  screen — never force the choice to only "subscribe or leave the app." `id: CONSUMER-006`
+  screen — never force the choice to only "subscribe or leave the app." `id: CONSUMER-006` (MUST)
 - **State the terms plainly near the CTA**: price, billing cadence, and cancellation terms
   visible on the same screen as the button, not hidden behind a link (NYTimes, MasterClass both
   do this above/below the primary CTA).
