@@ -90,6 +90,17 @@ Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing
 
 ---
 
+### Onboarding Flow
+Designs new onboarding flows or evaluates/critiques existing ones — signup sequences, setup checklists, first-run wizards, personalization quizzes, permission priming, paywalls — for SaaS/web products and consumer/mobile apps. SaaS and consumer onboarding fail for opposite reasons if you cross the patterns, so the skill picks the right shape (companion checklist vs. linear sequence) before designing or evaluating anything. Pulls current visual reference from Mobbin when available, routes all UI copy to righter, and routes all structure/styling decisions to the vois skills (vois-patterns → vois-components → vois-tokens).
+
+Ships as `SKILL.md` plus two shape-specific `references/` files (`saas-onboarding.md`, `consumer-onboarding.md`), a `data/onboarding-rules.json` canonical rule set (18 rules: 5 universal, 6 SaaS, 7 consumer), and its own `scripts/check-rule-sync.mjs` to keep the rules and worked examples in sync — same convention as vois-patterns' own rule-sync script.
+
+**Use when:** designing a new onboarding flow from scratch, or reviewing/auditing an existing one from screenshots or a description — signup sequences, setup checklists, first-run wizards, personalization quizzes, permission priming, or paywalls.
+
+→ [`onboarding-flow/`](./onboarding-flow)
+
+---
+
 ### Designer IC Assessment
 Runs a structured behavioral interview to assess an IC designer across five categories and 19 competency areas, including AI fluency. Produces a competency-by-competency narrative, a scores-at-a-glance table, and a CSV export for Notion / FigJam handoff. Supports both designer self-assessment and manager assessment as independent sessions.
 
@@ -210,4 +221,4 @@ Read them in order. Each skill assumes you've read the previous one and points f
 ---
 
 **Maintained by:** Om Suthar  
-**Last updated:** 2026-09-12
+**Last updated:** 2026-09-26
