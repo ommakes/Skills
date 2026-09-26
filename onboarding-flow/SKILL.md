@@ -1,6 +1,6 @@
 ---
 name: onboarding-flow
-version: 1.1.0
+version: 1.2.0
 author: Personify Labs
 description: >
   Design new onboarding flows or evaluate/critique existing ones — signup sequences, setup
@@ -48,7 +48,9 @@ This skill defines the *sequence and screen types*. It is not a copywriting or s
    linear sequence. An existing flow that uses the wrong shape for its product type is itself a
    finding, not something to route around.
 3. **Read the matching reference file** and walk the flow screen by screen against every rule
-   `id` in `data/onboarding-rules.json` for that shape, plus the five `UNIV-*` rules.
+   `id` in `data/onboarding-rules.json` for that shape, plus the five `UNIV-*` rules. If the
+   flow states or implies its activation event (see Mode 2 step 2), treat any screen that
+   doesn't move toward it as a candidate cut even when it doesn't fail a specific numbered rule.
 4. **Output in the Review format below.** Don't rewrite copy or restyle components yourself —
    flag copy issues for righter and structural issues for vois-patterns, cite what should be
    checked there, and stop.
@@ -56,16 +58,24 @@ This skill defines the *sequence and screen types*. It is not a copywriting or s
 ### Mode 2: Generate a New Flow
 1. **What kind of product is this?** Walk the decision tree below — it determines the whole
    shape of the flow, not just the visual style.
-2. **Pull current reference, don't rely on memory.** If the `mcp__Mobbin__search_flows` or
+2. **Name the activation event.** Before sequencing any screens: what does this user need to
+   accomplish for onboarding to have worked? What's the one activation event (first workflow
+   run, first save, first invite sent, first personalized result shown), and what information is
+   strictly necessary to reach it? Anything that doesn't materially move the user toward that
+   event is friction, not onboarding — cut it rather than including it "just in case."
+3. **Pull current reference, don't rely on memory.** If the `mcp__Mobbin__search_flows` or
    `mcp__Mobbin__search_screens` tools are available, use them to pull 3–5 real examples for the
    *specific* product category (e.g. "fintech app onboarding," "B2B analytics tool setup guide")
    before finalizing screens — patterns date fast, and a competitor-specific pull beats the
    general patterns catalogued here. If Mobbin isn't available, use `references/` as the
-   fallback baseline.
-3. **Read the matching reference file** for the full screen-by-screen breakdown.
-4. **Route copy to righter and structure to vois** as you build each screen — don't batch this
+   fallback baseline. Treat what you pull as evidence of current practice, not proof that a
+   pattern is correct — weigh it against `data/onboarding-rules.json`, which is this skill's
+   durable baseline. A competitor doing something doesn't override a rule here without a stated
+   reason ("Apple does X" is not itself an argument for X).
+4. **Read the matching reference file** for the full screen-by-screen breakdown.
+5. **Route copy to righter and structure to vois** as you build each screen — don't batch this
    at the end.
-5. **Output in the New Flow format below.**
+6. **Output in the New Flow format below.**
 
 ---
 
@@ -88,6 +98,15 @@ START: What is the user signing up for?
 If a product genuinely straddles both (e.g. a mobile companion app for a web SaaS product),
 default to the shape of the surface you're designing or evaluating *this* flow for — a mobile
 app onboarding still follows the consumer shape even if the parent product is B2B SaaS.
+
+A second edge case: a single surface that blends both, like Notion, Figma, Slack, or a
+ChatGPT-style prosumer tool — used repeatedly at a desk like SaaS, but with real upfront value
+in a personalization choice (a workspace type, a template, a use case). Default to the SaaS
+shape as the base — these are still ongoing accounts used repeatedly, not short sessions — and
+borrow at most one consumer-style screen for the single highest-leverage personalization
+question, only if the product's early value genuinely depends on it. Treat CONSUMER-004's
+payoff rule as binding on that screen. Never let this turn into a multi-screen quiz gating
+access to the product — that's the SaaS shape's whole point (`SAAS-001`).
 
 ---
 
@@ -116,8 +135,15 @@ using the wrong shape for its product type.
 **Rules checked:** [list every rule `id` from `data/onboarding-rules.json` that applies to this
 screen type, whether it passed or failed]
 
-**Violations found:**
-- `[rule id]`: [what's wrong] → [what to do instead, in one sentence]. If none, write "None found."
+**Violations found:** For each one:
+- `[rule id]` (MUST | SHOULD, from `data/onboarding-rules.json`)
+  - Observed: [what's actually on this screen in the supplied flow — point at it, don't assert
+    without something to point at]
+  - Expected: [what the rule's `outcome` requires]
+  - Fix: [what to do instead, in one sentence]
+
+If none, write "None found." A `MUST` violation is always a violation. A `SHOULD` violation with
+a stated, legitimate reason isn't one — note the reasoning in place of a fix instead of flagging it.
 
 **Route to righter:** [any copy on this screen worth a pass — labels, headlines, error states —
 or "Nothing flagged."]
@@ -126,9 +152,10 @@ or "Nothing flagged."]
 pass, or "Nothing flagged."]
 ---
 
-After all screens: one summary line — total violations, and the single highest-leverage fix
-(usually a `CONSUMER-004`/personalization-payoff or `SAAS-001`/blocking-wizard issue if either
-is present).
+After all screens: one summary line — total violations (call out `MUST` violations separately,
+since those are non-negotiable), and the single highest-leverage fix (usually a
+`CONSUMER-004`/personalization-payoff issue, a `SAAS-001`/blocking-wizard issue, or any `MUST`
+violation, if present).
 
 ### New Flow format (Mode 2)
 Use the screen sequence itself as the deliverable — a numbered list of screens in order, each
@@ -141,39 +168,47 @@ satisfies. Follow with the Checklist Before Handing Off below, completed, not ju
 
 These held across every real flow pulled for this skill, SaaS and consumer alike. Every rule
 below carries a stable `id` in backticks — cite the id, not the bullet position, when referencing
-a rule from outside this file.
+a rule from outside this file. Each is also tagged `MUST` or `SHOULD` in
+`data/onboarding-rules.json`: `MUST` rules address coercion, deception, or dark patterns and
+have no legitimate exception; `SHOULD` rules are strong defaults with real exceptions — deviate
+from them only with a stated reason, not by default.
 
-- **One primary action per screen** `id: UNIV-001`. If a screen has two competing CTAs, one is
-  winning by accident. Make the secondary action visually and verbally subordinate (text link,
-  not a second button of equal weight).
-- **Progress must be honest and visible** `id: UNIV-002`. A progress bar, step count ("Step 3 of
-  4"), or fraction ("3/8 completed") should reflect real remaining effort, not motivate through
-  vagueness. Never show progress that doesn't move.
-- **Never trap the user** `id: UNIV-003`. Every screen needs a way out — back arrow, X, or skip
-  — except the single final confirmation screen. A flow with no exit reads as coercive, not
+- **One primary action per screen** `id: UNIV-001` (SHOULD). For a screen presenting a single
+  decision, give it exactly one primary action — if a screen has two competing CTAs for the same
+  decision, one is winning by accident. Make the secondary action visually and verbally
+  subordinate (text link, not a second button of equal weight). This doesn't apply to a
+  checklist's per-item CTAs (`SAAS-003` — each item is its own independent action, not
+  competitors) or a legally required consent screen's equal-weight buttons (`CONSUMER-007`).
+- **Progress must be honest and visible** `id: UNIV-002` (MUST). A progress bar, step count
+  ("Step 3 of 4"), or fraction ("3/8 completed") should reflect real remaining effort, not
+  motivate through vagueness. Never show progress that doesn't move.
+- **Never trap the user** `id: UNIV-003` (MUST). Every screen needs a way out — back arrow, X, or
+  skip — except the single final confirmation screen. A flow with no exit reads as coercive, not
   confident.
-- **Ask before you tell** `id: UNIV-004`. If you collect a preference (goal, interest, role), the
-  next screen the user sees should visibly reflect that answer. If it doesn't, cut the question
-  — asking without using it just adds friction for nothing.
-- **Route every word to righter, every layout decision to vois-patterns** `id: UNIV-005`. Don't
-  write filler copy "for now" and don't eyeball spacing. It compounds into rework.
+- **Ask before you tell** `id: UNIV-004` (SHOULD). If you collect a preference (goal, interest,
+  role), the payoff must visibly appear within one or two screens after that answer. If it
+  won't, cut the question — asking without using it just adds friction for nothing.
+- **Route every word to righter, every layout decision to vois-patterns** `id: UNIV-005` (MUST).
+  Don't write filler copy "for now" and don't eyeball spacing. It compounds into rework.
 
 **Structured lookup:** `data/onboarding-rules.json` holds every tagged rule from this file and
-both reference files as `{ id, condition, outcome, source_file }` — useful for a quick
+both reference files as `{ id, strength, condition, outcome, source_file }` — useful for a quick
 condition/outcome check by `id` without opening the full file it lives in. This is also what
 Mode 1 walks screen-by-screen against.
 
-**Source of truth:** `data/onboarding-rules.json` is canonical for a rule's `condition`/`outcome`.
-The `.md` files restate rules for readability and carry the worked examples (real app names,
-screen-by-screen breakdowns) the JSON doesn't — but if the two ever disagree, the JSON wins.
-`scripts/check-rule-sync.mjs` checks that every tagged id cited in the `.md` files resolves to a
-real entry in the JSON and vice versa; run it after editing rules in either place.
+**Source of truth:** `data/onboarding-rules.json` is canonical for a rule's `strength`,
+`condition`, and `outcome`. The `.md` files restate rules for readability and carry the worked
+examples (real app names, screen-by-screen breakdowns) the JSON doesn't — but if the two ever
+disagree, the JSON wins. `scripts/check-rule-sync.mjs` checks that every tagged id cited in the
+`.md` files resolves to a real entry in the JSON, the reverse, and that every rule has a valid
+`strength`; run it after editing rules in either place.
 
 ---
 
 ## Checklist Before Handing Off (Mode 2)
 
 - [ ] Shape selected (SaaS companion checklist vs. consumer linear sequence) and justified
+- [ ] Activation event named, and every screen either moves toward it or was cut
 - [ ] Pulled current Mobbin reference for this product's specific category, if the tool is available
 - [ ] Screen sequence drafted, one primary action per screen
 - [ ] Progress indicator defined and honest
@@ -187,13 +222,21 @@ real entry in the JSON and vice versa; run it after editing rules in either plac
 ## Maintaining This Skill
 
 `data/onboarding-rules.json` is the canonical rule set (18 rules: 5 universal, 6 SaaS, 7
-consumer). When you add, remove, or reword a rule, update it in both the `.md` file and the
-JSON, then run:
+consumer). Every rule carries a `strength` of `MUST` or `SHOULD` (see Universal Rules above for
+what the distinction means) alongside its `id`, `condition`, `outcome`, and `source_file`. When
+you add, remove, or reword a rule, update it in both the `.md` file and the JSON, then run:
 
 ```
 node scripts/check-rule-sync.mjs
 ```
 
 It fails loudly if an id is tagged in markdown but missing from the JSON, listed in the JSON but
-never cited in markdown, or tagged in a file that doesn't match the JSON's `source_file`. Run it
-before publishing any edit to a rule.
+never cited in markdown, tagged in a file that doesn't match the JSON's `source_file`, or missing
+a valid `strength`. Run it before publishing any edit to a rule.
+
+`evals/cases.json` is a fixed set of worked flows (good and bad, both shapes) with the rule ids a
+correct review should flag — and, for the exact false positive this skill's checklist and
+consent patterns first shipped with, the ids it should explicitly *not* flag. It's a manual
+regression corpus, not an automated test suite: whether a flow actually violates a rule is a
+judgment call, not something a script can verify. Re-walk each case's `scenario` against the
+current rules after editing `SKILL.md` or the JSON, and confirm the same ids still come out.

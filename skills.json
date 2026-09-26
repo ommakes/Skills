@@ -55,7 +55,7 @@
     {
       "name": "onboarding-flow",
       "path": "onboarding-flow",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": "Personify Labs",
       "description": "Design new onboarding flows or evaluate/critique existing ones — signup sequences, setup checklists, first-run wizards, personalization quizzes, permission priming, paywalls — for SaaS/web products or consumer/mobile apps. Pulls current visual reference from Mobbin, routes all UI copy to righter, and routes all structure/styling to the vois skills (vois-patterns → vois-components → vois-tokens).",
       "tags": ["design", "ux", "onboarding", "product", "mobbin"]

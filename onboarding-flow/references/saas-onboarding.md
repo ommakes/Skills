@@ -14,7 +14,7 @@ permanently accessible, not modal.
 
 Don't build a full-screen wizard for a SaaS product unless the account genuinely can't function
 until a step is done (e.g. connecting a payment processor before anything else works). Default
-to the companion pattern. `id: SAAS-001`
+to the companion pattern. `id: SAAS-001` (SHOULD)
 
 ## Anatomy of the checklist
 
@@ -22,24 +22,24 @@ to the companion pattern. `id: SAAS-001`
    above the main content (Dropbox Dash). Pick based on how often the user will return to the
    home/dashboard screen in normal use — if rarely, dock it in the sidebar so it stays visible.
 2. **Progress indicator**: fraction ("1/8 completed") plus a filled progress bar, always visible
-   at the top of the checklist — never buried. `id: SAAS-002`
+   at the top of the checklist — never buried. `id: SAAS-002` (SHOULD)
 3. **Item structure**: each item is one line (title + one-sentence description) with a single
    CTA button per item ("Start", "Connect Stripe", "Create plans", "Send invites"). Numbered,
    but not always strictly sequential — Apollo lets users complete "Essentials" before
-   "Outbound" even though outbound is listed first. `id: SAAS-003`
+   "Outbound" even though outbound is listed first. `id: SAAS-003` (SHOULD)
 4. **Completed state**: checkmark + strikethrough or muted text, but the item **stays visible**
    in the list rather than disappearing. This is deliberate — visible progress motivates
-   completion of what's left (Outseta, Apollo). `id: SAAS-004`
+   completion of what's left (Outseta, Apollo). `id: SAAS-004` (SHOULD)
 5. **One item "in progress" at a time expands inline**: WRITER's checklist shows the active
    step with its own mini progress bar (0% → 67% → 100%) directly in the card, so the user
    sees momentum without leaving the home screen.
 6. **Optional deeper items appear below the checklist, not inside it**: Apollo surfaces
    "upcoming free live trainings" and a bookable 1:1 onboarding expert *below* the core
-   checklist — progressive disclosure, not required steps. `id: SAAS-005`
+   checklist — progressive disclosure, not required steps. `id: SAAS-005` (SHOULD)
 
 ## What NOT to do
 
-- Don't gate the product's real functionality behind checklist completion. `id: SAAS-006`
+- Don't gate the product's real functionality behind checklist completion. `id: SAAS-006` (MUST)
 - Don't use a percentage that includes steps the user can't act on yet (misleads on effort
   remaining).
 - Don't remove completed items from view — it removes the visible momentum that motivates
