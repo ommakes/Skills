@@ -1,0 +1,112 @@
+{
+  "rules": [
+    {
+      "id": "UNIV-001",
+      "condition": "A screen has more than one call-to-action.",
+      "outcome": "Exactly one primary action per screen. Every other action must be visually and verbally subordinate (text link, not a second button of equal weight).",
+      "source_file": "SKILL.md"
+    },
+    {
+      "id": "UNIV-002",
+      "condition": "The flow shows a progress bar, step count, or fraction.",
+      "outcome": "The indicator must reflect real remaining effort. Never show progress that doesn't move, and never include steps the user can't yet act on in the count.",
+      "source_file": "SKILL.md"
+    },
+    {
+      "id": "UNIV-003",
+      "condition": "Any screen except the final confirmation screen.",
+      "outcome": "Must have a way out: back arrow, X, or skip. A flow with no exit reads as coercive, not confident.",
+      "source_file": "SKILL.md"
+    },
+    {
+      "id": "UNIV-004",
+      "condition": "The flow asks the user a personalization question (goal, interest, role, etc.).",
+      "outcome": "The next screen the user sees must visibly use that answer. If it won't, cut the question instead of asking it for no reason.",
+      "source_file": "SKILL.md"
+    },
+    {
+      "id": "UNIV-005",
+      "condition": "Any word appears on screen, or any layout/spacing/component decision is made.",
+      "outcome": "Route copy to righter and structure to vois-patterns → vois-components → vois-tokens. Don't draft placeholder copy or eyeball spacing.",
+      "source_file": "SKILL.md"
+    },
+    {
+      "id": "SAAS-001",
+      "condition": "Designing onboarding for a SaaS/web product.",
+      "outcome": "Drop the user into the real product on signup. Use a companion checklist alongside it, never a full-screen wizard that blocks the product, unless the account genuinely cannot function until a step is done (e.g. connecting a payment processor).",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "SAAS-002",
+      "condition": "A setup checklist is present.",
+      "outcome": "Show a fraction (e.g. '1/8 completed') plus a filled progress bar, always visible at the top of the checklist, never buried.",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "SAAS-003",
+      "condition": "Each checklist item.",
+      "outcome": "One line: title plus one-sentence benefit-first description, plus a single CTA button per item.",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "SAAS-004",
+      "condition": "A checklist item is completed.",
+      "outcome": "Mark with checkmark or strikethrough but keep the item visible in the list. Never remove completed items from view — visible progress motivates finishing the rest.",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "SAAS-005",
+      "condition": "Optional or deeper items exist (live trainings, 1:1 onboarding calls, advanced setup).",
+      "outcome": "Surface these below the core checklist, not inside it. Progressive disclosure, not required steps.",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "SAAS-006",
+      "condition": "Any checklist item.",
+      "outcome": "Never gate the product's real functionality behind checklist completion.",
+      "source_file": "references/saas-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-001",
+      "condition": "A personalization quiz screen.",
+      "outcome": "One question per screen. Never stack two questions on one screen.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-002",
+      "condition": "A quiz or onboarding sequence screen.",
+      "outcome": "Show progress as a thin bar at the top or an explicit step count. Never omit a progress signal from a linear sequence.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-003",
+      "condition": "Any quiz or sequence screen before the final confirmation.",
+      "outcome": "Back arrow top-left, X to close or skip top-right. Never remove the exit.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-004",
+      "condition": "The quiz collects a personalization answer.",
+      "outcome": "The payoff must visibly appear within one or two screens. If it won't, cut the question — it's friction with no return.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-005",
+      "condition": "The flow will request a native OS permission (notifications, ad tracking, camera, etc.).",
+      "outcome": "Show a permission-priming screen explaining the specific benefit before the native OS prompt fires. Never let the OS dialog be the user's first exposure to why.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-006",
+      "condition": "A paywall or subscribe screen.",
+      "outcome": "Always pair the primary paid CTA with a visible, if de-emphasized, non-paying path. State price, billing cadence, and cancellation terms on the same screen as the CTA.",
+      "source_file": "references/consumer-onboarding.md"
+    },
+    {
+      "id": "CONSUMER-007",
+      "condition": "A legally required consent or tracking screen.",
+      "outcome": "Use plain, equal-weight buttons (Accept All / No Thanks / Manage Preferences). Never disguise the choice as a single option with a small 'manage' link.",
+      "source_file": "references/consumer-onboarding.md"
+    }
+  ]
+}
