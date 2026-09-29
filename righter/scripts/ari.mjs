@@ -5,6 +5,7 @@
 //   node ari.mjs "Your copy text here"
 //   node ari.mjs --before "old copy" --after "new copy"
 //   echo "Your copy text here" | node ari.mjs
+//   node ari.mjs --target 10 "Your copy text here"   (optional; default target is 6)
 
 const GRADE_TABLE = [
   { grade: "Kindergarten", age: "5–6" },
@@ -61,6 +62,11 @@ function formatMetrics(m) {
   return `Word count: ${m.wordCount}\nARI score: ${m.ari}\nGrade level: ${m.grade} (age ${m.age})`;
 }
 
+function targetLine(target) {
+  const { grade, age } = gradeForAri(target);
+  return `Target: ARI ≤ ${target} (${grade}, age ${age})`;
+}
+
 async function readStdin() {
   const chunks = [];
   for await (const chunk of process.stdin) chunks.push(chunk);
@@ -69,6 +75,17 @@ async function readStdin() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
+  let target = 6;
+  const targetIdx = args.indexOf("--target");
+  if (targetIdx !== -1) {
+    const value = Number(args[targetIdx + 1]);
+    if (!Number.isFinite(value) || value <= 0) {
+      console.error("--target needs a positive number, for example --target 10");
+      process.exit(1);
+    }
+    target = value;
+    args.splice(targetIdx, 2);
+  }
   const beforeIdx = args.indexOf("--before");
   const afterIdx = args.indexOf("--after");
 
@@ -83,12 +100,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       `Word count: ${beforeMetrics.wordCount} → ${afterMetrics.wordCount}\n` +
         `ARI score: ${beforeMetrics.ari} → ${afterMetrics.ari}\n` +
         `Grade level: ${beforeMetrics.grade} (age ${beforeMetrics.age}) → ${afterMetrics.grade} (age ${afterMetrics.age})\n` +
-        `Target: ARI ≤ 6 (Grade 5, age 10–11)`
+        targetLine(target)
     );
   } else {
     const text = args.length > 0 ? args.join(" ") : await readStdin();
     const metrics = computeReadability(text);
     console.log(formatMetrics(metrics));
-    console.log(`Target: ARI ≤ 6 (Grade 5, age 10–11)`);
+    console.log(targetLine(target));
   }
 }

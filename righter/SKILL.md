@@ -102,7 +102,7 @@ Use this block for every piece of copy reviewed:
 - Word count: X → Y
 - ARI score: X.X → Y.Y
 - Grade level: Grade X (age X–X) → Grade X (age X–X)
-- Target: ARI ≤ 6 (Grade 5, age 10–11)
+- Target: ARI ≤ N (Grade X, <tier> tier)
 ---
 
 ### New copy format
@@ -127,7 +127,7 @@ Use this block for every piece of copy reviewed:
 - Word count: X
 - ARI score: X.X
 - Grade level: Grade X (age X–X)
-- Target: ARI ≤ 6 (Grade 5, age 10–11)
+- Target: ARI ≤ N (Grade X, <tier> tier)
 ---
 
 ---
@@ -142,7 +142,7 @@ Subject → verb → object. Active voice is shorter and easier to follow.
 - ✓ "Click here to start earning rewards."
 
 ### 2. Write at or below a fifth grade reading level `id: reading-level`
-Short sentences. Simple words. Clear structure. Target ARI ≤ 6.
+Short sentences. Simple words. Clear structure. Target ARI ≤ 6. This is the default `consumer` target. See Audience and Reading Target for other tiers.
 - ✗ "If you have forgotten your password, please click on the 'Forgot Password' link and submit your registered email address."
 - ✓ "Click 'Forgot Password'. Enter your email. Check your inbox for a reset link."
 
@@ -319,6 +319,28 @@ When writing new copy — especially labels, CTAs, empty states, and microcopy �
 
 ---
 
+## Audience and Reading Target
+
+The reading target depends on who the copy is for. Pick a tier, then score against it.
+
+| Tier | Use when | ARI target | Grade |
+|---|---|---|---|
+| `consumer` (default) | General public, consumer apps, marketing-adjacent UI | ≤ 6 | Grade 5 |
+| `professional` | Work tools where users know the domain | ≤ 10 | Grade 9 |
+| `technical` | Developer or admin tools | ≤ 12 | Grade 11 |
+
+Choose the tier in this order:
+1. If `vois_get_microcopy` returns a tier or audience, use it.
+2. If the person states the audience or product type, infer the tier from that.
+3. Otherwise use `consumer`. If the audience is unclear, stay on `consumer`. Don't guess upward.
+
+- If the tier isn't `consumer`, name it at the top of the output. If it's `consumer` by default, say nothing extra.
+- At `professional` and `technical`, terms the audience already knows are fine. `avoid-jargon` still applies to internal names, system terms, and acronyms the audience wouldn't use.
+- A tier changes the ARI target only. Every other principle still applies in full.
+- Run `node scripts/ari.mjs --target N "<copy>"` to print the matching Target line.
+
+---
+
 ## Reading Metrics
 
 Calculate and show these for all reviewed and written copy.
@@ -354,7 +376,7 @@ Round to one decimal place. Always include grade and age range.
 | 13 | Grade 12 | 17–18 |
 | 14+ | Professional | 18+ |
 
-**Target: ARI ≤ 6 (Grade 5, age 10–11)**
+**Target: ARI ≤ 6 (Grade 5, age 10–11) for the default `consumer` tier.** Other tiers are in Audience and Reading Target above.
 
 ---
 
@@ -374,7 +396,7 @@ Run through this for every piece of copy before finalizing.
 
 **Clarity**
 - [ ] Jargon or technical terms?
-- [ ] Reading level above Grade 5?
+- [ ] Reading level above the target for this audience tier?
 - [ ] Interface elements named (tab, panel, section)?
 - [ ] System-framing instead of user-goal framing?
 - [ ] Too much information up front (no progressive disclosure)?
