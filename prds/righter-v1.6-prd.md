@@ -324,7 +324,7 @@ P2 items (voice chart, Figma) can ship in a follow-up release. Don't let them bl
 
 ## Step 7: Em dash sweep (D15)
 
-1. Run `grep -rnP '\x{2014}' righter/ skills.json` and list every hit.
+1. Run ``grep -rn $'\xe2\x80\x94' righter/`` and list every hit. Sweep `righter/` only. Other skills' entries in `skills.json` and `README.md` are out of scope. Write the righter entries you touch without em dashes.
 2. Replace each with a period, comma, colon, or a reworded clause. Punctuation only. Don't change meaning.
 3. Keep the two D15 exceptions: the ✗ example under `no-em-dashes`, and the inputs of case-02 and case-07 in `evals/cases.json`. Check that `notes` fields and other prose in `cases.json` are swept.
 4. Re-run the Step 1 baseline cases. The sweep must not change any result.
@@ -350,7 +350,7 @@ for f in righter/data/*.json righter/evals/cases.json skills.json; do python3 -m
 ./scripts/validate-skills.sh
 
 # No em dashes left in the skill. Only the D15 exceptions should print.
-grep -rnP '\x{2014}' righter/ skills.json || echo "no em dashes"
+grep -rn $'\xe2\x80\x94' righter/ || echo "no em dashes"
 
 # ARI sanity check on each new example (run on every example string you added)
 node righter/scripts/ari.mjs "<example>"
