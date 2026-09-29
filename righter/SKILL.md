@@ -3,10 +3,10 @@ name: righter
 description: >
   Apply UX content writing principles to review existing UI copy or write new UI copy from scratch.
   Use this skill whenever someone asks you to: review, audit, critique, or improve UI text, error messages,
-  button labels, tooltips, empty states, onboarding copy, form helper text, or any software interface copy.
+  button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.5.0
+version: 1.6.0
 ---
 
 # Righter

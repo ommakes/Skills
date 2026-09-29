@@ -4,6 +4,31 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.6.0] - 2026-09-29
+
+The gap analysis behind this release comes from [content-designer/ux-writing-skill](https://github.com/content-designer/ux-writing-skill) (MIT). No text was copied. Ideas only, rewritten in Righter's voice.
+
+### Added
+
+- **Audience and Reading Target section.** Three tiers: `consumer` (default, ARI 6 or lower), `professional` (10), `technical` (12). Tiers change the reading target only. Every other principle still applies. With no audience stated, reviews behave as they did in 1.5.0. A non-default tier is named at the top of the output.
+- **Principle 18, `accessible-copy`,** and `references/accessibility.md`. Covers labels and links that work out of context, no "click here", status that isn't color alone, errors that name their field, placeholders that don't replace labels, and `aria-label` copy for icon-only controls. When an object noun doesn't fit a component's limit, the review keeps the short label and recommends an `aria-label`.
+- **`empty-state` and `permission-prompt`** in `data/components.json`, with an "Other components" note in `SKILL.md`. The error decision tree is unchanged.
+- **`references/tone.md`,** tone by context for five user states (frustrated, confused, confident, cautious, successful). Loaded only for emotional or high-stakes copy.
+- **`references/voice-chart.md`,** a fillable voice chart template with a worked example.
+- **`references/figma.md`,** a workflow for reviewing copy from a Figma link.
+- **`--target N` flag** for `scripts/ari.mjs`. Optional. Default output is unchanged.
+- **Eval cases 09 to 15,** plus an optional `audience` field in `evals/cases.json`.
+
+### Changed
+
+- **Version bump:** `1.5.0` → `1.6.0`
+- The Target line in both output formats is now `Target: ARI ≤ N (Grade X, <tier> tier)`. The checklist item for reading level now checks against the audience tier.
+- Principle 1's example no longer uses "Click here", which conflicts with `accessible-copy`.
+- Case-07 in `evals/cases.json` also flags `accessible-copy` for its "Click here" CTA.
+- Removed every em dash from the skill's own text, except the deliberate examples in `no-em-dashes` and the two eval inputs that test it.
+
+---
+
 ## [1.5.0] - 2026-09-08
 
 ### Added
