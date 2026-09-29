@@ -50,7 +50,7 @@ Righter has blind spots:
 - Not adopting its comprehension statistics ("8 words = 100%", "14 words = 90%") or "active voice 85% of the time". They're weakly sourced or arbitrary.
 - Not changing the error decision tree.
 - Not changing the `vois_get_microcopy` tool signature. That lives in the Vois repo.
-- Not renumbering or rewording principles 1 to 17, except the edits listed in section 6.1 and the one example fix in D10.
+- Not renumbering or changing the meaning of principles 1 to 17. Wording changes are limited to the edits in section 6.1, the example fix in D10, and the em dash sweep in D15 (punctuation only).
 - Not touching the other copies of Righter (see D9). They are follow-ups.
 
 ## 5. Decisions and trade-offs
@@ -73,6 +73,7 @@ Each says what would flip it.
 | D12 | **Rhetorical devices and `empty-state` are reconciled.** Existing text allows one device on empty states. The new `empty-state` component keeps that: one device at most, first-use type only, never on no-results or user-cleared. "No cute filler" means no filler, not no personality | Two rules pointing opposite ways would make reviews inconsistent. | If the first-use rule produces cute copy in review, ban devices in empty states. |
 | D13 | **`onboarding-flow` owns permission screens inside an onboarding sequence.** `permission-prompt` owns the copy itself, in any context. Its rules must agree with `CONSUMER-005` (state the specific benefit, prime before the OS dialog). If they conflict, stop and ask | Both skills touch permission priming. Someone has to be the tiebreak. | If the two skills keep colliding, move the copy rules into one shared place. |
 | D14 | **Toast rules win over `present-tense` for toasts.** `components.json` toast success copy is a past participle ("File created"). Tone examples for the successful state must follow the toast rules, not the principle. Note the exception in `tone.md` | The component rule is the more specific rule, and it already exists. | If you want toasts in present tense, that's a separate change to `components.json`. |
+| D15 | **No em dashes anywhere in the skill.** This includes existing text in `SKILL.md`, `CHANGELOG.md`, the `data/` files, `scripts/ari.mjs`, and the new files. The sweep is a separate commit and changes punctuation only (period, comma, colon, or a reworded clause). Two exceptions stay: the ✗ example under `no-em-dashes` in `SKILL.md`, and any `evals/cases.json` `input` that exists to test the em dash rule (case-02 and case-07). Mention those by name in the PR | The skill preaches the rule, so it shouldn't break it. Fresh text alone would leave the skill inconsistent. | If the sweep changes meaning anywhere, revert that line and tell me. |
 
 ## 6. Requirements
 
@@ -189,7 +190,7 @@ Contents:
 - Extend the frontmatter `description` trigger list with "permission prompts" and "accessible labels or link text". Keep it one paragraph. Mirror the change in the `skills.json` description.
 - Add reference entries to the "Reference files" list at the top of `SKILL.md`, each with a "read when" note.
 - Update the Righter blurb in the root `README.md` (the "### Righter" section) to mention tiers, accessible copy, and the new components. Keep it to the existing length.
-- Add a `CHANGELOG.md` entry for `[1.6.0] - 2026-09-29`, following the existing Added / Changed style. Credit `content-designer/ux-writing-skill` (MIT) as the source of the gap analysis. No em dashes in new lines. The existing entries use them. Leave those.
+- Add a `CHANGELOG.md` entry for `[1.6.0] - 2026-09-29`, following the existing Added / Changed style. Credit `content-designer/ux-writing-skill` (MIT) as the source of the gap analysis. No em dashes anywhere in the file. Rewrite the existing entries' em dashes too (D15).
 - Add a "Follow-ups" note in the PR (not the changelog) for the other copies (D9).
 
 ### 6.8 Evals (P0)
@@ -218,7 +219,7 @@ Update the `description` field of `evals/cases.json` to mention the optional `au
 - Cases 09 to 15 produce the expected results.
 - A review with no audience stated has the same structure as 1.5.0 output.
 - `SKILL.md` grows by roughly 50 lines or fewer.
-- All JSON parses. No em dashes in any new text. Every new example passes Righter's own checklist.
+- All JSON parses. No em dashes anywhere in the Righter skill files (D15). Every new example passes Righter's own checklist.
 - `scripts/validate-skills.sh` passes.
 
 ## 8. Risks
@@ -250,7 +251,7 @@ Update the `description` field of `evals/cases.json` to mention the optional `au
 1. Work on the branch you're given for this session. Don't touch `main` directly.
 2. Don't change the text of principles 1 to 17 beyond the edits in section 6.1 and D10. Don't renumber. Don't change ids.
 3. Don't change the error decision tree or the `vois_get_microcopy` call shape.
-4. Write in Righter's own style. Short sentences, contractions, no weakeners, **no em dashes** in anything you add. (Existing text may contain em dashes. Leave it.)
+4. Write in Righter's own style. Short sentences, contractions, no weakeners, **no em dashes** anywhere in the skill, new text and existing text alike. The only exceptions are listed in D15.
 5. Don't copy text from the other skill. Read it for ideas, write your own.
 6. If something in this file conflicts with what you find in the repo, stop and tell me. Don't pick silently.
 7. Make trade-offs visible. If you have to make a call this PRD doesn't cover, write it down in the PR description under "Judgment calls".
@@ -321,7 +322,15 @@ P2 items (voice chart, Figma) can ship in a follow-up release. Don't let them bl
 6. Re-run cases 01 to 08 and diff against your Step 1 baseline. Every baseline id must still be flagged and every component pick must match. List any new flags.
 7. Commit: `test(righter): evals for v1.6 features`.
 
-## Step 7: Housekeeping (6.7)
+## Step 7: Em dash sweep (D15)
+
+1. Run `grep -rnP '\x{2014}' righter/ skills.json` and list every hit.
+2. Replace each with a period, comma, colon, or a reworded clause. Punctuation only. Don't change meaning.
+3. Keep the two D15 exceptions: the ✗ example under `no-em-dashes`, and the inputs of case-02 and case-07 in `evals/cases.json`. Check that `notes` fields and other prose in `cases.json` are swept.
+4. Re-run the Step 1 baseline cases. The sweep must not change any result.
+5. Commit: `style(righter): remove em dashes from skill text`.
+
+## Step 8: Housekeeping (6.7)
 
 1. Bump `version` to `1.6.0` in `righter/SKILL.md` and in `skills.json`.
 2. Update the frontmatter `description` triggers in both places.
@@ -329,7 +338,7 @@ P2 items (voice chart, Figma) can ship in a follow-up release. Don't let them bl
 4. Write the `CHANGELOG.md` entry, dated 2026-09-29, with the credit line (MIT).
 5. Commit: `chore(righter): release 1.6.0`.
 
-## Step 8: Verify
+## Step 9: Verify
 
 Run all of these from the repo root and paste the output into the PR description.
 
@@ -340,8 +349,8 @@ for f in righter/data/*.json righter/evals/cases.json skills.json; do python3 -m
 # Frontmatter and version checks
 ./scripts/validate-skills.sh
 
-# No em dashes in anything new. Compare against main so old text is ignored.
-git diff main --unified=0 -- righter skills.json README.md | grep '^+' | grep -v '^+++' | grep '—' || echo "no new em dashes"
+# No em dashes left in the skill. Only the D15 exceptions should print.
+grep -rnP '\x{2014}' righter/ skills.json || echo "no em dashes"
 
 # ARI sanity check on each new example (run on every example string you added)
 node righter/scripts/ari.mjs "<example>"
@@ -358,15 +367,16 @@ Then a manual pass:
 - [ ] `SKILL.md` grew by about 50 lines or fewer.
 - [ ] No sibling skill breaks (Step 0, item 4), and `permission-prompt` agrees with `CONSUMER-005`.
 - [ ] The decision tree and `vois_get_microcopy` call are unchanged.
+- [ ] Em dash grep returns only the D15 exceptions.
 - [ ] Nothing changed outside `Skills/righter`, `skills.json`, and `README.md`.
 
-## Step 9: PR
+## Step 10: PR
 
 Open a draft PR titled `Righter 1.6.0: audience tiers, accessible copy, new components`. The description should include:
 
 1. A short summary in plain language.
 2. The decisions table (D1 to D14) and anything you changed or added ("Judgment calls").
-3. The verification output from Step 8.
+3. The verification output from Step 9.
 4. Conflicts you noticed with the source skill and with sibling skills.
 5. The follow-ups from section 9 of the PRD, including the ready-to-file Vois issue text.
 
@@ -375,5 +385,5 @@ Don't merge. I'll review.
 ## Definition of done
 
 - All P0 and P1 items shipped. P2 shipped or explicitly deferred in the PR.
-- Every checkbox in Step 8 is ticked.
+- Every checkbox in Step 9 is ticked.
 - Nothing outside `Skills/righter`, `skills.json`, and `README.md` changed, apart from the PR itself.
