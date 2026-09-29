@@ -1,6 +1,6 @@
 {
   "source": "righter/references/email.md",
-  "description": "Numeric benchmarks for product transactional emails (2025 SaaS/product context). Rules and structural guidance stay in references/email.md — this file covers only the measurable targets.",
+  "description": "Numeric benchmarks for product transactional emails (2025 SaaS/product context). Rules and structural guidance stay in references/email.md. This file covers only the measurable targets.",
   "context_note": "Open rates are no longer a reliable primary metric. Apple Mail Privacy Protection (MPP) pre-loads email content for ~46% of email users, inflating open rate data by up to 18 points. Track click-to-open rate (CTOR) and click-through rate (CTR) instead.",
   "benchmarks": [
     { "metric": "transactional_vs_marketing_performance", "target": "8x higher opens and clicks than marketing emails", "context": "Transactional emails" },

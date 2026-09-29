@@ -1,4 +1,4 @@
-// ari.mjs — computes the Automated Readability Index (ARI) and grade level
+// ari.mjs: computes the Automated Readability Index (ARI) and grade level
 // for a piece of copy, matching the formula and grade table in SKILL.md.
 //
 // Usage:

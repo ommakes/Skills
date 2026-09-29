@@ -1,5 +1,5 @@
 {
-  "description": "Regression corpus for the righter skill. Each case is a piece of copy with the violations a correct review should find, referenced by stable rule id (see SKILL.md principle/error-rule ids, and category ids in data/weakeners.json). Use this manually when editing SKILL.md or the data files: re-review each `input`, and confirm the same ids still get flagged and the `expected_component` (if set) still matches the decision tree. Cases can carry an optional `audience` field (`consumer`, `professional`, or `technical`) that sets the reading tier for that review; without it the tier is `consumer`. Not an automated test suite — there's no scorer here, just a fixed set of known-answer cases.",
+  "description": "Regression corpus for the righter skill. Each case is a piece of copy with the violations a correct review should find, referenced by stable rule id (see SKILL.md principle/error-rule ids, and category ids in data/weakeners.json). Use this manually when editing SKILL.md or the data files: re-review each `input`, and confirm the same ids still get flagged and the `expected_component` (if set) still matches the decision tree. Cases can carry an optional `audience` field (`consumer`, `professional`, or `technical`) that sets the reading tier for that review; without it the tier is `consumer`. Not an automated test suite: there's no scorer here, just a fixed set of known-answer cases.",
   "cases": [
     {
       "id": "case-01",
@@ -44,7 +44,7 @@
       "input": "Click here to learn more about this particular setting and how it works within the application panel.",
       "expected_violations": ["no-interface-references", "reading-level", "simple-sentences"],
       "expected_component": "tooltip",
-      "notes": "Also violates the tooltip length rule in data/components.json (40–60 characters max) — well over."
+      "notes": "Also violates the tooltip length rule in data/components.json (40–60 characters max), well over."
     },
     {
       "id": "case-06",
@@ -67,7 +67,7 @@
       "input": "Heads up: your export finished with 2 warnings you may want to review before sharing this file.",
       "expected_violations": ["hedging-words"],
       "expected_component": "inline-alert",
-      "notes": "Deliberately ambiguous case for the decision tree: not blocking, not a toast (has follow-up detail), not tied to one form field — exercises the tree's ordinary Inline Alert branch, not the fallback."
+      "notes": "Deliberately ambiguous case for the decision tree: not blocking, not a toast (has follow-up detail), not tied to one form field: exercises the tree's ordinary Inline Alert branch, not the fallback."
     },
     {
       "id": "case-09",

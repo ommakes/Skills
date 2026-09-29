@@ -24,7 +24,7 @@
       ],
       "uses_shared_prefix_format": true,
       "title_rules": [
-        "Communicate the result or the required decision — not the cause",
+        "Communicate the result or the required decision, not the cause",
         "No punctuation at the end"
       ],
       "title_examples": {
@@ -57,7 +57,7 @@
       "when_to_use": "Confirming a completed action. Low priority. No required response. Auto-dismisses.",
       "rules": [
         "Sentence case, no period, max 90 characters, max 2 lines",
-        "Must be instantly understandable — if it needs explanation, don't use a toast",
+        "Must be instantly understandable: if it needs explanation, don't use a toast",
         "Don't use for promotional messages, upsells, or proactive/preventative information",
         "Max 1 action (undo, fix, show, update)"
       ],
@@ -101,7 +101,7 @@
       "rules": [
         "Under 50 characters, 1 line or 1 short sentence",
         "Neutral state: describes the solution proactively, before the user makes an error",
-        "Error state: describes the solution, not the error — tell them how to fix it, not what they did wrong",
+        "Error state: describes the solution, not the error: tell them how to fix it, not what they did wrong",
         "Error state uses a red warning icon"
       ],
       "examples": {
@@ -115,7 +115,7 @@
       "when_to_use": "System-level message. Affects the whole app or a major capability. High visibility, persistent until resolved.",
       "use_for": ["system outages", "role-based limitations", "account-based restrictions", "geographic restrictions"],
       "rules": [
-        "Never auto-dismisses — persists until resolved (reappears on refresh if dismissed without fixing)",
+        "Never auto-dismisses: persists until resolved (reappears on refresh if dismissed without fixing)",
         "Max 1 action per banner",
         "Max 2 lines in smaller viewports"
       ],
@@ -128,7 +128,7 @@
         "good": ["Action Required: Billing information missing", "Verify Now: Two-factor authentication needed"],
         "bad": ["Notice: Scheduled maintenance tonight"]
       },
-      "action_types": ["Secondary button — takes user to fix the issue", "Link button — takes user to learn more"],
+      "action_types": ["Secondary button: takes user to fix the issue", "Link button: takes user to learn more"],
       "variants": [
         { "name": "Neutral (gray)", "description": "concise message with optional recommended action" },
         { "name": "Informative (blue)", "description": "system-level context, include action when possible" },
@@ -144,7 +144,7 @@
         "Only on interactive elements",
         "Never duplicates the visible label of the trigger element",
         "No actions inside tooltips",
-        "Don't use to add \"nice to have\" context — only essential labels or descriptions"
+        "Don't use to add \"nice to have\" context: only essential labels or descriptions"
       ]
     },
     {
