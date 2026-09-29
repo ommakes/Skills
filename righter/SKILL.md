@@ -15,6 +15,7 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 
 **Reference files — read these when relevant:**
 - `data/components.json` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip). Look up by component `id`, don't scan the whole file.
+- `references/accessibility.md` — read when reviewing or writing labels, buttons, link text, form errors, or icon-only controls, or whenever `accessible-copy` might apply
 - `references/email.md` — rules for product transactional emails (subject lines, preheaders, body, CTAs, footers, structure)
 - `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
 - `data/weakeners.json` — structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
@@ -139,7 +140,7 @@ Apply all of these when reviewing or writing. These are the fallback when `vois_
 ### 1. Use active voice `id: active-voice`
 Subject → verb → object. Active voice is shorter and easier to follow.
 - ✗ "Rewards can be earned by clicking here."
-- ✓ "Click here to start earning rewards."
+- ✓ "Start earning rewards."
 
 ### 2. Write at or below a fifth grade reading level `id: reading-level`
 Short sentences. Simple words. Clear structure. Target ARI ≤ 6. This is the default `consumer` target. See Audience and Reading Target for other tiers.
@@ -232,6 +233,19 @@ Applies only to copy that's allowed personality: marketing surfaces, taglines, f
 
 - ✗ "No setup required. Start immediately."
 - ✓ "No setup. No waiting. No excuses." (`anaphora-epistrophe`)
+
+### 18. Make copy work without the visuals `id: accessible-copy`
+Screen reader users often hear labels and links as a list, out of context. Write copy that still makes sense that way. Detail and the brevity trade-off are in `references/accessibility.md`.
+- Name the object in labels, buttons, and links. Never use "click here" as link text.
+- Pair status colors with words. Don't rely on color alone.
+- Error text names its field, so it reads right when announced with the field label.
+- A placeholder never replaces a visible label.
+- Icons with no visible text get a text alternative. Give the recommended `aria-label` copy.
+- Keep `no-interface-references` in force: "Submit application", not "Submit button".
+- ✗ "Read more"
+- ✓ "Read the privacy policy"
+- ✗ Red text: "Email"
+- ✓ "Error: Email is required"
 
 ---
 
@@ -398,6 +412,7 @@ Run through this for every piece of copy before finalizing.
 - [ ] Jargon or technical terms?
 - [ ] Reading level above the target for this audience tier?
 - [ ] Interface elements named (tab, panel, section)?
+- [ ] Labels, links, or status that only make sense visually?
 - [ ] System-framing instead of user-goal framing?
 - [ ] Too much information up front (no progressive disclosure)?
 
