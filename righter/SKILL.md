@@ -14,7 +14,7 @@ version: 1.5.0
 A UX writing skill. Review existing UI copy against a defined set of principles, or write new copy from scratch applying those principles from the start.
 
 **Reference files — read these when relevant:**
-- `data/components.json` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip). Look up by component `id`, don't scan the whole file.
+- `data/components.json` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip, Empty State, Permission Prompt). Look up by component `id`, don't scan the whole file.
 - `references/accessibility.md` — read when reviewing or writing labels, buttons, link text, form errors, or icon-only controls, or whenever `accessible-copy` might apply
 - `references/email.md` — rules for product transactional emails (subject lines, preheaders, body, CTAs, footers, structure)
 - `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
@@ -309,6 +309,11 @@ Is it a hover label for an icon or interactive element?
 None of the above?
   └─ Default to Inline Alert — safest non-blocking option until the case is clear enough to fit one of the rows above
 ```
+
+### Other components
+The tree above is for errors only. For non-error surfaces, look up the component by `id` in `data/components.json`:
+- `empty-state`: a list, page, or section has nothing to show (first use, user cleared it, no results).
+- `permission-prompt`: the app asks for a device or account permission (location, notifications, camera, contacts, storage).
 
 ---
 
