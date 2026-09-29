@@ -16,6 +16,9 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 **Reference files — read these when relevant:**
 - `data/components.json` — per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip, Empty State, Permission Prompt). Look up by component `id`, don't scan the whole file.
 - `references/accessibility.md` — read when reviewing or writing labels, buttons, link text, form errors, or icon-only controls, or whenever `accessible-copy` might apply
+- `references/tone.md` — read when copy lands on an emotional or high-stakes moment (errors, destructive actions, first use, success)
+- `references/voice-chart.md` — read only when someone asks to define, document, or audit a brand voice
+- `references/figma.md` — read only when someone shares a Figma link and asks for a copy review
 - `references/email.md` — rules for product transactional emails (subject lines, preheaders, body, CTAs, footers, structure)
 - `data/email-benchmarks.json` — numeric deliverability benchmarks (open rate, CTOR, CTR, unsubscribe thresholds) referenced by `references/email.md`. Query by `metric`.
 - `data/weakeners.json` — structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
