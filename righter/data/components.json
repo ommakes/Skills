@@ -24,7 +24,7 @@
       ],
       "uses_shared_prefix_format": true,
       "title_rules": [
-        "Communicate the result or the required decision — not the cause",
+        "Communicate the result or the required decision, not the cause",
         "No punctuation at the end"
       ],
       "title_examples": {
@@ -57,7 +57,7 @@
       "when_to_use": "Confirming a completed action. Low priority. No required response. Auto-dismisses.",
       "rules": [
         "Sentence case, no period, max 90 characters, max 2 lines",
-        "Must be instantly understandable — if it needs explanation, don't use a toast",
+        "Must be instantly understandable: if it needs explanation, don't use a toast",
         "Don't use for promotional messages, upsells, or proactive/preventative information",
         "Max 1 action (undo, fix, show, update)"
       ],
@@ -101,7 +101,7 @@
       "rules": [
         "Under 50 characters, 1 line or 1 short sentence",
         "Neutral state: describes the solution proactively, before the user makes an error",
-        "Error state: describes the solution, not the error — tell them how to fix it, not what they did wrong",
+        "Error state: describes the solution, not the error: tell them how to fix it, not what they did wrong",
         "Error state uses a red warning icon"
       ],
       "examples": {
@@ -115,7 +115,7 @@
       "when_to_use": "System-level message. Affects the whole app or a major capability. High visibility, persistent until resolved.",
       "use_for": ["system outages", "role-based limitations", "account-based restrictions", "geographic restrictions"],
       "rules": [
-        "Never auto-dismisses — persists until resolved (reappears on refresh if dismissed without fixing)",
+        "Never auto-dismisses: persists until resolved (reappears on refresh if dismissed without fixing)",
         "Max 1 action per banner",
         "Max 2 lines in smaller viewports"
       ],
@@ -128,7 +128,7 @@
         "good": ["Action Required: Billing information missing", "Verify Now: Two-factor authentication needed"],
         "bad": ["Notice: Scheduled maintenance tonight"]
       },
-      "action_types": ["Secondary button — takes user to fix the issue", "Link button — takes user to learn more"],
+      "action_types": ["Secondary button: takes user to fix the issue", "Link button: takes user to learn more"],
       "variants": [
         { "name": "Neutral (gray)", "description": "concise message with optional recommended action" },
         { "name": "Informative (blue)", "description": "system-level context, include action when possible" },
@@ -144,8 +144,64 @@
         "Only on interactive elements",
         "Never duplicates the visible label of the trigger element",
         "No actions inside tooltips",
-        "Don't use to add \"nice to have\" context — only essential labels or descriptions"
+        "Don't use to add \"nice to have\" context: only essential labels or descriptions"
       ]
+    },
+    {
+      "id": "empty-state",
+      "name": "Empty State",
+      "when_to_use": "A list, page, or section has nothing to show. Not an error. Covers first use, a user-cleared list, and no search results.",
+      "structure": [
+        { "field": "Title", "limit": "15–40 characters, no end punctuation; says what's missing or what this place is for" },
+        { "field": "Description", "limit": "40–120 characters, 1–2 sentences; doesn't restate the title" },
+        { "field": "Action", "limit": "one primary action, verb-led, 2–3 words" }
+      ],
+      "rules": [
+        "Say why it's empty only when that helps the user act",
+        "Give a next step that fills the space. The exception is no results, where the next step is changing the search or filter",
+        "Never blame the user",
+        "No filler. Every word either explains or points to the next step",
+        "Don't restate the title in the description",
+        "Personality follows `rhetorical-devices`: one device at most, first use only. Never on user-cleared or no-results states"
+      ],
+      "title_examples": {
+        "good": ["No invoices yet", "All tasks done", "No results for \"invoice 204\""],
+        "bad": ["Nothing to see here", "Oops! Nothing found"]
+      },
+      "variants": [
+        { "name": "First use", "description": "the user hasn't created anything yet; explain what fills this space and how to start", "example": "No invoices yet / Create an invoice and it shows up here. / Create invoice" },
+        { "name": "User cleared", "description": "the user finished or removed everything; confirm it, then offer the next item", "example": "All tasks done / Add a task to plan your next steps. / Add task" },
+        { "name": "No results", "description": "a search or filter matched nothing; the next step is changing the query, not creating content", "example": "No results for \"invoice 204\" / Try a different search or clear your filters. / Clear filters" }
+      ]
+    },
+    {
+      "id": "permission-prompt",
+      "name": "Permission Prompt",
+      "when_to_use": "The app is about to ask for a device or account permission: location, notifications, camera, contacts, or storage. Also applies to a priming screen shown before the native OS dialog.",
+      "structure": [
+        { "field": "Benefit line", "limit": "40–80 characters, one sentence; leads with what the user gets" },
+        { "field": "Description", "limit": "optional, 60–150 characters; adds one concrete detail" },
+        { "field": "Primary action", "limit": "verb plus the permission name, 2–3 words" },
+        { "field": "Secondary action", "limit": "exit with no penalty, 2 words, such as \"Not now\"" }
+      ],
+      "rules": [
+        "Lead with the benefit to the user, then name the permission in the action",
+        "Ask in context, when the user first reaches the feature that needs it. Never on launch",
+        "The primary action names the permission and matches what the OS dialog asks for",
+        "State one specific benefit. Don't write \"we need access\"",
+        "If the user declines, the follow-up copy says what they'll miss and how to change it later. No guilt, no repeated asks",
+        "On a priming screen before the OS dialog, the same rules apply and the primary action opens the OS dialog"
+      ],
+      "example": {
+        "benefit_line": "Get alerts when your order ships.",
+        "primary_action": "Allow notifications",
+        "secondary_action": "Not now"
+      },
+      "declined_example": "You won't get shipping alerts. Turn them on anytime in Settings.",
+      "examples": {
+        "good": ["Get alerts when your order ships. / Allow notifications", "See stores near you. / Allow location"],
+        "bad": ["We need access to your notifications.", "Allow all permissions to continue."]
+      }
     }
   ]
 }

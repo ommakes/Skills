@@ -1,5 +1,5 @@
 {
-  "description": "Regression corpus for the righter skill. Each case is a piece of copy with the violations a correct review should find, referenced by stable rule id (see SKILL.md principle/error-rule ids, and category ids in data/weakeners.json). Use this manually when editing SKILL.md or the data files: re-review each `input`, and confirm the same ids still get flagged and the `expected_component` (if set) still matches the decision tree. Not an automated test suite — there's no scorer here, just a fixed set of known-answer cases.",
+  "description": "Regression corpus for the righter skill. Each case is a piece of copy with the violations a correct review should find, referenced by stable rule id (see SKILL.md principle/error-rule ids, and category ids in data/weakeners.json). Use this manually when editing SKILL.md or the data files: re-review each `input`, and confirm the same ids still get flagged and the `expected_component` (if set) still matches the decision tree. Cases can carry an optional `audience` field (`consumer`, `professional`, or `technical`) that sets the reading tier for that review; without it the tier is `consumer`. Not an automated test suite: there's no scorer here, just a fixed set of known-answer cases.",
   "cases": [
     {
       "id": "case-01",
@@ -44,7 +44,7 @@
       "input": "Click here to learn more about this particular setting and how it works within the application panel.",
       "expected_violations": ["no-interface-references", "reading-level", "simple-sentences"],
       "expected_component": "tooltip",
-      "notes": "Also violates the tooltip length rule in data/components.json (40–60 characters max) — well over."
+      "notes": "Also violates the tooltip length rule in data/components.json (40–60 characters max), well over."
     },
     {
       "id": "case-06",
@@ -58,8 +58,8 @@
       "id": "case-07",
       "copy_type": "onboarding email subject + CTA",
       "input": "Subject: WELCOME!!! You're going to LOVE this — act now to unlock your account!\nCTA: Click here",
-      "expected_violations": ["no-em-dashes", "limit-exclamation-marks"],
-      "notes": "Also fails references/email.md rules directly: ALL CAPS, multiple exclamation marks, spam-trigger phrase ('act now'), and 'Click here' as a standalone CTA."
+      "expected_violations": ["no-em-dashes", "limit-exclamation-marks", "accessible-copy"],
+      "notes": "Added `accessible-copy` in 1.6.0: 'Click here' as a standalone CTA says nothing out of context. Also fails references/email.md rules directly: ALL CAPS, multiple exclamation marks, spam-trigger phrase ('act now'), and 'Click here' as a standalone CTA."
     },
     {
       "id": "case-08",
@@ -67,7 +67,59 @@
       "input": "Heads up: your export finished with 2 warnings you may want to review before sharing this file.",
       "expected_violations": ["hedging-words"],
       "expected_component": "inline-alert",
-      "notes": "Deliberately ambiguous case for the decision tree: not blocking, not a toast (has follow-up detail), not tied to one form field — exercises the tree's ordinary Inline Alert branch, not the fallback."
+      "notes": "Deliberately ambiguous case for the decision tree: not blocking, not a toast (has follow-up detail), not tied to one form field: exercises the tree's ordinary Inline Alert branch, not the fallback."
+    },
+    {
+      "id": "case-09",
+      "copy_type": "link text",
+      "input": "Click here to read more",
+      "expected_violations": ["accessible-copy", "no-interface-references"],
+      "notes": "'Click here' and 'read more' both fail out of context. Fix names the object, for example 'Read the privacy policy'."
+    },
+    {
+      "id": "case-10",
+      "copy_type": "form validation summary",
+      "input": "Fields in red need your attention.",
+      "expected_violations": ["accessible-copy"],
+      "notes": "Color-only status. Fix names the fields and pairs the color with words, for example '2 fields need your attention: Email and Phone number.'"
+    },
+    {
+      "id": "case-11",
+      "copy_type": "permission prompt",
+      "input": "We need your location.",
+      "expected_violations": ["user-goal-framing"],
+      "expected_component": "permission-prompt",
+      "notes": "System-framed. No user benefit, and no action that names the permission. Fix leads with the benefit, for example 'See stores near you.' with the action 'Allow location'."
+    },
+    {
+      "id": "case-12",
+      "copy_type": "empty state",
+      "input": "No data.",
+      "expected_violations": [],
+      "expected_component": "empty-state",
+      "notes": "No numbered principle clearly fails here. The failure is against the empty-state component rules in data/components.json: it doesn't say what's missing, and it gives no next step. Component-rule case only."
+    },
+    {
+      "id": "case-13",
+      "copy_type": "helper text",
+      "audience": "professional",
+      "input": "Confirm the exported totals match your statement before you close the month.",
+      "expected_violations": [],
+      "notes": "ARI 9.7. Passes the professional target (ARI <= 10) and would fail the consumer target (ARI <= 6). The output names the professional tier at the top. Verified with scripts/ari.mjs."
+    },
+    {
+      "id": "case-14",
+      "copy_type": "helper text",
+      "input": "Confirm the exported totals match your statement before you close the month.",
+      "expected_violations": ["reading-level"],
+      "notes": "Same copy as case-13 with no audience given. ARI 9.7 against the default consumer target of ARI <= 6. Proves the default is still consumer. The output prints no tier line."
+    },
+    {
+      "id": "case-15",
+      "copy_type": "settings label",
+      "input": "Pick how your team gets updates.",
+      "expected_violations": [],
+      "notes": "Ambiguous audience: the request says only 'a settings label for our app'. Stays on the consumer tier and prints no tier line. ARI 2.0, under the consumer target."
     }
   ]
 }
