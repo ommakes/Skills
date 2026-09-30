@@ -2,7 +2,7 @@
 // Verifies that every rule ID referenced in SKILL.md exists in data/conversion-rules.json,
 // that every rule ID in the JSON is at least mentioned somewhere in SKILL.md or its own
 // `contradicts` list, and that every ID inside `contradicts` arrays resolves to a real rule
-// (or an explicit cross-skill tag like "ONBOARD:delay-signup-ask", which is exempt).
+// (or an explicit cross-skill tag containing a colon, which is exempt).
 //
 // Usage: node scripts/check-rule-sync.mjs
 // Exit code 0 = clean, 1 = mismatch found.
@@ -61,7 +61,7 @@ for (const id of ruleIds) {
 }
 
 // 3. Every ID inside a contradicts[] array must resolve to a real rule, unless it's an
-//    explicit cross-skill tag (contains a colon, e.g. "ONBOARD:delay-signup-ask").
+//    explicit cross-skill tag (contains a colon).
 for (const [id, rule] of Object.entries(ruleData.rules)) {
   for (const c of rule.contradicts || []) {
     if (c.includes(":")) continue; // cross-skill tag, exempt

@@ -46,7 +46,7 @@
       "condition": "The product's value is legible without hands-on use. If it isn't, this will read as an ambush.",
       "evidence": "Instasize: +7% premium subscriptions.",
       "routes_to": ["vois-patterns"],
-      "contradicts": ["PAYWALL-08", "ONBOARD:delay-signup-ask"]
+      "contradicts": ["PAYWALL-08"]
     },
     "PAYWALL-06": {
       "category": "paywall",
