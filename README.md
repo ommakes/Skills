@@ -15,7 +15,7 @@ These four skills work together as a stack, and each one works standalone — no
 Each skill's `data/*.json` is the canonical source for its rules — `references/*.md` restates them for readability and worked examples, but the JSON wins on conflict. [`scripts/check-rule-sync.mjs`](./scripts/check-rule-sync.mjs) enforces that the two never silently disagree, and runs in CI alongside `vois-tokens`' own detector regression suite (see [`.github/workflows/design-system-checks.yml`](./.github/workflows/design-system-checks.yml)).
 
 ### Vois Patterns
-Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages), state management (view/edit), and routing to righter skill for all microcopy. 
+Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages, pricing pages), state management (view/edit), and routing to righter skill for all microcopy. 
 
 **Read first** to determine the structure and architecture of what you're building.
 
