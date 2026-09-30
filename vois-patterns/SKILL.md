@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Vois Patterns Skill
@@ -71,8 +71,16 @@ START: What is the user trying to accomplish?
 ├─ PATH D: Quick input, confirmation, or selection
 │  └─ → read references/dialogs-and-action-sheets.md         [PATH-D]
 │
-└─ PATH E: View details of a single item (read-only or view state)
-   └─ → read references/detail-pages.md                      [PATH-E]
+├─ PATH E: View details of a single item (read-only or view state)
+│  └─ → read references/detail-pages.md                      [PATH-E]
+│
+└─ PATH F: Show what it costs and help someone choose a plan
+   └─ → read references/pricing-pages.md
+      ├─ IF: flat, one plan                    → [PATH-F-FLAT-1]
+      ├─ IF: seat-based, 1 / 2-3 / 4 plans     → [PATH-F-SEAT-1] / [PATH-F-SEAT-3] / [PATH-F-SEAT-4]
+      ├─ IF: usage-based, 1 plan / tiered / PAYG → [PATH-F-USAGE-1] / [PATH-F-USAGE-TIERED] / [PATH-F-USAGE-PAYG]
+      ├─ IF: seat fee + included usage         → [PATH-F-HYBRID]
+      └─ IF: consumer subscription             → [PATH-F-CONSUMER-WEB] / [PATH-F-CONSUMER-PAYWALL]
 ```
 
 Read only the one reference file that matches the path you picked. Each template file is self-contained.
@@ -98,6 +106,7 @@ existing paths.
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
+| `references/pricing-pages.md` | Pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), calculators, comparison tables, trial timelines | `[PATH-F]` `[PATH-PRICE-U1]` to `[PATH-PRICE-C11]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |
 | `references/content-density.md` | Deciding how much breathing room a screen should have — admin grid vs. everyday form vs. onboarding/confirmation moment | `[PATH-DENSITY-*]` (cross-cutting) |
@@ -121,7 +130,7 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 
 # Quick Checklist Before Implementation
 
-- [ ] Container type selected (settings / table / form / dialog / detail) — or, if the brief didn't map directly, checked `references/composition.md` for a fit or combination before designing new structure
+- [ ] Container type selected (settings / table / form / dialog / detail / pricing) — or, if the brief didn't map directly, checked `references/composition.md` for a fit or combination before designing new structure
 - [ ] Content density tier picked deliberately (dense / standard / spacious) — see `references/content-density.md`, not defaulted to whatever the mid-range spacing tokens produce
 - [ ] `vois_record_pattern_choice` called with `skillVersion`, `pathId`, `userGoal`, and `thresholdInputs`, if that tool is available
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
@@ -146,6 +155,11 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 - After picking a container type here, read vois-components to select specific components
 - vois-components resolves ambiguous pairs — Dialog vs Drawer, Toast vs Banner, Select vs Combobox
 - If a `vois_record_component_choice` tool is available, call it after selecting; if not, this step is optional telemetry
+
+**This skill ↔ conversion-patterns:**
+
+- PATH-F decides layout and structure of a pricing page
+- Paywall timing, placement, trial-vs-no-trial, and other test-backed conversion questions route to conversion-patterns
 
 **This skill ↔ righter skill:**
 

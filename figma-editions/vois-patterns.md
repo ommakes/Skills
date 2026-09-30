@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Vois Patterns Skill
@@ -48,7 +48,14 @@ START: What is the user trying to accomplish?
 │
 ├─ PATH D: Quick input, confirmation, or selection        [PATH-D]
 │
-└─ PATH E: View details of a single item (read-only)      [PATH-E]
+├─ PATH E: View details of a single item (read-only)      [PATH-E]
+│
+└─ PATH F: Show what it costs and help someone choose a plan
+   ├─ IF: flat, one plan                       → [PATH-F-FLAT-1]
+   ├─ IF: seat-based, 1 / 2-3 / 4 plans        → [PATH-F-SEAT-1] / [PATH-F-SEAT-3] / [PATH-F-SEAT-4]
+   ├─ IF: usage-based, 1 plan / tiered / PAYG  → [PATH-F-USAGE-1] / [PATH-F-USAGE-TIERED] / [PATH-F-USAGE-PAYG]
+   ├─ IF: seat fee + included usage            → [PATH-F-HYBRID]
+   └─ IF: consumer subscription                → [PATH-F-CONSUMER-WEB] / [PATH-F-CONSUMER-PAYWALL]
 ```
 
 ---
@@ -138,6 +145,32 @@ START: What is the user trying to accomplish?
 
 ---
 
+### PATH F: Pricing Page
+
+**When to use:** showing what a product costs and helping a buyer pick a plan. Answer four questions first: what is the billing unit (seat, usage, seat + usage, flat), how many tiers are real, who is buying (one person, a team lead, procurement), and is there a sales-led tier. If there is one, it gets "Custom" in the price slot. If there isn't, don't fake it.
+
+**Layout by billing model:**
+- **Flat** `[PATH-F-FLAT-1]`: one centered card with price, unit, period, 4 to 8 numeric features, one CTA, and a small secondary path for big buyers.
+- **Seat-based** `[PATH-F-SEAT-1]` `[PATH-F-SEAT-3]` `[PATH-F-SEAT-4]`: price per seat with the period, included seats, and caps disclosed. Add a seat stepper on the card when count changes the price. With four plans, add a comparison table below the cards.
+- **Usage-based** `[PATH-F-USAGE-1]` `[PATH-F-USAGE-TIERED]` `[PATH-F-USAGE-PAYG]`: never show only a per-unit rate. Add an estimator in the buyer's unit (slider plus number input, rate table, itemized total labeled "estimated") that defaults to a realistic value, not zero.
+- **Hybrid** `[PATH-F-HYBRID]`: cards show base price and allowance; a calculator (plan, seats, usage, add-ons, total) shows the real bill with monthly and annual totals.
+- **Consumer** `[PATH-F-CONSUMER-WEB]` `[PATH-F-CONSUMER-PAYWALL]`: selectable plan cards with one Continue button, monthly equivalent next to the real charge, and a trial timeline. On iOS, always show Restore Purchases, Terms, and Privacy.
+
+**Tier count:** 1 tier is a single centered card. 2 tiers works best as "me vs us" or "free vs paid", highlighting the paid one. 3 tiers is the default, highlighting the middle. 4 tiers only if the fourth is a real sales-led tier. 5+ only for consumer products with distinct benefit stories, using tabs or a carousel, never a wide row.
+
+**Rules that apply to every pricing page** (`[PATH-PRICE-U1]` to `[PATH-PRICE-U14]`):
+- Show price, unit, and billing period together as one lockup.
+- The annual toggle states its savings, and every number on the page changes when it flips.
+- One highlighted tier, never two, and only that tier gets the primary button.
+- CTA text matches the friction ("Start free", "Start free trial", "Talk to sales"), not "Get started" everywhere.
+- Use "Everything in X, plus:" on every tier above the first, and write limits as numbers, not adjectives.
+- Define any term that changes the bill (for example standard users vs end users).
+- Below the cards: comparison table (3+ tiers), FAQ, reassurance line. On mobile, stack the recommended tier first.
+
+**Evidence and routing:** based on pattern review of about 45 screens, with no conversion data. Paywall timing, placement, and trial-vs-no-trial are outside this section and belong to a conversion-focused skill. The full rule set (`[PATH-PRICE-*]`, don'ts, checklist, reference screens) lives in `references/pricing-pages.md` in the full version.
+
+---
+
 ## Permissions, Visibility, and Conditional Logic
 
 Cross-cutting rules that apply across every container type above.
@@ -160,7 +193,7 @@ Cross-cutting rules that apply across every container type above.
 
 ## Composing Existing Primitives
 
-Before designing new structure for a brief that names its own feature ("approval queue," "impersonate a user," "bulk edit") instead of one of the five container types above:
+Before designing new structure for a brief that names its own feature ("approval queue," "impersonate a user," "bulk edit") instead of one of the container types above:
 
 1. **Check for a direct fit first.** Translate the brief into a plain job-to-be-done and re-check it against the decision tree — most briefs that sound novel because of their product-specific name are a direct fit once translated (an "approval queue" is PATH-B: browse/filter/act on a list).
 2. **Combine two existing patterns before inventing a third.** A brief needing more than one container type's job at once should compose the existing ones: an approval queue is PATH-B (browse) + PATH-D (approve/reject dialog from a row); a multi-step form with a review step is PATH-C (input steps) + PATH-E (a read-only review step); bulk edit from a list is PATH-B (selection) + PATH-C-SIMPLE (shared-field form) + PATH-D (dialog). If you can't name which existing pattern is doing each part of the job, that's the signal for step 3.
@@ -194,7 +227,7 @@ For exact class names and token values, see `vois-tokens`.
 
 ## Quick Checklist Before Implementation
 
-- [ ] Container type selected (settings / table / form / dialog / detail) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
+- [ ] Container type selected (settings / table / form / dialog / detail / pricing) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
 - [ ] Content density tier picked deliberately (dense / standard / spacious), not defaulted to whatever mid-range spacing produces
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see Permissions section above)

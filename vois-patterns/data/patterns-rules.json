@@ -1,6 +1,6 @@
 {
   "source": "vois-patterns/references/*.md",
-  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here.",
+  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here. pricing-pages.md adds PATH-F (top-level) with PATH-F-* sub-decisions, plus PATH-PRICE-* cross_cutting_rule nodes (U universal, T tier count, S seat, X usage, H hybrid, C consumer).",
   "nodes": [
     {
       "id": "PATH-A",
@@ -194,6 +194,572 @@
       "rule_name": "Spacious Layout",
       "condition": "Low-frequency, high-stakes, or attention-focusing moment — onboarding/first-run, empty states, a destructive-confirmation dialog, marketing/landing surfaces, a single critical rarely-seen decision point.",
       "outcome": "Lean toward the looser end of the spacing scale (--space-32/-48 and up), fewer things visible at once, more whitespace around the one thing that matters. Optimize for making one decision unmistakable, not for efficiency."
+    },
+    {
+      "id": "PATH-F",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "pattern_name": "Pricing Page",
+      "condition": "User is showing what a product costs and helping a buyer choose a plan. Billing unit is flat, seat-based, usage-based, hybrid, or consumer subscription, with 1 to 4 real tiers.",
+      "outcome": "Use the Pricing Page pattern. Billing model picks the sub-decision (PATH-F-FLAT-1 through PATH-F-CONSUMER-PAYWALL). Universal rules (PATH-PRICE-U*) apply to every pricing page. Tier-count rules (PATH-PRICE-T*) apply to layout. Model-specific rules (S, X, H, C) apply per sub-decision."
+    },
+    {
+      "id": "PATH-F-FLAT-1",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Flat price, one plan (no seats, no meter).",
+      "outcome": "Single centered card: price with unit and period, 4 to 8 numeric features, one CTA. See PATH-PRICE-T1. Add a small secondary path for large buyers."
+    },
+    {
+      "id": "PATH-F-SEAT-1",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Seat-based, one plan.",
+      "outcome": "Single card with per-seat price, included seats, and a seat stepper or input if count changes the price. See PATH-PRICE-T1, PATH-PRICE-S1 to S5."
+    },
+    {
+      "id": "PATH-F-SEAT-3",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Seat-based, 2 to 3 plans.",
+      "outcome": "Cards side by side, highlight the middle (or the paid tier when there are 2). Per-seat price with period, included seats, caps disclosed. See PATH-PRICE-T2, T3, S1 to S7."
+    },
+    {
+      "id": "PATH-F-SEAT-4",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Seat-based, 4 plans (Free, Pro, Team, Enterprise).",
+      "outcome": "Four cards with short bullets plus a comparison table below. Enterprise shows Custom. Define seat types that bill differently. See PATH-PRICE-T4, S4, S6, U11."
+    },
+    {
+      "id": "PATH-F-USAGE-1",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Usage-based, one plan and one rate.",
+      "outcome": "Single card plus an estimator: slider with number input, rate table, itemized total labeled estimated. See PATH-PRICE-X1 to X6."
+    },
+    {
+      "id": "PATH-F-USAGE-TIERED",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Usage-based, 2 to 4 plans, each with an included allowance and overage.",
+      "outcome": "Plan cards show base price and allowance in the buyer's unit. A calculator below recommends a plan from the input and shows overage separately. See PATH-PRICE-X2, X7, X8."
+    },
+    {
+      "id": "PATH-F-USAGE-PAYG",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Pure pay-as-you-go with no plans.",
+      "outcome": "Calculator-first page: slider plus input, live rate table with the active tier highlighted, itemized breakdown, big estimated total, and a note on custom pricing for large volume. See PATH-PRICE-X1 to X5, X10, X11."
+    },
+    {
+      "id": "PATH-F-HYBRID",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Seat fee plus included usage plus overage.",
+      "outcome": "Cards show base price and allowance. A calculator (plan, seats, usage, add-ons, total) shows the real bill with monthly and annual totals. See PATH-PRICE-H1 to H4."
+    },
+    {
+      "id": "PATH-F-CONSUMER-WEB",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Consumer subscription on a web page (individual, family, student).",
+      "outcome": "Selectable plan cards with a clear selected state and one Continue button. Name family plans by accounts or devices. Show monthly equivalent and real charge. See PATH-PRICE-C1, C2, C6."
+    },
+    {
+      "id": "PATH-F-CONSUMER-PAYWALL",
+      "node_type": "sub_decision",
+      "parent": "PATH-F",
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "condition": "Consumer subscription on iOS or in-app paywall.",
+      "outcome": "Plan cards, trial timeline, CTA that agrees with post-trial price, Restore Purchases, Terms, Privacy. Timing and placement route to conversion-patterns. See PATH-PRICE-C2 to C5, C8, C11."
+    },
+    {
+      "id": "PATH-PRICE-U1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "One lockup for price",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Show price, unit, and billing period together: \"$24 per person / month, billed annually.\" Seen on Descript, Height, Plain. Never split the unit into a footnote."
+    },
+    {
+      "id": "PATH-PRICE-U2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Annual toggle states its savings",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "\"Save 25%,\" \"2 months free,\" \"-20%.\" Put it next to the toggle, not in a tooltip. Every price on the page must change when the toggle flips. Default to annual only if annual is what you want to sell."
+    },
+    {
+      "id": "PATH-PRICE-U3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show the annual total when annual is on",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Copy.ai and Kit both show \"$36/mo, billed $432/year.\" Buyers do the math anyway. Do it for them."
+    },
+    {
+      "id": "PATH-PRICE-U4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "One highlighted tier, never two",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Use a border or elevation plus a short badge (\"Most popular,\" \"Recommended\"). Do not rely on color alone."
+    },
+    {
+      "id": "PATH-PRICE-U5",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Only the highlighted tier gets the primary button",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Others get secondary style. Descript and Plain do this well. Teachable colors one and blacks the others, which is close but inconsistent when the highlight and the button color disagree."
+    },
+    {
+      "id": "PATH-PRICE-U6",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "CTA matches the friction",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Free: \"Start free.\" Paid with trial: \"Start free trial.\" Top tier: \"Talk to sales.\" Do not put \"Get started\" on every card."
+    },
+    {
+      "id": "PATH-PRICE-U7",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Use \"Everything in X, plus:\"",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "on every tier above the first. Dub, Height, Windsurf, Circle all do it. It cuts repeated bullets and shows the ladder."
+    },
+    {
+      "id": "PATH-PRICE-U8",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Limits are numbers, not adjectives",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "\"30 transcription hours / month\" beats \"generous limits.\" Keep to about 6 to 8 bullets per card. If a card runs longer, the extra goes in the comparison table."
+    },
+    {
+      "id": "PATH-PRICE-U9",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "\"No credit card required\" near the free or trial CTA, only when true",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Seen on Dub, Clay, Lyssna."
+    },
+    {
+      "id": "PATH-PRICE-U10",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Enterprise says \"Custom\" in the price slot",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "List what sales unlocks (SSO, audit logs, dedicated support). Don't invent a starting price you won't honor."
+    },
+    {
+      "id": "PATH-PRICE-U11",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Define any term that changes the bill",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Retool footnotes \"standard users\" vs \"end users.\" If two things look like seats but bill differently, define both below the cards."
+    },
+    {
+      "id": "PATH-PRICE-U12",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "State tax and currency",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Mistral says \"excluding taxes\" and has a currency switch. Do this if you sell across regions."
+    },
+    {
+      "id": "PATH-PRICE-U13",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Below the cards, in this order:",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "comparison table (3+ tiers), FAQ, reassurance line (cancel anytime, money-back). *Design judgment, not one observed order.*"
+    },
+    {
+      "id": "PATH-PRICE-U14",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Mobile stacks cards with the recommended tier first",
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "*Design judgment.* Users won't scroll past three tall cards to find the one you want them to see."
+    },
+    {
+      "id": "PATH-PRICE-T1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "One tier",
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "One card, centered, price, 4 to 8 features, one CTA. Reflect (\"One plan one price\") and Skillshare do this. If price varies by a size variable, put the control inside the card (Kit's subscriber dropdown). Add a small secondary path for big buyers (\"Request a demo\")."
+    },
+    {
+      "id": "PATH-PRICE-T2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Two tiers",
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Works best when the split is \"me vs us\" (Personal / Team) or \"free vs paid.\" Highlight the paid one."
+    },
+    {
+      "id": "PATH-PRICE-T3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Three tiers",
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "The default. Name tiers by audience or stage, not Good/Better/Best. Seen: Hobbyist / Creator / Business (Descript), Launch / Grow / Scale (Plain), Starter / Pro / Enterprise (Current)."
+    },
+    {
+      "id": "PATH-PRICE-T4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Four tiers",
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Windsurf, Mistral, Retool, and Firecrawl show four. Only do it when the fourth is a real sales-led tier. Keep card bullets short and put depth in a comparison table. Airtable and Lyssna both use a sticky-header table with grouped sections."
+    },
+    {
+      "id": "PATH-PRICE-T5",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Five or more",
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Only for consumer products with distinct benefit stories. Revolut uses five cards with short descriptions and arrows. Klarna uses tabs plus cards. Never a five-column row of feature bullets."
+    },
+    {
+      "id": "PATH-PRICE-S1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Price per seat per month, with the period",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Plain: \"$39 / user / month.\" Say who counts as a seat."
+    },
+    {
+      "id": "PATH-PRICE-S2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show included seats",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Copy.ai: \"5 user seats included.\" Lyssna shows both \"included seats\" and \"maximum seats\" per tier."
+    },
+    {
+      "id": "PATH-PRICE-S3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Add a stepper on the card when seat count changes the price",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Mistral puts \"$50/mo, 2 users\" with +/- on the Team card. GitBook uses a number input and shows a running total. Show monthly and annual totals."
+    },
+    {
+      "id": "PATH-PRICE-S4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Separate seat types and say so",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Lyssna has viewer seats. Retool has standard users and end users with different prices. If you have free viewers or cheaper light users, show that as a feature, not fine print."
+    },
+    {
+      "id": "PATH-PRICE-S5",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Disclose caps",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "\"Up to 50 members\" (Height), \"max 15 seats\" (Lyssna). Buyers hit these walls later and feel tricked if you hid them."
+    },
+    {
+      "id": "PATH-PRICE-S6",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Volume discounts live on the Enterprise card",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Windsurf: \"Volume based annual discounts (>200 seats).\""
+    },
+    {
+      "id": "PATH-PRICE-S7",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "If the free tier has unlimited seats, say it loudly",
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Height and Current lead with \"unlimited members.\" It's a differentiator."
+    },
+    {
+      "id": "PATH-PRICE-X1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Never show only a per-unit rate",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "A rate like \"1.8 cents per charge\" is meaningless without a sample bill. Add an estimator (Stripe, Vercel, Cofounder)."
+    },
+    {
+      "id": "PATH-PRICE-X2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Ask in the customer's unit",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Kit asks \"How many email subscribers do you have?\" Teak asks \"Avg. daily active players.\" Cartesia converts credits to minutes of audio. If your billing unit is abstract (tokens, credits, blocks), translate it. Mailchimp's \"blocks of 25,000 emails\" is the version to avoid."
+    },
+    {
+      "id": "PATH-PRICE-X3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Slider plus number input",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Vercel and Grok pair them. The slider is for exploring, the input is for exactness. Label the tick marks."
+    },
+    {
+      "id": "PATH-PRICE-X4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show the rate table next to the calculator",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Stripe highlights the active tier under the slider track. Mailchimp shows the full block-rate table. Buyers want to verify your math."
+    },
+    {
+      "id": "PATH-PRICE-X5",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Big estimated total, plus an itemized breakdown",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cofounder lists token, compute, and database costs above a large total. Vercel does the same and adds a comparison. Always label it \"estimated.\""
+    },
+    {
+      "id": "PATH-PRICE-X6",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Default to a realistic value, not zero",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cartesia starts at 45 min. Mailchimp's empty state shows $0.00, which tells the buyer nothing. *My read, not tested.*"
+    },
+    {
+      "id": "PATH-PRICE-X7",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show included allowance and overage separately",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cofounder: \"$20 included.\" Windsurf: \"Add-on credits at $10 / 250 credits.\" Say what happens when they run out."
+    },
+    {
+      "id": "PATH-PRICE-X8",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Recommend a plan from the input",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cartesia shows a \"Recommended plan\" card after you pick volume. Kit disables tiers that can't cover your count (\"Max subscribers reached\")."
+    },
+    {
+      "id": "PATH-PRICE-X9",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Say what one unit buys",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "If you sell credits, give an example (\"1 credit = about 2 pages scraped\"). ClassPass explains credits in its own page and notes rollover. Rollover is worth stating."
+    },
+    {
+      "id": "PATH-PRICE-X10",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Offer a reset on multi-input calculators",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Grok has one."
+    },
+    {
+      "id": "PATH-PRICE-X11",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Predictability is a feature",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "If you don't meter something, show it as $0. Agentcard lists \"$0 per issued card\" and \"$0 per order\" under a flat monthly fee. If you have a spending cap or pause, say so."
+    },
+    {
+      "id": "PATH-PRICE-X12",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Outcome pricing needs a definition",
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Intercom prices Fin at \"$0.99 per outcome.\" Any outcome-based price must define what counts as one, on the same screen."
+    },
+    {
+      "id": "PATH-PRICE-H1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show usage per seat",
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Windsurf: \"500 prompt credits / user / month.\" Buyers multiply by team size. Put the multiplication in the calculator."
+    },
+    {
+      "id": "PATH-PRICE-H2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Calculator order follows how buyers think",
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Plan, then seats, then usage, then add-ons, then total. GitBook: plan, site count, users, total per month and per year. Teak adds an add-on toggle."
+    },
+    {
+      "id": "PATH-PRICE-H3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Two totals",
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Monthly and annual, always."
+    },
+    {
+      "id": "PATH-PRICE-H4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Keep the cards simple, put the math in the calculator",
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Cards show the base price and allowance. The calculator shows the real bill. Don't cram both into one card."
+    },
+    {
+      "id": "PATH-PRICE-C1",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Plan choice is radio cards with one Continue button",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "MasterClass and Quizlet show cards with a clear selected state and one button below. Do not hide prices behind a tap."
+    },
+    {
+      "id": "PATH-PRICE-C2",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Show both the monthly equivalent and the real charge",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Blue Apron: \"$8.33/mo\" plus \"$99.99/yr.\" Lifesum shows per-month next to the billing period. Yubo's \"$0.60/day\" is fine only if the actual charge is also visible."
+    },
+    {
+      "id": "PATH-PRICE-C3",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Explain the trial as a timeline",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Quizlet: today (access), reminder date, trial ends, billing starts. Jomo says \"We'll notify you 24h before your trial ends.\" This is the single clearest trust builder in the set."
+    },
+    {
+      "id": "PATH-PRICE-C4",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "The CTA and the small print agree",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "\"Start free trial\" with \"7-day free, then $29.98/year\" right under it (Halide). Blue Apron adds a terms checkbox before enabling the button."
+    },
+    {
+      "id": "PATH-PRICE-C5",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "iOS: always show Restore Purchases, Terms, Privacy",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Jomo, Lifesum, Notion all do."
+    },
+    {
+      "id": "PATH-PRICE-C6",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Name family plans by who's in them",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Deezer: \"1 account / 2 accounts / 6 accounts.\" MasterClass: \"1 account, 6 devices.\""
+    },
+    {
+      "id": "PATH-PRICE-C7",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Free vs Pro list when free is real",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Tide Guide shows a checklist with two columns. It makes the upgrade feel concrete."
+    },
+    {
+      "id": "PATH-PRICE-C8",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Sticky CTAs must not cover a plan",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Tide Guide's button sits over the annual plan card in the screen I saw. Test with the smallest supported device."
+    },
+    {
+      "id": "PATH-PRICE-C9",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Strikethrough anchors only for real prior prices",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Lifesum and Deezer use them. If the higher price was never charged, don't show it. *Ethical rule, not observed.*"
+    },
+    {
+      "id": "PATH-PRICE-C10",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "One line on why it costs money",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Halide has a \"Why is Halide not free?\" block. For indie or small-team apps it earns trust."
+    },
+    {
+      "id": "PATH-PRICE-C11",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/pricing-pages.md",
+      "rule_name": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`",
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`."
     }
   ]
 }

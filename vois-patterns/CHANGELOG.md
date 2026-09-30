@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.9.0] - 2026-09-30
+
+**Add** | New template `references/pricing-pages.md` (PATH-F): decision tree for pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), plus 53 tagged rules (`PATH-PRICE-U1` to `PATH-PRICE-C11`, grouped U, T, S, X, H, C), a don'ts list, and a pre-implementation checklist. Based on pattern review of about 45 Mobbin screens (SaaS web, consumer web, iOS paywalls). Observational only, no conversion data; a few rules are marked as design judgment. Added matching entries to `data/patterns-rules.json` (1 top-level pattern, 10 sub-decisions, 53 `cross_cutting_rule` nodes). Paywall timing and placement routes to `conversion-patterns`.
+
+**Change** | `SKILL.md` gains PATH F in the decision tree, a Reference Files row, a "pricing" option in the container-type checklist item, and a `conversion-patterns` entry under Relationship to Other Skills. `patterns-rules.json`'s top-level `description` now mentions `pricing-pages.md` and the `PATH-PRICE-U1` to `PATH-PRICE-C11` groups.
+
+---
+
 ## [1.8.0] - 2026-09-12
 
 **Add** | New `references/content-density.md`: a three-tier framework (dense / standard / spacious) for how much breathing room a screen should have, picked from who's using it and how often rather than defaulted to the mid-range spacing tokens everywhere. `PATH-DENSITY-DENSE` (admin grids, comparison-heavy scanning), `PATH-DENSITY-STANDARD` (the default — forms, settings, everyday detail views), `PATH-DENSITY-SPACIOUS` (onboarding, empty states, destructive confirmations, marketing) — added to `data/patterns-rules.json` as `cross_cutting_rule` nodes. Explicitly distinguished from `[DS-SLOP-010]` (card-ification is a container-choice anti-pattern; density is a spacing/information-per-screen decision, independent of it) and related to `vois-tokens`' `DENSITY` taste dial (the dial tunes within a tier, it doesn't pick the tier). `SKILL.md` gains a Reference Files row and checklist item.
@@ -212,7 +220,7 @@ All feedback feeds into the analysis loop for the next version.
 
 | Version | Status | Stability | Last Updated |
 |---------|--------|-----------|--------------|
-| 1.5.1 | Active | Stable | 2026-07-23 |
+| 1.9.0 | Active | Stable | 2026-09-30 |
 
 ---
 
@@ -225,5 +233,5 @@ All feedback feeds into the analysis loop for the next version.
 
 ---
 
-**Last updated:** 2026-07-23  
-**Current version:** 1.5.1
+**Last updated:** 2026-09-30  
+**Current version:** 1.9.0
