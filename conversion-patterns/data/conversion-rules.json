@@ -1,0 +1,303 @@
+{
+  "version": "1.0.0",
+  "source_note": "Every rule below is a single case study from one company, not a controlled multi-trial finding. Each is validated in its own context, not proven as a general law. Use the 'condition' field to check fit before applying. Where two rules contradict, that is not an error in this file — it means they assume opposite starting conditions. Check 'contradicts' before picking a lever.",
+  "rules": {
+
+    "PAYWALL-01": {
+      "category": "paywall",
+      "lever": "Show an explicit day-by-day billing timeline during the trial, including the exact charge date.",
+      "mechanism": "Removes the fear of a surprise charge, which is often the real blocker, not the trial's value.",
+      "condition": "User has already agreed to start the trial. The friction is billing anxiety, not product doubt.",
+      "evidence": "Blinkist: +23% trial signups, -55% customer complaints, push opt-ins rose from 6% to 74%.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "PAYWALL-02": {
+      "category": "paywall",
+      "lever": "Offer the free trial only on the annual plan, or give annual a longer trial than monthly.",
+      "mechanism": "Makes annual feel like the safer, lower-risk option instead of the bigger commitment.",
+      "condition": "You want to nudge undecided users toward annual and can tolerate monthly users getting a worse or no trial.",
+      "evidence": "Moonly: +39% view-to-subscription conversion. Headspace: 7-day trial on monthly, 14-day on annual, double-digit conversion increase despite delaying revenue.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "PAYWALL-03": {
+      "category": "paywall",
+      "lever": "Single-tap trial start with gain-framed copy (e.g. \"redeem your free 2 weeks\"), skipping a second paywall/confirmation screen.",
+      "mechanism": "Fewer steps plus framing the trial as something being given, not something being asked for.",
+      "condition": "User already has enough context to decide without more selling on a second screen.",
+      "evidence": "Slopes: +25% trial starts.",
+      "routes_to": ["vois-patterns", "righter"],
+      "contradicts": ["PAYWALL-08"]
+    },
+    "PAYWALL-04": {
+      "category": "paywall",
+      "lever": "Default the paywall to showing only the yearly plan; put monthly behind a secondary \"view all plans\" link.",
+      "mechanism": "Removes the side-by-side comparison that lets users default to the cheaper, smaller commitment.",
+      "condition": "Same as PAYWALL-02 — you're optimizing for annual mix, and are OK with monthly users doing extra work to find their option.",
+      "evidence": "Mojo: +15-20% increase in yearly-plan share.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "PAYWALL-05": {
+      "category": "paywall",
+      "lever": "Show the paywall immediately when the app is opened, before any feature use.",
+      "mechanism": "Works when the value prop is already understood from the app store listing or marketing, so there's nothing left to demonstrate.",
+      "condition": "The product's value is legible without hands-on use. If it isn't, this will read as an ambush.",
+      "evidence": "Instasize: +7% premium subscriptions.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": ["PAYWALL-08", "ONBOARD:delay-signup-ask"]
+    },
+    "PAYWALL-06": {
+      "category": "paywall",
+      "lever": "Before asking for the trial, make the cost of inaction vivid — project a habit or behavior forward (e.g. lifetime hours lost) instead of only describing the product's benefit.",
+      "mechanism": "Creates a motivated moment, similar to why gym-membership commitment effects work, right before the ask.",
+      "condition": "Product addresses a habit or behavior the user already has some regret about (screen time, spending, etc.). Doesn't transfer to neutral utility products.",
+      "evidence": "Opal: trial-signup conversion rate went from 7% to 17% across iterations.",
+      "routes_to": ["righter", "vois-patterns"],
+      "contradicts": []
+    },
+    "PAYWALL-07": {
+      "category": "paywall",
+      "lever": "Require a credit card for the trial instead of running freemium or a no-card trial.",
+      "mechanism": "Filters for intent and reduces low-value support load, at the cost of top-of-funnel volume.",
+      "condition": "Support cost or low-intent signups are an actual measured problem, and you're willing to trade volume for conversion rate. Reported lift did not include funnel-volume data — check that before copying this.",
+      "evidence": "Outseta: 35% trial-to-paid conversion vs. 7.25% on freemium (4-5x).",
+      "routes_to": ["vois-patterns"],
+      "contradicts": ["PAYWALL-03", "PAYWALL-08"]
+    },
+    "PAYWALL-08": {
+      "category": "paywall",
+      "lever": "Let premium content play for a short window (e.g. 10 seconds) before the paywall interrupts, instead of gating it up front.",
+      "mechanism": "Value has to be tasted to be believed; gating first never lets the user find out what they'd be paying for.",
+      "condition": "The product's value is experiential and hard to convey in text or a screenshot (video, audio, live content).",
+      "evidence": "PepTalk: conversion with the taste-first variant \"significantly\" beat the gate-first variant.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": ["PAYWALL-05", "PAYWALL-07"]
+    },
+    "PAYWALL-09": {
+      "category": "paywall",
+      "lever": "Send a reminder (email/push) a few days before the trial ends.",
+      "mechanism": "Surfaces value again right before the decision point and reduces \"I forgot I was in a trial\" cancellations, without adding a hard sell.",
+      "condition": "Standard trial-to-paid transition where users may simply lose track of the date.",
+      "evidence": "Shaw Academy: +14% sales at reported 99%+ significance, without a matching rise in cancellations.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "PAYWALL-10": {
+      "category": "paywall",
+      "lever": "Add a badge or explicit framing (\"free during the month\", \"save 60%\") to an offer that isn't otherwise changing.",
+      "mechanism": "Same offer, clearer framing of what's being gained — badges make an existing deal legible instead of buried in body copy.",
+      "condition": "The underlying offer is already good; the problem is presentation, not substance.",
+      "evidence": "TIPSTOP: +190% direct conversion.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "PAYWALL-11": {
+      "category": "paywall",
+      "lever": "Replace marketing copy on the paywall with a real user review and star rating.",
+      "mechanism": "Peer proof outweighs brand copy when the audience is skeptical of self-promotion.",
+      "condition": "You have a genuinely strong review to use, and the audience is more swayed by peers than by the brand's own voice.",
+      "evidence": "Runtastic: +44% paid subscriptions.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "PAYWALL-12": {
+      "category": "paywall",
+      "lever": "Tune paywall visuals and copy to the audience's specific identity or emotional register, not generic feature-benefit language.",
+      "mechanism": "Identity-driven audiences respond to belonging and cause more than to a features list.",
+      "condition": "The audience has a strong shared identity (a diaspora publication, a niche community, a cause). This is an audience-fit result, not a general \"emotion beats benefits\" law — don't apply it to audiences without that shared identity.",
+      "evidence": "Neos Kosmos: image test +13%, tone-of-voice test (\"support our work\" vs. benefit-listing) +16%.",
+      "routes_to": ["righter", "vois-patterns"],
+      "contradicts": []
+    },
+
+    "CHECKOUT-01": {
+      "category": "checkout",
+      "lever": "Remove mandatory account creation at checkout; ask only name and email, replace password creation with a reset-link flow.",
+      "mechanism": "Cuts the last blocker when purchase intent is already high.",
+      "condition": "User has already committed to the purchase decision (picked the item/room/service); account creation is the only remaining step, not the trust-builder.",
+      "evidence": "HotelTonight: +15% conversions.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": ["PAYWALL-07"]
+    },
+    "CHECKOUT-02": {
+      "category": "checkout",
+      "lever": "Show a single point-estimate price instead of a range.",
+      "mechanism": "Users anchor to the top of a displayed range and hesitate; a single number reads as more trustworthy even if less \"technically accurate.\"",
+      "condition": "Trust in the number matters more to the user than precision about variability.",
+      "evidence": "Uber: double-digit increase in rides per user.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "CHECKOUT-03": {
+      "category": "checkout",
+      "lever": "Restate an existing incentive (best-price guarantee, free-shipping threshold, returns policy) at the actual decision point, not just on a policy page.",
+      "mechanism": "Users don't reread policy pages; repeating the incentive where the decision is being made changes the outcome even though nothing about the offer changed.",
+      "condition": "The incentive already exists and is real — this is a visibility fix, not a new offer.",
+      "evidence": "Buyagift: +9.6% sales. Clarks: +2.6% conversions. T.M. Lewin: +50% conversion rate, +7% monthly sales.",
+      "routes_to": ["righter", "vois-patterns"],
+      "contradicts": []
+    },
+    "CHECKOUT-04": {
+      "category": "checkout",
+      "lever": "Add short, benefit-focused copy (and/or top reviews) near the top of the product page.",
+      "mechanism": "High-traffic, low-conversion pages often lead with generic description instead of the reason to buy.",
+      "condition": "Traffic is not the problem; the page currently under-sells before the fold.",
+      "evidence": "Goldelucks: +31.6% orders, +66.2% order revenue. Hannah & Henry (AI-generated version): +45.7% sales.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "CHECKOUT-05": {
+      "category": "checkout",
+      "lever": "Offer cart abandoners a limited-time discount with a countdown timer.",
+      "mechanism": "Reactivates intent that was already warm (they added to cart), rather than manufacturing urgency from nothing.",
+      "condition": "Target users showed real prior intent (cart add), not cold traffic.",
+      "evidence": "Kiss My Keto: +15% conversion rate.",
+      "routes_to": ["righter", "vois-patterns"],
+      "contradicts": []
+    },
+    "CHECKOUT-06": {
+      "category": "checkout",
+      "lever": "Add a values/storytelling panel (craftsmanship, sustainability, origin) to the product page.",
+      "mechanism": "Differentiates on story where the product is premium or handmade and competes against commodity alternatives.",
+      "condition": "Brand positioning already depends on craft/values, not just price or convenience.",
+      "evidence": "Beckett Simonon: +5% sales, 237% annualized ROI on the panel.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "CHECKOUT-07": {
+      "category": "checkout",
+      "lever": "Before testing any lever, verify the current flow isn't just broken or confusing.",
+      "mechanism": "Some \"conversion wins\" are bug fixes wearing a growth-hack costume — clarifying real UI confusion isn't a psychological lever, it's cleanup.",
+      "condition": "Always check this first, especially when complaint volume or confused-user reports exist.",
+      "evidence": "Chick-fil-A: fixed a payment-options UI users misread as loyalty-card-only. +6% credit card payments, complaints dropped to zero.",
+      "routes_to": [],
+      "contradicts": [],
+      "check_first": true
+    },
+
+    "RETENTION-01": {
+      "category": "retention",
+      "lever": "Decouple a streak or habit-loop from hitting the full daily goal — let a smaller action (one lesson, one session) preserve it.",
+      "mechanism": "Lowers the bar for the specific trigger that sustains the habit loop, without removing the goal itself.",
+      "condition": "Churn is coming from missing an ambitious goal, not from lack of motivation to engage at all.",
+      "evidence": "Duolingo: +40% increase in learners on a 7+ day streak.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "RETENTION-02": {
+      "category": "retention",
+      "lever": "Show ambient social proof (real comments/reactions from other users) during use, not only at the payment moment.",
+      "mechanism": "Doubt about whether the product is \"working\" creeps in mid-use, not just at checkout — proof needs to live where the doubt lives.",
+      "condition": "Product is habit- or wellness-oriented, where the value is felt gradually rather than confirmed instantly.",
+      "evidence": "Headspace: +3% survival rate of free trial users.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "RETENTION-03": {
+      "category": "retention",
+      "lever": "Display concrete per-item numbers instead of only an aggregate total.",
+      "mechanism": "An aggregate obscures the user's individual contribution; concrete numbers keep a recurring small habit legible over time.",
+      "condition": "The habit involves recurring small actions (auto-invest, recurring workouts, recurring saves) where the total can hide whether it's still happening.",
+      "evidence": "Stash: +12% of users still auto-investing 8 months later.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "RETENTION-04": {
+      "category": "retention",
+      "lever": "Test icon/interaction choices (like/dislike, react, approve/reject) against the actual audience instead of assuming the more \"appealing\" icon wins.",
+      "mechanism": "None assumed — this is the built-in reminder that icon aesthetics don't transfer across audiences.",
+      "condition": "Any binary approve/reject or react UI. Always check_first for this category.",
+      "evidence": "Paktor: thumbs up/down outperformed heart/X on clicks (+6%/+4.3%) and repeat usage (+2.3%) for this dating-app audience.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": [],
+      "check_first": true
+    },
+
+    "REFERRAL-01": {
+      "category": "referral",
+      "lever": "Show real-time visibility into a referral's progress (signup stages), not just success at the very end.",
+      "mechanism": "A black box between \"invited\" and \"reward\" kills motivation to keep tracking or pushing; visibility into \"almost there\" sustains it.",
+      "condition": "Referral rate is measurably low and the current flow only confirms success after the fact.",
+      "evidence": "SoFi: 20x increase in referrals, reaching 40% of new signups in 3 months.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "REFERRAL-02": {
+      "category": "referral",
+      "lever": "Give referred users a longer trial than the standard new-user trial.",
+      "mechanism": "Referral programs need to convert skeptics who haven't yet decided the product is worth it, not just capture people who already had intent.",
+      "condition": "Referral flow currently gives referred users the same trial as everyone else.",
+      "evidence": "Headspace 30-Day Guest Pass: +7% new signups, +8% revenue from a higher free-to-paid conversion via referrals.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+
+    "MONETIZE-01": {
+      "category": "monetization-awareness",
+      "lever": "Add \"Pro\"/locked badges to premium-only features with no other change to the app.",
+      "mechanism": "Creates upgrade awareness without a hard wall — free users see what they're missing continuously instead of hitting it once.",
+      "condition": "Free users currently have no visible cue that a feature is premium-gated until they try to use it.",
+      "evidence": "Mobbin: +35% free-to-paid conversions.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+    "MONETIZE-02": {
+      "category": "monetization-awareness",
+      "lever": "Gate the specific feature your most-engaged free users are already repeatedly hitting, identified from usage data — not an arbitrary feature.",
+      "mechanism": "Converts existing dependency into willingness to pay; gating a feature nobody uses converts nobody.",
+      "condition": "You have usage data showing which feature power users return to. The lift is specific to that segment, not the general free-user population.",
+      "evidence": "Busuu: +83% conversion among the power-user segment that hit the multi-language gate.",
+      "routes_to": ["vois-patterns"],
+      "contradicts": []
+    },
+
+    "CTA-01": {
+      "category": "cta-pricing",
+      "lever": "Reframe CTA copy around the specific free-trial value (\"Trial for free\") instead of a generic action (\"Sign up for free\").",
+      "mechanism": "Makes the free-trial angle explicit rather than implied.",
+      "condition": "Audience already recognizes the brand/product; the CTA's job is to surface the trial angle, not explain the product.",
+      "evidence": "Going: +104% trial starts month-over-month, also outperformed organic traffic for the first time.",
+      "routes_to": ["righter"],
+      "contradicts": []
+    },
+    "CTA-02": {
+      "category": "cta-pricing",
+      "lever": "Show a monthly-equivalent price instead of the full lump-sum price.",
+      "mechanism": "A lump sum reads as large; audiences that think in monthly-budget terms respond to the smaller framed number.",
+      "condition": "Price is currently shown as a lump sum for a plan billed annually or in bulk.",
+      "evidence": "Unacademy: +13.5% click-through rate at reported 100% significance.",
+      "routes_to": ["righter", "vois-patterns"],
+      "contradicts": []
+    },
+    "CTA-03": {
+      "category": "cta-pricing",
+      "lever": "A visually distinctive button (e.g. thin border, standing apart from surrounding UI) can beat a button that blends into the existing design system.",
+      "mechanism": "In a busy layout (carousel, dense list), visual distinctiveness competes for attention better than visual consistency.",
+      "condition": "The CTA sits inside a crowded or scroll-heavy layout where it's competing with other content for attention.",
+      "evidence": "Unacademy: the distinctive variant generated 13k clicks vs. 9k and 7k for the two more \"on-brand\" variants.",
+      "routes_to": ["vois-tokens", "vois-patterns"],
+      "contradicts": []
+    },
+    "CTA-04": {
+      "category": "cta-pricing",
+      "lever": "Increase visual contrast between pricing tiers and emphasize the specific features customers say they value, rather than an even-handed feature list.",
+      "mechanism": "A visually flat pricing table makes every tier look equally worth considering, which isn't decision-supporting.",
+      "condition": "Multi-tier pricing page where tiers currently render with similar visual weight.",
+      "evidence": "GitHub: +20% free and paid signups (bundled with color/cleanup changes, so this exact lift isn't isolated to contrast alone).",
+      "routes_to": ["vois-tokens", "righter"],
+      "contradicts": []
+    },
+    "CTA-05": {
+      "category": "cta-pricing",
+      "lever": "\"Simplify the page\" is not a guaranteed win — verify with real data before assuming less is more.",
+      "mechanism": "None assumed — this is the built-in caution rule for this category.",
+      "condition": "Any time a simplification is proposed on the strength of intuition alone.",
+      "evidence": "Instapage: the original, more detailed pricing page slightly outperformed the simplified variant (3.67% vs. 3.44%).",
+      "routes_to": [],
+      "contradicts": [],
+      "check_first": true
+    }
+  }
+}

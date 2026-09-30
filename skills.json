@@ -85,6 +85,17 @@
       "tags": ["design", "analytics", "metrics", "tagging"]
     },
     {
+      "name": "conversion-patterns",
+      "path": "conversion-patterns",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Condition-gated paywall, checkout, retention, referral, and CTA/pricing-display patterns drawn from published A/B test case studies. Makes you name your funnel stage and product type before picking a lever, then hands structure to vois-patterns, copy to righter, and instrumentation to metrics-tagging. Every rule is one case study, not a universal law.",
+      "tags": ["design", "conversion", "paywall", "checkout", "pricing"],
+      "dataFiles": [
+        { "path": "data/conversion-rules.json", "keyedBy": "id", "schemaVersion": 1, "describes": "32 condition-gated conversion levers as rules keyed by ID (PAYWALL, CHECKOUT, RETENTION, REFERRAL, MONETIZE, CTA), each with lever, mechanism, condition, evidence, routes_to, and contradicts" }
+      ]
+    },
+    {
       "name": "designer-ic-assessment",
       "path": "designer-ic-assessment",
       "version": "1.1.0",

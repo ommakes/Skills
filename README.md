@@ -81,6 +81,17 @@ Ships as `SKILL.md` plus a `references/event-registry.md` starter template — a
 
 ---
 
+### Conversion Patterns
+Condition-gated patterns for paywalls, checkout, retention, referral, and pricing-page CTAs, drawn from published A/B test case studies. Every rule is a single result from one company, so the skill makes you name your funnel stage, trust level, and product type before it lets you pick a lever. Two modes: diagnose a new ticket, or audit an existing screen. It always ends by handing structure to `vois-patterns`, copy to `righter`, and a success metric plus kill condition to `metrics-tagging`.
+
+**Use when:** a ticket touches paywalls, trial structure, checkout, upsells, streaks or habit loops, referral flows, or pricing-page CTA and price display. For the layout of a pricing page itself, use `vois-patterns` (PATH-F) alongside it.
+
+Ships as `SKILL.md`, `data/conversion-rules.json` (32 rules across 6 categories), and `scripts/check-rule-sync.mjs` to keep the two in sync. See [`conversion-patterns/CHANGELOG.md`](./conversion-patterns/CHANGELOG.md) for version history.
+
+→ [`conversion-patterns/`](./conversion-patterns/)
+
+---
+
 ### Design Ask
 Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing. Identifies what design work is actually being asked for, flags when tickets prescribe a UI solution instead of describing a user need, and produces a ready-to-use list of questions to bring to the PM before starting.
 
