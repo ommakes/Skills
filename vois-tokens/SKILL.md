@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.13.0
+version: 1.14.0
 ---
 
 # Vois Tokens Skill
@@ -78,7 +78,7 @@ building fresh, not just the bare rule text:**
 | `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
 | `references/elevation.md` | Shadow/elevation tiers, modal scrim, z-index pairing | `[DS-ELEVATION]` |
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
-| `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
+| `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints, form, field, dialog widths, auto-growing textareas | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
@@ -149,7 +149,7 @@ Run this regardless of which reference files you read — it's the universal gat
 **Accessibility**
 - [ ] All interactive elements have `:focus-visible` styles `[DS-A11Y-002]`
 - [ ] No `outline: none` without a replacement `[DS-A11Y-003]`
-- [ ] Touch targets minimum 44x44px `[DS-A11Y-001]`
+- [ ] Interactive elements have a hit area of at least `var(--hit-area-min)`. The token never sets the visible size `[DS-A11Y-001]`
 - [ ] Contrast passes WCAG AA `[DS-A11Y-004]`
 - [ ] No `div` or `span` as interactive elements without ARIA `[DS-A11Y-005]`
 - [ ] All images have `alt` `[DS-A11Y-010]`
@@ -159,6 +159,8 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] `loading="lazy"` on below-the-fold images `[DS-A11Y-013]`
 
 **Layout**
+- [ ] Form, field, and dialog widths use width tokens `[DS-LAYOUT-WIDTH-001]` `[DS-LAYOUT-WIDTH-002]` `[DS-LAYOUT-WIDTH-003]` `[DS-LAYOUT-WIDTH-004]`
+- [ ] Auto-growing textareas use `field-sizing: content` with an explicit `inline-size`, `lh` min and max, and an `@supports` fallback `[DS-LAYOUT-FIELD-001]` `[DS-LAYOUT-FIELD-002]` `[DS-LAYOUT-FIELD-003]` `[DS-LAYOUT-FIELD-004]`
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
 - [ ] Long pages use `content-visibility: auto` on off-screen sections `[DS-LAYOUT-002]`
 - [ ] Tested at sm, md, lg breakpoints `[DS-RESPONSIVE-002]`
@@ -218,6 +220,9 @@ Run this regardless of which reference files you read — it's the universal gat
 | Flex child text overflowing or not truncating | Add `min-width: 0` to the flex child | `references/layout-and-responsive.md` |
 | Fixed-size image looks stretched | Add `object-fit: cover` or `object-fit: contain` | `references/layout-and-responsive.md` |
 | 16:9 or other ratio container | `aspect-ratio: 16 / 9`, not padding-top hack | `references/layout-and-responsive.md` |
+| Textarea that grows with content | `field-sizing: content`, explicit width, `lh` min and max | `references/layout-and-responsive.md` |
+| Control smaller than its click area | Extend the hit area to `var(--hit-area-min)` | `references/accessibility.md` |
+| Form, field, or dialog width | Use the `widths` tokens in `data/tokens.json` | `references/layout-and-responsive.md` |
 | Group of radio or checkbox inputs | Wrap in `<fieldset>` with `<legend>` | `references/accessibility.md` |
 | Date or time in content | `<time datetime="...">` | `references/accessibility.md` |
 | Hand-authoring a media query | Use `em` not `px` for the breakpoint value | `references/css-architecture.md` |
@@ -297,7 +302,7 @@ Run this for any review/audit task, regardless of which reference files the unde
 - [ ] Modals have `inert`, `overscroll-behavior: contain`, `scrollbar-gutter: stable`
 - [ ] Enter animations split/staggered; exits are subtler and shorter
 - [ ] No `transition: all`; `will-change` only where stutter was actually observed
-- [ ] Touch targets at least 44×44px; focus-visible styles present
+- [ ] Hit areas at least `var(--hit-area-min)`; focus-visible styles present
 - [ ] Headings use `text-wrap: balance`; body copy uses `text-wrap: pretty`
 - [ ] Dynamic numbers use `tabular-nums`
 - [ ] No AI-slop defaults — centered-everything hero, purple→blue gradient, three identical cards, eyebrow on every section (`references/anti-slop.md`)

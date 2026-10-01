@@ -75,3 +75,62 @@ everything down proportionally until it fits) is usually the wrong one:
 - `min-width: 0` on flex children containing text or overflow-prone content. `[DS-LAYOUT-COMP-003]`
 - Images with set dimensions need `object-fit`. `[DS-LAYOUT-COMP-006]`
 - Use `aspect-ratio` instead of the padding-top percentage hack. `[DS-LAYOUT-COMP-005]`
+
+## Form, Field, and Dialog Widths `[DS-LAYOUT-WIDTH]`
+
+Widths come from tokens in `data/tokens.json` (`widths`). Never a raw value.
+
+Form containers use `max-width: var(--width-form-max)`. `[DS-LAYOUT-WIDTH-001]`
+
+Single-line fields use `max-width: var(--width-field-max)` by default. Short fixed-format values (postal code, state code, expiry, security code) use `var(--width-field-narrow)`. Only textareas may extend to `var(--width-form-max)`. `[DS-LAYOUT-WIDTH-002]`
+
+Layouts hold at `var(--width-viewport-min)` with no horizontal scroll. `[DS-LAYOUT-WIDTH-003]`
+
+Desktop dialogs use `max-width: var(--width-dialog-sm)` or `var(--width-dialog-lg)`. Which tier applies is decided in vois-patterns `[PATH-D-SIZE]`. `[DS-LAYOUT-WIDTH-004]`
+
+## Auto-growing Text Fields `[DS-LAYOUT-FIELD]`
+
+Text areas grow with what the user types. Use the CSS property, not JavaScript. `field-sizing: content` is Baseline newly available as of June 2026 (Chrome 123, Safari 26.2, Firefox 152), so browsers older than those still need the fallback.
+
+Use `field-sizing: content` (Tailwind v4: `field-sizing-content`). No `scrollHeight` measuring, no `ResizeObserver`, no autosize libraries. `[DS-LAYOUT-FIELD-001]`
+
+Always set an explicit `inline-size`. Content sizing also shrinks the width, and without one the field collapses to a sliver. `[DS-LAYOUT-FIELD-002]`
+
+Set the minimum and maximum height in text lines with the `lh` unit, plus the field's block padding. Do not rely on the `rows` attribute for the minimum, because browsers ignore `rows` under `field-sizing: content`. At the maximum, the field scrolls inside itself. `[DS-LAYOUT-FIELD-003]`
+
+Wrap the styles in `@supports`. Keep the `rows` attribute and `resize: vertical` as the fallback for browsers without support. `[DS-LAYOUT-FIELD-004]`
+
+```css
+/* Form textarea */
+@supports (field-sizing: content) {
+  .textarea-auto {
+    --pad: calc(var(--spacing) * 2);          /* spacing step 2 */
+    field-sizing: content;
+    inline-size: 100%;
+    max-inline-size: var(--width-form-max);
+    padding-block: var(--pad);
+    min-block-size: calc(var(--textarea-min-lines) * 1lh + var(--pad) * 2);
+    max-block-size: calc(var(--textarea-max-lines) * 1lh + var(--pad) * 2);
+    overflow-y: auto;
+    resize: none;
+  }
+}
+
+/* AI chat input: same pattern, one line to start, no width cap */
+@supports (field-sizing: content) {
+  .chat-auto {
+    --pad: calc(var(--spacing) * 2);
+    field-sizing: content;
+    inline-size: 100%;
+    padding-block: var(--pad);
+    min-block-size: calc(var(--chat-input-min-lines) * 1lh + var(--pad) * 2);
+    max-block-size: calc(var(--chat-input-max-lines) * 1lh + var(--pad) * 2);
+    overflow-y: auto;
+    resize: none;
+  }
+}
+```
+
+The line-count tokens are `--textarea-min-lines`, `--textarea-max-lines`, `--chat-input-min-lines`, and `--chat-input-max-lines`. The height math is exact when the field's outline is a shadow border (`[DS-SURFACE-007]`) or has no border. A real border adds its width to the height.
+
+Where this applies: `[PATH-FIELD-TEXTAREA-AUTOSIZE]` and `[PATH-FIELD-CHAT-INPUT]` in vois-patterns.

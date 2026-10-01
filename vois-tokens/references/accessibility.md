@@ -4,7 +4,7 @@ These are not optional.
 
 ## Touch Targets
 
-Minimum touch target: **44x44px**. If the visual element is smaller, expand the hit area with a pseudo-element: `[DS-A11Y-001]`
+Every interactive element has a hit area of at least `var(--hit-area-min)` in both dimensions. The token sets the click or tap area only, never the visual size of the control. If the visible element is smaller, extend the hit area with a pseudo-element: `[DS-A11Y-001]`
 
 ```css
 .icon-button {
@@ -14,7 +14,12 @@ Minimum touch target: **44x44px**. If the visual element is smaller, expand the 
 .icon-button::after {
   content: '';
   position: absolute;
-  inset: -10px;
+  inset: 50% auto auto 50%;
+  width: 100%;
+  height: 100%;
+  min-width: var(--hit-area-min);
+  min-height: var(--hit-area-min);
+  transform: translate(-50%, -50%);
 }
 ```
 

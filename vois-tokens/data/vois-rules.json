@@ -24,7 +24,7 @@
       "category": "DS-A11Y",
       "category_label": "Accessibility",
       "source_file": "vois-tokens/references/accessibility.md",
-      "rule": "Minimum touch target: 44x44px. If the visual element is smaller, expand the hit area with a pseudo-element",
+      "rule": "Every interactive element has a hit area of at least var(--hit-area-min) in both dimensions. The visual element can be smaller. Extend the hit area with a pseudo-element, and never size the visible control with this token.",
       "severity": "required",
       "enforcement": "advisory"
     },
@@ -1026,6 +1026,78 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Error messages tell the user what to do next, not just what went wrong",
       "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-WIDTH-001",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Form containers use max-width: var(--width-form-max). No hardcoded width values.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-WIDTH-002",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Single-line fields use max-width: var(--width-field-max) by default. Short fixed-format values use var(--width-field-narrow). Only textareas may extend to var(--width-form-max).",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-WIDTH-003",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Layouts must hold at var(--width-viewport-min) with no horizontal scroll.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-WIDTH-004",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Desktop dialogs use max-width: var(--width-dialog-sm) or var(--width-dialog-lg). No hardcoded dialog widths. Which tier applies is decided in vois-patterns PATH-D-SIZE.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-FIELD-001",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Text areas that grow with their content use field-sizing: content (Tailwind v4: field-sizing-content). No JavaScript autosizing: no scrollHeight measuring, ResizeObserver, or autosize libraries.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-FIELD-002",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Always set an explicit inline-size with field-sizing: content. Content sizing also shrinks the width, and an unset width collapses to a sliver.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-FIELD-003",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Set min-block-size and max-block-size from the line-count tokens using the lh unit plus the field's block padding. Do not rely on the rows attribute for the minimum, because browsers ignore rows under field-sizing: content. Scroll inside the field with overflow-y: auto at the maximum.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-LAYOUT-FIELD-004",
+      "category": "DS-LAYOUT",
+      "category_label": "Layout",
+      "source_file": "vois-tokens/references/layout-and-responsive.md",
+      "rule": "Wrap field-sizing styles in @supports (field-sizing: content). Keep the rows attribute and resize: vertical as the fallback for browsers without support.",
+      "severity": "required",
       "enforcement": "advisory"
     }
   ]
