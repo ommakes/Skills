@@ -1,0 +1,282 @@
+{
+  "source": "vois-dataviz/references/decision-tree.md (generated from this file by scripts/build-reference.mjs)",
+  "description": "The chart-selection decision tree as a graph. Start at `start`. Each question node has options with a `next` node id; each result node names a form from data/chart-catalog.json plus alternatives, the color job, the rules that bite hardest, and notes. `jobs` maps the spec's `job` field to its entry node so a program can list every form reachable for a job (scripts/check-spec.mjs does this). `gates` are checks every result must clear before the form is final. Walk the tree, record the result node id with vois_record_component_choice, then continue with color, marks, interaction and states.",
+  "start": "CHART-Q-ROOT",
+  "jobs": {
+    "single": "CHART-Q-SINGLE",
+    "time": "CHART-Q-TIME",
+    "compare": "CHART-Q-COMPARE",
+    "part": "CHART-Q-PART",
+    "relate": "CHART-Q-RELATE",
+    "distribution": "CHART-Q-DIST",
+    "flow": "CHART-Q-FLOW",
+    "geo": "CHART-Q-GEO",
+    "hierarchy": "CHART-Q-HIER",
+    "schedule": "CHART-R-GANTT",
+    "lookup": "CHART-R-TABLE",
+    "ohlc": "CHART-R-CANDLE"
+  },
+  "gates": [
+    { "id": "GATE-AUDIENCE", "check": "If the audience is unknown or general, only forms with fit 'core' or 'situational' and audience 'general' may be the final answer. Forms with audience 'analyst' or fit 'rare' need spec.audience analyst and a how-to-read note.", "rules": ["DV-PURPOSE-002", "DV-FORM-005"] },
+    { "id": "GATE-SIMPLER", "check": "Is there a simpler catalog form with the same job that loses nothing the reader needs? If so, use it.", "rules": ["DV-FORM-002"] },
+    { "id": "GATE-SERIES", "check": "Series above 8 is never solved by more hues. Fold into Other, facet, or isolate. Series above 4 loses direct labels; above 5 needs emphasis or small multiples.", "rules": ["DV-COLOR-003", "DV-FILTER-007"] },
+    { "id": "GATE-SCALE", "check": "Two measures on different scales never share a plot. Small multiples, two charts, or index to a common base.", "rules": ["DV-HONEST-002"] },
+    { "id": "GATE-TWIN", "check": "Every result ships with a table view and a text alternative.", "rules": ["DV-A11Y-003", "DV-A11Y-004"] },
+    { "id": "GATE-VOLUME", "check": "Over about 500 points per series downsample; over about 2,000 marks in SVG aggregate or use canvas.", "rules": ["DV-SUSTAIN-002", "DV-SUSTAIN-006"] }
+  ],
+  "nodes": [
+    {
+      "id": "CHART-Q-ROOT", "type": "question",
+      "question": "What does the viewer need to DO with this data?",
+      "options": [
+        { "label": "Read one current number, maybe with a target or a trend", "next": "CHART-Q-SINGLE" },
+        { "label": "See how something changes over time", "next": "CHART-Q-TIME" },
+        { "label": "Compare categories or rank them", "next": "CHART-Q-COMPARE" },
+        { "label": "See how parts add up to a whole", "next": "CHART-Q-PART" },
+        { "label": "See whether two or more measures move together", "next": "CHART-Q-RELATE" },
+        { "label": "See how values are spread out, or find outliers", "next": "CHART-Q-DIST" },
+        { "label": "See how things move through stages or between states", "next": "CHART-Q-FLOW" },
+        { "label": "See where something is (geography)", "next": "CHART-Q-GEO" },
+        { "label": "See hierarchy or nesting", "next": "CHART-Q-HIER" },
+        { "label": "Plan or track work across a schedule", "next": "CHART-R-GANTT" },
+        { "label": "Look up exact values or compare many attributes at once", "next": "CHART-R-TABLE" },
+        { "label": "Follow price movement (open, high, low, close)", "next": "CHART-R-CANDLE" }
+      ]
+    },
+    {
+      "id": "CHART-Q-SINGLE", "type": "question",
+      "question": "Is there a target, limit or threshold to compare it to?",
+      "options": [
+        { "label": "Yes", "next": "CHART-Q-SINGLE-TARGET" },
+        { "label": "No", "next": "CHART-Q-SINGLE-TREND" }
+      ]
+    },
+    {
+      "id": "CHART-Q-SINGLE-TARGET", "type": "question",
+      "question": "One metric against one limit, or several metrics each against a target?",
+      "options": [
+        { "label": "One ratio against one limit (quota used, goal progress)", "next": "CHART-R-METER" },
+        { "label": "Several metrics, each with a target and quality bands", "next": "CHART-R-BULLET" }
+      ]
+    },
+    {
+      "id": "CHART-Q-SINGLE-TREND", "type": "question",
+      "question": "Does the recent trend change how the reader should feel about the number?",
+      "options": [
+        { "label": "Yes, show the shape", "next": "CHART-R-STAT-SPARK" },
+        { "label": "No, just the number and its delta", "next": "CHART-R-STAT" }
+      ]
+    },
+    {
+      "id": "CHART-Q-TIME", "type": "question",
+      "question": "How many series, and what is the message?",
+      "options": [
+        { "label": "One series", "next": "CHART-Q-TIME-ONE" },
+        { "label": "Two to four series on the same unit and scale", "next": "CHART-Q-TIME-FEW" },
+        { "label": "Five or more series", "next": "CHART-Q-TIME-MANY" },
+        { "label": "Parts of a whole over time", "next": "CHART-Q-TIME-PARTS" },
+        { "label": "Increases and decreases building up to a total", "next": "CHART-R-WATERFALL" }
+      ]
+    },
+    {
+      "id": "CHART-Q-TIME-ONE", "type": "question",
+      "question": "What shape is the single series?",
+      "options": [
+        { "label": "A few discrete periods (about 12 or fewer) where each value matters", "next": "CHART-R-COLUMN" },
+        { "label": "A continuous trend where rate of change matters", "next": "CHART-R-LINE" },
+        { "label": "Cumulative volume or magnitude is the message and zero is meaningful", "next": "CHART-R-AREA" },
+        { "label": "The value holds between events (plan tier, stock, provisioned resources)", "next": "CHART-R-STEP" }
+      ]
+    },
+    {
+      "id": "CHART-Q-TIME-FEW", "type": "question",
+      "question": "Do the series share a unit and scale?",
+      "options": [
+        { "label": "Yes, and I'm comparing different entities", "next": "CHART-R-LINE-MULTI" },
+        { "label": "Yes, and I'm comparing this period with a previous period", "next": "CHART-R-LINE-COMPARE" },
+        { "label": "No, different units or scales (never a dual axis)", "next": "CHART-R-SMALL-MULTIPLES" }
+      ]
+    },
+    {
+      "id": "CHART-Q-TIME-MANY", "type": "question",
+      "question": "Is one series the story and the rest context?",
+      "options": [
+        { "label": "Yes", "next": "CHART-R-EMPHASIS" },
+        { "label": "No, they all matter", "next": "CHART-R-SMALL-MULTIPLES" }
+      ]
+    },
+    {
+      "id": "CHART-Q-TIME-PARTS", "type": "question",
+      "question": "Do totals matter, or only shares? How many periods?",
+      "options": [
+        { "label": "Totals matter, about 12 periods or fewer", "next": "CHART-R-BAR-STACKED" },
+        { "label": "Totals matter, many periods", "next": "CHART-R-AREA-STACKED" },
+        { "label": "Shares matter, not totals", "next": "CHART-R-BAR-STACKED-PCT" }
+      ]
+    },
+    {
+      "id": "CHART-Q-COMPARE", "type": "question",
+      "question": "How many categories are there?",
+      "options": [
+        { "label": "About 12 or fewer", "next": "CHART-Q-COMPARE-FEW" },
+        { "label": "About 13 to 25", "next": "CHART-R-BAR-H-TOPN" },
+        { "label": "More than 25", "next": "CHART-R-TABLE" }
+      ]
+    },
+    {
+      "id": "CHART-Q-COMPARE-FEW", "type": "question",
+      "question": "What shape is the comparison?",
+      "options": [
+        { "label": "One value per category, ranking or long labels", "next": "CHART-R-BAR-H" },
+        { "label": "One value per category, short labels or a natural order", "next": "CHART-R-BAR-V" },
+        { "label": "Two or three series side by side per category", "next": "CHART-R-BAR-GROUPED" },
+        { "label": "Values above and below a baseline, target or average", "next": "CHART-R-BAR-DIVERGING" },
+        { "label": "Before versus after (or A versus B) for each item", "next": "CHART-R-DUMBBELL" },
+        { "label": "Actual versus target across several metrics", "next": "CHART-R-BULLET" },
+        { "label": "Prioritize the vital few causes", "next": "CHART-R-PARETO" },
+        { "label": "Profile one to three entities across 5 or more dimensions (analyst only)", "next": "CHART-R-RADAR" }
+      ]
+    },
+    {
+      "id": "CHART-Q-PART", "type": "question",
+      "question": "How many parts make up the whole?",
+      "options": [
+        { "label": "Two", "next": "CHART-R-METER" },
+        { "label": "Three to six", "next": "CHART-Q-PART-FEW" },
+        { "label": "Seven or more", "next": "CHART-R-BAR-H-TOPN" },
+        { "label": "The parts nest (category, subcategory)", "next": "CHART-Q-HIER" }
+      ]
+    },
+    {
+      "id": "CHART-Q-PART-FEW", "type": "question",
+      "question": "What does the reader do with the shares?",
+      "options": [
+        { "label": "Glance at one whole", "next": "CHART-R-DONUT" },
+        { "label": "Read a share to the single percentage point", "next": "CHART-R-WAFFLE" },
+        { "label": "Compare shares across several groups", "next": "CHART-R-BAR-STACKED-PCT" },
+        { "label": "The parts are an ordered scale (Likert, sentiment)", "next": "CHART-R-DIVERGING-STACKED" }
+      ]
+    },
+    {
+      "id": "CHART-Q-RELATE", "type": "question",
+      "question": "What are the variables?",
+      "options": [
+        { "label": "Two numeric measures across many items", "next": "CHART-R-SCATTER" },
+        { "label": "Three numeric measures, the third as size", "next": "CHART-R-BUBBLE" },
+        { "label": "Two categorical dimensions and one measure", "next": "CHART-R-HEATMAP" },
+        { "label": "Four or more numeric variables, screening for correlations (analyst only)", "next": "CHART-R-PAIRPLOT" }
+      ]
+    },
+    {
+      "id": "CHART-Q-DIST", "type": "question",
+      "question": "Who is reading, and what about the spread matters?",
+      "options": [
+        { "label": "General audience, one measure", "next": "CHART-R-HISTOGRAM" },
+        { "label": "Compare the spread across groups or periods (analyst)", "next": "CHART-R-BOX" },
+        { "label": "Fine shape, multimodality, density (analyst)", "next": "CHART-R-VIOLIN" },
+        { "label": "Spread over time (latency p50, p95, p99)", "next": "CHART-R-PERCENTILES" }
+      ]
+    },
+    {
+      "id": "CHART-Q-FLOW", "type": "question",
+      "question": "What moves, and between what?",
+      "options": [
+        { "label": "People or events through ordered stages with drop-off (conversion)", "next": "CHART-R-FUNNEL" },
+        { "label": "A conserved quantity between categories (money, traffic)", "next": "CHART-Q-FLOW-SANKEY" },
+        { "label": "The steps and decisions of a process", "next": "CHART-R-FLOWCHART" },
+        { "label": "Who connects to whom", "next": "CHART-Q-FLOW-NETWORK" },
+        { "label": "Pairwise flows among 12 or fewer groups (analyst)", "next": "CHART-R-CHORD" }
+      ]
+    },
+    {
+      "id": "CHART-Q-FLOW-SANKEY", "type": "question",
+      "question": "How many nodes?",
+      "options": [
+        { "label": "About 15 or fewer", "next": "CHART-R-SANKEY" },
+        { "label": "More than about 15", "next": "CHART-R-TABLE" }
+      ]
+    },
+    {
+      "id": "CHART-Q-FLOW-NETWORK", "type": "question",
+      "question": "Is connectivity itself the question, with under about 100 nodes?",
+      "options": [
+        { "label": "Yes (analyst)", "next": "CHART-R-NETWORK" },
+        { "label": "No, a ranked list of connections answers it", "next": "CHART-R-TABLE" }
+      ]
+    },
+    {
+      "id": "CHART-Q-GEO", "type": "question",
+      "question": "Is the value a rate or density (normalized) or a raw count?",
+      "options": [
+        { "label": "A rate, density or per-capita value", "next": "CHART-R-CHOROPLETH" },
+        { "label": "A raw count", "next": "CHART-Q-GEO-COUNT" }
+      ]
+    },
+    {
+      "id": "CHART-Q-GEO-COUNT", "type": "question",
+      "question": "What matters more, exact comparison or location?",
+      "options": [
+        { "label": "Exact comparison", "next": "CHART-R-GEO-BAR" },
+        { "label": "Location, and the audience knows the geography well (analyst)", "next": "CHART-R-CARTOGRAM" }
+      ]
+    },
+    {
+      "id": "CHART-Q-HIER", "type": "question",
+      "question": "Is the message structure or proportion?",
+      "options": [
+        { "label": "Structure (who reports to whom, what contains what)", "next": "CHART-R-TREE" },
+        { "label": "Proportion within two levels", "next": "CHART-R-TREEMAP" },
+        { "label": "Proportion within three or four levels (analyst)", "next": "CHART-R-SUNBURST" }
+      ]
+    },
+    { "id": "CHART-R-STAT", "type": "result", "form": "FORM-STAT-TILE", "alternatives": ["FORM-METER"], "color_job": "status", "rules": ["DV-FORM-003", "DV-CONTEXT-002", "DV-CLARITY-009"], "notes": "Value, delta against a named period, optional hero treatment for the one number the view leads with." },
+    { "id": "CHART-R-STAT-SPARK", "type": "result", "form": "FORM-STAT-TILE", "alternatives": ["FORM-SPARKLINE"], "color_job": "status", "rules": ["DV-FORM-008", "DV-CONTEXT-002", "DV-LAYOUT-004"], "notes": "Stat tile with a 12-point sparkline in the de-emphasis hue and the current point in the accent." },
+    { "id": "CHART-R-METER", "type": "result", "form": "FORM-METER", "alternatives": ["FORM-STAT-TILE"], "color_job": "status", "rules": ["DV-FORM-003", "DV-A11Y-001"], "notes": "A 2-slice pie is a meter. Fill carries severity; the track is a lighter step of the same ramp." },
+    { "id": "CHART-R-BULLET", "type": "result", "form": "FORM-BULLET", "alternatives": ["FORM-BAR-DIVERGING", "FORM-TABLE"], "color_job": "sequential", "rules": ["DV-CONTEXT-003", "DV-A11Y-001"], "notes": "Actual bar, target tick, quality bands from one ramp, plus a text value." },
+    { "id": "CHART-R-COLUMN", "type": "result", "form": "FORM-BAR-V", "alternatives": ["FORM-LINE"], "color_job": "single", "rules": ["DV-HONEST-001", "DV-HONEST-004", "DV-COLOR-007", "DV-CLARITY-006"], "notes": "Zero baseline. Hatch the in-progress period. One color for the whole series." },
+    { "id": "CHART-R-LINE", "type": "result", "form": "FORM-LINE", "alternatives": ["FORM-AREA", "FORM-STEP-LINE"], "color_job": "single", "rules": ["DV-HONEST-005", "DV-INTERACT-001", "DV-HONEST-004", "DV-STATE-006"], "notes": "Linear or monotone. Crosshair and shared tooltip. Dotted tail for forecast. Markers only when sparse." },
+    { "id": "CHART-R-AREA", "type": "result", "form": "FORM-AREA", "alternatives": ["FORM-LINE"], "color_job": "single", "rules": ["DV-HONEST-001", "DV-FORM-009", "DV-COLOR-010"], "notes": "Zero baseline, about 10 percent fill with a 2px edge." },
+    { "id": "CHART-R-STEP", "type": "result", "form": "FORM-STEP-LINE", "alternatives": ["FORM-LINE"], "color_job": "single", "rules": ["DV-HONEST-005"], "notes": "State that holds between events is a step line." },
+    { "id": "CHART-R-LINE-MULTI", "type": "result", "form": "FORM-LINE-MULTI", "alternatives": ["FORM-SMALL-MULTIPLES"], "color_job": "categorical", "rules": ["DV-CLARITY-004", "DV-COLOR-004", "DV-INTERACT-003", "DV-HONEST-002"], "notes": "Legend always, direct end-labels for up to 4, one tooltip listing every series, fixed color order." },
+    { "id": "CHART-R-LINE-COMPARE", "type": "result", "form": "FORM-LINE-MULTI", "alternatives": ["FORM-STAT-TILE"], "color_job": "single", "rules": ["DV-FILTER-003", "DV-HONEST-003", "DV-CONTEXT-002"], "notes": "Current period solid, previous period muted and dotted, labeled 'Previous period', same length and aligned." },
+    { "id": "CHART-R-SMALL-MULTIPLES", "type": "result", "form": "FORM-SMALL-MULTIPLES", "alternatives": ["FORM-EMPHASIS"], "color_job": "single", "rules": ["DV-CONSIST-004", "DV-HONEST-002", "DV-COLOR-003"], "notes": "One panel per measure or series, shared x-axis and crosshair, state the y-scales." },
+    { "id": "CHART-R-EMPHASIS", "type": "result", "form": "FORM-EMPHASIS", "alternatives": ["FORM-SMALL-MULTIPLES"], "color_job": "single", "rules": ["DV-COLOR-009", "DV-CLARITY-003"], "notes": "One accent series, the rest in the de-emphasis gray, accent series labeled directly." },
+    { "id": "CHART-R-BAR-STACKED", "type": "result", "form": "FORM-BAR-STACKED", "alternatives": ["FORM-BAR-STACKED-PCT", "FORM-AREA-STACKED"], "color_job": "categorical", "rules": ["DV-FORM-007", "DV-CLARITY-006", "DV-COLOR-003"], "notes": "5 or fewer segments, 2px surface gaps, label only what fits." },
+    { "id": "CHART-R-AREA-STACKED", "type": "result", "form": "FORM-AREA-STACKED", "alternatives": ["FORM-BAR-STACKED", "FORM-AREA-PCT"], "color_job": "categorical", "rules": ["DV-COLOR-010", "DV-COLOR-003", "DV-INTERACT-001"], "notes": "Stack, never overlap. Most important part at the baseline." },
+    { "id": "CHART-R-BAR-STACKED-PCT", "type": "result", "form": "FORM-BAR-STACKED-PCT", "alternatives": ["FORM-AREA-PCT"], "color_job": "categorical", "rules": ["DV-HONEST-003", "DV-A11Y-004"], "notes": "Axis 0 to 100 percent, counts in the tooltip and table." },
+    { "id": "CHART-R-WATERFALL", "type": "result", "form": "FORM-WATERFALL", "alternatives": ["FORM-BAR-DIVERGING"], "color_job": "diverging", "rules": ["DV-COLOR-006", "DV-A11Y-001"], "notes": "Start, steps, end. Signed labels, not color alone." },
+    { "id": "CHART-R-BAR-H-TOPN", "type": "result", "form": "FORM-BAR-H", "alternatives": ["FORM-TABLE"], "color_job": "single", "rules": ["DV-FORM-007", "DV-FORM-006", "DV-COLOR-007"], "notes": "Top N (about 10) plus Other, sorted, one color, full list in the table view." },
+    { "id": "CHART-R-BAR-H", "type": "result", "form": "FORM-BAR-H", "alternatives": ["FORM-BAR-V"], "color_job": "single", "rules": ["DV-FORM-006", "DV-HONEST-001", "DV-COLOR-007", "DV-CLARITY-003"], "notes": "Sorted descending, value at the bar end, one color." },
+    { "id": "CHART-R-BAR-V", "type": "result", "form": "FORM-BAR-V", "alternatives": ["FORM-BAR-H"], "color_job": "single", "rules": ["DV-HONEST-001", "DV-COLOR-007", "DV-CLARITY-006"], "notes": "Short labels or natural order. Zero baseline." },
+    { "id": "CHART-R-BAR-GROUPED", "type": "result", "form": "FORM-BAR-GROUPED", "alternatives": ["FORM-LINE-MULTI", "FORM-DUMBBELL"], "color_job": "categorical", "rules": ["DV-CLARITY-004", "DV-COLOR-003"], "notes": "3 series per group at most. Legend required." },
+    { "id": "CHART-R-BAR-DIVERGING", "type": "result", "form": "FORM-BAR-DIVERGING", "alternatives": ["FORM-WATERFALL"], "color_job": "diverging", "rules": ["DV-COLOR-005", "DV-COLOR-006", "DV-A11Y-001"], "notes": "Centered on the baseline; sign in labels." },
+    { "id": "CHART-R-DUMBBELL", "type": "result", "form": "FORM-DUMBBELL", "alternatives": ["FORM-BAR-GROUPED"], "color_job": "single", "rules": ["DV-A11Y-004"], "notes": "Sort by change; table gives both values and the delta." },
+    { "id": "CHART-R-PARETO", "type": "result", "form": "FORM-PARETO", "alternatives": ["FORM-BAR-H"], "color_job": "single", "rules": ["DV-HONEST-002"], "notes": "The one sanctioned two-scale chart: cumulative share on a fixed, labeled 0 to 100 percent scale." },
+    { "id": "CHART-R-RADAR", "type": "result", "form": "FORM-RADAR", "alternatives": ["FORM-BAR-GROUPED", "FORM-SMALL-MULTIPLES"], "color_job": "categorical", "rules": ["DV-FORM-005", "DV-A11Y-004"], "notes": "Analyst only. A bar chart per entity is usually easier to read." },
+    { "id": "CHART-R-TABLE", "type": "result", "form": "FORM-TABLE", "alternatives": ["FORM-BAR-H"], "color_job": "none", "rules": ["DV-FORM-008", "DV-A11Y-004", "DV-SUSTAIN-002"], "notes": "Sortable and searchable. Inline bars or sparklines for the eye." },
+    { "id": "CHART-R-DONUT", "type": "result", "form": "FORM-DONUT", "alternatives": ["FORM-BAR-H", "FORM-WAFFLE"], "color_job": "categorical", "rules": ["DV-FORM-004", "DV-A11Y-001"], "notes": "3 to 6 segments, sorted, total in the hole, values in the legend." },
+    { "id": "CHART-R-WAFFLE", "type": "result", "form": "FORM-WAFFLE", "alternatives": ["FORM-DONUT"], "color_job": "categorical", "rules": ["DV-FORM-004"], "notes": "100 cells, one per percent." },
+    { "id": "CHART-R-DIVERGING-STACKED", "type": "result", "form": "FORM-BAR-DIVERGING-STACKED", "alternatives": ["FORM-BAR-STACKED-PCT"], "color_job": "diverging", "rules": ["DV-COLOR-005"], "notes": "Centered on the neutral midpoint; ordered ramp." },
+    { "id": "CHART-R-SCATTER", "type": "result", "form": "FORM-SCATTER", "alternatives": ["FORM-HEATMAP"], "color_job": "categorical", "rules": ["DV-A11Y-007", "DV-COLOR-003"], "notes": "At most 3 grouped series (all pairs can be neighbors). Nearest-point hit layer." },
+    { "id": "CHART-R-BUBBLE", "type": "result", "form": "FORM-BUBBLE", "alternatives": ["FORM-SCATTER"], "color_job": "categorical", "rules": ["DV-FORM-005", "DV-A11Y-007"], "notes": "Size by area. Use transparency for overlap." },
+    { "id": "CHART-R-HEATMAP", "type": "result", "form": "FORM-HEATMAP", "alternatives": ["FORM-TABLE"], "color_job": "sequential", "rules": ["DV-COLOR-011", "DV-COLOR-005", "DV-A11Y-004"], "notes": "Single-hue ramp plus a scale legend. Not a Recharts form: build with grid cells and tokens." },
+    { "id": "CHART-R-PAIRPLOT", "type": "result", "form": "FORM-PAIRPLOT", "alternatives": ["FORM-HEATMAP"], "color_job": "single", "rules": ["DV-FORM-005"], "notes": "Analyst only. A correlation heatmap is the lighter alternative." },
+    { "id": "CHART-R-HISTOGRAM", "type": "result", "form": "FORM-HISTOGRAM", "alternatives": ["FORM-BOX"], "color_job": "single", "rules": ["DV-HONEST-001", "DV-CLARITY-005"], "notes": "State the bucket size; annotate modes." },
+    { "id": "CHART-R-BOX", "type": "result", "form": "FORM-BOX", "alternatives": ["FORM-HISTOGRAM"], "color_job": "single", "rules": ["DV-FORM-005"], "notes": "Analyst only, with a how-to-read note." },
+    { "id": "CHART-R-VIOLIN", "type": "result", "form": "FORM-VIOLIN", "alternatives": ["FORM-BOX", "FORM-KDE"], "color_job": "single", "rules": ["DV-FORM-005"], "notes": "Analyst only." },
+    { "id": "CHART-R-PERCENTILES", "type": "result", "form": "FORM-LINE-MULTI", "alternatives": ["FORM-SMALL-MULTIPLES"], "color_job": "sequential", "rules": ["DV-COLOR-002", "DV-CLARITY-004"], "notes": "p50, p95, p99 as lines in one hue stepping darker with percentile, same unit and scale." },
+    { "id": "CHART-R-FUNNEL", "type": "result", "form": "FORM-FUNNEL", "alternatives": ["FORM-BAR-H", "FORM-SANKEY"], "color_job": "ordinal", "rules": ["DV-FORM-010", "DV-HONEST-006", "DV-COLOR-007"], "notes": "Aligned bars, one-hue ordinal ramp, conversion and abandonment between stages, guard small counts." },
+    { "id": "CHART-R-SANKEY", "type": "result", "form": "FORM-SANKEY", "alternatives": ["FORM-TABLE"], "color_job": "categorical", "rules": ["DV-FORM-002", "DV-A11Y-004"], "notes": "15 nodes or fewer. Highlight a path on hover." },
+    { "id": "CHART-R-FLOWCHART", "type": "result", "form": "FORM-FLOWCHART", "alternatives": [], "color_job": "none", "rules": ["DV-A11Y-003"], "notes": "A diagram, not a data chart. Give an ordered-list alternative." },
+    { "id": "CHART-R-NETWORK", "type": "result", "form": "FORM-NETWORK", "alternatives": ["FORM-TABLE"], "color_job": "categorical", "rules": ["DV-FORM-005"], "notes": "Analyst only. Label hubs, not every node." },
+    { "id": "CHART-R-CHORD", "type": "result", "form": "FORM-CHORD", "alternatives": ["FORM-SANKEY", "FORM-TABLE"], "color_job": "categorical", "rules": ["DV-FORM-005"], "notes": "Analyst only." },
+    { "id": "CHART-R-CHOROPLETH", "type": "result", "form": "FORM-CHOROPLETH", "alternatives": ["FORM-BAR-H"], "color_job": "sequential", "rules": ["DV-HONEST-003", "DV-COLOR-011"], "notes": "Normalized values only, with a scale legend and a ranked list beside it." },
+    { "id": "CHART-R-GEO-BAR", "type": "result", "form": "FORM-BAR-H", "alternatives": ["FORM-CHOROPLETH"], "color_job": "single", "rules": ["DV-HONEST-003", "DV-FORM-006"], "notes": "Counts by region as a ranked bar; a map is secondary." },
+    { "id": "CHART-R-CARTOGRAM", "type": "result", "form": "FORM-CARTOGRAM", "alternatives": ["FORM-BAR-H"], "color_job": "sequential", "rules": ["DV-FORM-005"], "notes": "Rare. Pair with a ranked table." },
+    { "id": "CHART-R-TREE", "type": "result", "form": "FORM-TREE", "alternatives": ["FORM-TABLE"], "color_job": "categorical", "rules": ["DV-A11Y-003"], "notes": "Use tree semantics or nested lists for assistive tech." },
+    { "id": "CHART-R-TREEMAP", "type": "result", "form": "FORM-TREEMAP", "alternatives": ["FORM-BAR-H"], "color_job": "sequential", "rules": ["DV-COLOR-011", "DV-A11Y-004"], "notes": "Size is the measure; color is a second measure with a scale key." },
+    { "id": "CHART-R-SUNBURST", "type": "result", "form": "FORM-SUNBURST", "alternatives": ["FORM-TREEMAP"], "color_job": "categorical", "rules": ["DV-FORM-005"], "notes": "Analyst only." },
+    { "id": "CHART-R-GANTT", "type": "result", "form": "FORM-GANTT", "alternatives": ["FORM-TABLE"], "color_job": "categorical", "rules": ["DV-A11Y-004"], "notes": "Swim lanes, a today line, milestones as markers." },
+    { "id": "CHART-R-CANDLE", "type": "result", "form": "FORM-CANDLESTICK", "alternatives": ["FORM-LINE"], "color_job": "diverging", "rules": ["DV-COLOR-006", "DV-A11Y-001"], "notes": "Gain versus loss by fill (solid or hollow) as well as hue." }
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "source": "vois-dataviz/references/review-protocol.md",
+  "description": "How an agent reviews an existing chart or dashboard and proposes improvements. Contains the review steps, the severity mapping, the order to triage findings, a symptom to fix playbook for the most common upgrades. Findings follow data/review-output.schema.json. Every rule id here is defined in data/dataviz-rules.json; this file never restates rule text, so the two can't drift.",
+  "verdicts": {
+    "PASS": "Rule satisfied or not applicable",
+    "WARN": "A recommended rule is not met. Note it and offer the fix",
+    "FAIL": "A required rule is not met. Fix before handoff"
+  },
+  "severity_map": {
+    "required": "FAIL",
+    "recommended": "WARN"
+  },
+  "triage_order": [
+    "DV-A11Y",
+    "DV-HONEST",
+    "DV-FORM",
+    "DV-COLOR",
+    "DV-STATE",
+    "DV-FILTER",
+    "DV-INTERACT",
+    "DV-CONTEXT",
+    "DV-CLARITY",
+    "DV-LAYOUT",
+    "DV-CONSIST",
+    "DV-SUSTAIN",
+    "DV-IMPL",
+    "DV-PURPOSE"
+  ],
+  "triage_note": "Report in this order: things that exclude people or mislead come first, polish last. Within a category, FAIL before WARN.",
+  "review_steps": [
+    {
+      "step": 1,
+      "name": "Inventory",
+      "action": "List every visualization on the screen: tiles, charts, tables with sparklines, maps. Give each a stable local id (V1, V2...). Note the page template (DASH-Q-TYPE) and the audience.",
+      "output": "inventory[]"
+    },
+    {
+      "step": 2,
+      "name": "Infer the job",
+      "action": "For each item write the question it appears to answer and its job from data/decision-tree.json 'jobs'. If you can't, that is a DV-PURPOSE-001 finding.",
+      "output": "inventory[].job, inventory[].question"
+    },
+    {
+      "step": 3,
+      "name": "Check the form",
+      "action": "Walk the tree for that job. Compare the form used with the tree's results and alternatives. A form outside the reachable set is a DV-FORM-001 finding; name the better form.",
+      "output": "findings for DV-FORM-*"
+    },
+    {
+      "step": 4,
+      "name": "Run the mechanical checks",
+      "action": "If you have code, run scripts/detect.mjs on the files and fold the output in. If you have a spec, run scripts/check-spec.mjs. These cover the 'auto' and 'spec' rules.",
+      "output": "findings from detectors"
+    },
+    {
+      "step": 5,
+      "name": "Run the judgment checks",
+      "action": "For each remaining rule with enforcement 'judgment', look at the render and decide PASS, WARN or FAIL. Start with DV-A11Y and DV-HONEST. Don't skip a category because the detectors were clean.",
+      "output": "findings for judgment rules"
+    },
+    {
+      "step": 6,
+      "name": "Check the dashboard as a whole",
+      "action": "Check the page: hierarchy (DV-LAYOUT-001), one filter row (DV-FILTER-001), consistent periods and colors (DV-CONSIST-*), the state matrix for every card (DASH-STATE-MATRIX).",
+      "output": "page-level findings"
+    },
+    {
+      "step": 7,
+      "name": "Propose the upgrade",
+      "action": "For every FAIL and every WARN you'd fix, give the concrete change: the rule's 'do', the replacement form, and the component names. Prefer the playbook below when a symptom matches. Don't redesign what passes.",
+      "output": "findings[].fix"
+    },
+    {
+      "step": 8,
+      "name": "Report",
+      "action": "Emit findings in the output schema, ordered by triage_order, then a one-paragraph summary: what's strongest, what to fix first. Call vois_record_rule_usage for the rule ids that drove changes.",
+      "output": "report"
+    }
+  ],
+  "improvement_playbook": [
+    {
+      "symptom": "Pie or donut with more than 6 slices, or close values",
+      "fix": "Sorted horizontal bar, top 10 plus Other, values at the bar end. Keep a donut only for 3 to 6 parts with the total in the hole.",
+      "rules": [
+        "DV-FORM-004",
+        "DV-FORM-007"
+      ],
+      "forms": [
+        "FORM-BAR-H"
+      ]
+    },
+    {
+      "symptom": "Two y-axes on one chart",
+      "fix": "Split into two aligned charts sharing the x-axis, or index both to 100 at the first period on one axis.",
+      "rules": [
+        "DV-HONEST-002"
+      ],
+      "forms": [
+        "FORM-SMALL-MULTIPLES",
+        "FORM-LINE-MULTI"
+      ]
+    },
+    {
+      "symptom": "Bar axis doesn't start at zero",
+      "fix": "Set the domain to start at 0. If the change is small, show the delta as a number or switch to a line and say the axis is zoomed.",
+      "rules": [
+        "DV-HONEST-001"
+      ],
+      "forms": [
+        "FORM-BAR-V",
+        "FORM-LINE"
+      ]
+    },
+    {
+      "symptom": "Curved, smoothed line that overshoots",
+      "fix": "Use monotone or linear. Use step for values that hold between events.",
+      "rules": [
+        "DV-HONEST-005"
+      ],
+      "forms": [
+        "FORM-LINE",
+        "FORM-STEP-LINE"
+      ]
+    },
+    {
+      "symptom": "Each bar of one series has its own color",
+      "fix": "One color for every bar. Use text labels for status, or an ordinal ramp if the bars are ordered stages.",
+      "rules": [
+        "DV-COLOR-007"
+      ],
+      "forms": [
+        "FORM-BAR-V"
+      ]
+    },
+    {
+      "symptom": "More than 8 series or a '+N more' legend",
+      "fix": "Top 8 plus Other, or emphasis (one accent, rest gray), or small multiples. Add a table for the long tail.",
+      "rules": [
+        "DV-COLOR-003",
+        "DV-FILTER-007"
+      ],
+      "forms": [
+        "FORM-EMPHASIS",
+        "FORM-SMALL-MULTIPLES"
+      ]
+    },
+    {
+      "symptom": "Red and green are the only cue",
+      "fix": "Add an arrow, a sign or a label. Use the diverging pair (warm and cool) instead of red and green where the meaning isn't good versus bad.",
+      "rules": [
+        "DV-COLOR-006",
+        "DV-A11Y-001"
+      ],
+      "forms": [
+        "FORM-BAR-DIVERGING"
+      ]
+    },
+    {
+      "symptom": "KPI with no comparison",
+      "fix": "Add a delta chip against a named period, and a sparkline if the trend matters.",
+      "rules": [
+        "DV-CONTEXT-002",
+        "DV-FORM-008"
+      ],
+      "forms": [
+        "FORM-STAT-TILE"
+      ]
+    },
+    {
+      "symptom": "Date picker is calendar-only",
+      "fix": "Presets first (Today, 7, 30, 90 days, This month, Year to date), custom behind them, comparison control beside, timezone shown.",
+      "rules": [
+        "DV-FILTER-002",
+        "DV-FILTER-003"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Each card has its own filter or range",
+      "fix": "Hoist to one filter row above the cards. Mark and allow reset for any deliberate local override.",
+      "rules": [
+        "DV-FILTER-001",
+        "DV-FILTER-004"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Full-page spinner or skeleton flash on every filter change",
+      "fix": "Skeleton on first load in the final geometry; on refetch hold the previous render at reduced opacity.",
+      "rules": [
+        "DV-STATE-001",
+        "DV-FILTER-008"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "A row of flat zero charts",
+      "fix": "One collecting-data or no-activity state that explains the threshold. Don't draw axes for nothing.",
+      "rules": [
+        "DV-STATE-006",
+        "DV-STATE-002",
+        "DV-HONEST-008"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Number on every point",
+      "fix": "Label the end and the extreme only. Put the rest in the tooltip and table.",
+      "rules": [
+        "DV-CLARITY-003"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Tooltip is the only way to read values",
+      "fix": "Direct-label the points that matter and add a Chart | Table toggle. Make the tooltip appear on focus.",
+      "rules": [
+        "DV-A11Y-006",
+        "DV-A11Y-004"
+      ],
+      "forms": [
+        "FORM-TABLE"
+      ]
+    },
+    {
+      "symptom": "No text alternative or table view",
+      "fix": "Wrap in a figure with a caption, add accessibilityLayer, and a table view fed by the same config.",
+      "rules": [
+        "DV-A11Y-003",
+        "DV-A11Y-004",
+        "DV-IMPL-003"
+      ],
+      "forms": [
+        "FORM-TABLE"
+      ]
+    },
+    {
+      "symptom": "Funnel with a color per stage or a step over 100%",
+      "fix": "One-hue ordinal ramp; show counts with the percent and suppress or flag ratios on tiny denominators.",
+      "rules": [
+        "DV-FORM-010",
+        "DV-HONEST-006",
+        "DV-COLOR-007"
+      ],
+      "forms": [
+        "FORM-FUNNEL"
+      ]
+    },
+    {
+      "symptom": "Overlapping translucent areas in similar hues",
+      "fix": "Stack them, facet them, or cut to two with a 10 to 15 percent wash.",
+      "rules": [
+        "DV-COLOR-010"
+      ],
+      "forms": [
+        "FORM-AREA-STACKED",
+        "FORM-SMALL-MULTIPLES"
+      ]
+    },
+    {
+      "symptom": "Hex colors in chart code",
+      "fix": "Move colors into the chart config as var(--chart-N) tokens, keyed by series.",
+      "rules": [
+        "DV-COLOR-001",
+        "DV-IMPL-002"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Chart-type picker with a dozen or more tiles",
+      "fix": "Offer 5 valid types for the data shape and disable the rest with a reason.",
+      "rules": [
+        "DV-INTERACT-008",
+        "DV-FORM-005"
+      ],
+      "forms": []
+    },
+    {
+      "symptom": "Decorative gradient, 3D or heavy borders",
+      "fix": "Flat marks, hairline grid, wash fill at about 10 percent.",
+      "rules": [
+        "DV-FORM-009",
+        "DV-CLARITY-001",
+        "DV-CLARITY-002"
+      ],
+      "forms": []
+    }
+  ],
+  "report_template": "## Data viz review: <screen>\n\n**Audience:** <executive|analyst|operator|general> · **Template:** <DASH-*> · **Visualizations:** <n>\n\n### Summary\n<One paragraph: what works, the top 3 fixes.>\n\n### Findings (FAIL first)\n| # | Viz | Rule | Verdict | What's wrong | Fix |\n|---|-----|------|---------|--------------|-----|\n\n### Proposed changes\n<Concrete changes with form ids, component names and token roles.>\n\n### Not checked\n<Anything you couldn't verify, e.g. contrast without rendered colors.>"
+}

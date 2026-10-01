@@ -6,7 +6,7 @@ Component selection rubrics for agents building UI with shadcn/ui and design sys
 
 After `vois-patterns` determines the container type (settings page, form, table, dialog, etc.), agents read this skill to pick the right specific component for each job-to-be-done.
 
-The skill covers 20 high-ambiguity component pairs organized by job, with decision trees and "why not X" explanations for each. Examples:
+The skill covers 21 high-ambiguity component pairs organized by job, with decision trees and "why not X" explanations for each. Examples:
 
 - Dialog vs Drawer vs Sheet
 - Toast vs Banner vs Alert

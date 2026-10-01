@@ -7,6 +7,7 @@ on:
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
+      - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
   pull_request:
@@ -14,6 +15,7 @@ on:
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
+      - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
 
@@ -29,6 +31,12 @@ jobs:
 
       - name: Detector regression suite (vois-tokens)
         run: node vois-tokens/scripts/detect.test.mjs
+
+      - name: Data viz scripts and data integrity (vois-dataviz)
+        run: node vois-dataviz/scripts/dataviz.test.mjs
+
+      - name: Data viz generated references are up to date
+        run: node vois-dataviz/scripts/build-reference.mjs --check
 
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs

@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.10.1] - 2026-10-01
+
+**Change** | Relationship section points data screens (dashboards, analytics views, anything with charts or KPI tiles) to the new `vois-dataviz` skill after the page structure is decided. No rule changes.
+
+---
+
 ## [1.10.0] - 2026-10-01
 
 **Add** | New `references/settings-interactions.md` (companion to PATH-A): save model (instant vs explicit), preference rows, notification matrix, members, integrations, typed removal, danger zone, and the email-change flow with one-time-code verification. 23 `PATH-SET-*` rules.

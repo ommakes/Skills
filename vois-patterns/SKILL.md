@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.10.0
+version: 1.10.1
 ---
 
 # Vois Patterns Skill
@@ -157,6 +157,11 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 - After picking a container type here, read vois-components to select specific components
 - vois-components resolves ambiguous pairs — Dialog vs Drawer, Toast vs Banner, Select vs Combobox
 - If a `vois_record_component_choice` tool is available, call it after selecting; if not, this step is optional telemetry
+
+**This skill ↔ vois-dataviz:**
+
+- If the screen is a dashboard, an analytics view, or contains charts, KPI tiles, sparklines or maps, decide the page structure here, then read vois-dataviz for what goes inside it
+- vois-dataviz picks the chart forms, chart colors, filters and data states; it does not decide the page container
 
 **This skill ↔ conversion-patterns:**
 

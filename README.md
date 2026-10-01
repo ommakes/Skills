@@ -10,7 +10,7 @@ npx skills add ommakes/Skills
 
 ## Design System Skills (Read in Order)
 
-These four skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens, with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`vois_record_pattern_choice`, `vois_record_component_choice`, `vois_record_rule_usage`, `vois_get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
+These skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens (with vois-dataviz between patterns and components for any screen that shows data), with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`vois_record_pattern_choice`, `vois_record_component_choice`, `vois_record_rule_usage`, `vois_get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
 
 Each skill's `data/*.json` is the canonical source for its rules — `references/*.md` restates them for readability and worked examples, but the JSON wins on conflict. [`scripts/check-rule-sync.mjs`](./scripts/check-rule-sync.mjs) enforces that the two never silently disagree, and runs in CI alongside `vois-tokens`' own detector regression suite (see [`.github/workflows/design-system-checks.yml`](./.github/workflows/design-system-checks.yml)).
 
@@ -37,6 +37,19 @@ Component selection rubrics organized by job-to-be-done. Covers 20 high-ambiguit
 Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigation, display, selection, overlays, feedback) — `SKILL.md` holds the quick-reference table and job index, references hold the full decision trees.
 
 → [`vois-components/`](./vois-components)
+
+---
+
+### Vois Dataviz
+Data visualization and dashboard guidance, usable for both building and reviewing. A chart-selection decision tree (12 viewer jobs to 49 results), do's and don'ts for 14 principles, 114 checkable rules, a 48-form chart catalog covering the 23 families in the UX Magazine data viz playbook, six dashboard templates, and 57 pieces of Mobbin evidence marked adopt or watch-out. Everything is machine-readable JSON, with a chart spec checker, a code detector for Recharts and shadcn chart code, and a review protocol so agents can audit and improve existing dashboards.
+
+**Read after** vois-patterns decides the screen is a dashboard or contains charts, and before vois-components.
+
+**Use when:** building or reviewing a chart, KPI tile, sparkline, heatmap, dashboard, date-range or filter row, or the loading, empty and error states of any of them. Optionally calls `vois_record_component_choice` and `vois_record_rule_usage`, if those tools are available.
+
+Ships as `SKILL.md` plus `data/*.json` (canonical), generated `references/*.md`, and `scripts/` with tests.
+
+→ [`vois-dataviz/`](./vois-dataviz)
 
 ---
 

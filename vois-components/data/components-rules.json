@@ -388,6 +388,29 @@
         { "question": "Why not Switch for form fields?", "answer": "Switch communicates immediate effect — the moment the user flips it, something changes. In a form with a submit button, the user expects nothing to change until they submit. Using a Switch in that context sends a mixed signal." },
         { "question": "Why not Checkbox for toggles in settings?", "answer": "Checkbox requires submitting a form or clicking a button to apply. For settings that should apply in real time (dark mode, notifications, sidebar collapsed), Switch communicates immediacy correctly." }
       ]
+    },
+    {
+      "id": "JOB-VISUALIZE-DATA",
+      "number": 21,
+      "title": "Visualize data: chart, KPI tile, sparkline, or dashboard",
+      "source_file": "vois-components/SKILL.md",
+      "framing": "The reader needs to see a number, a trend, a comparison, a share or a distribution, not read a list of records.",
+      "decision_tree": [
+        { "condition": "One current value, with or without a change", "recommendation": "Card containing a stat tile: value, delta against a named period, optional sparkline. Not a chart." },
+        { "condition": "Shape over time, comparison, parts of a whole, relationship, distribution, or flow", "recommendation": "Hand off to vois-dataviz: walk its decision tree to pick the form, then build with the workspace chart primitives (typically shadcn Chart over Recharts: ChartContainer, ChartTooltip, ChartLegend; check the workspace manifest for the exact names)" },
+        { "condition": "Exact lookup, or many attributes at once", "recommendation": "Table or DataTable (see JOB-DISPLAY-DATA), with inline sparklines for trend" },
+        { "condition": "A dashboard of several visualizations", "sub_branches": [
+          { "condition": "Each widget", "recommendation": "Card with a header (title, scope, actions), the plot, and a footer link" },
+          { "condition": "Sections or secondary views", "recommendation": "Tabs" },
+          { "condition": "Date range, comparison, dimension filters", "recommendation": "One filter row above the cards: Popover with Calendar and presets, Select for dimensions" },
+          { "condition": "Loading, empty and error states", "recommendation": "Skeleton in the final geometry, an EmptyState per empty case, an inline error with retry inside the card" }
+        ] }
+      ],
+      "rationale": [
+        { "question": "Why not a Table for a trend?", "answer": "A table gives exact values but hides shape. If the reader's job is to see rising, falling or spiking, use a chart and keep the table as its accessible twin. If the job is lookup, use the table." },
+        { "question": "Why not a one-bar chart or a 2-slice pie for a single value?", "answer": "The number is the chart. A stat tile with a delta says it faster and more precisely." },
+        { "question": "Why hand off to vois-dataviz instead of picking a chart type here?", "answer": "Chart choice depends on the viewer's job, the audience, the series count and honesty rules (baseline, axes, partial periods) that this skill doesn't cover. vois-dataviz owns that tree and the chart-specific do's and don'ts." }
+      ]
     }
   ]
 }

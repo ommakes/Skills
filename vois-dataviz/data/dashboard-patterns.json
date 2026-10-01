@@ -1,0 +1,144 @@
+{
+  "source": "vois-dataviz/references/dashboard-patterns.md (generated from this file by scripts/build-reference.mjs)",
+  "description": "Dashboard-level structure: which template to use (DASH-Q-TYPE decision node), six page templates, and eight reusable pieces (tile, card, filter bar, date range, state matrix, table with sparklines, drill-down, tooltip). Each entry lists its regions in order, the shadcn component names to build it from (check your workspace manifest for renames), the rules it must satisfy, and the Mobbin evidence. Page structure decisions between dashboard and non-dashboard pages still belong to vois-patterns; this file starts once a screen is known to be a data screen.",
+  "nodes": [
+    {
+      "id": "DASH-Q-TYPE", "node_type": "decision", "name": "Which dashboard template?",
+      "question": "Who reads it, how often, and what do they do next?",
+      "options": [
+        { "label": "A leader scans it in under 30 seconds to know if things are OK", "next": "DASH-EXEC" },
+        { "label": "An operator watches live state and reacts to thresholds", "next": "DASH-MONITOR" },
+        { "label": "An analyst asks new questions of the data each visit", "next": "DASH-EXPLORER" },
+        { "label": "It is a weekly or monthly narrative that gets exported or emailed", "next": "DASH-REPORT" },
+        { "label": "Users assemble their own set of widgets", "next": "DASH-BUILDER" },
+        { "label": "The reader opened one metric and wants its full story", "next": "DASH-METRIC-DETAIL" }
+      ]
+    },
+    {
+      "id": "DASH-EXEC", "node_type": "template", "name": "Executive summary",
+      "when": "Audience is a leader; the question is 'are we on track?'; read in seconds; low interactivity.",
+      "structure": ["Filter row: date range with presets and a comparison control", "Hero KPI row: 3 to 6 stat tiles with deltas, one hero", "Primary trend: one wide line or area chart, KPI tabs optional", "Breakdowns: two to four cards (top N bars, one donut, one table with sparklines)", "Footer links: See all and Export"],
+      "vois_components": ["Card", "Tabs", "Select", "Popover", "Calendar", "Table", "Button"],
+      "must_follow": ["DV-PURPOSE-002", "DV-PURPOSE-003", "DV-LAYOUT-001", "DV-LAYOUT-004", "DV-LAYOUT-005", "DV-CONTEXT-002", "DV-FILTER-004"],
+      "anti_patterns": ["Twelve equal-weight cards", "Specialist forms such as violin or pairplot", "Per-chart date pickers"],
+      "evidence": ["MOB-08", "MOB-47", "MOB-05", "MOB-03"]
+    },
+    {
+      "id": "DASH-MONITOR", "node_type": "template", "name": "Operational monitor",
+      "when": "Audience is an operator; values are live or near live; thresholds and alerts matter; short windows (an hour to a week).",
+      "structure": ["Filter row: range (short presets), group by, source, refresh control, freshness stamp", "Status strip: current state tiles with thresholds and status icons", "Small multiples: one chart per signal, shared x-axis and crosshair", "Breakdown table with sparkline columns and a column menu to show or hide them", "Alerts or events list linked to chart annotations"],
+      "vois_components": ["Card", "ToggleGroup", "Select", "Table", "Badge", "Skeleton", "Tooltip"],
+      "must_follow": ["DV-CONTEXT-004", "DV-CONSIST-004", "DV-SUSTAIN-003", "DV-STATE-005", "DV-STATE-006", "DV-HONEST-008", "DV-COLOR-006", "DV-FILTER-008"],
+      "anti_patterns": ["Re-animating on every poll", "Flat zero charts for signals that aren't collected", "Red and green with no icon or label"],
+      "evidence": ["MOB-02", "MOB-14", "MOB-32", "MOB-48", "MOB-21"]
+    },
+    {
+      "id": "DASH-EXPLORER", "node_type": "template", "name": "Analyst explorer",
+      "when": "Audience is an analyst; the question changes each visit; builds queries; compares segments and periods.",
+      "structure": ["Toolbar row: range, comparison, granularity, chart type (5 or fewer), anomaly or forecast toggle, data freshness", "Query panel (side): metrics, filter, breakdown, compare", "Primary chart with legend chips that toggle series", "Breakdown table beneath with visibility checkboxes, min, average, max, change and a sparkline column", "Save, share and export in the header"],
+      "vois_components": ["Card", "Tabs", "ToggleGroup", "Select", "Popover", "Calendar", "Checkbox", "Table", "Sheet", "DropdownMenu"],
+      "must_follow": ["DV-INTERACT-003", "DV-INTERACT-005", "DV-INTERACT-008", "DV-INTERACT-010", "DV-LAYOUT-007", "DV-FILTER-006", "DV-FILTER-007", "DV-A11Y-004", "DV-CONTEXT-004"],
+      "anti_patterns": ["A 22-type chart picker", "A group-by that produces 16 hues", "Filters that reset on reload"],
+      "evidence": ["MOB-42", "MOB-40", "MOB-15", "MOB-38", "MOB-39", "MOB-57"]
+    },
+    {
+      "id": "DASH-REPORT", "node_type": "template", "name": "Narrative report",
+      "when": "Output is read weekly or monthly, exported, emailed or printed; the 'so what' matters more than exploration.",
+      "structure": ["Title, period and scope, locked filters stated in text", "One-sentence takeaway per section", "Charts with annotations on anomalies and explained dips", "Text card for definitions and methodology", "Export CSV and PDF; print styles"],
+      "vois_components": ["Card", "Table", "Button", "Separator"],
+      "must_follow": ["DV-CONTEXT-001", "DV-CONTEXT-003", "DV-CONTEXT-005", "DV-CONTEXT-006", "DV-SUSTAIN-004", "DV-A11Y-009", "DV-COLOR-008"],
+      "anti_patterns": ["Color-only encoding that dies in a greyscale print", "Charts with no caption"],
+      "evidence": ["MOB-13", "MOB-19", "MOB-45"]
+    },
+    {
+      "id": "DASH-BUILDER", "node_type": "template", "name": "Customizable widget board",
+      "when": "Users compose their own dashboard from widgets and may share it.",
+      "structure": ["View mode: the finished board, filters row, auto-refresh and freshness", "Edit mode: Add widget, drag handles, grid drop slots, dashboard variables panel, Done editing", "Widget configuration panel: type (5 or fewer valid), axes, sort, color, legend and tooltip toggles", "Empty board: dashed 'Add your first chart' slot"],
+      "vois_components": ["Card", "Sheet", "Select", "Switch", "Button", "Popover", "Dialog"],
+      "must_follow": ["DV-LAYOUT-008", "DV-STATE-002", "DV-STATE-004", "DV-INTERACT-008", "DV-FILTER-001", "DV-SUSTAIN-001"],
+      "anti_patterns": ["Edit controls visible in view mode", "A blank card when a widget is misconfigured"],
+      "evidence": ["MOB-29", "MOB-27", "MOB-25", "MOB-21", "MOB-37"]
+    },
+    {
+      "id": "DASH-METRIC-DETAIL", "node_type": "template", "name": "Single metric detail",
+      "when": "The reader drilled into one metric from a card or a table row.",
+      "structure": ["Header: metric name, definition tooltip, current value and delta", "Range and grain controls beneath the header", "Primary chart with target or benchmark lines and annotations", "Data table of record beneath, also the table twin, with export", "Optional edit surface for manual data points"],
+      "vois_components": ["Sheet", "Card", "Table", "Tooltip", "Tabs", "Button"],
+      "must_follow": ["DV-CONTEXT-003", "DV-CONTEXT-005", "DV-A11Y-004", "DV-FILTER-005", "DV-INTERACT-004"],
+      "anti_patterns": ["A chart with no way to see the numbers"],
+      "evidence": ["MOB-36", "MOB-40", "MOB-11", "MOB-04"]
+    },
+    {
+      "id": "DASH-KPI-TILE", "node_type": "component", "name": "KPI tile",
+      "when": "Any headline number.",
+      "structure": ["Label (sentence case, no trailing colon), with an info icon if derived", "Value (compact: 1,284 / 12.9K / $4.2M), proportional figures", "Delta chip: arrow, signed percent, named baseline, color by direction times whether up is good", "Optional 12-point sparkline in the de-emphasis hue, current point in the accent", "As a selector: selected tile outlined with aria-selected and the chart title follows"],
+      "vois_components": ["Card", "Badge", "Tooltip", "Tabs"],
+      "must_follow": ["DV-CONTEXT-002", "DV-CLARITY-009", "DV-FORM-008", "DV-A11Y-001", "DV-HONEST-010", "DV-INTERACT-007"],
+      "anti_patterns": ["A green up-arrow on a flat zero", "Bare percent with no period", "Color-only delta"],
+      "evidence": ["MOB-05", "MOB-08", "MOB-51", "MOB-46", "MOB-55"]
+    },
+    {
+      "id": "DASH-CHART-CARD", "node_type": "component", "name": "Chart card",
+      "when": "Any chart on a dashboard.",
+      "structure": ["Header: title (with a chevron if it drills in) and scope subtitle on the left; actions menu on the right (expand, view as table, export, edit)", "Optional KPI value with delta above the plot", "Plot, in a figure with a caption and accessibilityLayer", "Legend (always for 2 or more series)", "Footer: scope disclosure ('1 filter') and a See all link"],
+      "vois_components": ["Card", "DropdownMenu", "ToggleGroup", "Tooltip", "Skeleton", "Button"],
+      "must_follow": ["DV-LAYOUT-002", "DV-INTERACT-006", "DV-CONTEXT-001", "DV-CONTEXT-007", "DV-A11Y-003", "DV-A11Y-004", "DV-STATE-001", "DV-STATE-003", "DV-CONSIST-005"],
+      "anti_patterns": ["Hand-built cards with different action placement", "A chart in a div with no accessible name"],
+      "evidence": ["MOB-04", "MOB-06", "MOB-12", "MOB-39"]
+    },
+    {
+      "id": "DASH-FILTER-BAR", "node_type": "component", "name": "Filter bar",
+      "when": "Any dashboard with more than one card.",
+      "structure": ["One left-aligned row above the cards", "Date range first (button showing the resolved range), comparison control next to it, then dimension filters, then group by", "Active filters as removable chips with Clear all", "Right side: freshness stamp, refresh, export"],
+      "vois_components": ["Popover", "Calendar", "Select", "Badge", "Button", "ToggleGroup"],
+      "must_follow": ["DV-FILTER-001", "DV-FILTER-002", "DV-FILTER-003", "DV-FILTER-004", "DV-FILTER-006", "DV-FILTER-008", "DV-CONSIST-002"],
+      "anti_patterns": ["Filters inside cards with no marker", "A calendar with no presets"],
+      "evidence": ["MOB-05", "MOB-30", "MOB-52", "MOB-07", "MOB-55"]
+    },
+    {
+      "id": "DASH-DATE-RANGE", "node_type": "component", "name": "Date range picker",
+      "when": "The date range control inside the filter bar.",
+      "structure": ["Trigger shows the resolved range, plus the timezone", "Popover: presets as rows or chips (Today, Yesterday, 7, 14, 30, 90 days, This month, Year to date, All time)", "Two-month calendar with the range highlighted", "Footer: custom start and end fields, Cancel, Apply", "Comparison select beside it, 'vs previous period' by default"],
+      "vois_components": ["Popover", "Calendar", "Select", "Button", "Input"],
+      "must_follow": ["DV-FILTER-002", "DV-FILTER-003", "DV-FILTER-005", "DV-CONSIST-006", "DV-A11Y-005"],
+      "anti_patterns": ["Making users click two dates for 'last 30 days'"],
+      "evidence": ["MOB-03", "MOB-53", "MOB-56", "MOB-57", "MOB-54"]
+    },
+    {
+      "id": "DASH-STATE-MATRIX", "node_type": "component", "name": "State matrix",
+      "when": "Every card, every dashboard.",
+      "structure": ["First load: skeleton in the final geometry", "Refetch: hold the previous render at reduced opacity with an inline indicator", "Not set up: explain what it will show and give the connect action", "Collecting data: say what's missing, the threshold and when to check back", "Filtered to zero: 'No results for these filters' and Clear filters", "Real zero: draw the chart with zero", "Error: message and Retry inside the card, others unaffected", "Misconfigured: name what's missing and open the fix", "Stale or partial: badge with timestamp, hatch the incomplete period"],
+      "vois_components": ["Skeleton", "Card", "Button", "Alert"],
+      "must_follow": ["DV-STATE-001", "DV-STATE-002", "DV-STATE-003", "DV-STATE-004", "DV-STATE-005", "DV-STATE-006", "DV-STATE-007", "DV-FILTER-008", "DV-HONEST-004", "DV-HONEST-008"],
+      "anti_patterns": ["A full-page spinner", "One generic 'No data' for four different situations", "Six flat zero charts in a row"],
+      "evidence": ["MOB-22", "MOB-23", "MOB-24", "MOB-25", "MOB-26", "MOB-27", "MOB-28", "MOB-30", "MOB-31"]
+    },
+    {
+      "id": "DASH-TABLE-SPARK", "node_type": "component", "name": "Table with sparklines and deltas",
+      "when": "A ranked list where each row also has a trend.",
+      "structure": ["Sortable header; numbers right-aligned with tabular-nums", "Value column, delta column (arrow, sign, color), then a sparkline column at the right", "Sparklines axisless and muted; a column menu can hide them", "Row click or arrow opens the detail view; row actions in a menu"],
+      "vois_components": ["Table", "DataTable", "Badge", "DropdownMenu"],
+      "must_follow": ["DV-FORM-008", "DV-A11Y-001", "DV-CLARITY-009", "DV-INTERACT-006", "DV-INTERACT-004"],
+      "anti_patterns": ["Sparklines with their own axes and legends"],
+      "evidence": ["MOB-32", "MOB-33", "MOB-34", "MOB-35"]
+    },
+    {
+      "id": "DASH-DRILLDOWN", "node_type": "component", "name": "Drill-down",
+      "when": "A summary links to detail.",
+      "structure": ["Visible affordance: chevron in the title, See all link, or on-card hint ('Click a bar to view details')", "Click lands on a filtered table or the metric detail with the same range and filters", "Breadcrumb or back link restores the dashboard state"],
+      "vois_components": ["Button", "Breadcrumb", "Sheet"],
+      "must_follow": ["DV-INTERACT-004", "DV-PURPOSE-004", "DV-FILTER-006"],
+      "anti_patterns": ["A hidden click handler", "A drill-down that drops the filters"],
+      "evidence": ["MOB-04", "MOB-06", "MOB-11", "MOB-54"]
+    },
+    {
+      "id": "DASH-TOOLTIP", "node_type": "component", "name": "Chart tooltip",
+      "when": "Every interactive chart.",
+      "structure": ["Header: the full x label", "One row per series: line-key, name, value (emphasized); at most 6 rows then '+N more'", "Optional delta versus previous", "Surface, elevation and text tokens; textContent for data labels", "Same content on keyboard focus; Esc dismisses; hoverable and persistent"],
+      "vois_components": ["Tooltip", "ChartTooltipContent"],
+      "must_follow": ["DV-INTERACT-001", "DV-INTERACT-002", "DV-A11Y-006", "DV-IMPL-006"],
+      "anti_patterns": ["Tooltip as the only place a value appears"],
+      "evidence": ["MOB-01", "MOB-14", "MOB-18"]
+    }
+  ]
+}

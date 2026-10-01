@@ -1,7 +1,7 @@
 ---
 name: vois-components
-description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.6.0
+description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
+version: 1.7.0
 ---
 
 # Vois Component Selection Skill
@@ -83,6 +83,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | 1 level deep | Back link | Breadcrumb |
 | Simple collection, no sorting | List | Table |
 | Comparable attributes, < 100 rows | Table | DataTable |
+| One headline number | Stat tile in a Card (see vois-dataviz) | A one-bar chart |
+| Trend, comparison, share, distribution | Chart: walk the vois-dataviz decision tree | A table of raw rows |
 | 100+ rows, sortable, bulk actions | DataTable | Table |
 | Persistent app navigation | Sidebar | Drawer |
 | Contextual tools for selected item | Sheet or Panel | Sidebar, Drawer |
@@ -91,7 +93,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ## Job Index
 
-`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 20 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
+`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 21 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
 
 | Job ID | Job |
 |---|---|
@@ -115,12 +117,15 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | `JOB-DISPLAY-DATA` | Job 18 Display structured data |
 | `JOB-DATA-ENTRY` | Job 19 Data entry surface |
 | `JOB-SECONDARY-CONTENT` | Job 20 Secondary content / persistent nav |
+| `JOB-VISUALIZE-DATA` | Job 21 Visualize data (hands the form choice to vois-dataviz) |
 
 ---
 
 ## Relationship to Other Skills
 
 **Read `vois-patterns` first.** That skill determines the container type — settings page, form, table, dialog. Once you know the structure, come here to pick the specific components that fill it.
+
+**`vois-dataviz` for charts.** `JOB-VISUALIZE-DATA` picks the container (Card, Tabs, filter row, states). The chart form, chart colors, honesty rules and dashboard structure come from `vois-dataviz`.
 
 **Read `vois-tokens` after.** Once components are selected, `vois-tokens` handles tokens, spacing, animation, and accessibility implementation.
 

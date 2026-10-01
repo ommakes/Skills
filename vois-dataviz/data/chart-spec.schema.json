@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vois chart spec",
+  "description": "The contract an agent fills in BEFORE writing chart code. scripts/check-spec.mjs reads it and reports rule findings, including whether `form` is reachable from `job` in data/decision-tree.json. Write one spec per visualization. Unknown fields are allowed.",
+  "type": "object",
+  "required": ["question", "audience", "job", "form"],
+  "properties": {
+    "id": { "type": "string", "description": "Local id, such as V1." },
+    "question": { "type": "string", "description": "The one question this chart answers. DV-PURPOSE-001." },
+    "audience": { "type": "string", "enum": ["executive", "analyst", "operator", "general"] },
+    "job": { "type": "string", "enum": ["single", "time", "compare", "part", "relate", "distribution", "flow", "geo", "hierarchy", "schedule", "lookup", "ohlc"], "description": "Key of decision-tree.json 'jobs'." },
+    "form": { "type": "string", "pattern": "^FORM-[A-Z0-9-]+$", "description": "A form id from chart-catalog.json." },
+    "tree_result": { "type": "string", "pattern": "^CHART-R-[A-Z0-9-]+$", "description": "The decision-tree result node you landed on." },
+    "alternatives_considered": { "type": "array", "items": { "type": "string" } },
+    "series": { "type": "integer", "minimum": 0, "description": "Number of series plotted." },
+    "categories": { "type": "integer", "minimum": 0, "description": "Number of categories, bars, slices or segments." },
+    "points": { "type": "integer", "minimum": 0, "description": "Points per series." },
+    "top_n": { "type": "integer", "minimum": 1, "description": "If categories were capped, the cap." },
+    "dual_axis": { "type": "boolean" },
+    "baseline": { "type": "string", "enum": ["zero", "non-zero", "n/a"] },
+    "color_job": { "type": "string", "enum": ["categorical", "ordinal", "sequential", "diverging", "status", "single", "none"] },
+    "has_legend": { "type": "boolean" },
+    "has_tooltip": { "type": "boolean" },
+    "has_table_view": { "type": "boolean" },
+    "has_text_alternative": { "type": "boolean" },
+    "has_comparison": { "type": "boolean", "description": "For KPIs: a delta against a named period." },
+    "config_driven": { "type": "boolean", "description": "Driven by a typed chart config. DV-SUSTAIN-001." },
+    "states": {
+      "type": "object",
+      "properties": {
+        "loading": { "type": "boolean" },
+        "empty_not_set_up": { "type": "boolean" },
+        "empty_collecting": { "type": "boolean" },
+        "empty_filtered": { "type": "boolean" },
+        "error": { "type": "boolean" },
+        "partial_period": { "type": "boolean" }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}
