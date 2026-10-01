@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.6.0] - 2026-10-01
+
+### Added
+
+- **`JOB-ACCEPT-TEXT` gains an InputOTP branch** for a fixed-length one-time code (email or SMS verification, authenticator), with a "Why not a plain Input?" rationale. Check the exact component name against the workspace manifest. `SKILL.md`'s Quick Reference and `README.md` updated.
+
+### Changed
+
+- **`JOB-ACCEPT-TEXT`** textarea guidance now points to `field-sizing: content` (`DS-LAYOUT-FIELD-001`) and the line-count tokens instead of "set rows" and "auto-resize".
+- **`JOB-EXPOSE-ACTIONS`** now says two visible actions is the target and three is the ceiling.
+- **`JOB-TRIGGER-ACTION` rationale** no longer states 44×44px; it points to `var(--hit-area-min)`.
+
+---
+
 ## [1.5.0] — 2026-09-12
 
 ### Added

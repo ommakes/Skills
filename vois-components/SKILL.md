@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.
-version: 1.5.0
+version: 1.6.0
 ---
 
 # Vois Component Selection Skill
@@ -54,6 +54,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Job | Use | Not |
 |-----|-----|-----|
 | Confirm destructive action | AlertDialog | Dialog, Toast |
+| Fixed-length one-time code | InputOTP | Input |
 | Transient feedback, no action needed | Toast | Alert, Banner |
 | Transient feedback, action required | Alert (persistent) | Toast |
 | Focused overlay, exactly one field anchored to a row/item | Popover | Sheet, Dialog |
