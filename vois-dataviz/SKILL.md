@@ -170,7 +170,7 @@ Written by hand:
 | `scripts/check-spec.mjs --tree <job>` | Lists every form a job can reach |
 | `scripts/detect.mjs <files>` | Finds the 15 `auto` rules in chart code (13 detectors). Add `// dataviz-allow: <detector>` for a deliberate exception |
 | `scripts/build-reference.mjs [--check]` | Regenerates, or checks, the generated references |
-| `scripts/dataviz.test.mjs` | 54 tests: detectors, spec checker, data integrity |
+| `scripts/dataviz.test.mjs` | 58 tests: detectors, spec checker, data integrity |
 
 ---
 
