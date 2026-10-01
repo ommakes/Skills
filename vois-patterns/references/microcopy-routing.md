@@ -23,6 +23,7 @@ Use righter skill for:
 - **Breadcrumb labels:** navigation hierarchy labels
 - **Table action menus:** "Edit row", "Delete row", "Archive"
 - **Quick action tooltips:** icon button explanations ("Edit", "Share", "Delete")
+- **Verification code flows:** dialog title and body naming the address, code length and expiry, change-address link, resend link and cooldown text, incorrect and expired code helper text, resend and success toasts (see `settings-interactions.md`, "Copy to get from righter")
 
 **Do NOT guess at button labels.** Example of wrong → right:
 

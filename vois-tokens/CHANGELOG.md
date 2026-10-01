@@ -4,6 +4,27 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.14.0] - 2026-10-01
+
+### Added
+
+- **Width tokens and rules.** `data/tokens.json` gains `widths` (`--width-form-max`, `--width-field-max`, `--width-field-narrow`, `--width-viewport-min`, `--width-dialog-sm`, `--width-dialog-lg`, `--hit-area-min`), all in `rem`. New `DS-LAYOUT-WIDTH-001` to `004` in `references/layout-and-responsive.md` and `data/vois-rules.json`.
+- **Auto-growing text fields.** `data/tokens.json` gains `text_field_lines` (`--textarea-min-lines` 3, `--textarea-max-lines` 12, `--chat-input-min-lines` 1, `--chat-input-max-lines` 8). New `DS-LAYOUT-FIELD-001` to `004`: use `field-sizing: content`, always set an explicit `inline-size`, size min and max with the `lh` unit, and wrap in `@supports` with a `rows` fallback. Rule count 110 to 118.
+
+### Changed
+
+- **`DS-A11Y-001`** now uses `--hit-area-min` (2.75rem). It sets the click or tap area only, never the visible size of a control. The `inset: -10px` example in `references/accessibility.md` is replaced with one sized by the token. `touch_target_minimum` in `data/tokens.json` is updated to match.
+- **`SKILL.md`** checklists and Quick Reference updated for the above.
+- **Version bump:** `1.13.0` → `1.14.0`
+
+### Known gaps
+
+- `scripts/detect.mjs` does not flag raw widths or JavaScript autosizing.
+- The autosize CSS was tested in Chromium 141 only. Firefox and Safari are untested, and `resize: none` while autosizing is untested.
+- `field-sizing-content` as the Tailwind v4 utility name is not confirmed against this repo's Tailwind version.
+
+---
+
 ## [1.13.0] — 2026-09-12
 
 ### Added

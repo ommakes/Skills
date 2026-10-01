@@ -26,6 +26,8 @@
 
 Contains: first/last name, email, phone, home address, role, profile picture, delete account
 
+→ Email follows `[PATH-SET-IDENTITY-FIELD]`. Field widths and groups follow `form-field-groups.md`.
+
 **Microcopy to write with righter:**
 
 - Label: "First name"
@@ -81,6 +83,8 @@ Contains: list with role-based access (member, admin, etc.)
 ## Form Handling Within Settings:
 
 Each section = mini form with own view/edit state
+
+→ Where the view state applies, and how instant save and explicit save work: see `settings-interactions.md` (`[PATH-SET-SAVE-INSTANT]`, `[PATH-SET-SAVE-EXPLICIT]`, `[PATH-SET-VIEW-EDIT-BLOCK]`).
 
 **VIEW STATE** (default)
 

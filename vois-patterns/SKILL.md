@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.9.0
+version: 1.10.0
 ---
 
 # Vois Patterns Skill
@@ -55,7 +55,7 @@ This skill routes to `righter` skill for all microcopy (button labels, error mes
 START: What is the user trying to accomplish?
 
 ├─ PATH A: Manage settings or account preferences
-│  └─ → read references/settings-pages.md
+│  └─ → read references/settings-pages.md, then references/settings-interactions.md
 │     ├─ IF: 2–3 sections only      → [PATH-A-DEPTH-SHALLOW]
 │     └─ IF: 4+ sections            → [PATH-A-DEPTH-DEEP]
 │
@@ -63,7 +63,7 @@ START: What is the user trying to accomplish?
 │  └─ → read references/table-list.md                       [PATH-B]
 │
 ├─ PATH C: Create a new item OR edit an existing item
-│  └─ → read references/forms.md
+│  └─ → read references/forms.md, then references/form-field-groups.md
 │     ├─ IF: 1–6 fields             → [PATH-C-SIMPLE]
 │     ├─ IF: 7–15 fields            → [PATH-C-MEDIUM]
 │     └─ IF: 15+ fields / complex   → [PATH-C-COMPLEX]
@@ -83,7 +83,7 @@ START: What is the user trying to accomplish?
       └─ IF: consumer subscription             → [PATH-F-CONSUMER-WEB] / [PATH-F-CONSUMER-PAYWALL]
 ```
 
-Read only the one reference file that matches the path you picked. Each template file is self-contained.
+Read the reference file for the path you picked. Paths A and C each have a companion file. Read the companion when the work involves it.
 
 **If the brief doesn't name a container type directly** (it names a
 product-specific feature instead — "approval queue," "impersonate a user,"
@@ -91,7 +91,7 @@ product-specific feature instead — "approval queue," "impersonate a user,"
 structure. Most of those translate to a direct fit or a combination of two
 existing paths.
 
-**Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
+**Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` (nodes may also carry optional `pattern_name`, `builds_on`, `basis`, `basis_note`, and `evidence`) — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
 
 **Source of truth:** `data/patterns-rules.json` is canonical for a path's `condition`/`outcome`. `references/*.md` may restate a path for readability and carries the worked examples JSON doesn't — but if the two ever disagree, the JSON wins. `scripts/check-rule-sync.mjs` (repo root) checks in CI that every `[PATH-*]` tag cited in `references/*.md` resolves to a real entry in `patterns-rules.json` and vice versa.
 
@@ -102,9 +102,11 @@ existing paths.
 | File | Covers | Path ID(s) |
 |---|---|---|
 | `references/settings-pages.md` | Profile, workspace, billing, notifications, members sections; view/edit state | `[PATH-A]` |
-| `references/table-list.md` | Browse/filter/act on lists, sidebar vs modal detail view, pagination | `[PATH-B]` |
+| `references/settings-interactions.md` | Save model, notifications, members, integrations, removal, danger zone, email change with one-time code | rules for settings interactions (see `data/patterns-rules.json`) |
+| `references/table-list.md` | Browse/filter/act on lists, sidebar vs modal detail view, pagination | `[PATH-B]` `[PATH-B-ROW-ACTIONS]` `[PATH-B-ROW-ACTIONS-REVEAL]` `[PATH-B-NARROW]` |
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
-| `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` |
+| `references/form-field-groups.md` | Field widths, columns, spacing, name, address, phone, email, one-time code, auto-growing textareas, AI chat input | rules for form field groups (see `data/patterns-rules.json`) |
+| `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/pricing-pages.md` | Pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), calculators, comparison tables, trial timelines | `[PATH-F]` `[PATH-PRICE-U1]` to `[PATH-PRICE-C11]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |

@@ -36,7 +36,7 @@ The skill covers 20 high-ambiguity component pairs organized by job, with decisi
 | Choose from a list | Select vs Combobox vs Command |
 | Provide contextual info | Tooltip vs Popover vs HoverCard |
 | Trigger an action | Button vs IconButton vs LinkButton |
-| Accept text | Input vs Textarea vs RichTextEditor |
+| Accept text | Input vs Textarea vs RichTextEditor vs InputOTP |
 | Capture binary choice | Checkbox vs Toggle vs Switch |
 | Label or categorize | Badge vs Tag vs Chip |
 | Represent a user | Avatar vs AvatarGroup vs Presence |
