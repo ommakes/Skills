@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vois data viz review output",
+  "description": "What an agent emits when reviewing an existing chart or dashboard (see references/review-protocol.md). Findings are ordered by data/review-checklist.json triage_order. Every ruleId must exist in data/dataviz-rules.json.",
+  "type": "object",
+  "required": ["screen", "audience", "inventory", "findings"],
+  "properties": {
+    "screen": { "type": "string" },
+    "audience": { "type": "string", "enum": ["executive", "analyst", "operator", "general", "unknown"] },
+    "template": { "type": "string", "pattern": "^DASH-[A-Z-]+$" },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["viz", "job", "form_used"],
+        "properties": {
+          "viz": { "type": "string", "description": "Local id, such as V1." },
+          "question": { "type": "string" },
+          "job": { "type": "string" },
+          "form_used": { "type": "string" },
+          "form_recommended": { "type": "string", "description": "A form id, when the form should change." }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ruleId", "verdict", "viz", "issue", "fix"],
+        "properties": {
+          "ruleId": { "type": "string", "pattern": "^DV-[A-Z0-9]+-[0-9]{3}$" },
+          "verdict": { "type": "string", "enum": ["FAIL", "WARN"] },
+          "viz": { "type": "string", "description": "Local id, or 'page' for a page-level finding." },
+          "issue": { "type": "string", "description": "What is wrong, specific to this screen." },
+          "fix": { "type": "string", "description": "The concrete change." },
+          "evidence": { "type": "string", "description": "Where you saw it: a file and line, a region of the screenshot, or a MOB-* id for a precedent." },
+          "source": { "type": "string", "enum": ["detector", "spec", "judgment"] }
+        }
+      }
+    },
+    "not_checked": { "type": "array", "items": { "type": "string" } },
+    "summary": { "type": "string" }
+  }
+}

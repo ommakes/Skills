@@ -1,0 +1,1063 @@
+{
+  "source": "vois-dataviz/references/principles.md (generated from this file by scripts/build-reference.mjs)",
+  "description": "Canonical data-visualization rules for web-app dashboards. 14 principles, each with do/don't lists, and every checkable rule under them as { id, category, severity, enforcement, rule, do, dont, check, sources, evidence }. severity: 'required' = a violation is a FAIL in review; 'recommended' = a WARN. enforcement: 'auto' = scripts/detect.mjs finds it in code; 'spec' = scripts/check-spec.mjs finds it in a chart spec; 'judgment' = an agent must look at the render or the design. `evidence` holds MOB-* ids from data/evidence.json (real products seen on Mobbin). `sources` tags: article (UX Magazine data viz playbook), mobbin (real dashboards seen on Mobbin), dataviz-skill (the bundled design-system-agnostic dataviz skill), wcag (WCAG 2.2), vois (Vois-stack specific, only the DV-IMPL rules and a few token and motion links).",
+  "categories": {
+    "DV-PURPOSE": "Purpose and audience",
+    "DV-FORM": "Choosing the form",
+    "DV-HONEST": "Honest representation",
+    "DV-CLARITY": "Clarity and ink",
+    "DV-COLOR": "Color by job",
+    "DV-CONSIST": "Consistency",
+    "DV-CONTEXT": "Context",
+    "DV-A11Y": "Accessibility",
+    "DV-INTERACT": "Interaction",
+    "DV-FILTER": "Filters and time",
+    "DV-STATE": "States",
+    "DV-LAYOUT": "Dashboard composition",
+    "DV-SUSTAIN": "Sustainable build",
+    "DV-IMPL": "Implementation in the Vois stack"
+  },
+  "principles": [
+    {
+      "id": "DV-PURPOSE",
+      "name": "Start with the question and the audience",
+      "statement": "Every chart exists to answer one question for one kind of reader. If you can't write the question, delete the chart.",
+      "why": "Executives want a few simple headline visuals, analysts want granular views, operators want live state. The same data needs a different design for each.",
+      "dos": ["Write the one question the chart answers before choosing a form", "Name the audience: executive, analyst, operator, or general", "Lead the page with the answer (hero number or takeaway), details beneath", "Link each summary to a deeper view instead of cramming detail in"],
+      "donts": ["Don't add a chart because the data exists", "Don't give executives a scatter plot or analysts a single donut", "Don't build one dashboard for every audience"]
+    },
+    {
+      "id": "DV-FORM",
+      "name": "Pick the simplest form that tells the story",
+      "statement": "The viewer's job picks the form. Choose the simplest, most compact format that does the job, and sometimes the right answer is not a chart.",
+      "why": "Most bad charts are the wrong form for the job, not bad styling. Pies for comparison, one-bar bar charts and 22-type pickers are the usual symptoms.",
+      "dos": ["Walk the decision tree and record the chosen form", "Use a stat tile for a single value, a table for exact lookup", "Default to line, bar, stacked bar, area, table, sparkline for unknown data literacy", "Cap categories at about 12, fold the tail into Other"],
+      "donts": ["Don't use a pie or donut to compare close values", "Don't use 3D, radar for a general audience, or specialist forms without a reader who can use them", "Don't offer a chart-type picker with more than 5 options"]
+    },
+    {
+      "id": "DV-HONEST",
+      "name": "Show the data truthfully",
+      "statement": "Compare like with like on a single honest axis, and mark anything that is partial, projected, missing or too small to trust.",
+      "why": "Truncated bars, dual axes, spline overshoot and flat zeros for missing data all manufacture a story the data doesn't contain.",
+      "dos": ["Start bars, columns and areas at zero", "Use one y-axis per chart", "Mark partial periods and forecasts with hatching or dashes plus a label", "Normalize (per user, per capita, rate) when denominators differ", "Show missing data as missing"],
+      "donts": ["Don't use dual axes", "Don't use natural or cardinal spline smoothing on real data", "Don't plot a partial period as if it were complete", "Don't show a percentage built on a handful of events without the counts", "Don't let NaN, Infinity or a step over 100 percent reach the screen"]
+    },
+    {
+      "id": "DV-CLARITY",
+      "name": "Maximize data, minimize ink",
+      "statement": "Everything on the chart is either data or something that helps read data. Remove the rest.",
+      "why": "Clutter competes with the signal. The grid, axes and legend exist to be read once and forgotten.",
+      "dos": ["Make gridlines and axes hairline and recessive", "Label selectively: the end point, the extreme, the series that matters", "Use direct labels for up to 4 series and always a legend for 2 or more", "Title axes with units and keep tick labels whole and horizontal", "Use text tokens for text, series color only for marks"],
+      "donts": ["Don't put a number on every point", "Don't truncate or rotate axis labels to fit", "Don't paint text in a series color", "Don't use heavy borders, gradients as data, or fat saturated blocks"]
+    },
+    {
+      "id": "DV-COLOR",
+      "name": "Color is assigned by the job it does",
+      "statement": "Each color encodes exactly one thing: identity, magnitude, polarity or status. Pick the job first, then the palette, then check it.",
+      "why": "Color is the easiest channel to misuse and the one most readers can't fully see. A palette is a computed set with checks, not a taste call.",
+      "dos": ["Use chart tokens in fixed order, never cycled", "Keep one entity on one color across the whole product", "Use one hue light to dark for magnitude, two opposing hues plus neutral for polarity", "Use one accent plus gray when one series is the story", "Select dark mode steps and check them against the dark surface"],
+      "donts": ["Don't use hex values or raw palette classes in chart code", "Don't give every bar of one series its own color", "Don't reuse status colors for series 4", "Don't pair red and green as the only distinction", "Don't generate a 9th hue"]
+    },
+    {
+      "id": "DV-CONSIST",
+      "name": "Stay consistent",
+      "statement": "A metric looks and reads the same everywhere. Random changes in format, period or color imply meaning that isn't there.",
+      "why": "Readers learn the system in the first card and apply it to the rest. Every inconsistency costs a re-learn or a wrong conclusion.",
+      "dos": ["Use one unit, format and precision per metric everywhere", "Use the same period and granularity under one filter", "Reuse the same KPI tile and card anatomy", "Share scales and crosshair across small multiples", "Format with Intl and state the timezone"],
+      "donts": ["Don't show revenue as $1.2M in one card and 1,200,000 in the next", "Don't change a series color between cards", "Don't mix periods under one date filter"]
+    },
+    {
+      "id": "DV-CONTEXT",
+      "name": "Give the number a frame",
+      "statement": "A number without a comparison, a scope or a date is trivia. Say what it is, what it's compared to, and how fresh it is.",
+      "why": "Context turns data into a decision. It's also where statistics get twisted when it's missing.",
+      "dos": ["Pair every KPI with a delta against a named period", "Draw targets and benchmarks as labeled reference lines", "Annotate anomalies and launches", "Show data freshness on live views", "Disclose any filter that makes a chart narrower than the page"],
+      "donts": ["Don't show a bare delta with no period", "Don't leave a dip unexplained when the cause is known", "Don't hide a chart-level filter"]
+    },
+    {
+      "id": "DV-A11Y",
+      "name": "Accessible by construction",
+      "statement": "Every chart works without color, without a mouse, without sight and without motion. The table view is the equivalent, not an afterthought.",
+      "why": "WCAG applies to charts: contrast for marks and text, a text alternative, keyboard access, no color-only meaning, reduced motion. Roughly 1 in 12 men can't separate some hues.",
+      "dos": ["Give every chart a text alternative and a table view", "Make marks at least 3:1 and text at least 4.5:1 against their surface", "Add arrows, signs, labels or patterns next to color", "Make points, legend items and card actions keyboard reachable with visible focus", "Keep hit targets at least var(--hit-area-min)", "Respect prefers-reduced-motion"],
+      "donts": ["Don't make a tooltip the only way to read a value", "Don't convey good or bad with color alone", "Don't rely on hover for anything critical on touch", "Don't autoplay or loop chart animation"]
+    },
+    {
+      "id": "DV-INTERACT",
+      "name": "Interactive by default",
+      "statement": "A web chart is interactive. Ship the hover layer, the legend toggle and the drill-down with the same care as the static render.",
+      "why": "Readers aim at a date, not a 2px line. A crosshair, a shared tooltip and a clear click-through make dense charts usable.",
+      "dos": ["Line and area: crosshair that snaps to the nearest x, one tooltip listing every series", "Bar, dot, cell: per-mark tooltip and a lift on hover", "Let the legend isolate or hide a series", "Show a visible affordance on anything clickable", "Offer view as table, expand and export in one consistent card menu"],
+      "donts": ["Don't require the pointer to land on a thin line", "Don't offer chart types the data can't support", "Don't put critical info only in hover"]
+    },
+    {
+      "id": "DV-FILTER",
+      "name": "One set of filters, one slice of truth",
+      "statement": "Dashboard filters sit in one row above what they scope, and every chart, tile and table under them re-renders on the same slice.",
+      "why": "When cards disagree because they answer different filters, readers stop trusting all of them.",
+      "dos": ["Put date range first, with presets before the calendar", "Put the comparison control next to the range", "Reflect filters in the URL and as removable chips", "Cap group-by at 8 and fold the tail into Other", "Hold the previous render at reduced opacity while refetching"],
+      "donts": ["Don't scatter per-chart filters unmarked", "Don't flash a skeleton on every refetch", "Don't offer granularity that the range can't support"]
+    },
+    {
+      "id": "DV-STATE",
+      "name": "Design every state",
+      "statement": "Loading, empty, collecting, filtered-to-zero, error, stale and misconfigured are different states with different messages and actions.",
+      "why": "Dashboards spend much of their life in non-happy states. A wall of flat zero charts or a full-page spinner makes a working product look broken.",
+      "dos": ["Use a skeleton that matches the final chart geometry", "Write four distinct empty cases: not set up, collecting data, filtered to zero, real zero", "Isolate errors to the card with a retry", "Say exactly what's missing in a misconfigured widget and give the fix", "Collapse many empty charts into one explanation"],
+      "donts": ["Don't use a full-page spinner", "Don't show a flat zero line for data that hasn't been collected", "Don't blank the dashboard because one query failed"]
+    },
+    {
+      "id": "DV-LAYOUT",
+      "name": "Compose the dashboard as a hierarchy",
+      "statement": "Reading order follows importance: filters, hero KPIs, the primary trend, breakdowns, detail table. Every card has the same anatomy.",
+      "why": "A dashboard is read in seconds. The layout has to tell the reader where to look first and where to go for more.",
+      "dos": ["Use 3 to 6 KPI tiles and one hero", "Keep to about 6 to 8 visualizations before scroll or tabs", "Use one card anatomy: title and scope left, actions right, value, plot, legend, footer link", "Pair a chart with its breakdown table", "Collapse to one column on small screens"],
+      "donts": ["Don't fill a grid with equal-weight cards", "Don't decorate with hero illustrations", "Don't put 12 charts on one screen"]
+    },
+    {
+      "id": "DV-SUSTAIN",
+      "name": "Build it to be fed live data",
+      "statement": "Charts are driven by a typed config and real data, handle the ugly cases, and stay fast.",
+      "why": "A dashboard that works with the demo fixture and breaks with a 40-character label, a null, or 20,000 points isn't finished.",
+      "dos": ["Drive chart, table view, tooltip, legend and export from one config", "Test with long labels, nulls, negatives, tiny and huge numbers", "Downsample past about 500 points per series", "Choose an update cadence by need and don't re-animate on refresh"],
+      "donts": ["Don't hardcode data in a chart component", "Don't ship a chart that only works on the happy-path fixture"]
+    },
+    {
+      "id": "DV-IMPL",
+      "name": "Use the Vois stack",
+      "statement": "Build on the workspace's chart primitives, tokens and accessibility defaults before reaching for anything custom.",
+      "why": "Consistency and accessibility come free from shared primitives. Custom SVG should be the exception for forms the primitives lack.",
+      "dos": ["Use shadcn Chart over Recharts: ChartContainer, ChartTooltip, ChartLegend", "Map each series key to a label and a chart token in the chart config", "Turn on accessibilityLayer", "Resolve chart tokens with vois_get_tokens"],
+      "donts": ["Don't inline color strings in JSX", "Don't set fixed pixel widths on charts", "Don't invent token values: report a gap instead"]
+    }
+  ],
+  "rules": [
+    {
+      "id": "DV-PURPOSE-001", "category": "DV-PURPOSE", "severity": "required", "enforcement": "spec",
+      "rule": "Every chart has a written question it answers, stated in the spec and reflected in its title or subtitle.",
+      "do": "Title as the takeaway or the metric plus a one-line description of what it shows.",
+      "dont": "A chart whose only reason to exist is that the column was available.",
+      "check": "spec.question is non-empty; the rendered title or subtitle makes the question obvious.",
+      "sources": ["article", "dataviz-skill"], "evidence": ["MOB-04"]
+    },
+    {
+      "id": "DV-PURPOSE-002", "category": "DV-PURPOSE", "severity": "required", "enforcement": "spec",
+      "rule": "Name the audience and set density to match: executive (3 to 6 headline numbers, simple forms), analyst (granular forms, exploration), operator (live state, thresholds). When literacy is unknown, stay with line, bar and table.",
+      "do": "Set spec.audience and pick forms with fit 'core' unless the audience is analyst.",
+      "dont": "A violin plot on an executive overview.",
+      "check": "spec.audience is set; forms with audience 'analyst' or 'specialist' in the catalog only appear when spec.audience is analyst.",
+      "sources": ["article"], "evidence": ["MOB-13", "MOB-37"]
+    },
+    {
+      "id": "DV-PURPOSE-003", "category": "DV-PURPOSE", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Lead with the answer: one hero number or takeaway above the fold, supporting detail beneath.",
+      "do": "KPI row first, primary trend second.",
+      "dont": "Open with a filter bar and a wall of equal-weight charts.",
+      "check": "The first visual a reader meets states the headline.",
+      "sources": ["article"], "evidence": ["MOB-08", "MOB-47"]
+    },
+    {
+      "id": "DV-PURPOSE-004", "category": "DV-PURPOSE", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Summaries link to detail. A card shows the glance; a visible link or click-through opens the full view.",
+      "do": "'See all', an arrow in the card title, or click a bar to open the filtered detail.",
+      "dont": "Cram every breakdown into the summary card.",
+      "check": "Each summary card has a visible path to its detail view.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-04", "MOB-11"]
+    },
+    {
+      "id": "DV-FORM-001", "category": "DV-FORM", "severity": "required", "enforcement": "spec",
+      "rule": "Choose the form by walking the decision tree from the viewer's job. Record the job, the form and any alternatives considered.",
+      "do": "Start at CHART-Q-ROOT, record the result node and the FORM id.",
+      "dont": "Pick a chart type by habit or by what the library demos.",
+      "check": "spec.form is reachable from spec.job in data/decision-tree.json.",
+      "sources": ["article", "dataviz-skill"], "evidence": ["MOB-37", "MOB-38"]
+    },
+    {
+      "id": "DV-FORM-002", "category": "DV-FORM", "severity": "required", "enforcement": "judgment",
+      "rule": "Use the simplest, most compact form that tells the story and escalate to a more complex form only when the simpler one fails the job.",
+      "do": "Bar before bubble, line before streamgraph, table before pivot.",
+      "dont": "A Sankey where a sorted bar answers the question.",
+      "check": "A simpler catalog form with the same job would not lose information the reader needs.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-FORM-003", "category": "DV-FORM", "severity": "required", "enforcement": "spec",
+      "rule": "A single current value is a stat tile or meter, not a chart. No one-bar bar charts, no 2-slice pies.",
+      "do": "Value, delta, optional sparkline.",
+      "dont": "A donut with one filled arc and a percent in the middle when the number alone says it.",
+      "check": "spec.categories is greater than 1 for any bar, column or pie form.",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-05"]
+    },
+    {
+      "id": "DV-FORM-004", "category": "DV-FORM", "severity": "required", "enforcement": "spec",
+      "rule": "Pie and donut are for a part-to-whole glance with 3 to 6 segments that sum to 100 percent. Never use them to compare close values. Above 6 parts, use a sorted horizontal bar.",
+      "do": "Sort descending from 12 o'clock, put the total in the donut hole, list values in the legend.",
+      "dont": "A 9-slice pie where two slices are 11 and 12 percent.",
+      "check": "spec.categories is between 3 and 6 for FORM-PIE and FORM-DONUT.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-09", "MOB-21"]
+    },
+    {
+      "id": "DV-FORM-005", "category": "DV-FORM", "severity": "recommended", "enforcement": "spec",
+      "rule": "Specialist forms (violin, KDE, pairplot, force-directed network, cartogram, chord, radar) need an analyst audience and a one-line 'how to read this' next to them.",
+      "do": "Offer a simpler twin (histogram, table) alongside.",
+      "dont": "Ship a force-directed graph to a general audience.",
+      "check": "Catalog entries with fit 'rare' only appear with spec.audience analyst.",
+      "sources": ["article"], "evidence": ["MOB-37"]
+    },
+    {
+      "id": "DV-FORM-006", "category": "DV-FORM", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Rank and long labels go horizontal; sort by value unless the categories have a natural order.",
+      "do": "Horizontal bars sorted descending for 'top pages'.",
+      "dont": "Rotate 12 long labels 45 degrees under vertical columns.",
+      "check": "No rotated or truncated category labels; sort order is deliberate.",
+      "sources": ["article", "dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-FORM-007", "category": "DV-FORM", "severity": "recommended", "enforcement": "spec",
+      "rule": "Cap visible categories at about 12. Show top N plus Other, with the full list in the table view.",
+      "do": "Top 10 plus 'Other (37)' with a link to the table.",
+      "dont": "Thirty bars no one can read.",
+      "check": "spec.categories is 12 or fewer for bar-type forms, otherwise spec.top_n is set.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-41"]
+    },
+    {
+      "id": "DV-FORM-008", "category": "DV-FORM", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Use sparklines inside tables and stat tiles for trend at a glance. No axes, current point emphasized, and a link to the full chart.",
+      "do": "A muted line with an accent end-dot in a table column.",
+      "dont": "A sparkline with axes, gridlines and a legend.",
+      "check": "Sparkline cells have no axis chrome and a nearby numeric value.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-05", "MOB-32", "MOB-33", "MOB-34"]
+    },
+    {
+      "id": "DV-FORM-009", "category": "DV-FORM", "severity": "required", "enforcement": "judgment",
+      "rule": "No 3D, no skeuomorphic effects, no gradients that encode nothing.",
+      "do": "Flat marks with a wash fill at about 10 percent opacity for areas.",
+      "dont": "Extruded bars or a glossy donut.",
+      "check": "Marks are flat; any gradient is a fade to surface, not a data channel.",
+      "sources": ["article", "dataviz-skill"], "evidence": ["MOB-46"]
+    },
+    {
+      "id": "DV-FORM-010", "category": "DV-FORM", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Render funnels as aligned bars with the step conversion and drop-off between stages, not as tapering shapes that distort width. Color stages with one-hue ordinal steps.",
+      "do": "Bars plus a '66.7%' connector and an abandonment column.",
+      "dont": "A different hue per stage.",
+      "check": "Stage marks share one hue; step conversion is a number, not inferred from taper.",
+      "sources": ["mobbin"], "evidence": ["MOB-43", "MOB-44"]
+    },
+    {
+      "id": "DV-HONEST-001", "category": "DV-HONEST", "severity": "required", "enforcement": "auto",
+      "rule": "Bars, columns and areas start at zero. Lines may zoom, but a non-zero axis is stated.",
+      "do": "domain starting at 0 for bar and area; axis note when a line is zoomed.",
+      "dont": "A bar axis that starts at 90 so a 2 percent change looks like a collapse.",
+      "check": "No YAxis domain with a non-zero lower bound on a chart containing Bar or Area.",
+      "detector": "non-zero-bar-domain",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-HONEST-002", "category": "DV-HONEST", "severity": "required", "enforcement": "auto",
+      "rule": "One y-axis per chart. Never dual-axis. Two measures on different scales become two charts, small multiples, or both indexed to a common base. The one sanctioned exception is a Pareto chart's cumulative share on a fixed, labeled 0 to 100 percent scale, marked with a dataviz-allow comment.",
+      "do": "Two aligned charts sharing the x-axis, or index both series to 100 at the first period.",
+      "dont": "Users on the left axis and sessions on the right, which invents a correlation.",
+      "check": "At most one YAxis per chart; no orientation right second axis.",
+      "detector": "dual-axis",
+      "sources": ["dataviz-skill", "article"], "evidence": ["MOB-06"]
+    },
+    {
+      "id": "DV-HONEST-003", "category": "DV-HONEST", "severity": "required", "enforcement": "judgment",
+      "rule": "Compare like with like: same period length, same units, normalized when denominators differ. Annotate any remaining difference.",
+      "do": "Per-user, per-capita or rate when group sizes differ; same-length periods for deltas.",
+      "dont": "A 31-day month against a 28-day month in gross totals with no note.",
+      "check": "Every comparison has matched units, period lengths and denominators, or a visible note.",
+      "sources": ["article"], "evidence": ["MOB-55"]
+    },
+    {
+      "id": "DV-HONEST-004", "category": "DV-HONEST", "severity": "required", "enforcement": "judgment",
+      "rule": "Mark partial periods and projections distinctly: hatched fill or dashed line, plus a label. Never plot an incomplete period as complete.",
+      "do": "Hatched bar for 'today so far'; dashed line labeled 'Forecast'; shaded band for a range.",
+      "dont": "A last-bucket cliff that is just a day not finished.",
+      "check": "The current period and any forecast are visually and textually distinct.",
+      "sources": ["mobbin", "dataviz-skill"], "evidence": ["MOB-03", "MOB-06", "MOB-08"]
+    },
+    {
+      "id": "DV-HONEST-005", "category": "DV-HONEST", "severity": "required", "enforcement": "auto",
+      "rule": "No spline interpolation that invents values between points. Use linear or monotone; use step for values that hold between events. Show point markers when data is sparse.",
+      "do": "type monotone or linear; step for plan tier, stock level, resource usage.",
+      "dont": "type natural or basis, which overshoots below zero between real points.",
+      "check": "No curve type natural, basis, cardinal or catmullRom on Line or Area.",
+      "detector": "spline-curve",
+      "sources": ["mobbin", "article"], "evidence": ["MOB-01", "MOB-48"]
+    },
+    {
+      "id": "DV-HONEST-006", "category": "DV-HONEST", "severity": "required", "enforcement": "judgment",
+      "rule": "Guard small samples and ratios. Under the minimum sample, show raw counts or a 'low sample' flag. A step conversion over 100 percent, NaN or Infinity is a data error to investigate, never a value to print.",
+      "do": "'4 of 5 sessions' next to 80 percent; suppress a percent when the denominator is under the threshold.",
+      "dont": "Print '125%' between two funnel stages.",
+      "check": "Percentages carry or can reach their counts; no value outside 0 to 100 for a share or conversion.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-44"]
+    },
+    {
+      "id": "DV-HONEST-007", "category": "DV-HONEST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Don't invent precision. Compact large numbers on tiles and axes (12.9K, $4.2M); show exact values in the tooltip and table.",
+      "do": "1,284 on a tile, 1,284.37 in the table.",
+      "dont": "$10,923.4417 on a headline.",
+      "check": "Display precision matches the decision the number supports.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-HONEST-008", "category": "DV-HONEST", "severity": "required", "enforcement": "judgment",
+      "rule": "Missing data is not zero. Break the line or show 'No data'; reserve a flat zero line for a real measured zero.",
+      "do": "A gap in the line for the hours the collector was down.",
+      "dont": "Six charts of flat zeros for a metric that has never been collected.",
+      "check": "Null and zero render differently; unmeasured periods are not drawn as 0.",
+      "sources": ["mobbin"], "evidence": ["MOB-02", "MOB-46"]
+    },
+    {
+      "id": "DV-HONEST-009", "category": "DV-HONEST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Use a log scale only for ratio data spanning orders of magnitude, and say so on the axis.",
+      "do": "Axis title 'Requests (log scale)'.",
+      "dont": "A silent log axis on a general-audience chart.",
+      "check": "Any non-linear scale is labeled.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-HONEST-010", "category": "DV-HONEST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Make delta math explicit: name the comparison period, and show growth from a zero base as 'new' or a dash, never infinity or 100 percent.",
+      "do": "+12.4% vs previous 7 days; 'New' when the prior value was 0.",
+      "dont": "+Infinity%.",
+      "check": "Every delta names its baseline; zero baselines are handled.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-03", "MOB-55"]
+    },
+    {
+      "id": "DV-CLARITY-001", "category": "DV-CLARITY", "severity": "required", "enforcement": "judgment",
+      "rule": "Remove anything that doesn't help read the data: heavy borders, background fills inside the plot, redundant legends and labels, decorative gradients.",
+      "do": "Ask of each element: what does the reader lose if this goes?",
+      "dont": "A boxed plot area inside a boxed card inside a boxed section.",
+      "check": "Deleting any non-data element would not reduce understanding.",
+      "sources": ["article", "dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-CLARITY-002", "category": "DV-CLARITY", "severity": "recommended", "enforcement": "auto",
+      "rule": "Gridlines and axes are solid 1px hairlines, one step off the surface, recessive. Horizontal gridlines only unless reading across is the task.",
+      "do": "CartesianGrid vertical={false} with a token stroke.",
+      "dont": "Dashed or dark gridlines at the same weight as the data.",
+      "check": "No strokeDasharray on the grid; grid color is a chart-grid token.",
+      "detector": "dashed-grid",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-49"]
+    },
+    {
+      "id": "DV-CLARITY-003", "category": "DV-CLARITY", "severity": "required", "enforcement": "auto",
+      "rule": "Label selectively: the end point, the extreme, the series the story is about. Never a number on every point. The axis, tooltip and table carry the rest.",
+      "do": "One end-label per line; a value on the peak.",
+      "dont": "A LabelList on every point of a line.",
+      "check": "No LabelList on Line or Area; bar labels only when each fits inside or beyond its mark.",
+      "detector": "label-every-point",
+      "sources": ["dataviz-skill", "article"], "evidence": ["MOB-16", "MOB-10"]
+    },
+    {
+      "id": "DV-CLARITY-004", "category": "DV-CLARITY", "severity": "required", "enforcement": "auto",
+      "rule": "Two or more series always get a legend; up to four are also direct-labeled. A single series gets no legend box because the title names it.",
+      "do": "ChartLegend for 2+ series; end-labels for up to 4.",
+      "dont": "A one-swatch legend that restates the title, or no legend on a 3-line chart.",
+      "check": "Multi-series charts include a legend component; single-series ones don't.",
+      "detector": "missing-legend",
+      "sources": ["dataviz-skill", "article"], "evidence": ["MOB-15"]
+    },
+    {
+      "id": "DV-CLARITY-005", "category": "DV-CLARITY", "severity": "required", "enforcement": "judgment",
+      "rule": "Axes carry a unit (in the title or the axis label), clean round ticks, about 5 or fewer y-ticks, and tick and axis labels that are whole and horizontal.",
+      "do": "'Tokens' on the y-axis, ticks at 0 / 20K / 40K.",
+      "dont": "An axis title cut to 'Task count, in numb...' or ticks rotated 60 degrees.",
+      "check": "No truncated axis text; no rotation beyond 45 degrees; units present.",
+      "sources": ["article"], "evidence": ["MOB-04"]
+    },
+    {
+      "id": "DV-CLARITY-006", "category": "DV-CLARITY", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Mark specs: bars at most 24px thick with a 4px rounded data end and a square baseline, lines 2px, markers at least 8px, a 2px surface-colored gap between touching fills and a 2px surface ring on overlapping dots. No stroke around marks to separate them.",
+      "do": "Cap bar thickness and let the band's leftover be air.",
+      "dont": "Slot-filling fat blocks, or an outline drawn around every segment.",
+      "check": "Bar thickness is capped; stacks use a gap not a border.",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-17", "MOB-50"]
+    },
+    {
+      "id": "DV-CLARITY-007", "category": "DV-CLARITY", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Order deliberately: sort by value unless the categories have a natural order, and make legend order match the visual order of the series.",
+      "do": "Top stack segment is the first legend item.",
+      "dont": "Alphabetical bars when the reader wants a ranking.",
+      "check": "Sort and legend order are intentional and consistent.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-CLARITY-008", "category": "DV-CLARITY", "severity": "required", "enforcement": "judgment",
+      "rule": "Text never wears the series color. Values, labels, legends and axis text use text tokens; a colored swatch, dot or line-key beside the text carries identity.",
+      "do": "Dot in the series color, label in text-muted.",
+      "dont": "Yellow text for the yellow series.",
+      "check": "Text color tokens only, except labels inside a fill, which pick ink or white by the fill's luminance.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-CLARITY-009", "category": "DV-CLARITY", "severity": "recommended", "enforcement": "judgment",
+      "rule": "One hero figure per view. KPI hierarchy: value, then label, then delta. Large standalone numbers use proportional figures; tabular-nums only where numbers align in a column.",
+      "do": "48px or larger hero in the same sans as the rest; tabular-nums in table cells and axis ticks.",
+      "dont": "A serif display face on the hero, or tabular-nums on a 48px number.",
+      "check": "Exactly one hero per view; figure style matches the context.",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-12"]
+    },
+    {
+      "id": "DV-COLOR-001", "category": "DV-COLOR", "severity": "required", "enforcement": "auto",
+      "rule": "Chart code uses chart tokens (var(--chart-N) and friends), never hex values or raw palette classes. Extends DS-COLOR-001 to charts.",
+      "do": "color: 'var(--chart-1)' in the chart config.",
+      "dont": "stroke='#8884d8'.",
+      "check": "No hex or rgb literal in stroke, fill or color of chart code.",
+      "detector": "hardcoded-chart-color",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-COLOR-002", "category": "DV-COLOR", "severity": "required", "enforcement": "spec",
+      "rule": "Assign color by the job it does: categorical (identity), ordinal (ordered buckets, one hue ramp), sequential (magnitude, one hue), diverging (polarity, two hues plus neutral), status (reserved meaning). State the job in the spec.",
+      "do": "spec.color_job set from the catalog's color_job for the form.",
+      "dont": "Pick colors first and decide what they mean later.",
+      "check": "spec.color_job is one of the five jobs and matches the form.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-COLOR-003", "category": "DV-COLOR", "severity": "required", "enforcement": "auto",
+      "rule": "Categorical hues are assigned in fixed order and never cycled. Eight is the ceiling and five is comfortable. A ninth series folds into Other, becomes small multiples, or uses composite encoding. Series count above 8 is never solved by generating a hue.",
+      "do": "Use the chart-1 to chart-8 order as given.",
+      "dont": "COLORS[index % COLORS.length].",
+      "check": "No modulo cycling of a color array; spec.series is 8 or fewer.",
+      "detector": "cycled-colors",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-35", "MOB-41", "MOB-49"]
+    },
+    {
+      "id": "DV-COLOR-004", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "Color follows the entity, not its rank or row index. Filtering or re-sorting never repaints a surviving series, and the same entity keeps its color across cards and pages.",
+      "do": "Map series key to color token once, in the config.",
+      "dont": "Color by array index so removing series 2 turns series 3 blue.",
+      "check": "Series colors are keyed by entity id, not position.",
+      "sources": ["dataviz-skill", "article"], "evidence": ["MOB-15"]
+    },
+    {
+      "id": "DV-COLOR-005", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "Sequential is one hue light to dark. Diverging is two opposing hues with a neutral gray midpoint. Never a rainbow, and never a hue at the midpoint.",
+      "do": "Blue ramp for volume; blue-to-orange around zero.",
+      "dont": "A jet rainbow heatmap.",
+      "check": "Ramp is monotone in lightness; midpoint is neutral.",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-20"]
+    },
+    {
+      "id": "DV-COLOR-006", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "Status colors (good, warning, serious, critical) are reserved for state. They are never reused for 'series 4', and always ship with an icon, sign or label. Don't make red versus green the only distinction.",
+      "do": "Arrow, sign and color on a delta chip; a down-arrow on churn that's green because down is good.",
+      "dont": "Red and green bars with no other cue.",
+      "check": "Every status color has a non-color companion; status tokens aren't used for identity.",
+      "sources": ["dataviz-skill", "wcag"], "evidence": ["MOB-09", "MOB-20", "MOB-33"]
+    },
+    {
+      "id": "DV-COLOR-007", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "A single series of nominal categories uses one color for every bar. Don't ramp or rainbow by value, and don't give each bar its own hue. Ordered stages (funnel, tiers) use a one-hue ordinal ramp.",
+      "do": "Same chart-1 on every bar; one hue stepping dark for later funnel stages.",
+      "dont": "Five bars in five hues when the categories have no meaning in the color.",
+      "check": "One series maps to one color; ordinal buckets use a ramp.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-09", "MOB-44"]
+    },
+    {
+      "id": "DV-COLOR-008", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "Dark mode is selected, not inverted: its own steps from the same ramps, checked against the dark surface so marks stay at least 3:1 and text at least 4.5:1.",
+      "do": "Verify the dark palette on the dark card surface.",
+      "dont": "Auto-invert, or reuse the light palette on near-black.",
+      "check": "Contrast is verified per mode.",
+      "sources": ["dataviz-skill", "wcag"], "evidence": ["MOB-06", "MOB-47"]
+    },
+    {
+      "id": "DV-COLOR-009", "category": "DV-COLOR", "severity": "recommended", "enforcement": "judgment",
+      "rule": "When one series is the story, use emphasis: one accent hue and neutral gray for the rest.",
+      "do": "Highlight 'Checkout' in the accent, gray the other eight funnels.",
+      "dont": "Eight hues competing for attention.",
+      "check": "If the title names one series, only that series is saturated.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-COLOR-010", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
+      "rule": "Overlapping areas use a wash of about 10 to 15 percent opacity, or aren't overlapped at all (stack or facet). Multiple translucent hues over each other create new muddy colors that read as extra series.",
+      "do": "Stacked area, or small multiples.",
+      "dont": "Four translucent orange, pink, purple and red areas on top of each other.",
+      "check": "No more than two overlapping filled areas on one plot.",
+      "sources": ["mobbin", "dataviz-skill"], "evidence": ["MOB-49"]
+    },
+    {
+      "id": "DV-COLOR-011", "category": "DV-COLOR", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Heatmaps and choropleths use a sequential single hue unless a meaningful center exists, then diverging. Always include a scale legend with minimum, midpoint and maximum.",
+      "do": "A ramp key reading -3% / 0 / +3%.",
+      "dont": "Unlabeled shades of red and green.",
+      "check": "Scale legend present; ramp type matches the data.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-20"]
+    },
+    {
+      "id": "DV-CONSIST-001", "category": "DV-CONSIST", "severity": "required", "enforcement": "judgment",
+      "rule": "One metric, one unit, one format, one precision everywhere it appears: tile, axis, tooltip, table, export.",
+      "do": "A shared formatter per metric.",
+      "dont": "$1.2M on the tile and 1,200,000 in the table with no reason.",
+      "check": "Formatters are shared; unit appears wherever the number does.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-CONSIST-002", "category": "DV-CONSIST", "severity": "required", "enforcement": "judgment",
+      "rule": "Everything under one filter uses the same period and granularity, and the resolved scope is visible.",
+      "do": "Show 'Jun 11 to Jun 17, 2026 (UTC)' once, near the filter.",
+      "dont": "Last 7 days in one card and month to date in the next with no label.",
+      "check": "All cards reconcile to the same date scope.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-02", "MOB-07"]
+    },
+    {
+      "id": "DV-CONSIST-003", "category": "DV-CONSIST", "severity": "required", "enforcement": "judgment",
+      "rule": "The same entity keeps the same color across the whole dashboard and across pages.",
+      "do": "Single source of truth for entity color.",
+      "dont": "'Mobile' is blue in one card and orange in the next.",
+      "check": "Cross-card entity colors match.",
+      "sources": ["article", "dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-CONSIST-004", "category": "DV-CONSIST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Small multiples share scales and axes, or state clearly that they don't, and they share a crosshair.",
+      "do": "Hover on one chart moves the crosshair on all of them.",
+      "dont": "Three stacked charts with independent unlabeled y-ranges.",
+      "check": "Shared domain or an explicit note; synchronized hover.",
+      "sources": ["mobbin"], "evidence": ["MOB-14"]
+    },
+    {
+      "id": "DV-CONSIST-005", "category": "DV-CONSIST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "The same job uses the same component. All KPI tiles share one anatomy; all chart cards share one header, action placement and footer.",
+      "do": "One StatTile and one ChartCard component.",
+      "dont": "Each card hand-built with different paddings and action positions.",
+      "check": "Cards are instances of shared components.",
+      "sources": ["article", "vois"], "evidence": ["MOB-12"]
+    },
+    {
+      "id": "DV-CONSIST-006", "category": "DV-CONSIST", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Format dates, numbers and currency with Intl in the user's locale, and state the timezone wherever dates are bucketed.",
+      "do": "'All analytics are based on UTC' near the filter.",
+      "dont": "Hardcoded en-US formatting and an unstated timezone.",
+      "check": "Intl formatters; timezone stated.",
+      "sources": ["mobbin"], "evidence": ["MOB-12"]
+    },
+    {
+      "id": "DV-CONTEXT-001", "category": "DV-CONTEXT", "severity": "required", "enforcement": "judgment",
+      "rule": "The title says what, the subtitle says the scope: metric, filter and period.",
+      "do": "'Daily activity' / 'Jun 11 to Jun 17, 2026'.",
+      "dont": "A title that is only a column name with no scope.",
+      "check": "Each card states its metric and period.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-01", "MOB-04"]
+    },
+    {
+      "id": "DV-CONTEXT-002", "category": "DV-CONTEXT", "severity": "required", "enforcement": "judgment",
+      "rule": "Every KPI has a comparison: a delta against a named period, signed, with direction (arrow) separate from meaning (good or bad).",
+      "do": "'12.4% vs previous 7 days' with an up arrow; churn down is shown as good.",
+      "dont": "A bare number, or a bare percent with no baseline.",
+      "check": "Each tile has a delta and a baseline name.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-03", "MOB-05", "MOB-08", "MOB-55"]
+    },
+    {
+      "id": "DV-CONTEXT-003", "category": "DV-CONTEXT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Draw targets, benchmarks and averages as labeled reference lines, and annotate anomalies, launches and outages.",
+      "do": "A thin line labeled 'Target: 15' or 'Your average'.",
+      "dont": "An unexplained spike the team already knows the cause of.",
+      "check": "Reference lines are labeled directly; known events are annotated.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-19", "MOB-36"]
+    },
+    {
+      "id": "DV-CONTEXT-004", "category": "DV-CONTEXT", "severity": "required", "enforcement": "judgment",
+      "rule": "Live and near-live views show freshness ('Updated 2 minutes ago') and offer a manual refresh.",
+      "do": "A timestamp near the filters and a refresh button.",
+      "dont": "A dashboard that might be an hour stale and doesn't say.",
+      "check": "Freshness text and refresh control present on live views.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-21", "MOB-57", "MOB-13"]
+    },
+    {
+      "id": "DV-CONTEXT-005", "category": "DV-CONTEXT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Derived or ambiguous metrics get a definition: an info tooltip or a link to the methodology.",
+      "do": "An 'i' icon next to 'Experience score' with the formula.",
+      "dont": "Unexplained acronyms.",
+      "check": "Each derived metric has a definition within one interaction.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-13", "MOB-28"]
+    },
+    {
+      "id": "DV-CONTEXT-006", "category": "DV-CONTEXT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Report-style views add one sentence of insight where the cause or consequence is known, written in plain language.",
+      "do": "'Seasonal decline' next to a dip.",
+      "dont": "Make the reader guess.",
+      "check": "Notable shifts are explained or flagged as unexplained.",
+      "sources": ["article"], "evidence": ["MOB-13"]
+    },
+    {
+      "id": "DV-CONTEXT-007", "category": "DV-CONTEXT", "severity": "required", "enforcement": "judgment",
+      "rule": "If a chart is narrower than the page scope (its own filter, a different source), say so on the card.",
+      "do": "'1 filter, tasks in 1 project' in the card footer.",
+      "dont": "A chart that silently excludes archived items while its neighbor includes them.",
+      "check": "Any chart-level scope is disclosed on the card.",
+      "sources": ["mobbin"], "evidence": ["MOB-04"]
+    },
+    {
+      "id": "DV-A11Y-001", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Never rely on color alone. Identity comes from a legend or direct label, state from an icon, sign or text, and where needed a pattern or shape.",
+      "do": "Arrow plus sign plus color on deltas; dashed versus solid for forecast.",
+      "dont": "Green and red bars as the only cue.",
+      "check": "Greyscale screenshot still reads.",
+      "sources": ["wcag"], "evidence": ["MOB-33"]
+    },
+    {
+      "id": "DV-A11Y-002", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Marks reach at least 3:1 against their surface and adjacent marks (WCAG 1.4.11). Text, including text inside fills and in tooltips, reaches at least 4.5:1 (WCAG 1.4.3).",
+      "do": "Verify each mode; pick ink or white for in-fill labels by luminance.",
+      "dont": "A pale yellow bar on white with no label and no table.",
+      "check": "Measured contrast per mode.",
+      "sources": ["wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-003", "category": "DV-A11Y", "severity": "required", "enforcement": "auto",
+      "rule": "Every chart has a text alternative: a role img container with an aria-label that states the takeaway, plus the library's accessibility layer, plus a visible or screen-reader-only summary of the trend or statistic.",
+      "do": "figure with figcaption; accessibilityLayer on the chart.",
+      "dont": "An unlabeled SVG.",
+      "check": "Recharts chart elements carry accessibilityLayer.",
+      "detector": "missing-accessibility-layer",
+      "sources": ["wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-004", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Every chart has a table-view twin, reachable by keyboard, in the same order, with the same numbers. This is the WCAG-clean equivalent.",
+      "do": "A Chart | Table toggle in the card header.",
+      "dont": "A chart whose values exist only in pixels.",
+      "check": "A table view exists and matches the chart.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-36", "MOB-39", "MOB-42", "MOB-52"]
+    },
+    {
+      "id": "DV-A11Y-005", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Everything interactive is keyboard reachable and operable: data points or groups, legend items (real buttons with aria-pressed), the card menu, the date picker. Focus is visible (DS-A11Y-002).",
+      "do": "Arrow keys step through points; Esc dismisses a pinned tooltip.",
+      "dont": "Hover-only controls, or divs with click handlers.",
+      "check": "Tab and arrow-key walkthrough works end to end.",
+      "sources": ["wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-006", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Tooltips enhance and never gate. Every value is also reachable by a direct label or the table view. Content on hover or focus is dismissible, hoverable and persistent (WCAG 1.4.13). On touch, tap pins the tooltip.",
+      "do": "Same details on focus as on hover; Esc to dismiss.",
+      "dont": "Make a tooltip the only way to learn a number.",
+      "check": "Values are reachable without hover.",
+      "sources": ["dataviz-skill", "wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-007", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
+      "rule": "Hit targets are bigger than the marks: at least var(--hit-area-min) (DS-A11Y-001), with a transparent hit area of at least 24px on dots, or a nearest-point layer for dense scatter. The hit area includes the gap.",
+      "do": "Crosshair that snaps to the nearest x.",
+      "dont": "An 8px dot you have to land on dead center.",
+      "check": "Marks can be hit within 24px of their center.",
+      "sources": ["dataviz-skill", "vois"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-008", "category": "DV-A11Y", "severity": "required", "enforcement": "auto",
+      "rule": "Chart entry animation is at most 300ms (DS-ANIMATION-001), off under prefers-reduced-motion (DS-ANIMATION-004), and never replays on refresh.",
+      "do": "isAnimationActive only on first mount, 300ms or less.",
+      "dont": "animationDuration 1500 on every data update.",
+      "check": "No animationDuration above 300.",
+      "detector": "slow-chart-animation",
+      "sources": ["vois", "wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-009", "category": "DV-A11Y", "severity": "recommended", "enforcement": "judgment",
+      "rule": "A pattern or texture channel is available for color-vision deficiency, print and forced-colors. Opt-in, not the default.",
+      "do": "45 and 135 degree hatch, ordered on value scales.",
+      "dont": "Dense texture on by default.",
+      "check": "Chart stays legible in greyscale and forced-colors.",
+      "sources": ["dataviz-skill"], "evidence": ["MOB-03"]
+    },
+    {
+      "id": "DV-A11Y-010", "category": "DV-A11Y", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Charts work at 200 percent zoom and 320px width. Text is at least 12px. Nothing depends on hover on touch.",
+      "do": "Test at 320px and 200 percent.",
+      "dont": "Sub-10px axis labels.",
+      "check": "Reflow test passes.",
+      "sources": ["wcag"], "evidence": []
+    },
+    {
+      "id": "DV-A11Y-011", "category": "DV-A11Y", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Announce meaningful changes only: user-triggered updates get a polite live region, and background refreshes don't announce.",
+      "do": "'Chart updated: 30 days' after a range change.",
+      "dont": "Announce every poll.",
+      "check": "Live region used only for user-initiated changes.",
+      "sources": ["wcag"], "evidence": []
+    },
+    {
+      "id": "DV-INTERACT-001", "category": "DV-INTERACT", "severity": "required", "enforcement": "auto",
+      "rule": "Charts are interactive by default. Line and area: a crosshair that snaps to the nearest x and one tooltip listing every series. Bar, dot, cell: a per-mark tooltip and a lift on hover. Only a bare stat tile skips it.",
+      "do": "ChartTooltip with ChartTooltipContent.",
+      "dont": "A static SVG with no readout.",
+      "check": "Each chart includes a Tooltip component.",
+      "detector": "missing-tooltip",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-14", "MOB-47", "MOB-12"]
+    },
+    {
+      "id": "DV-INTERACT-002", "category": "DV-INTERACT", "severity": "required", "enforcement": "judgment",
+      "rule": "Tooltip anatomy: header is the x label in full (weekday and year if ambiguous); one row per series with a short line-key, the series name and the value, value emphasized; at most 6 rows then '+N more'. Insert untrusted labels with textContent, never innerHTML.",
+      "do": "'Mon, Jun 15 / 76,065 tokens'.",
+      "dont": "Header 'x', boxes as keys, or dangerouslySetInnerHTML with a CSV header.",
+      "check": "Tooltip content matches the anatomy; no innerHTML of data labels.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-01", "MOB-14", "MOB-18"]
+    },
+    {
+      "id": "DV-INTERACT-003", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "The legend toggles series: click to hide or isolate, shown with aria-pressed, hidden series keep their color, and one action restores all.",
+      "do": "Legend items as buttons.",
+      "dont": "A legend that is only decoration on a 6-series chart.",
+      "check": "Legend items are real buttons with state.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-35", "MOB-15"]
+    },
+    {
+      "id": "DV-INTERACT-004", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Clickable means visibly clickable: an arrow in the card title, a 'See all' link, hover affordance, or on-card hint text ('Click a bar to view details'). Click drills into a filtered detail view.",
+      "do": "'Net cashflow >' title link.",
+      "dont": "A hidden click handler.",
+      "check": "Every drill-down has a visible affordance.",
+      "sources": ["mobbin"], "evidence": ["MOB-04", "MOB-06", "MOB-11", "MOB-54"]
+    },
+    {
+      "id": "DV-INTERACT-005", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Long series (over about 90 points) get zoom or brush, a reset control, and the selection kept in the URL.",
+      "do": "Range slider plus 'Reset zoom'.",
+      "dont": "Make the reader squint at 400 daily points.",
+      "check": "Zoom with reset for dense series.",
+      "sources": ["mobbin"], "evidence": ["MOB-40"]
+    },
+    {
+      "id": "DV-INTERACT-006", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Card actions (expand, view as table, export CSV or PNG, edit, delete) live in one consistent place in the card header, revealed on hover but always reachable by focus.",
+      "do": "A '...' menu or a toolbar at the top right.",
+      "dont": "Actions that appear in a different spot on each card.",
+      "check": "Same actions in the same place on every card.",
+      "sources": ["mobbin"], "evidence": ["MOB-02", "MOB-03", "MOB-09", "MOB-32", "MOB-39"]
+    },
+    {
+      "id": "DV-INTERACT-007", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "When the KPI row doubles as the chart selector, the selected tile shows state (outline, aria-selected) and the chart title changes with it.",
+      "do": "Tabs styled as KPI tiles above the primary chart.",
+      "dont": "A tab strip that looks identical selected and not.",
+      "check": "Selected state is visible and announced.",
+      "sources": ["mobbin"], "evidence": ["MOB-08", "MOB-10", "MOB-51"]
+    },
+    {
+      "id": "DV-INTERACT-008", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "A chart-type switcher offers at most 5 types, all valid for the data shape. Disable the others with a reason.",
+      "do": "Vertical bar, horizontal bar, line, donut, number.",
+      "dont": "A 22-tile picker with sunburst, word cloud and pictograph.",
+      "check": "Switcher options are valid for the shape and 5 or fewer.",
+      "sources": ["mobbin"], "evidence": ["MOB-37", "MOB-38"]
+    },
+    {
+      "id": "DV-INTERACT-009", "category": "DV-INTERACT", "severity": "required", "enforcement": "judgment",
+      "rule": "Marks respond on hover and focus (lift, outline or lighten), and the crosshair snaps to the nearest x. Nothing critical is hover-only on touch.",
+      "do": "The hovered bar lifts; the same on focus.",
+      "dont": "A tooltip with no change in the chart.",
+      "check": "Hover and focus feedback exist and match.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-12"]
+    },
+    {
+      "id": "DV-INTERACT-010", "category": "DV-INTERACT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "For analyst views, allow pinning a tooltip or comparing two points. Keep it out of executive views.",
+      "do": "Click to pin, shift-click to compare.",
+      "dont": "Compare tools on a 5-second overview.",
+      "check": "Pin or compare only where the audience is analyst.",
+      "sources": ["mobbin"], "evidence": ["MOB-15"]
+    },
+    {
+      "id": "DV-FILTER-001", "category": "DV-FILTER", "severity": "required", "enforcement": "judgment",
+      "rule": "Dashboard-scope filters sit in one row above everything they scope. A chart-local override is allowed only if it is visibly marked as overridden and resettable.",
+      "do": "One left-aligned row: date range, comparison, dimension filters.",
+      "dont": "A different date picker inside each card with no indication.",
+      "check": "One filter row; any local override is badged and has reset.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-07", "MOB-52"]
+    },
+    {
+      "id": "DV-FILTER-002", "category": "DV-FILTER", "severity": "required", "enforcement": "judgment",
+      "rule": "Date range is the first filter. Presets (Today, 7 days, 30 days, 90 days, This month, Year to date) come before a calendar, the custom range sits behind them, and the resolved dates and timezone are shown.",
+      "do": "Presets as rows on the left, two-month calendar on the right, Apply and Cancel.",
+      "dont": "Make the reader click start and end dates for 'last 30 days'.",
+      "check": "Presets exist; resolved dates visible.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-03", "MOB-53", "MOB-56"]
+    },
+    {
+      "id": "DV-FILTER-003", "category": "DV-FILTER", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Put a comparison control next to the range: previous period, same period last year, custom. Overlay the comparison as a muted dotted series and carry the delta into the KPIs.",
+      "do": "'vs Previous period' selector, dotted prior line labeled 'Preceding period'.",
+      "dont": "Compare periods of different lengths.",
+      "check": "Comparison control present; overlay is muted and labeled.",
+      "sources": ["mobbin"], "evidence": ["MOB-05", "MOB-11", "MOB-51", "MOB-55"]
+    },
+    {
+      "id": "DV-FILTER-004", "category": "DV-FILTER", "severity": "required", "enforcement": "judgment",
+      "rule": "Filters scope everything beneath them. Every chart, tile and table re-renders on the same slice, so the numbers reconcile.",
+      "do": "One query context shared by the cards.",
+      "dont": "A KPI that ignores the segment filter its chart obeys.",
+      "check": "Tiles sum to charts under any filter.",
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-02", "MOB-07"]
+    },
+    {
+      "id": "DV-FILTER-005", "category": "DV-FILTER", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Offer granularity (hour, day, week, month) only where the range supports it, default it automatically, and keep prev and next range arrows beside the range.",
+      "do": "Disable 'Hourly' on a 12-month range.",
+      "dont": "Let a 2-year hourly request render 17,000 points.",
+      "check": "Grain options track the range.",
+      "sources": ["mobbin"], "evidence": ["MOB-10", "MOB-40", "MOB-57"]
+    },
+    {
+      "id": "DV-FILTER-006", "category": "DV-FILTER", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Filter state lives in the URL and is shareable, shows as removable chips with a count, and has a Clear all.",
+      "do": "'Exclude bots equals Yes' chip with an x.",
+      "dont": "Filters that reset on reload.",
+      "check": "Reload and share keep the slice.",
+      "sources": ["mobbin"], "evidence": ["MOB-30"]
+    },
+    {
+      "id": "DV-FILTER-007", "category": "DV-FILTER", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Group-by and breakdown cap at 8 groups with Top N plus Other, and warn before producing more.",
+      "do": "'Showing top 8 of 37. Other (29).'",
+      "dont": "A stacked bar with 16 hues and a '+11 more' legend.",
+      "check": "Group-by output is 8 or fewer series.",
+      "sources": ["mobbin", "dataviz-skill"], "evidence": ["MOB-41"]
+    },
+    {
+      "id": "DV-FILTER-008", "category": "DV-FILTER", "severity": "required", "enforcement": "judgment",
+      "rule": "Refetch keeps the frame. While data reloads, hold the previous render at reduced opacity with a small inline progress indicator. No skeleton flash, no layout jump. Cancel stale requests.",
+      "do": "opacity 0.6 on the chart while loading.",
+      "dont": "Swap the chart for a skeleton on every filter change.",
+      "check": "Filter change doesn't remount the chart.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-STATE-001", "category": "DV-STATE", "severity": "required", "enforcement": "judgment",
+      "rule": "First load uses a skeleton that matches the final geometry (title, value, plot block, table rows). No full-page spinner.",
+      "do": "Grey blocks in the exact card layout.",
+      "dont": "A centered logo spinner over the whole app.",
+      "check": "Skeleton and loaded states share geometry.",
+      "sources": ["mobbin", "vois"], "evidence": ["MOB-22", "MOB-24", "MOB-26"]
+    },
+    {
+      "id": "DV-STATE-002", "category": "DV-STATE", "severity": "required", "enforcement": "judgment",
+      "rule": "Four different empty cases, four different messages: (a) not set up: explain and offer the connect action, (b) collecting: say what's missing and when to check back, (c) filters returned nothing: say so and offer Clear filters, (d) the real value is zero: draw the chart with zero.",
+      "do": "'Not enough data yet. Check back after more visitors have visited.' with the threshold.",
+      "dont": "One generic 'No data' for all four.",
+      "check": "Each empty case has distinct copy and the right action.",
+      "sources": ["mobbin"], "evidence": ["MOB-23", "MOB-27", "MOB-28", "MOB-30", "MOB-31"]
+    },
+    {
+      "id": "DV-STATE-003", "category": "DV-STATE", "severity": "required", "enforcement": "judgment",
+      "rule": "Errors are isolated to the card with a message and a retry. One failing query never blanks the dashboard. Keep the last good render with a stale badge where possible.",
+      "do": "'Couldn't load revenue. Retry.' in the card, rest of the page intact.",
+      "dont": "A full-page error for one failed card.",
+      "check": "Simulate one failed query; the others still render.",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-STATE-004", "category": "DV-STATE", "severity": "required", "enforcement": "judgment",
+      "rule": "A misconfigured widget says exactly what is missing and offers the fix in place.",
+      "do": "'The x-axis is missing a value. Configure widget.'",
+      "dont": "A blank card.",
+      "check": "Missing config produces a named message and an action.",
+      "sources": ["mobbin"], "evidence": ["MOB-25"]
+    },
+    {
+      "id": "DV-STATE-005", "category": "DV-STATE", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Stale or partial data is badged with a timestamp. Partial periods follow DV-HONEST-004.",
+      "do": "'Last synced 1 day ago' with a refresh link.",
+      "dont": "Quiet staleness.",
+      "check": "Stale state is visible.",
+      "sources": ["mobbin"], "evidence": ["MOB-57"]
+    },
+    {
+      "id": "DV-STATE-006", "category": "DV-STATE", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Sparse data (fewer than about 3 points) shows markers, a stat or a table instead of a lonely line. A grid of mostly flat-zero charts collapses into one explanation.",
+      "do": "One 'No activity in this range' state for six empty cards.",
+      "dont": "Six flat zero charts side by side.",
+      "check": "Sparse data has a purpose-built view.",
+      "sources": ["mobbin"], "evidence": ["MOB-02", "MOB-46"]
+    },
+    {
+      "id": "DV-STATE-007", "category": "DV-STATE", "severity": "recommended", "enforcement": "judgment",
+      "rule": "No layout shift between skeleton, loaded, empty and error. Reserve the container height including the x-axis band.",
+      "do": "min-height on the card body.",
+      "dont": "A fixed plot height with no room for axis labels, which makes a nested scrollbar.",
+      "check": "Heights match across states.",
+      "sources": ["dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-LAYOUT-001", "category": "DV-LAYOUT", "severity": "required", "enforcement": "judgment",
+      "rule": "Page hierarchy: (1) filter row, (2) hero or KPI row, (3) primary trend, (4) breakdowns, (5) detail table. Reading order equals importance.",
+      "do": "KPI row, then a wide trend, then 2-up breakdowns, then the table.",
+      "dont": "Put the most important chart bottom-right.",
+      "check": "Visual weight and order follow importance.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-08", "MOB-47"]
+    },
+    {
+      "id": "DV-LAYOUT-002", "category": "DV-LAYOUT", "severity": "required", "enforcement": "judgment",
+      "rule": "One card anatomy: title and scope on the left, actions on the right, then KPI value with delta, the plot, the legend, and a footer link. Padding and gaps come from spacing tokens (DS-SPACING-001).",
+      "do": "The same ChartCard everywhere.",
+      "dont": "Hand-built card layouts.",
+      "check": "Every card matches the anatomy.",
+      "sources": ["mobbin", "vois"], "evidence": ["MOB-06", "MOB-12", "MOB-04"]
+    },
+    {
+      "id": "DV-LAYOUT-003", "category": "DV-LAYOUT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Use a consistent grid (12-column or auto-fit minmax) with equal gaps and equal-height rows. Give charts a minimum readable size: lines about 320px wide, horizontal bars about 280px, plots at least 200px tall.",
+      "do": "Container queries for the card, not just viewport breakpoints.",
+      "dont": "An orphan card in a half-empty row.",
+      "check": "No orphan cards; no card below its minimum size.",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-LAYOUT-004", "category": "DV-LAYOUT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "KPI rows have 3 to 6 tiles. Each tile has a label, value, delta, and an optional 12-point sparkline. More than 6 means grouping under section headings.",
+      "do": "Four tiles with deltas.",
+      "dont": "A strip of 12 undifferentiated numbers.",
+      "check": "KPI count and tile anatomy.",
+      "sources": ["article", "mobbin", "dataviz-skill"], "evidence": ["MOB-05", "MOB-08", "MOB-47"]
+    },
+    {
+      "id": "DV-LAYOUT-005", "category": "DV-LAYOUT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "At most about 6 to 8 visualizations before scroll or tabs. Group under section headings and put secondary views in tabs.",
+      "do": "Overview, Traffic, Sales tabs.",
+      "dont": "One endless page of 20 cards.",
+      "check": "Count per view; grouped.",
+      "sources": ["article"], "evidence": ["MOB-13"]
+    },
+    {
+      "id": "DV-LAYOUT-006", "category": "DV-LAYOUT", "severity": "required", "enforcement": "judgment",
+      "rule": "Responsive: below 640px, one column; KPI tiles 2-up; wide tables become cards or scroll with a sticky first column; tooltips become tap to pin; chart height at least 200px.",
+      "do": "Container queries and an explicit mobile layout for each card.",
+      "dont": "Shrink a desktop chart until labels collide.",
+      "check": "Checked at 320, 640 and 1280.",
+      "sources": ["vois", "wcag"], "evidence": []
+    },
+    {
+      "id": "DV-LAYOUT-007", "category": "DV-LAYOUT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Pair a chart with its breakdown table beneath it: rows with visibility checkboxes, color keys, min, average, max, change and a sparkline column.",
+      "do": "Checkbox toggles a series in the chart and the table.",
+      "dont": "A chart and a table that don't share state.",
+      "check": "Table rows toggle chart series.",
+      "sources": ["mobbin"], "evidence": ["MOB-15", "MOB-42", "MOB-50"]
+    },
+    {
+      "id": "DV-LAYOUT-008", "category": "DV-LAYOUT", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Customizable dashboards have an explicit edit mode: Add widget, drag handles, drop slots, dashboard variables and auto-refresh in a side panel. View mode hides all of it.",
+      "do": "'Add your first chart' as a dashed placeholder; Done editing.",
+      "dont": "Edit controls mixed into view mode.",
+      "check": "Edit and view modes are distinct.",
+      "sources": ["mobbin"], "evidence": ["MOB-21", "MOB-27", "MOB-29"]
+    },
+    {
+      "id": "DV-SUSTAIN-001", "category": "DV-SUSTAIN", "severity": "required", "enforcement": "spec",
+      "rule": "Charts are driven by a typed config: data keys, labels, units, color tokens, formatter. The same config drives the chart, the table view, the tooltip, the legend and the export.",
+      "do": "One ChartConfig, many consumers.",
+      "dont": "Copy-pasted chart code per card.",
+      "check": "spec.config_driven is true.",
+      "sources": ["article", "vois"], "evidence": []
+    },
+    {
+      "id": "DV-SUSTAIN-002", "category": "DV-SUSTAIN", "severity": "required", "enforcement": "judgment",
+      "rule": "Handle extremes: long labels (middle truncation with the full text in a tooltip), huge and tiny numbers, negatives, nulls, one point, 10,000 points, many series. Downsample past about 500 points per series.",
+      "do": "Test fixtures for each extreme.",
+      "dont": "Ship after seeing only the demo data.",
+      "check": "Fixtures exist and render.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-SUSTAIN-003", "category": "DV-SUSTAIN", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Choose update cadence by need: static, on-demand, polled, pushed. Real-time appends without replaying animation and pauses while the pointer is on a chart.",
+      "do": "Auto-refresh setting (5 min) and a freshness stamp.",
+      "dont": "Re-render the whole chart every second.",
+      "check": "Cadence is documented; no re-animation.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-21"]
+    },
+    {
+      "id": "DV-SUSTAIN-004", "category": "DV-SUSTAIN", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Outputs leave the app: CSV export honors the current filters, PNG or PDF export is greyscale-safe, and print styles exist for report views.",
+      "do": "'Export CSV' beside the table.",
+      "dont": "An export that ignores the filters on screen.",
+      "check": "Export matches the view.",
+      "sources": ["article", "mobbin"], "evidence": ["MOB-03", "MOB-08", "MOB-45"]
+    },
+    {
+      "id": "DV-SUSTAIN-005", "category": "DV-SUSTAIN", "severity": "required", "enforcement": "auto",
+      "rule": "Never hardcode data in a chart component. Data arrives as typed props or from a query. Fixtures live in stories and tests and are labeled.",
+      "do": "chartData as a prop.",
+      "dont": "A 12-row const inside the component that ships.",
+      "check": "No large inline data array in non-test, non-story chart files.",
+      "detector": "inline-data",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-SUSTAIN-006", "category": "DV-SUSTAIN", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Performance: SVG up to about 2,000 marks, canvas or aggregation beyond; memoize series; debounce resize; lazy-load charts below the fold.",
+      "do": "LTTB downsampling for long series.",
+      "dont": "Render 50,000 SVG nodes.",
+      "check": "Profile with the largest realistic dataset.",
+      "sources": ["article"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-001", "category": "DV-IMPL", "severity": "required", "enforcement": "judgment",
+      "rule": "Use the workspace's chart primitives first: shadcn Chart over Recharts (ChartContainer, ChartTooltip, ChartLegend). Reach for custom SVG or d3 only for forms the primitives lack, such as heatmaps. Check the workspace manifest for the real names.",
+      "do": "ChartContainer with a config.",
+      "dont": "Bring in a second chart library for a bar chart.",
+      "check": "Primitives used or the gap reported.",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-002", "category": "DV-IMPL", "severity": "required", "enforcement": "judgment",
+      "rule": "The chart config maps each series key to a label and a chart token. Color strings never appear inline in JSX.",
+      "do": "{ revenue: { label: 'Revenue', color: 'var(--chart-1)' } }.",
+      "dont": "stroke='#2563eb' on a Line.",
+      "check": "Colors only in the config, only as tokens.",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-003", "category": "DV-IMPL", "severity": "required", "enforcement": "auto",
+      "rule": "Wrap each chart in a figure with a caption or title, set accessibilityLayer on Recharts charts, and give the container an accessible name.",
+      "do": "<BarChart accessibilityLayer>.",
+      "dont": "A bare chart in a div.",
+      "check": "accessibilityLayer present.",
+      "detector": "missing-accessibility-layer",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-004", "category": "DV-IMPL", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Chart token roles: chart-1 to chart-8 categorical, a one-hue sequential ramp, a diverging pair with a neutral, four status roles, and grid, axis, label and surface furniture. Resolve values from the workspace tokens (vois_get_tokens when available). If a role is missing, report a gap rather than inventing a value.",
+      "do": "Get the chart token values before writing the config.",
+      "dont": "Hardcode a palette 'for now'.",
+      "check": "Every color traces to a token.",
+      "sources": ["vois", "dataviz-skill"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-005", "category": "DV-IMPL", "severity": "recommended", "enforcement": "auto",
+      "rule": "Animate on first mount only, 300ms or less, off under reduced motion, never on refresh.",
+      "do": "isAnimationActive={false} on updates.",
+      "dont": "Animate every refetch.",
+      "check": "animationDuration at most 300.",
+      "detector": "slow-chart-animation",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-006", "category": "DV-IMPL", "severity": "recommended", "enforcement": "judgment",
+      "rule": "Tooltip and legend are separate components that use surface, elevation and text tokens.",
+      "do": "ChartTooltipContent with the popover surface token.",
+      "dont": "Inline styles on the tooltip.",
+      "check": "Tooltip and legend use tokens.",
+      "sources": ["vois"], "evidence": []
+    },
+    {
+      "id": "DV-IMPL-007", "category": "DV-IMPL", "severity": "required", "enforcement": "auto",
+      "rule": "Charts are responsive: ChartContainer or ResponsiveContainer with an explicit min height or aspect ratio that includes the x-axis band. No fixed pixel width on the chart element.",
+      "do": "className='min-h-[200px] w-full'.",
+      "dont": "<LineChart width={600} height={300}>.",
+      "check": "No numeric width on a chart element.",
+      "detector": "fixed-chart-width",
+      "sources": ["vois", "dataviz-skill"], "evidence": []
+    }
+  ]
+}

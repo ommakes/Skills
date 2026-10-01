@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.7.0] - 2026-10-01
+
+### Added
+
+- **`JOB-VISUALIZE-DATA`** (job 21): charts, KPI tiles, sparklines and dashboards. A single value is a stat tile in a Card; everything else hands the form choice to the new `vois-dataviz` skill; dashboard containers are Card, Tabs, one filter row, Skeleton and per-state empty and error handling. `SKILL.md` Quick Reference, Job Index and Relationship section updated; `data/components-rules.json` gains the entry.
+
+---
+
 ## [1.6.0] - 2026-10-01
 
 ### Added
