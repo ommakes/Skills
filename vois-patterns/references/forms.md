@@ -1,5 +1,7 @@
 # Form (Create/Edit) `[PATH-C]`
 
+Field widths, columns, and the name, address, phone, email, and one-time-code groups: see `form-field-groups.md`.
+
 ## When to use:
 
 - User is creating a new item
@@ -12,14 +14,14 @@
 
 → Layout: Single column, stack vertically
 → No grouping needed
-→ Space between fields: 24px (spacing-md in vois-tokens)
+→ Space between fields: `gap-6`
 
 ### IF: 7-15 fields (medium form) `[PATH-C-MEDIUM]`
 
-→ Layout: Single column OR 2 columns
+→ Layout: Single column OR up to 2 columns (see `[PATH-FIELD-COLUMNS]` and `[PATH-FIELD-WRAP]` in `form-field-groups.md`)
 → Group related inputs with section headers
 → Example: Address group (street address, city, state, zip)
-→ Space within section: 24px between fields, 40px between sections
+→ Space within section: `gap-6` between fields, `gap-10` between sections
 
 ### IF: 15+ fields OR complex relationships `[PATH-C-COMPLEX]`
 
@@ -54,8 +56,8 @@
 
 **Form labels follow typography rules from vois-tokens:**
 
-- Use H5 (14px, medium weight) for input labels
-- Use Description style (14px normal) for helper text
+- Use H5 for input labels
+- Use Description style for helper text
 - → **Content of labels and helpers: use righter skill**
 
 **Example field structure (righter routing):**
@@ -63,8 +65,8 @@
 ```
 H5 label (righter): "Email address"
 Description helper text (righter): "We'll send a confirmation link here"
-Input field (max 400px wide)
-Error message on validation failure (righter): "Please enter a valid email"
+Input field (up to `--width-field-max`)
+Error message on validation failure (righter, `helper-text` component)
 ```
 
 ## Field Grouping:
@@ -86,6 +88,8 @@ Description helper text (righter): "Where invoices should be sent"
 
 ## Validation & Error Messages:
 
+→ Which component to use and how to write the message: righter `error-decision-tree`, `error-structure`, and the `helper-text` component. This section covers placement only.
+
 **Helper text placement:**
 
 - Account for helper text space so form doesn't shift when error appears
@@ -93,19 +97,11 @@ Description helper text (righter): "Where invoices should be sent"
 
 **Error messages:**
 
-- Inline alerts grouped with associated input fields
+- Field-level errors use righter's Helper Text, attached to the field. Inline Alerts are for page sections, not single fields.
 - Proximity = relationship clarity
 - → **For error message copy, use righter skill** (what went wrong + what to do next)
 
-Example (from righter):
-
-```
-❌ "Password must be at least 8 characters"
-(not just "Invalid password")
-
-✓ "Email already in use. Try another or sign in to your account"
-(not just "Email taken")
-```
+→ Error copy examples live in righter (`error-structure`, `error-no-blame`, `error-field-vs-system`, and the `helper-text` component). They are not repeated here.
 
 ## Binary Choices:
 
@@ -128,13 +124,7 @@ Example (from righter):
 → Modal warns user will lose all saved data
 → → **For confirmation modal copy, use righter skill** (clear consequence language)
 
-Example (from righter):
-
-```
-Heading: "Discard changes?"
-Body: "You have unsaved changes. If you leave now, they'll be lost."
-Button: "Discard" (destructive), "Keep editing" (default)
-```
+→ Confirmation copy (title, description, button labels) comes from righter's `alert-dialog` component. The component is an AlertDialog per vois-components `JOB-CONFIRM-DESTRUCTIVE`. Examples are not repeated here.
 
 ## Save Behavior:
 
@@ -174,5 +164,5 @@ Place near form title or in header area.
 ## Mobile Behavior:
 
 - Active input field always visible while keyboard present
-- Max 400px width on input/dropdown fields
+- `--width-field-max` on input/dropdown fields
 - Dropdowns → action sheets on mobile (see dialogs-and-action-sheets.md)

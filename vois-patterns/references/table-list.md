@@ -25,7 +25,9 @@
 - First column: bold text, pinned on horizontal scroll
 - Header row: pinned on vertical scroll
 - Row hover state → click opens sidebar or modal
-- Quick action buttons: max 3, visible on hover, right-aligned, float above content
+- Quick action buttons `[PATH-B-ROW-ACTIONS]`: 2 visible is preferred and 3 is the maximum. Everything beyond that, including secondary and destructive actions, goes in a DropdownMenu (see vois-components `JOB-EXPOSE-ACTIONS`)
+- Quick actions are right-aligned and float above content
+- `[PATH-B-ROW-ACTIONS-REVEAL]`: reveal on hover only where the device supports hover. On touch devices the actions are always visible.
 
 **Pagination:**
 
@@ -49,6 +51,13 @@
 
 - If row is deleted/archived: dim the row visually and disable actions
 - → **For action button labels ("Edit", "Delete", "Archive"), use righter skill**
+
+## Narrow Layout `[PATH-B-NARROW]`
+
+Below the `sm` container width (`40em`):
+
+- **4 or fewer columns** (not counting the actions column): rows stack as list items, with the first column as the title and the remaining values beneath it
+- **More than 4 columns:** the table scrolls horizontally with the first column and header row pinned, as above
 
 ## If User Edits from Modal:
 

@@ -27,6 +27,19 @@
 - Dropdown selection
 - Binary confirmation (yes/no, approve/reject)
 
+## Dialog Width `[PATH-D-SIZE]`
+
+Applies to desktop dialogs. Both widths are maximums, set by tokens. Every dialog is a single column.
+
+- **Small, `--width-dialog-sm`:** confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields
+- **Large, `--width-dialog-lg`:** dialogs whose content needs the extra width, such as a textarea or a short list
+
+Pick the tier by what the content needs, not by whether the dialog contains an input. One field in a large dialog leaves it capped at `--width-field-max` with empty space around it.
+
+Two-column layouts go on pages, not in dialogs (see `[PATH-FIELD-COLUMNS]`). A flow that needs steps or more room becomes a page, not a bigger dialog.
+
+On mobile, dialogs that take text input are full modals at the viewport width, so these tiers do not apply (see above).
+
 ## Dialog Content Structure:
 
 **Header:**
@@ -39,26 +52,28 @@
 **Body:**
 
 - Single input field OR simple content
-- Max width: depends on desktop or mobile (see vois-tokens)
+- Max width: see `[PATH-D-SIZE]` below
 
 **Footer:**
 
 - Sticky positioned at bottom
 - Button group: right-aligned on desktop, stacked on mobile
 - Primary button (right side): default action
-- Secondary button (left of primary, 20px gap): cancel/alternative
+- Secondary button (left of primary, `gap-5`): cancel/alternative
 - Optional tertiary button (left side): learn more, help link
 - → **For button labels, use righter skill** (specific action words, not just "Confirm")
 
 ## Button Placement Rules:
 
 - Primary button: right side
-- Secondary button: right side, 20px left of primary
+- Secondary button: right side, `gap-5` left of primary
 - Optional tertiary (ghost/link): left side
 - All vertically centered in sticky footer
 - Anchored to bottom of dialog/action sheet
 
 ## Confirmation Dialogs:
+
+Which component to use for a destructive action: vois-components `JOB-CONFIRM-DESTRUCTIVE`. For deleting a workspace, team, or account, add typed confirmation per `[PATH-SET-REMOVE-TYPED]`.
 
 Example structure (righter routing):
 

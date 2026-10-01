@@ -6,6 +6,20 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.10.0] - 2026-10-01
+
+**Add** | New `references/settings-interactions.md` (companion to PATH-A): save model (instant vs explicit), preference rows, notification matrix, members, integrations, typed removal, danger zone, and the email-change flow with one-time-code verification. 23 `PATH-SET-*` rules.
+
+**Add** | New `references/form-field-groups.md` (companion to PATH-C): field widths, columns and wrap, column gap, name, address, phone, email, one-time code, auto-growing textareas, and the AI chat input. 15 `PATH-FIELD-*` rules.
+
+**Add** | Four sub-decisions on existing paths: `PATH-D-SIZE` (dialog size tier by layout need), `PATH-B-ROW-ACTIONS`, `PATH-B-ROW-ACTIONS-REVEAL` (always visible on touch, hover reveal only where hover exists), and `PATH-B-NARROW` (stack at 4 or fewer columns, scroll with a pinned first column above that). 42 new nodes in `data/patterns-rules.json`, each with a `Builds on` list and a `basis` tag. New optional node fields: `pattern_name`, `builds_on`, `basis`, `basis_note`, `evidence`.
+
+**Change** | `forms.md`: raw px values and a reference to the nonexistent `spacing-md` replaced with scale steps and width tokens; type-scale numbers removed in favor of style names; error and confirmation copy examples replaced with pointers to righter; field errors aligned to righter's Helper Text. `settings-pages.md` view-then-edit now points to the new save rules. `table-list.md` quick actions are 2 preferred, 3 max, matching `JOB-EXPOSE-ACTIONS`. `PATH-C-MEDIUM` points to `PATH-FIELD-COLUMNS` and `PATH-FIELD-WRAP`. `microcopy-routing.md` gains a slot for verification-code copy.
+
+**Change** | `SKILL.md`: PATH A and PATH C read their companion file, the "read only one file" sentence is replaced, and the Reference Files table has two new rows plus the new sub-decision IDs.
+
+---
+
 ## [1.9.0] - 2026-09-30
 
 **Add** | New template `references/pricing-pages.md` (PATH-F): decision tree for pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), plus 53 tagged rules (`PATH-PRICE-U1` to `PATH-PRICE-C11`, grouped U, T, S, X, H, C), a don'ts list, and a pre-implementation checklist. Based on pattern review of about 45 Mobbin screens (SaaS web, consumer web, iOS paywalls). Observational only, no conversion data; a few rules are marked as design judgment. Added matching entries to `data/patterns-rules.json` (1 top-level pattern, 10 sub-decisions, 53 `cross_cutting_rule` nodes). Paywall timing and placement routes to `conversion-patterns`.

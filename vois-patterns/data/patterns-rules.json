@@ -760,6 +760,845 @@
       "rule_name": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`",
       "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
       "outcome": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`."
+    },
+    {
+      "id": "PATH-SET-SAVE-INSTANT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Instant save for single values",
+      "condition": "The user changes a Switch, Select, or Radio that stands alone on a settings page.",
+      "outcome": "Persist on change and confirm with a toast. If the save fails, revert the control and surface the failure with whichever component righter's decision tree picks. No Save button.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "JOB-TRANSIENT-FEEDBACK",
+        "error-decision-tree"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/8720abc2-c855-44ee-911d-bc15fc1707eb",
+        "https://mobbin.com/screens/dc1fcc97-dfb4-4c6d-8d6d-2c085da7c0c7"
+      ]
+    },
+    {
+      "id": "PATH-SET-SAVE-EXPLICIT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Explicit save for text and multi-field blocks",
+      "condition": "A settings block has text inputs or more than one related field.",
+      "outcome": "Save stays disabled until a value has changed and every required value is valid. Cancel restores the last saved values. Both sit in the block, not in a footer.",
+      "builds_on": [
+        "PATH-COND-PRIMARY-BUTTON"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/b82f1e2f-4e92-41fa-bec4-5471da0e0416",
+        "https://mobbin.com/screens/c2405be5-c890-4439-91bc-a5452e229e65",
+        "https://mobbin.com/screens/6f4b1a5c-2f74-42de-8b62-5a31d37ee699",
+        "https://mobbin.com/screens/441e5316-76a4-4e6b-80a3-88f2bf318839"
+      ]
+    },
+    {
+      "id": "PATH-SET-VIEW-EDIT-BLOCK",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Where the view state still applies",
+      "condition": "A settings block holds details that are mostly read and rarely changed, such as legal name, business address, or billing details.",
+      "outcome": "Use the view state by default and enter the edit state on an explicit Edit action, as `settings-pages.md` describes. Preference blocks are always editable and skip the view state.",
+      "builds_on": [
+        "PATH-A"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Confirmed by Om. Reconciles the existing view-then-edit model with the always-editable pages most products ship.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-SET-ROW-LAYOUT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Preference rows",
+      "condition": "Laying out preference rows, each with a label and one control.",
+      "outcome": "Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`40em`), stack the control under its label.",
+      "builds_on": [
+        "DS-SLOP-010",
+        "DS-SURFACE-008",
+        "DS-RESPONSIVE-003"
+      ],
+      "basis": "observed",
+      "basis_note": "observed layout. Linear wraps its rows in a bordered container, but DS-SLOP-010 discourages card-ifying static groups, so the container is dropped. Column cap and stacking are judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/8720abc2-c855-44ee-911d-bc15fc1707eb",
+        "https://mobbin.com/screens/a4e7fb71-dd94-4c1d-a5af-f032e03a10a9"
+      ]
+    },
+    {
+      "id": "PATH-SET-NOTIF-MATRIX",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Events by channel",
+      "condition": "There are two or more channels and three or more event types.",
+      "outcome": "Events are rows and channels are columns, grouped under category headers. Each cell is a Switch when changes save instantly, or a Checkbox only when the page has an explicit Save. With one channel, use a plain list of Switches. Below the `sm` container width, each event stacks with its channels listed beneath it.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "PATH-SET-SAVE-INSTANT",
+        "PATH-SET-SAVE-EXPLICIT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed matrix. Most products pair checkboxes with instant save, which JOB-BINARY-PREFERENCE does not allow, so the component follows Vois. Mobile collapse is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/e6f97962-c24c-478b-b416-08830dc5b062",
+        "https://mobbin.com/screens/6a123e37-85b7-4fb7-a9fb-6aa003704ae5",
+        "https://mobbin.com/screens/c8733bc0-e45f-49a9-a113-74770231103b",
+        "https://mobbin.com/screens/0ea0a7b7-bb81-490f-b3d0-55e2323e9c43",
+        "https://mobbin.com/screens/dc1fcc97-dfb4-4c6d-8d6d-2c085da7c0c7",
+        "https://mobbin.com/screens/9cf46a76-5078-402b-a585-0fb85ecd4f31"
+      ]
+    },
+    {
+      "id": "PATH-SET-NOTIF-CHANNEL-OFF",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Channel not connected",
+      "condition": "A channel column exists but the channel is not connected, for example Slack.",
+      "outcome": "Keep the column visible and disabled, with a link to connect it.",
+      "builds_on": [
+        "PATH-PERM-DISABLE-BY-CONDITION"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/fcb3eaa8-fc70-41b9-be36-43a9a0bcb176",
+        "https://mobbin.com/screens/dc1fcc97-dfb4-4c6d-8d6d-2c085da7c0c7"
+      ]
+    },
+    {
+      "id": "PATH-SET-NOTIF-DIGEST",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Digest",
+      "condition": "The product sends a digest email.",
+      "outcome": "Put its Switch above the matrix as its own row, separate from the per-event preferences.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/e6f97962-c24c-478b-b416-08830dc5b062",
+        "https://mobbin.com/screens/6a123e37-85b7-4fb7-a9fb-6aa003704ae5"
+      ]
+    },
+    {
+      "id": "PATH-SET-MEMBERS-LIST",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Member list",
+      "condition": "Listing members of a workspace or team.",
+      "outcome": "Columns are member (name and email), role, and status. Row actions follow `[PATH-B-ROW-ACTIONS]`, so Remove and other secondary actions sit in the DropdownMenu. The Invite primary button sits at the top right of the table. Narrow layout follows `[PATH-B-NARROW]`.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-B-ROW-ACTIONS",
+        "PATH-B-NARROW",
+        "JOB-DISPLAY-DATA",
+        "JOB-EXPOSE-ACTIONS"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/f9b9a1b8-369b-4d3e-8ecb-92133d82c74c",
+        "https://mobbin.com/screens/6395b9d6-04f9-4381-8f38-432456539c2e",
+        "https://mobbin.com/screens/039ad393-b295-403a-8a08-d8fc8c7015af"
+      ]
+    },
+    {
+      "id": "PATH-SET-MEMBERS-INVITE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Adding a member",
+      "condition": "The user adds a member.",
+      "outcome": "The Invite button opens a Dialog with email and role. Use an inline email field with an Invite button only when inviting is the main job of the page. The toast names the invited address.",
+      "builds_on": [
+        "JOB-OVERLAY-INTERACTION",
+        "PATH-D-SIZE",
+        "JOB-TRANSIENT-FEEDBACK"
+      ],
+      "basis": "observed",
+      "basis_note": "observed for both forms. The choice between them is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/3de7ed7e-4b6c-4254-a43a-a4ca51f3038d",
+        "https://mobbin.com/screens/48a8e1d5-3fbe-43fa-a6f8-ff2367e41dec",
+        "https://mobbin.com/screens/6395b9d6-04f9-4381-8f38-432456539c2e"
+      ]
+    },
+    {
+      "id": "PATH-SET-MEMBERS-STATES",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Pending and active rows",
+      "condition": "A member row is pending or active.",
+      "outcome": "Pending rows get a Pending badge and the menu actions Resend invite and Remove. Active rows get Edit role and Remove. When the role list is short, role can be an inline Select that saves instantly.",
+      "builds_on": [
+        "JOB-LABEL-CONTENT",
+        "PATH-SET-SAVE-INSTANT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Inline versus menu is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/f9b9a1b8-369b-4d3e-8ecb-92133d82c74c",
+        "https://mobbin.com/screens/039ad393-b295-403a-8a08-d8fc8c7015af",
+        "https://mobbin.com/screens/6b778223-e7d5-42b1-82c9-ccd8d191ca0f",
+        "https://mobbin.com/screens/653250ae-1b2d-42d8-9898-2f41c943dfb3"
+      ]
+    },
+    {
+      "id": "PATH-SET-MEMBERS-SELF",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Current user and owner rows",
+      "condition": "A member row is the current user or the owner.",
+      "outcome": "Label the current user's row \"You\". The owner row has no Remove. The current user's action is Leave, not Remove. Removing someone else uses an AlertDialog and notifies the removed member afterward.",
+      "builds_on": [
+        "PATH-PERM-DISABLE-BY-CONDITION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/6b778223-e7d5-42b1-82c9-ccd8d191ca0f",
+        "https://mobbin.com/screens/48a8e1d5-3fbe-43fa-a6f8-ff2367e41dec",
+        "https://mobbin.com/screens/653250ae-1b2d-42d8-9898-2f41c943dfb3"
+      ]
+    },
+    {
+      "id": "PATH-SET-INTEG-GROUPS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Connected before available",
+      "condition": "Listing integrations.",
+      "outcome": "Show Connected above Available, each with a count. Rows are a list by default. Use a card grid only when browsing a large catalog, and add search and a category filter there.",
+      "builds_on": [
+        "JOB-DISPLAY-DATA"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/4d8f6c81-5562-4a49-ae10-49f830806ee7",
+        "https://mobbin.com/screens/e700ca68-4482-467d-abe8-c66cbbd663fa",
+        "https://mobbin.com/screens/b8829590-0ca1-47ff-a6b1-1f9536ac5154"
+      ]
+    },
+    {
+      "id": "PATH-SET-INTEG-ACTIONS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Connect, configure, disconnect",
+      "condition": "Choosing row actions for an integration.",
+      "outcome": "Not connected: Connect. Connected: Configure when there are settings, plus a quiet Disconnect. Disconnect is never the primary button and is red only if it deletes data. A Connect that leaves the app shows an external-link icon.",
+      "builds_on": [
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/4d8f6c81-5562-4a49-ae10-49f830806ee7",
+        "https://mobbin.com/screens/a663fa43-1fbe-4f01-a1cc-3525a6b75e70",
+        "https://mobbin.com/screens/e700ca68-4482-467d-abe8-c66cbbd663fa"
+      ]
+    },
+    {
+      "id": "PATH-SET-INTEG-LOCKED",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Plan-gated integrations",
+      "condition": "An integration needs a higher plan.",
+      "outcome": "Show it disabled with the plan requirement stated. Do not hide it. This differs from role-denied items, which are hidden.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE",
+        "PATH-PERM-DISABLE-BY-CONDITION"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. The hide-versus-show distinction is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/bf24e755-2a66-4aa1-b64b-ad156bbd0641"
+      ]
+    },
+    {
+      "id": "PATH-SET-REMOVE-TYPED",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Typed confirmation",
+      "condition": "The deletion is irreversible or high-impact, such as a workspace, team, or account.",
+      "outcome": "The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never an action sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "alert-dialog"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/52df18d7-8f15-470f-a302-5c407d781091",
+        "https://mobbin.com/screens/aa928ac1-4a1d-4b8c-9ccb-be35211cdca8",
+        "https://mobbin.com/screens/b1d9a761-cf3b-4070-afd5-c8063ad60c3e",
+        "https://mobbin.com/screens/a88043ed-bb51-4cf5-9c5f-ee050577cc3a"
+      ]
+    },
+    {
+      "id": "PATH-SET-DANGER-ZONE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Danger zone",
+      "condition": "A page has account-, workspace-, or team-level destructive actions.",
+      "outcome": "Group them at the bottom under a Danger zone heading. Each row has a label and helper text on the left and a destructive button on the right. Leave and delete are separate rows.",
+      "builds_on": [
+        "PATH-A",
+        "PATH-SET-REMOVE-TYPED"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/60dd3590-48ba-4a6b-933a-7f8ef3ab8b6d",
+        "https://mobbin.com/screens/b82f1e2f-4e92-41fa-bec4-5471da0e0416",
+        "https://mobbin.com/screens/c2405be5-c890-4439-91bc-a5452e229e65"
+      ]
+    },
+    {
+      "id": "PATH-SET-IDENTITY-FIELD",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Email in account settings",
+      "condition": "Showing a sign-in identifier such as email.",
+      "outcome": "Show it read-only with an explicit Edit control and a Verified badge when verified. Edit starts `[PATH-SET-EMAIL-CHANGE]`. Never a plain input with a Save button.",
+      "builds_on": [
+        "PATH-A",
+        "JOB-LABEL-CONTENT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/a4e7fb71-dd94-4c1d-a5af-f032e03a10a9",
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37",
+        "https://mobbin.com/flows/74900d17-e21c-435a-a848-4c0ea23c8aa6",
+        "https://mobbin.com/screens/441e5316-76a4-4e6b-80a3-88f2bf318839"
+      ]
+    },
+    {
+      "id": "PATH-SET-EMAIL-CHANGE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Flow container and steps",
+      "condition": "The user chooses to change their email.",
+      "outcome": "A full page at its own route, not a dialog. Two steps shown with a Stepper. Step 1 is the new address, plus the current password when the session is not recent. Step 2 is the code. Follow `JOB-NAVIGATION-POSITION` for the Breadcrumb or Back link, and cap the form container at `--width-form-max`. Step 1 buttons are Cancel (returns to settings, address unchanged) and Next. Step 2 buttons are Back (returns to step 1 with the typed address kept) and Verify. Each step validates before the next. No retype-to-confirm field, since the code already proves the address works.",
+      "builds_on": [
+        "JOB-MULTISTEP-GUIDE",
+        "PATH-C",
+        "JOB-NAVIGATION-POSITION",
+        "error-other-rules"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Om chose a full page so the flow can use a Stepper, which `JOB-MULTISTEP-GUIDE` requires for 2 to 5 steps. Most products reviewed use a dialog (Discord flow, Monarch flow, Adobe flow), and AWS flow uses a full page. Re-auth is seen in Discord and AWS, and the session-recency condition is judgment.",
+      "evidence": [
+        "https://mobbin.com/flows/b0483890-8548-40c7-9511-05e386db741e",
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37",
+        "https://mobbin.com/flows/74900d17-e21c-435a-a848-4c0ea23c8aa6",
+        "https://mobbin.com/flows/58f8774d-1368-4ef1-84e8-37ae83c95aa0"
+      ]
+    },
+    {
+      "id": "PATH-SET-OTP-DELIVERY",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Where the code goes",
+      "condition": "Step 2 of the email change.",
+      "outcome": "Send the code to the new address. The current address stays active until the code verifies. The body names the exact address and offers a way back to correct it. State the code length, and state the expiry when the code expires. After a successful change, notify the previous address.",
+      "builds_on": [
+        "PATH-SET-EMAIL-CHANGE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed for sending to the new address (AWS flow), naming it, offering to change it (Posh, Eventbrite, Walmart, ManyChat, Pipedrive), stating length (Monarch flow, Pipedrive), and stating expiry (Hulu, GoFundMe). Notifying the old address is judgment.",
+      "evidence": [
+        "https://mobbin.com/flows/58f8774d-1368-4ef1-84e8-37ae83c95aa0",
+        "https://mobbin.com/screens/6561161d-a2f6-491d-ba69-e132d6d082e8",
+        "https://mobbin.com/screens/837ae066-4bea-4ddf-b920-6b390e4411e7",
+        "https://mobbin.com/screens/a1d550f9-c27f-4da1-89f6-96aae5ae74df",
+        "https://mobbin.com/screens/6ab3c8ac-4b3e-4647-96c4-d6db2f9de48a",
+        "https://mobbin.com/screens/4c42d71b-ed52-46d9-a638-1cefa769e83c",
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37",
+        "https://mobbin.com/screens/4c42d71b-ed52-46d9-a638-1cefa769e83c",
+        "https://mobbin.com/screens/ac1b7563-5a19-47bc-86af-1c7f48e507bc",
+        "https://mobbin.com/screens/a5d396fa-4222-4e5f-9b62-dff45b9a0e03"
+      ]
+    },
+    {
+      "id": "PATH-SET-OTP-SUBMIT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Verify button",
+      "condition": "The user enters the code.",
+      "outcome": "A primary Verify button in the step footer, replacing Next, disabled until every cell is filled. Back is the secondary. While verifying, show an inline Spinner in the button. Do not submit automatically on the last digit.",
+      "builds_on": [
+        "PATH-COND-PRIMARY-BUTTON",
+        "JOB-LOADING-STATE",
+        "PATH-C"
+      ],
+      "basis": "observed",
+      "basis_note": "observed button pattern (Monarch flow, Clerk, Wix, Hulu). No auto-submit is judgment.",
+      "evidence": [
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37",
+        "https://mobbin.com/screens/44a93746-df1c-4854-9f37-f9f0cbe73798",
+        "https://mobbin.com/screens/685d877e-6337-4ab5-a8c6-79e0920c66e5",
+        "https://mobbin.com/screens/ac1b7563-5a19-47bc-86af-1c7f48e507bc"
+      ]
+    },
+    {
+      "id": "PATH-SET-OTP-RESEND",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Resend",
+      "condition": "The user did not receive the code.",
+      "outcome": "A text link under the field. After each send, disable it and show the remaining wait in or beside it. Do not hide it. The wait length is a product setting, not a Vois value. A resend clears the cells, because the old code stops working, and confirms with a toast.",
+      "builds_on": [
+        "JOB-TRANSIENT-FEEDBACK",
+        "toast"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/64cebb0a-3add-4a5d-9cea-3f7cd0029b26",
+        "https://mobbin.com/screens/fc081ca5-8e4b-4e9f-ac19-e679d12dcddf",
+        "https://mobbin.com/screens/44a93746-df1c-4854-9f37-f9f0cbe73798",
+        "https://mobbin.com/screens/6561161d-a2f6-491d-ba69-e132d6d082e8",
+        "https://mobbin.com/screens/2e5e1693-71e4-4490-b49a-6215adb88b03",
+        "https://mobbin.com/screens/6ab3c8ac-4b3e-4647-96c4-d6db2f9de48a"
+      ]
+    },
+    {
+      "id": "PATH-SET-OTP-ERROR",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Wrong or expired code",
+      "condition": "The code is wrong or has expired.",
+      "outcome": "Show the error inline directly under the field with righter's Helper Text, using an icon plus text, and put every cell in the error state. Keep the digits, selected so typing replaces them. Never a toast for this. An expired code also brings the Resend link into focus. Copy and component choice come from righter.",
+      "builds_on": [
+        "error-decision-tree",
+        "helper-text",
+        "error-other-rules",
+        "DS-A11Y-017",
+        "JOB-TRANSIENT-FEEDBACK"
+      ],
+      "basis": "observed",
+      "basis_note": "observed inline (Databricks, Copy.ai, Clerk, GoFundMe, Walmart). Toast errors (Uvodo code, Posh) lose to JOB-TRANSIENT-FEEDBACK. Selecting the kept digits is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/64cebb0a-3add-4a5d-9cea-3f7cd0029b26",
+        "https://mobbin.com/screens/fc081ca5-8e4b-4e9f-ac19-e679d12dcddf",
+        "https://mobbin.com/screens/44a93746-df1c-4854-9f37-f9f0cbe73798",
+        "https://mobbin.com/screens/a5d396fa-4222-4e5f-9b62-dff45b9a0e03",
+        "https://mobbin.com/screens/a1d550f9-c27f-4da1-89f6-96aae5ae74df",
+        "https://mobbin.com/screens/2e5e1693-71e4-4490-b49a-6215adb88b03",
+        "https://mobbin.com/screens/6561161d-a2f6-491d-ba69-e132d6d082e8"
+      ]
+    },
+    {
+      "id": "PATH-SET-EMAIL-CHANGE-DONE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/settings-interactions.md",
+      "pattern_name": "Success",
+      "condition": "The code verifies.",
+      "outcome": "Return to the settings page, show the new address in the row with the Verified badge, and confirm with a toast. Until then the row keeps showing the old address.",
+      "builds_on": [
+        "PATH-SET-IDENTITY-FIELD",
+        "JOB-TRANSIENT-FEEDBACK"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/flows/74900d17-e21c-435a-a848-4c0ea23c8aa6",
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-CONTAINER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Form container",
+      "condition": "Building any form.",
+      "outcome": "Cap the form container at `--width-form-max`. The layout holds down to `--width-viewport-min` with no horizontal scroll.",
+      "builds_on": [
+        "DS-LAYOUT-WIDTH-001",
+        "DS-LAYOUT-WIDTH-003"
+      ],
+      "basis": "decision",
+      "basis_note": "decision.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-WIDTH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Field width tiers",
+      "condition": "Sizing a field.",
+      "outcome": "Single-line inputs and selects fill their column up to `--width-field-max`. Short fixed-format values (postal code, state or province code, expiry, security code) cap at `--width-field-narrow` and never stretch. Multi-line textareas may fill up to `--width-form-max` and grow in height per `[PATH-FIELD-TEXTAREA-AUTOSIZE]`. Single-line fields never exceed `--width-field-max`.",
+      "builds_on": [
+        "DS-LAYOUT-WIDTH-002",
+        "JOB-ACCEPT-TEXT",
+        "PATH-FIELD-TEXTAREA-AUTOSIZE"
+      ],
+      "basis": "decision",
+      "basis_note": "decision.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-COLUMNS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Two columns at most",
+      "condition": "Placing fields side by side.",
+      "outcome": "Use at most two columns. Pair only related fields of similar length, such as first and last name, or state and postal code. Address line 1, email, phone, and textareas always sit alone. Dialogs are always one column (`[PATH-D-SIZE]`). Visual order equals tab order.",
+      "builds_on": [
+        "PATH-C-MEDIUM",
+        "PATH-D-SIZE"
+      ],
+      "basis": "decision",
+      "basis_note": "decision for the limit and for no columns in dialogs. The pairings are observed.",
+      "evidence": [
+        "https://mobbin.com/screens/5e5d49e5-b251-4c72-bb73-fdfeab10d247",
+        "https://mobbin.com/screens/bc74aa14-d12a-400f-927f-bcb79c731a03",
+        "https://mobbin.com/screens/93fb63fa-2205-4b1c-a8b6-cc13af685212",
+        "https://mobbin.com/screens/5ee2420f-5953-4681-9002-621d8b83e537"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-WRAP",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Wrapping",
+      "condition": "The form's container gets narrow.",
+      "outcome": "Two columns become one when the form's container is narrower than the `sm` breakpoint value (`40em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.",
+      "builds_on": [
+        "DS-RESPONSIVE-003"
+      ],
+      "basis": "decision",
+      "basis_note": "decision for the wrap. The container-query choice follows the existing Vois rule.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-COLUMN-GAP",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Column gap",
+      "condition": "Two columns sit side by side.",
+      "outcome": "`gap-6` by default and `gap-10` when the DENSITY dial is 3 or lower. Vertical gaps between fields and sections are already set in `forms.md` (`gap-6` and `gap-10`).",
+      "builds_on": [
+        "DS-SPACING-001",
+        "DS-SPACING-002",
+        "PATH-C-MEDIUM"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. The 24 to 40 range and the link to the DENSITY dial are both confirmed by Om.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-LABEL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Optional marking",
+      "condition": "Marking which fields are required.",
+      "outcome": "If most fields are required, mark the optional ones \"(optional)\" instead of marking every required one. Label placement and style are already covered.",
+      "builds_on": [
+        "DS-A11Y-006",
+        "DS-TYPOGRAPHY-001"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/f41b3d1f-9920-4c5f-a90c-c67b08f9d065",
+        "https://mobbin.com/screens/a96eca03-e399-424e-b59d-aa849df1e231",
+        "https://mobbin.com/screens/bc74aa14-d12a-400f-927f-bcb79c731a03"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-NAME",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Name",
+      "condition": "Collecting a person's name.",
+      "outcome": "First name and last name as a pair. Use one full-name field only when the product treats the name as a single string.",
+      "builds_on": [
+        "PATH-FIELD-COLUMNS"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/6f4b1a5c-2f74-42de-8b62-5a31d37ee699",
+        "https://mobbin.com/screens/5ee2420f-5953-4681-9002-621d8b83e537",
+        "https://mobbin.com/screens/a96eca03-e399-424e-b59d-aa849df1e231",
+        "https://mobbin.com/screens/a4e7fb71-dd94-4c1d-a5af-f032e03a10a9"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-ADDRESS-ORDER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Address order",
+      "condition": "Building an address form.",
+      "outcome": "Country, address line 1, address line 2, city, then state or province and postal code as a pair. Country goes first because it decides which fields appear and how they are labelled. Changing country re-labels and re-validates without clearing typed values. In settings, line 2 is a visible optional field. In short flows it may collapse behind an \"Add apartment, suite\" link.",
+      "builds_on": [
+        "PATH-C"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/5e5d49e5-b251-4c72-bb73-fdfeab10d247",
+        "https://mobbin.com/screens/f41b3d1f-9920-4c5f-a90c-c67b08f9d065",
+        "https://mobbin.com/screens/93fb63fa-2205-4b1c-a8b6-cc13af685212",
+        "https://mobbin.com/screens/a96eca03-e399-424e-b59d-aa849df1e231"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-ADDRESS-PAIRS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Address pairs and autofill",
+      "condition": "Placing the lower address fields.",
+      "outcome": "State or province at default width pairs with postal code at `--width-field-narrow`. City sits alone. Never put three fields in one row. Set `autocomplete` on every field (address-line1, address-line2, address-level2, address-level1, postal-code, country).",
+      "builds_on": [
+        "PATH-FIELD-COLUMNS",
+        "PATH-FIELD-WIDTH"
+      ],
+      "basis": "observed",
+      "basis_note": "observed for the pairs. Autocomplete values are judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/5e5d49e5-b251-4c72-bb73-fdfeab10d247",
+        "https://mobbin.com/screens/bc74aa14-d12a-400f-927f-bcb79c731a03",
+        "https://mobbin.com/screens/93fb63fa-2205-4b1c-a8b6-cc13af685212",
+        "https://mobbin.com/screens/2f742116-0cc9-4aed-946b-e5c3265ae5a1"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-PHONE-CONTROL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Phone as one control",
+      "condition": "Collecting a phone number.",
+      "outcome": "One joined control with a country selector and a number input on a single row sharing one label. The selector is a Combobox with a fixed width of `w-24` and the number input takes the rest. The row stays on one line at `--width-viewport-min`. The whole control caps at `--width-field-max`. Closed, the selector shows the flag and dial code, and the open list shows country name and dial code with frequently used countries pinned first. The default follows the user's locale.",
+      "builds_on": [
+        "JOB-CHOOSE-FROM-LIST",
+        "PATH-FIELD-WIDTH",
+        "PATH-FIELD-WRAP"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/4b141508-40d8-4cd6-84b2-233ef0bed04f",
+        "https://mobbin.com/screens/1317f11b-3b55-4145-8835-a41a61236f72",
+        "https://mobbin.com/screens/1348f031-6be2-40f2-8aee-96f5f0c76b04",
+        "https://mobbin.com/screens/f040b404-54c5-464e-b291-4b0aaac1783d",
+        "https://mobbin.com/screens/4a05abed-e696-47b6-a3d9-deefc07fa85b",
+        "https://mobbin.com/screens/c47e7eff-fa06-4647-8ff4-fc9884c99d84"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-PHONE-INPUT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Number entry",
+      "condition": "The user types a phone number.",
+      "outcome": "Format as they type using the selected country's pattern, show a telephone keypad on mobile, and store in international format.",
+      "builds_on": [
+        "PATH-FIELD-PHONE-CONTROL"
+      ],
+      "basis": "observed",
+      "basis_note": "observed for live formatting (Coinbase phone). Keypad and storage format are judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/1317f11b-3b55-4145-8835-a41a61236f72"
+      ]
+    },
+    {
+      "id": "PATH-FIELD-EMAIL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Email",
+      "condition": "An email field appears in a regular form.",
+      "outcome": "Default width, email keypad and `autocomplete=\"email\"` on mobile. In account settings it follows `[PATH-SET-IDENTITY-FIELD]` instead.",
+      "builds_on": [
+        "PATH-FIELD-WIDTH",
+        "PATH-SET-IDENTITY-FIELD"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-TEXTAREA-AUTOSIZE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "Auto-growing text areas",
+      "condition": "A multi-line text field, such as notes, a description, or feedback.",
+      "outcome": "It grows with its content using CSS `field-sizing: content`, never JavaScript. It starts at `--textarea-min-lines`, stops growing at `--textarea-max-lines`, and scrolls inside after that. The CSS pattern, the required width setting, and the fallback are in `[DS-LAYOUT-FIELD-001]` to `[DS-LAYOUT-FIELD-004]`.",
+      "builds_on": [
+        "DS-LAYOUT-FIELD-001",
+        "DS-LAYOUT-FIELD-002",
+        "DS-LAYOUT-FIELD-003",
+        "DS-LAYOUT-FIELD-004",
+        "JOB-ACCEPT-TEXT"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Om specified `field-sizing: content`. Om confirmed the line counts: form textarea 3 to 12, chat input 1 to 8.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-CHAT-INPUT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "AI chat input",
+      "condition": "The user types a message into an AI or chat thread.",
+      "outcome": "One textarea using the same auto-growing pattern. It starts at `--chat-input-min-lines`, grows to `--chat-input-max-lines`, then scrolls inside. The composer is anchored to the bottom of the thread, so growth pushes upward and the send control stays aligned to the composer's bottom edge. It fills its container and is not capped by `--width-field-max` or `--width-form-max`, because the thread column sets its width. The chat container uses `dvh` so it tracks the mobile keyboard. Keep an accessible name even when there is no visible label.",
+      "builds_on": [
+        "PATH-FIELD-TEXTAREA-AUTOSIZE",
+        "DS-LAYOUT-001",
+        "DS-LAYOUT-FIELD-003",
+        "DS-A11Y-006"
+      ],
+      "basis": "decision",
+      "basis_note": "decision for the autosizing. Judgment for the bottom anchoring, the send-control alignment, and the width exemption. Chat input patterns beyond sizing were not researched.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-FIELD-OTP-INPUT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/form-field-groups.md",
+      "pattern_name": "One-time code",
+      "condition": "The user enters a fixed-length code, such as an email or SMS verification code.",
+      "outcome": "Use InputOTP with one cell per character, behaving as one field: one tab stop, paste fills every cell, backspace moves back, `autocomplete=\"one-time-code\"`, and a numeric keypad when the code is digits only. Keep a visible label. Cells share the row equally with `gap-2`, cap at `size-12`, and shrink to fit down to `--width-viewport-min`. The group caps at `--width-field-max`. The group is one hit area of at least `--hit-area-min` tall, and a tap on any cell focuses the first empty one, so cells can shrink visually without losing the target. The error state puts an icon and text under the group and puts every cell in the error style.",
+      "builds_on": [
+        "JOB-ACCEPT-TEXT",
+        "DS-A11Y-006",
+        "DS-A11Y-017",
+        "DS-A11Y-001",
+        "helper-text"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. 14 of the 18 verification screens reviewed use segmented cells. The rest use one plain field (Monarch flow, Wix, Eventbrite, Discord flow). Segmented seen in Pipedrive, Coinbase code, Hulu, Shopify, Apple Music, Databricks, Clerk. Behavior details and the group-as-one-hit-area approach are judgment.",
+      "evidence": [
+        "https://mobbin.com/flows/4075b4c5-07ec-4a8f-bf7e-ec810b669f37",
+        "https://mobbin.com/screens/685d877e-6337-4ab5-a8c6-79e0920c66e5",
+        "https://mobbin.com/screens/837ae066-4bea-4ddf-b920-6b390e4411e7",
+        "https://mobbin.com/flows/b0483890-8548-40c7-9511-05e386db741e",
+        "https://mobbin.com/screens/4c42d71b-ed52-46d9-a638-1cefa769e83c",
+        "https://mobbin.com/screens/fcebcfd2-be97-4300-ac8a-ee6b5949fbc5",
+        "https://mobbin.com/screens/ac1b7563-5a19-47bc-86af-1c7f48e507bc",
+        "https://mobbin.com/screens/59d54fdb-5696-4cee-8267-34ddbb1f3cff",
+        "https://mobbin.com/screens/6aa4a9d7-6cc9-4320-b237-5db6293b95de",
+        "https://mobbin.com/screens/64cebb0a-3add-4a5d-9cea-3f7cd0029b26",
+        "https://mobbin.com/screens/44a93746-df1c-4854-9f37-f9f0cbe73798"
+      ]
+    },
+    {
+      "id": "PATH-D-SIZE",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Dialog width",
+      "condition": "Choosing the width of a desktop Dialog or AlertDialog.",
+      "outcome": "Two tiers, both maximums, and every dialog is a single column. Small (--width-dialog-sm): confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields. Large (--width-dialog-lg): dialogs whose content needs the extra width, such as a textarea or a short list. Two-column layouts go on pages, not in dialogs. On mobile, text-input dialogs are full modals and the tiers do not apply.",
+      "builds_on": [
+        "PATH-D",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-FIELD-COLUMNS"
+      ],
+      "basis": "decision",
+      "basis_note": "Set and confirmed by Om: two tiers and widths, tier chosen by layout need, no two-column layouts in dialogs.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-B-ROW-ACTIONS",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Row quick actions",
+      "condition": "A table or list row has quick actions.",
+      "outcome": "Two visible actions is preferred and three is the maximum. Everything beyond that, including secondary and destructive actions, goes in a DropdownMenu.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-EXPOSE-ACTIONS"
+      ],
+      "basis": "decision",
+      "basis_note": "Set by Om. Resolves the conflict between table-list.md (max 3) and JOB-EXPOSE-ACTIONS (1 to 2).",
+      "evidence": []
+    },
+    {
+      "id": "PATH-B-ROW-ACTIONS-REVEAL",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Row actions on touch devices",
+      "condition": "A row's quick actions are revealed on hover.",
+      "outcome": "Reveal on hover only where the device supports hover. On touch devices the actions are always visible.",
+      "builds_on": [
+        "PATH-B-ROW-ACTIONS",
+        "DS-ANIMATION-007"
+      ],
+      "basis": "decision",
+      "basis_note": "Set by Om. Fixes hover-only actions being unreachable on touch.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-B-NARROW",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Table narrow layout",
+      "condition": "A table's container is narrower than the sm breakpoint value (40em).",
+      "outcome": "If the table has 4 or fewer columns, not counting the actions column, rows stack as list items. If it has more, the table scrolls horizontally with the first column and header row pinned.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-RESPONSIVE-003"
+      ],
+      "basis": "decision",
+      "basis_note": "Set by Om. The 4-column cutoff is Claude's proposal, accepted by Om. Not counting the actions column is Claude's interpretation.",
+      "evidence": []
     }
   ]
 }
