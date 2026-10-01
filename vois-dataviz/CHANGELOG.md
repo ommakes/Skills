@@ -20,7 +20,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `scripts/check-spec.mjs`, `scripts/detect.mjs`, `scripts/build-reference.mjs`, and 54 tests.
 - Generated references: principles, decision tree, chart catalog, dashboard patterns, evidence. Hand-written: implementation, review protocol, sources.
 - `scripts/dataviz.test.mjs` includes a prose-to-JSON ID sync check for the five ID families (`DV-`, `FORM-`, `CHART-`, `DASH-`, `MOB-`).
-
-### Known gaps
-
-- Material Design and USWDS pages were not readable when this was written. See `references/sources.md`.

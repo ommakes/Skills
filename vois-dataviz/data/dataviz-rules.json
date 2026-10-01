@@ -1,6 +1,6 @@
 {
   "source": "vois-dataviz/references/principles.md (generated from this file by scripts/build-reference.mjs)",
-  "description": "Canonical data-visualization rules for web-app dashboards. 14 principles, each with do/don't lists, and every checkable rule under them as { id, category, severity, enforcement, rule, do, dont, check, sources, evidence }. severity: 'required' = a violation is a FAIL in review; 'recommended' = a WARN. enforcement: 'auto' = scripts/detect.mjs finds it in code; 'spec' = scripts/check-spec.mjs finds it in a chart spec; 'judgment' = an agent must look at the render or the design. `evidence` holds MOB-* ids from data/evidence.json (real products seen on Mobbin). `sources` tags: article (UX Magazine data viz playbook), mobbin, material (Material Design data viz guidance), uswds (US Web Design System data viz guidance), dataviz-skill (the bundled dataviz skill), wcag, vois.",
+  "description": "Canonical data-visualization rules for web-app dashboards. 14 principles, each with do/don't lists, and every checkable rule under them as { id, category, severity, enforcement, rule, do, dont, check, sources, evidence }. severity: 'required' = a violation is a FAIL in review; 'recommended' = a WARN. enforcement: 'auto' = scripts/detect.mjs finds it in code; 'spec' = scripts/check-spec.mjs finds it in a chart spec; 'judgment' = an agent must look at the render or the design. `evidence` holds MOB-* ids from data/evidence.json (real products seen on Mobbin). `sources` tags: article (UX Magazine data viz playbook), mobbin (real dashboards seen on Mobbin), dataviz-skill (the bundled design-system-agnostic dataviz skill), wcag (WCAG 2.2), vois (Vois-stack specific, only the DV-IMPL rules and a few token and motion links).",
   "categories": {
     "DV-PURPOSE": "Purpose and audience",
     "DV-FORM": "Choosing the form",
@@ -146,7 +146,7 @@
       "do": "Set spec.audience and pick forms with fit 'core' unless the audience is analyst.",
       "dont": "A violin plot on an executive overview.",
       "check": "spec.audience is set; forms with audience 'analyst' or 'specialist' in the catalog only appear when spec.audience is analyst.",
-      "sources": ["article", "uswds"], "evidence": ["MOB-13", "MOB-37"]
+      "sources": ["article"], "evidence": ["MOB-13", "MOB-37"]
     },
     {
       "id": "DV-PURPOSE-003", "category": "DV-PURPOSE", "severity": "recommended", "enforcement": "judgment",
@@ -251,7 +251,7 @@
       "dont": "A bar axis that starts at 90 so a 2 percent change looks like a collapse.",
       "check": "No YAxis domain with a non-zero lower bound on a chart containing Bar or Area.",
       "detector": "non-zero-bar-domain",
-      "sources": ["article", "material"], "evidence": []
+      "sources": ["article"], "evidence": []
     },
     {
       "id": "DV-HONEST-002", "category": "DV-HONEST", "severity": "required", "enforcement": "auto",
@@ -360,7 +360,7 @@
       "dont": "A one-swatch legend that restates the title, or no legend on a 3-line chart.",
       "check": "Multi-series charts include a legend component; single-series ones don't.",
       "detector": "missing-legend",
-      "sources": ["dataviz-skill", "article", "material"], "evidence": ["MOB-15"]
+      "sources": ["dataviz-skill", "article"], "evidence": ["MOB-15"]
     },
     {
       "id": "DV-CLARITY-005", "category": "DV-CLARITY", "severity": "required", "enforcement": "judgment",
@@ -368,7 +368,7 @@
       "do": "'Tokens' on the y-axis, ticks at 0 / 20K / 40K.",
       "dont": "An axis title cut to 'Task count, in numb...' or ticks rotated 60 degrees.",
       "check": "No truncated axis text; no rotation beyond 45 degrees; units present.",
-      "sources": ["article", "material"], "evidence": ["MOB-04"]
+      "sources": ["article"], "evidence": ["MOB-04"]
     },
     {
       "id": "DV-CLARITY-006", "category": "DV-CLARITY", "severity": "recommended", "enforcement": "judgment",
@@ -417,7 +417,7 @@
       "do": "spec.color_job set from the catalog's color_job for the form.",
       "dont": "Pick colors first and decide what they mean later.",
       "check": "spec.color_job is one of the five jobs and matches the form.",
-      "sources": ["dataviz-skill", "material"], "evidence": []
+      "sources": ["dataviz-skill"], "evidence": []
     },
     {
       "id": "DV-COLOR-003", "category": "DV-COLOR", "severity": "required", "enforcement": "auto",
@@ -426,7 +426,7 @@
       "dont": "COLORS[index % COLORS.length].",
       "check": "No modulo cycling of a color array; spec.series is 8 or fewer.",
       "detector": "cycled-colors",
-      "sources": ["dataviz-skill", "uswds", "mobbin"], "evidence": ["MOB-35", "MOB-41", "MOB-49"]
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-35", "MOB-41", "MOB-49"]
     },
     {
       "id": "DV-COLOR-004", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
@@ -442,7 +442,7 @@
       "do": "Blue ramp for volume; blue-to-orange around zero.",
       "dont": "A jet rainbow heatmap.",
       "check": "Ramp is monotone in lightness; midpoint is neutral.",
-      "sources": ["dataviz-skill", "material"], "evidence": ["MOB-20"]
+      "sources": ["dataviz-skill"], "evidence": ["MOB-20"]
     },
     {
       "id": "DV-COLOR-006", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
@@ -450,7 +450,7 @@
       "do": "Arrow, sign and color on a delta chip; a down-arrow on churn that's green because down is good.",
       "dont": "Red and green bars with no other cue.",
       "check": "Every status color has a non-color companion; status tokens aren't used for identity.",
-      "sources": ["dataviz-skill", "material", "wcag"], "evidence": ["MOB-09", "MOB-20", "MOB-33"]
+      "sources": ["dataviz-skill", "wcag"], "evidence": ["MOB-09", "MOB-20", "MOB-33"]
     },
     {
       "id": "DV-COLOR-007", "category": "DV-COLOR", "severity": "required", "enforcement": "judgment",
@@ -602,7 +602,7 @@
       "do": "Arrow plus sign plus color on deltas; dashed versus solid for forecast.",
       "dont": "Green and red bars as the only cue.",
       "check": "Greyscale screenshot still reads.",
-      "sources": ["material", "uswds", "wcag"], "evidence": ["MOB-33"]
+      "sources": ["wcag"], "evidence": ["MOB-33"]
     },
     {
       "id": "DV-A11Y-002", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
@@ -610,7 +610,7 @@
       "do": "Verify each mode; pick ink or white for in-fill labels by luminance.",
       "dont": "A pale yellow bar on white with no label and no table.",
       "check": "Measured contrast per mode.",
-      "sources": ["material", "uswds", "wcag"], "evidence": []
+      "sources": ["wcag"], "evidence": []
     },
     {
       "id": "DV-A11Y-003", "category": "DV-A11Y", "severity": "required", "enforcement": "auto",
@@ -619,7 +619,7 @@
       "dont": "An unlabeled SVG.",
       "check": "Recharts chart elements carry accessibilityLayer.",
       "detector": "missing-accessibility-layer",
-      "sources": ["uswds", "material", "wcag"], "evidence": []
+      "sources": ["wcag"], "evidence": []
     },
     {
       "id": "DV-A11Y-004", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
@@ -627,7 +627,7 @@
       "do": "A Chart | Table toggle in the card header.",
       "dont": "A chart whose values exist only in pixels.",
       "check": "A table view exists and matches the chart.",
-      "sources": ["uswds", "dataviz-skill", "mobbin"], "evidence": ["MOB-36", "MOB-39", "MOB-42", "MOB-52"]
+      "sources": ["dataviz-skill", "mobbin"], "evidence": ["MOB-36", "MOB-39", "MOB-42", "MOB-52"]
     },
     {
       "id": "DV-A11Y-005", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
@@ -635,7 +635,7 @@
       "do": "Arrow keys step through points; Esc dismisses a pinned tooltip.",
       "dont": "Hover-only controls, or divs with click handlers.",
       "check": "Tab and arrow-key walkthrough works end to end.",
-      "sources": ["uswds", "wcag"], "evidence": []
+      "sources": ["wcag"], "evidence": []
     },
     {
       "id": "DV-A11Y-006", "category": "DV-A11Y", "severity": "required", "enforcement": "judgment",
@@ -668,7 +668,7 @@
       "do": "45 and 135 degree hatch, ordered on value scales.",
       "dont": "Dense texture on by default.",
       "check": "Chart stays legible in greyscale and forced-colors.",
-      "sources": ["dataviz-skill", "material", "uswds"], "evidence": ["MOB-03"]
+      "sources": ["dataviz-skill"], "evidence": ["MOB-03"]
     },
     {
       "id": "DV-A11Y-010", "category": "DV-A11Y", "severity": "recommended", "enforcement": "judgment",
@@ -1023,7 +1023,7 @@
       "dont": "A bare chart in a div.",
       "check": "accessibilityLayer present.",
       "detector": "missing-accessibility-layer",
-      "sources": ["vois", "uswds"], "evidence": []
+      "sources": ["vois"], "evidence": []
     },
     {
       "id": "DV-IMPL-004", "category": "DV-IMPL", "severity": "recommended", "enforcement": "judgment",

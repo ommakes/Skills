@@ -60,7 +60,8 @@ vois-dataviz/
 
 ## Known gaps
 
-- Material Design and USWDS weren't readable in the session that wrote this (blocked by the network proxy). Their rules are drawn from search summaries and are tagged `material` and `uswds`. See `references/sources.md`.
+## Known gaps
+
 - The Vois MCP server may not accept `DV-*` ids in `vois_record_rule_usage` yet. The call is optional and non-blocking.
 - Chart token roles (`chart-1` to `chart-8`, sequential, diverging, status, furniture) are specified in `references/implementation.md`. Their values live in the workspace tokens, which aren't in this repo.
 

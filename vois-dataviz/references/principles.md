@@ -61,7 +61,7 @@ Name the audience and set density to match: executive (3 to 6 headline numbers, 
 - **Do:** Set spec.audience and pick forms with fit 'core' unless the audience is analyst.
 - **Don't:** A violin plot on an executive overview.
 - **Check:** spec.audience is set; forms with audience 'analyst' or 'specialist' in the catalog only appear when spec.audience is analyst.
-- **Sources:** article, uswds
+- **Sources:** article
 - **Seen in:** [MOB-13](https://mobbin.com/screens/bef56b40-0756-4135-a99c-72692615331b) Mixpanel, [MOB-37](https://mobbin.com/screens/8f15ac15-37aa-4376-b9c1-d7dafee29930) Zendesk
 
 ##### `[DV-PURPOSE-003]` recommended, judgment
@@ -238,7 +238,7 @@ Bars, columns and areas start at zero. Lines may zoom, but a non-zero axis is st
 - **Do:** domain starting at 0 for bar and area; axis note when a line is zoomed.
 - **Don't:** A bar axis that starts at 90 so a 2 percent change looks like a collapse.
 - **Check:** No YAxis domain with a non-zero lower bound on a chart containing Bar or Area.
-- **Sources:** article, material
+- **Sources:** article
 
 ##### `[DV-HONEST-002]` required, auto, detector `dual-axis`
 
@@ -389,7 +389,7 @@ Two or more series always get a legend; up to four are also direct-labeled. A si
 - **Do:** ChartLegend for 2+ series; end-labels for up to 4.
 - **Don't:** A one-swatch legend that restates the title, or no legend on a 3-line chart.
 - **Check:** Multi-series charts include a legend component; single-series ones don't.
-- **Sources:** dataviz-skill, article, material
+- **Sources:** dataviz-skill, article
 - **Seen in:** [MOB-15](https://mobbin.com/screens/4ee5bf3f-d6ba-4724-88c8-f9bc8d74cfd9) Fey
 
 ##### `[DV-CLARITY-005]` required, judgment
@@ -399,7 +399,7 @@ Axes carry a unit (in the title or the axis label), clean round ticks, about 5 o
 - **Do:** 'Tokens' on the y-axis, ticks at 0 / 20K / 40K.
 - **Don't:** An axis title cut to 'Task count, in numb...' or ticks rotated 60 degrees.
 - **Check:** No truncated axis text; no rotation beyond 45 degrees; units present.
-- **Sources:** article, material
+- **Sources:** article
 - **Seen in:** [MOB-04](https://mobbin.com/screens/8e9ffe26-ef22-4540-b5e4-101f78abf96a) Asana
 
 ##### `[DV-CLARITY-006]` recommended, judgment
@@ -482,7 +482,7 @@ Assign color by the job it does: categorical (identity), ordinal (ordered bucket
 - **Do:** spec.color_job set from the catalog's color_job for the form.
 - **Don't:** Pick colors first and decide what they mean later.
 - **Check:** spec.color_job is one of the five jobs and matches the form.
-- **Sources:** dataviz-skill, material
+- **Sources:** dataviz-skill
 
 ##### `[DV-COLOR-003]` required, auto, detector `cycled-colors`
 
@@ -491,7 +491,7 @@ Categorical hues are assigned in fixed order and never cycled. Eight is the ceil
 - **Do:** Use the chart-1 to chart-8 order as given.
 - **Don't:** COLORS[index % COLORS.length].
 - **Check:** No modulo cycling of a color array; spec.series is 8 or fewer.
-- **Sources:** dataviz-skill, uswds, mobbin
+- **Sources:** dataviz-skill, mobbin
 - **Seen in:** [MOB-35](https://mobbin.com/screens/c1c85e79-bd6a-4577-a7c4-ffa4ff67dfda) Kraken, [MOB-41](https://mobbin.com/screens/1d042f08-1868-4567-bbb5-35ed5e51e9b0) Attio, [MOB-49](https://mobbin.com/screens/1dfc1ac5-3d51-4fcf-82d4-7a2109087afd) GitBook
 
 ##### `[DV-COLOR-004]` required, judgment
@@ -511,7 +511,7 @@ Sequential is one hue light to dark. Diverging is two opposing hues with a neutr
 - **Do:** Blue ramp for volume; blue-to-orange around zero.
 - **Don't:** A jet rainbow heatmap.
 - **Check:** Ramp is monotone in lightness; midpoint is neutral.
-- **Sources:** dataviz-skill, material
+- **Sources:** dataviz-skill
 - **Seen in:** [MOB-20](https://mobbin.com/screens/6334e233-7651-4be1-a9e9-eb7b29563b98) Perplexity
 
 ##### `[DV-COLOR-006]` required, judgment
@@ -521,7 +521,7 @@ Status colors (good, warning, serious, critical) are reserved for state. They ar
 - **Do:** Arrow, sign and color on a delta chip; a down-arrow on churn that's green because down is good.
 - **Don't:** Red and green bars with no other cue.
 - **Check:** Every status color has a non-color companion; status tokens aren't used for identity.
-- **Sources:** dataviz-skill, material, wcag
+- **Sources:** dataviz-skill, wcag
 - **Seen in:** [MOB-09](https://mobbin.com/screens/0dbdb488-1169-4df7-8f8f-95c45a428225) Trello, [MOB-20](https://mobbin.com/screens/6334e233-7651-4be1-a9e9-eb7b29563b98) Perplexity, [MOB-33](https://mobbin.com/screens/e39f0d0f-bed1-49ff-92e0-c53d36d34de6) Uniswap
 
 ##### `[DV-COLOR-007]` required, judgment
@@ -782,7 +782,7 @@ Never rely on color alone. Identity comes from a legend or direct label, state f
 - **Do:** Arrow plus sign plus color on deltas; dashed versus solid for forecast.
 - **Don't:** Green and red bars as the only cue.
 - **Check:** Greyscale screenshot still reads.
-- **Sources:** material, uswds, wcag
+- **Sources:** wcag
 - **Seen in:** [MOB-33](https://mobbin.com/screens/e39f0d0f-bed1-49ff-92e0-c53d36d34de6) Uniswap
 
 ##### `[DV-A11Y-002]` required, judgment
@@ -792,7 +792,7 @@ Marks reach at least 3:1 against their surface and adjacent marks (WCAG 1.4.11).
 - **Do:** Verify each mode; pick ink or white for in-fill labels by luminance.
 - **Don't:** A pale yellow bar on white with no label and no table.
 - **Check:** Measured contrast per mode.
-- **Sources:** material, uswds, wcag
+- **Sources:** wcag
 
 ##### `[DV-A11Y-003]` required, auto, detector `missing-accessibility-layer`
 
@@ -801,7 +801,7 @@ Every chart has a text alternative: a role img container with an aria-label that
 - **Do:** figure with figcaption; accessibilityLayer on the chart.
 - **Don't:** An unlabeled SVG.
 - **Check:** Recharts chart elements carry accessibilityLayer.
-- **Sources:** uswds, material, wcag
+- **Sources:** wcag
 
 ##### `[DV-A11Y-004]` required, judgment
 
@@ -810,7 +810,7 @@ Every chart has a table-view twin, reachable by keyboard, in the same order, wit
 - **Do:** A Chart | Table toggle in the card header.
 - **Don't:** A chart whose values exist only in pixels.
 - **Check:** A table view exists and matches the chart.
-- **Sources:** uswds, dataviz-skill, mobbin
+- **Sources:** dataviz-skill, mobbin
 - **Seen in:** [MOB-36](https://mobbin.com/screens/1173ea6b-a88a-4dcf-ab36-484121c41600) TheyDo, [MOB-39](https://mobbin.com/screens/fe4fee7b-86cb-4916-934f-2ea0ce6de346) Hex, [MOB-42](https://mobbin.com/screens/2018e7b8-e4b1-4231-ab91-c66557122a98) Amplitude, [MOB-52](https://mobbin.com/screens/3768d5f8-15d6-4c56-8ecb-ec8d437914f6) Customer.io
 
 ##### `[DV-A11Y-005]` required, judgment
@@ -820,7 +820,7 @@ Everything interactive is keyboard reachable and operable: data points or groups
 - **Do:** Arrow keys step through points; Esc dismisses a pinned tooltip.
 - **Don't:** Hover-only controls, or divs with click handlers.
 - **Check:** Tab and arrow-key walkthrough works end to end.
-- **Sources:** uswds, wcag
+- **Sources:** wcag
 
 ##### `[DV-A11Y-006]` required, judgment
 
@@ -856,7 +856,7 @@ A pattern or texture channel is available for color-vision deficiency, print and
 - **Do:** 45 and 135 degree hatch, ordered on value scales.
 - **Don't:** Dense texture on by default.
 - **Check:** Chart stays legible in greyscale and forced-colors.
-- **Sources:** dataviz-skill, material, uswds
+- **Sources:** dataviz-skill
 - **Seen in:** [MOB-03](https://mobbin.com/screens/205aefea-2dfc-4668-9af7-bc4921da1762) Mintlify
 
 ##### `[DV-A11Y-010]` recommended, judgment
@@ -1424,7 +1424,7 @@ Wrap each chart in a figure with a caption or title, set accessibilityLayer on R
 - **Do:** <BarChart accessibilityLayer>.
 - **Don't:** A bare chart in a div.
 - **Check:** accessibilityLayer present.
-- **Sources:** vois, uswds
+- **Sources:** vois
 
 ##### `[DV-IMPL-004]` recommended, judgment
 

@@ -247,3 +247,10 @@ for (const [re, file, key] of FAMILIES) {
     assert.deepEqual(unmentioned, [], `${file} ids never mentioned in prose`);
   });
 }
+
+test("rules stay platform-agnostic: sources come from a short allowed list", () => {
+  const allowed = new Set(["article", "mobbin", "dataviz-skill", "wcag", "vois"]);
+  for (const r of ruleIndex().values()) {
+    for (const src of r.sources) assert.ok(allowed.has(src), `${r.id} cites '${src}', which is not an allowed source`);
+  }
+});
