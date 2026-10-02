@@ -71,6 +71,8 @@ Cap text containers at `65ch`. The `ch` unit is relative to the current font's c
 
 Do not use `max-width: 600px` or similar fixed widths for text containers — they break at different font sizes.
 
+Marketing surfaces use `56ch` and a different type scale. See `marketing-type-and-spacing.md` (`[DS-MKT-005]`).
+
 ## Copy and Punctuation
 
 These details matter. Agents get them wrong by default.

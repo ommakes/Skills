@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.13.0] - 2026-10-02
+
+**Add** | New `references/marketing-pages.md` and PATH G (`PATH-G` plus eight `PATH-G-*` rules in `data/patterns-rules.json`): one idea per section, three blocks max in a row or stack, detail behind a link, image tile first, no dividers, left-align by default, one primary button per view and at most two repeats, footer at heading scale. These are taste rules for marketing surfaces only. Type scale and spacing live in `vois-tokens` (`DS-MKT`), word limits in `righter`.
+
+**Note** | The numbers behind these rules come from one reference site and one mockup. The rules say so in the file.
+
+---
+
 ## [1.12.0] - 2026-10-02
 
 **Add** | Three narrow-screen rules in `references/table-interactions.md`: `PATH-TABLE-NARROW-ROW` (stacked row anatomy), `PATH-TABLE-NARROW-OPEN` (full-width drawer with a back control), `PATH-TABLE-NARROW-SELECT` (selection as a mode, with a bottom bulk bar). From a Mobbin pass on iOS list and selection screens.

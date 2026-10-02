@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.7.0
+version: 1.8.0
 ---
 
 # Righter
@@ -24,6 +24,9 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 - `data/weakeners.json`: structured word/phrase lists for all weakener categories. Query by category id, don't scan the file top to bottom.
 - `data/phonaesthetics.json`: structured sound concepts and cluster table for word choice
 - `data/rhetorical-devices.json`: literary/rhetorical devices (metaphor, personification, epithet, anaphora, etc.) for copy that's allowed to have personality: marketing surfaces, taglines, empty states, feature names. Not for error messages or system copy.
+- `references/marketing-copy.md`: read when writing or reviewing marketing-site copy (hero, section heads, feature cards, buttons, meta descriptions). Word limits per slot and the `mkt-*` rules.
+- `data/marketing-limits.json`: word limits per marketing slot, banned puffery, and check severities. Query by slot `id`.
+- `scripts/check-slots.mjs`: counts words per marketing slot and checks limits, puffery, em dashes, and acronyms: `node scripts/check-slots.mjs hero-h1 "copy text"`. Run it instead of counting by hand.
 - `scripts/ari.mjs`: computes ARI, grade level, and word/character/sentence counts exactly. Run it instead of calculating Reading Metrics by hand when Node is available: `node scripts/ari.mjs "copy text"` or `node scripts/ari.mjs --before "..." --after "..."`.
 
 Every numbered principle below and every rule in Error Message Guidelines carries a stable `id` in backticks. Cite the id, not the number, when referencing a rule from outside this file (numbers shift when principles are added or reordered).
@@ -233,6 +236,8 @@ Em dashes read as a hedge in short-form UI copy and are a well-known AI writing 
 Applies only to copy that's allowed personality: marketing surfaces, taglines, feature names, empty states, onboarding. Skip entirely for error messages, form fields, and system copy. There, plain and literal beats clever every time.
 
 > Query `data/rhetorical-devices.json`. Pick at most one device per surface. Stacking two reads as trying too hard, not as clever.
+>
+> On marketing pages the word limits in `data/marketing-limits.json` win. A device has to fit inside the slot's limit. If it doesn't, cut the device.
 
 - ✗ "No setup required. Start immediately."
 - ✓ "No setup. No waiting. No excuses." (`anaphora-epistrophe`)
@@ -439,6 +444,11 @@ Run through this for every piece of copy before finalizing.
 **Personality (marketing/taglines/empty states/feature names only)**
 - [ ] Could a rhetorical device sharpen this? (see `data/rhetorical-devices.json`)
 - [ ] More than one device stacked on the same surface?
+
+**Marketing pages (only)**
+- [ ] Every slot within its limit? (`node scripts/check-slots.mjs`)
+- [ ] Puffery (premier, unique, world-class)? A number, place, or fact works better.
+- [ ] A fact repeated outside the footer, or one action with two labels? (`references/marketing-copy.md`)
 
 **Errors (if applicable)**
 - [ ] Clear next step provided?

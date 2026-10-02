@@ -4,6 +4,22 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.8.0] - 2026-10-02
+
+### Added
+
+- **Marketing copy guidance.** `references/marketing-copy.md` covers word limits per marketing slot (hero h1 7, hero sub 12, section head 5, card title 4, card description 20, button 2 to 4, eyebrow 2, form helper 12) and ten `mkt-*` rules. Where a rule already exists (`consistent-terminology`, `eliminate-weakeners`, `user-goal-framing`, `accessible-copy`), the new file cites the existing id.
+- **`data/marketing-limits.json`,** the canonical source for the slot limits, the banned puffery list, and check severities.
+- **`scripts/check-slots.mjs`,** counts words per slot and checks limits, sentence counts, puffery, em dashes, and acronym crowding. Fails on limits, puffery, and em dashes. Warns on weakeners and acronyms. The source guidance's own word counts were off by one to six in places, which is why this is a script.
+- **Eval cases 20 to 24** from the before and after examples.
+- **A marketing section in the Review Checklist,** and a note on `rhetorical-devices`: on marketing pages the slot limits win.
+
+### Changed
+
+- **Version bump:** `1.7.0` → `1.8.0`
+
+---
+
 ## [1.7.0] - 2026-10-02
 
 ### Added

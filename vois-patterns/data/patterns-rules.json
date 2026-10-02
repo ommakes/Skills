@@ -2318,6 +2318,87 @@
         "https://mobbin.com/screens/6964c526-e241-4be1-82b3-fc57658e5366",
         "https://mobbin.com/screens/d22b92a8-9d12-44c3-8cfc-3bf7ef403518"
       ]
+    },
+    {
+      "id": "PATH-G",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "pattern_name": "Marketing Page",
+      "condition": "User is showing what a product or business offers to people who are not yet using it: a landing page, homepage, or product marketing page. Not a pricing page (PATH-F) and not product UI.",
+      "outcome": "Use the Marketing Page pattern. Every feature block is the same stack: image, short title, one or two sentences, one link. Sections are far apart and text inside them is tight. PATH-G-* rules apply. Words go to righter (slot limits), type and spacing to vois-tokens (DS-MKT). These are taste rules for marketing surfaces, not general laws."
+    },
+    {
+      "id": "PATH-G-SECTION",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "One idea per section",
+      "condition": "Any section on a marketing page.",
+      "outcome": "One heading, one block of content, one link. If a section needs two headings, it is two sections."
+    },
+    {
+      "id": "PATH-G-BLOCKS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "Three blocks max",
+      "condition": "Any row or stack of blocks on a marketing page.",
+      "outcome": "No more than three blocks. If there are more, group them (five programs become three audience tiles) and link to the detail. Three is a ceiling, not a target. Blocks should still differ in size or emphasis."
+    },
+    {
+      "id": "PATH-G-DETAIL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "Detail goes behind a link",
+      "condition": "Full schedules, bios, long FAQs, or any long list on a marketing page.",
+      "outcome": "Put the full version on its own page. Show a taste on the page: about 5 schedule rows, one coach sentence, 3 questions, each with a link to the rest."
+    },
+    {
+      "id": "PATH-G-TILE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "Image tile first",
+      "condition": "A feature block on a marketing page.",
+      "outcome": "Large rounded image tile, then a title, then one or two sentences, then one link. Tiles are at least 300px tall on mobile."
+    },
+    {
+      "id": "PATH-G-DIVIDERS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "No dividers",
+      "condition": "Sections on a marketing page that blur together.",
+      "outcome": "Do not use hairlines, boxes, or borders to separate sections. Increase the section gap instead (DS-MKT-006)."
+    },
+    {
+      "id": "PATH-G-ALIGN",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "Left-align by default",
+      "condition": "Text and block alignment on a marketing page.",
+      "outcome": "Left-align. Center only the closing call to action."
+    },
+    {
+      "id": "PATH-G-CTA",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "One primary button per view",
+      "condition": "Buttons and calls to action on a marketing page.",
+      "outcome": "One primary button per view. A secondary button is allowed in the hero only. Repeat the primary call to action at most twice on a page (hero and close). Everything else is a plain link."
+    },
+    {
+      "id": "PATH-G-FOOTER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-pages.md",
+      "rule_name": "Footer at heading scale",
+      "condition": "The footer of a marketing page.",
+      "outcome": "Repeat the nav as large links at h2 size plus the wordmark. Small print stays small."
     }
   ]
 }

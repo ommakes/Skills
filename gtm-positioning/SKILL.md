@@ -81,6 +81,8 @@ Driven by how specific you're willing to be on use case. This determines everyth
 
 ## 3. Website Messaging Guide
 
+> **Fitting the words into the page.** This section decides what to say. Once you know, `righter` (`references/marketing-copy.md`) sets how much fits in each slot (hero h1 7 words, hero sub 12, section head 5, card title 4, card description 20), `vois-patterns` (`references/marketing-pages.md`) sets page structure, and `vois-tokens` sets type and spacing.
+
 Each page has one job. Get the front-door pages right first — they determine whether anyone ever sees the rest.
 
 ### Front door pages — get these right first
