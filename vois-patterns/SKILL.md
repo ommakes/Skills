@@ -104,7 +104,7 @@ existing paths.
 | `references/settings-pages.md` | Profile, workspace, billing, notifications, members sections; view/edit state | `[PATH-A]` |
 | `references/settings-interactions.md` | Save model, notifications, members, integrations, removal, danger zone, email change with one-time code | rules for settings interactions (see `data/patterns-rules.json`) |
 | `references/table-list.md` | Table or list, simple vs complex, row open (drawer, full page, dialog), where editing happens, pagination, narrow layout | `[PATH-B]` `[PATH-B-SIMPLE]` `[PATH-B-COMPLEX]` `[PATH-B-ROW-OPEN]` `[PATH-B-EDIT]` `[PATH-B-ROW-ACTIONS]` `[PATH-B-ROW-ACTIONS-REVEAL]` `[PATH-B-NARROW]` |
-| `references/table-interactions.md` | Selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty and error states, partial failures | `PATH-TABLE-*` rules (see `data/patterns-rules.json`) |
+| `references/table-interactions.md` | Selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty and error states, partial failures | rules for table interactions (see `data/patterns-rules.json`) |
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/form-field-groups.md` | Field widths, columns, spacing, name, address, phone, email, one-time code, auto-growing textareas, AI chat input | rules for form field groups (see `data/patterns-rules.json`) |
 | `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` |
