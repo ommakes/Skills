@@ -1,0 +1,8 @@
+{
+  "description": "Repo-specific exceptions for scripts/check-routing.py. externalSkills: skills that live in the other repo, so references to them are not dead links. skipFiles: globs of docs that name files in other repos on purpose. ignore: { file glob, message regex } pairs for one-off false positives. CHANGELOG.md files are always skipped.",
+  "externalSkills": ["vois-router", "vois-loop", "metrics-tagging"],
+  "skipFiles": ["prds/**", "design-previews/README.md"],
+  "ignore": [
+    { "file": "vois-tokens/README.md", "message": "DS-CSS-008" }
+  ]
+}
