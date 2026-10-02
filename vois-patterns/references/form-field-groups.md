@@ -6,7 +6,7 @@ Extends `forms.md`. That file already covers form complexity, states, labels, gr
 
 **Builds on.** Every rule lists the existing Vois or righter rules it relies on, by ID. Those rules are not restated here. Copy, error components, and toasts always come from righter.
 
-All spacing uses vois-tokens scale steps. Widths use the width tokens in `data/tokens.additions.json`: `--width-form-max`, `--width-field-max`, `--width-field-narrow`, `--width-viewport-min`.
+All spacing uses vois-tokens scale steps. Widths use the `widths` tokens in `vois-tokens/data/tokens.json`: `--width-form-max`, `--width-field-max`, `--width-field-narrow`, `--width-viewport-min`.
 
 ---
 

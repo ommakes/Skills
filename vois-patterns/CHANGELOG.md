@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.13.1] - 2026-10-02
+
+**Fix** | `references/form-field-groups.md` pointed to `data/tokens.additions.json`, which does not exist. It now points to the `widths` group in `vois-tokens/data/tokens.json`, where those four tokens live.
+
+---
+
 ## [1.13.0] - 2026-10-02
 
 **Add** | New `references/marketing-pages.md` and PATH G (`PATH-G` plus eight `PATH-G-*` rules in `data/patterns-rules.json`): one idea per section, three blocks max in a row or stack, detail behind a link, image tile first, no dividers, left-align by default, one primary button per view and at most two repeats, footer at heading scale. These are taste rules for marketing surfaces only. Type scale and spacing live in `vois-tokens` (`DS-MKT`), word limits in `righter`.

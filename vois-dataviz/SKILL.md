@@ -1,7 +1,7 @@
 ---
 name: vois-dataviz
 description: Data visualization and dashboard rules for web apps. Use whenever a screen contains a chart, graph, sparkline, KPI tile, heatmap, map, or data-heavy dashboard, whether you are building it, picking a chart type, choosing chart colors, designing filters or date ranges, designing loading and empty states for data, or reviewing and improving an existing dashboard. Walks a chart-selection decision tree, gives do's and don'ts per principle, ships a chart spec, a code detector and a review protocol that agents can run. Optionally records the chart form via vois_record_component_choice if that tool is available.
-version: 1.0.1
+version: 1.0.2
 ---
 
 # Vois Data Visualization Skill
@@ -160,7 +160,7 @@ Written by hand:
 | `data/chart-spec.schema.json` | | The spec you fill in before coding |
 | `data/review-output.schema.json` | | The shape of a review |
 
-**Source of truth.** The JSON is canonical and the generated references restate it. `scripts/validate-data.py` (repo root) fails CI if an ID in prose has no JSON entry or the reverse.
+**Source of truth.** The JSON is canonical and the generated references restate it. `scripts/dataviz.test.mjs` fails CI if an ID in prose has no JSON entry or the reverse.
 
 ## Scripts
 
