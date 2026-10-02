@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.17.1] - 2026-10-02
+
+### Changed
+
+- **`DS-SURFACE-002` and `DS-A11Y-013` metadata aligned** with the private `vois-skills` copy. `DS-SURFACE-002` now says when it applies (padding between nested surfaces exceeds 24px) instead of listing that as an exception. `DS-A11Y-013` now also says when it applies (images not in the initial viewport). Rule text and severity are unchanged.
+
+---
+
 ## [1.17.0] - 2026-10-02
 
 ### Added

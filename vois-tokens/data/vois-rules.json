@@ -137,6 +137,7 @@
       "rule": "`loading=\"lazy\"` on all images that aren't in the initial viewport. Skip it on hero images and above-the-fold content — those should load immediately.",
       "severity": "required",
       "enforcement": "advisory",
+      "applies_when": "images not in the initial viewport",
       "does_not_apply_when": "hero images and above-the-fold content — those should load immediately"
     },
     {
@@ -684,7 +685,7 @@
       "rule": "If padding between the two surfaces is larger than `24px`, treat them as independent surfaces and pick each radius on its own — forcing strict concentric math at that distance looks over-engineered, not intentional.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "does_not_apply_when": "padding between the two surfaces exceeds 24px — treat them as independent surfaces instead"
+      "applies_when": "padding between the two nested surfaces exceeds 24px"
     },
     {
       "id": "DS-SURFACE-003",
