@@ -111,4 +111,4 @@ Below the `sm` container width (`40em`):
 
 ## States, errors, and interactions
 
-Selection, bulk actions, columns, density, keyboard, URL state, loading, empty, error, and partial-failure handling are in `table-interactions.md` (`[PATH-TABLE-*]`).
+Selection, bulk actions, columns, density, keyboard, URL state, loading, empty, error, and partial-failure handling are in `table-interactions.md` (the `PATH-TABLE-*` rules).
