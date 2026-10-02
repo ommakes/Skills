@@ -4,6 +4,23 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.16.0] - 2026-10-02
+
+### Added
+
+- **`table_sizes` tokens** in `data/tokens.json`: `--table-header-h` (2.5rem), `--table-row-h-dense` (2rem), `--table-row-h-regular` (2.75rem, matches `--hit-area-min`), `--table-row-h-comfortable` (3.5rem).
+
+### Changed
+
+- **`DS-TABLE-019`** now names only those four as tokens. `--table-offset` and `--app-header-h` were listed as tokens in 1.15.0, but each page sets them, so they are not tokens. The scrollbar thumb uses an existing neutral token instead of a new `--scrollbar-thumb` (`DS-TABLE-010`).
+- **`DS-TABLE-006`** replaces the invented `--z-table-*` tokens with local z values (1, 2, 3) inside `isolation: isolate` on the scroll owner, so they cannot outrank an overlay.
+
+### Notes
+
+- `references/elevation.md` still points at a z-index scale in `css-architecture.md` that does not exist. Left as it was, and noted here so it gets fixed on its own.
+
+---
+
 ## [1.15.0] - 2026-10-02
 
 ### Added

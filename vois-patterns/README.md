@@ -227,6 +227,7 @@ If you notice a recurring structure that's not covered:
 | 1.5.1 | 2026-07-23 | Fixed MCP tool names and call argument shape |
 | 1.9.0 | 2026-09-30 | Added `references/pricing-pages.md` (PATH-F) and 64 matching rule entries |
 | 1.10.0 | 2026-10-01 | Added `references/settings-interactions.md` and `references/form-field-groups.md` with 42 matching rule entries (`PATH-SET-*`, `PATH-FIELD-*`, `PATH-D-SIZE`, `PATH-B-ROW-ACTIONS`, `PATH-B-ROW-ACTIONS-REVEAL`, `PATH-B-NARROW`) |
+| 1.12.0 | 2026-10-02 | Added three narrow-screen table rules (`PATH-TABLE-NARROW-*`) |
 | 1.11.0 | 2026-10-02 | Added `references/table-interactions.md` (32 `PATH-TABLE-*` rules) and `PATH-B-SIMPLE`, `PATH-B-COMPLEX`, `PATH-B-ROW-OPEN`, `PATH-B-EDIT`. Row detail now defaults to a drawer instead of a modal for view-first |
 
 See `CHANGELOG.md` for detailed rationale on each update.
@@ -273,5 +274,5 @@ If you have questions about a pattern or need clarification:
 ---
 
 **Last updated:** 2026-10-02  
-**Skill version:** 1.11.0  
+**Skill version:** 1.12.0  
 **Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`vois_record_pattern_choice`, `vois_report_pattern_gap`) are optional.

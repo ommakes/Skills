@@ -10,12 +10,12 @@
 <link rel="stylesheet" href="../_shared/base.css">
 <style>
   :root {
-    --scrollbar-thumb: var(--color-muted-foreground);
+    /* DS-TABLE-019: header and row heights are tokens (table_sizes). The offset is set by this page. */
+    --table-header-h: 2.5rem;
+    --table-row-h-dense: 2rem;
+    --table-row-h-regular: 2.75rem;
+    --table-row-h-comfortable: 3.5rem;
     --table-offset: 280px;
-    --table-header-h: 40px;
-    --z-table-pinned: 1;
-    --z-table-header: 2;
-    --z-table-corner: 3;
   }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .toolbar { display: flex; gap: var(--space-12); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-12); }
@@ -31,29 +31,30 @@
 
   /* DS-TABLE-002: the wrapper owns both axes and has a bounded block size. */
   .table-wrap {
-    --row-pad: var(--space-12);
+    --row-h: var(--table-row-h-regular);
     overflow: auto;
     max-block-size: min(60dvh, 440px);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     scrollbar-width: thin;                              /* DS-TABLE-010 */
-    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-color: var(--color-muted-foreground) transparent;
     scrollbar-gutter: stable;                           /* DS-TABLE-011 */
     overscroll-behavior-x: contain;                     /* DS-TABLE-012 */
     scroll-padding-block-start: var(--table-header-h);  /* DS-TABLE-013 */
     scroll-padding-inline-start: 240px;
+    isolation: isolate;                                 /* DS-TABLE-006: layers below stay inside the table */
   }
-  .table-wrap[data-density="dense"] { --row-pad: var(--space-4); }
-  .table-wrap[data-density="comfortable"] { --row-pad: var(--space-20); }
+  .table-wrap[data-density="dense"] { --row-h: var(--table-row-h-dense); }
+  .table-wrap[data-density="comfortable"] { --row-h: var(--table-row-h-comfortable); }
   .table-wrap:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
 
   table.complex { border-collapse: separate; border-spacing: 0; table-layout: fixed; inline-size: 1280px; /* DS-TABLE-007, 009 */ }
-  table.complex th, table.complex td { padding: var(--row-pad) var(--space-12); border-block-end: 1px solid var(--color-border); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--color-background); }
-  table.complex thead th { position: sticky; inset-block-start: 0; z-index: var(--z-table-header); block-size: var(--table-header-h); color: var(--color-muted-foreground); font-size: var(--text-h6-size); text-transform: uppercase; letter-spacing: .03em; }
+  table.complex th, table.complex td { block-size: var(--row-h); padding: 0 var(--space-12); border-block-end: 1px solid var(--color-border); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--color-background); }
+  table.complex thead th { position: sticky; inset-block-start: 0; z-index: 2; block-size: var(--table-header-h); color: var(--color-muted-foreground); font-size: var(--text-h6-size); text-transform: uppercase; letter-spacing: .03em; }
   /* DS-TABLE-006: pinned columns are opaque, layered, and use logical offsets. */
-  table.complex :is(th, td):nth-child(1) { position: sticky; inset-inline-start: 0; z-index: var(--z-table-pinned); }
-  table.complex :is(th, td):nth-child(2) { position: sticky; inset-inline-start: 44px; z-index: var(--z-table-pinned); border-inline-end: 1px solid var(--color-border); font-weight: 600; }
-  table.complex thead :is(th):nth-child(-n+2) { z-index: var(--z-table-corner); }
+  table.complex :is(th, td):nth-child(1) { position: sticky; inset-inline-start: 0; z-index: 1; }
+  table.complex :is(th, td):nth-child(2) { position: sticky; inset-inline-start: 44px; z-index: 1; border-inline-end: 1px solid var(--color-border); font-weight: 600; }
+  table.complex thead :is(th):nth-child(-n+2) { z-index: 3; }
   table.complex td.num, table.complex th.num { text-align: right; font-variant-numeric: tabular-nums; }
   table.complex tbody tr:hover td { background: var(--color-muted); }
   table.complex tbody tr[aria-selected="true"] td { background: var(--color-accent); }
