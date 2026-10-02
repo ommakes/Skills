@@ -1,0 +1,86 @@
+<!-- @dsCard group="Patterns" -->
+<!-- content: structure from vois-patterns PATH-B-SIMPLE and vois-tokens DS-TABLE-003; rows, labels, and copy invented for this kit -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Table, simple</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  /* DS-TABLE-003: a simple table sets no overflow on its wrapper, so the header sticks to the page. */
+  .app-bar { position: sticky; top: 0; z-index: 20; height: var(--app-header-h); display: flex; align-items: center; padding: 0 var(--space-16); background: var(--color-surface); border-bottom: 1px solid var(--color-border); font-size: var(--text-h5-size); }
+  :root { --app-header-h: 48px; }
+  .toolbar { display: flex; gap: var(--space-12); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-16); }
+  .toolbar .input { max-inline-size: 260px; }
+  .table-simple { border-collapse: separate; border-spacing: 0; /* DS-TABLE-007 */ }
+  .table-simple thead th {
+    position: sticky; inset-block-start: var(--app-header-h); z-index: 10;
+    background: var(--color-background);
+    border-block-end: 1px solid var(--color-border);
+  }
+  .table-simple td:first-child { font-weight: 600; }
+  .table-simple td.num, .table-simple th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-footer { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-16); }
+  .callout { margin-bottom: var(--space-24); padding: var(--space-12) var(--space-16); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); font-size: var(--text-description-size); }
+</style>
+</head>
+<body>
+<div class="app-bar">App header (fixed height, the table header sticks just below it)</div>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-24);">
+    <span class="kit-rule">Pattern B · Table/List with details · simple</span>
+    <h1 class="h1">Table, simple</h1>
+    <p class="text-description">Six columns or fewer, mostly read. The page scrolls and the header sticks to the page. No overflow on the wrapper, so there is no sideways scroll. Search, one filter, sort, 25 per page. Scroll the page to see the header stay put.</p>
+  </div>
+
+  <div class="callout">The wrapper deliberately sets no <code>overflow</code>. Adding <code>overflow-x: auto</code> would make it the scroll owner and the header would stop sticking to the page (DS-TABLE-001, DS-TABLE-004).</div>
+
+  <div class="toolbar">
+    <input class="input" type="search" placeholder="Search customers" aria-label="Search customers">
+    <select class="input" aria-label="Filter by plan" style="max-inline-size: 180px;"><option>All plans</option><option>Starter</option><option>Team</option><option>Enterprise</option></select>
+  </div>
+
+  <div class="table-region">
+    <table class="kit-table table-simple">
+      <thead>
+        <tr>
+          <th scope="col">Customer</th>
+          <th scope="col">Plan</th>
+          <th scope="col" aria-sort="descending"><button type="button">Seats &#9660;</button></th>
+          <th scope="col" class="num">MRR</th>
+          <th scope="col">Renews</th>
+          <th scope="col"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <span class="text-description">Showing 1-25 of 240</span>
+    <span style="display:flex; gap: var(--space-8);">
+      <button class="btn btn-ghost" disabled>Previous</button>
+      <button class="btn btn-ghost">Next</button>
+    </span>
+  </div>
+</div>
+<script>
+  const names = ["Acme Corp","Globex","Initech","Umbrella","Hooli","Stark Industries","Wayne Enterprises","Soylent","Wonka","Vandelay"];
+  const plans = ["Starter","Team","Enterprise"];
+  let html = "";
+  for (let i = 0; i < 25; i++) {
+    const seats = 120 - i * 4;
+    const mrr = (seats * 18).toLocaleString();
+    html += `<tr><td>${names[i % names.length]} ${Math.floor(i / names.length) + 1}</td><td>${plans[i % 3]}</td><td>${seats}</td><td class="num">$${mrr}</td><td>Mar ${(i % 28) + 1}</td><td><button class="btn btn-ghost">Edit</button></td></tr>`;
+  }
+  document.getElementById("rows").innerHTML = html;
+</script>
+</body>
+</html>

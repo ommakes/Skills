@@ -6,6 +6,20 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.11.0] - 2026-10-02
+
+**Add** | New `references/table-interactions.md` (companion to PATH-B): selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty, and error states, partial failures. 32 `PATH-TABLE-*` rules.
+
+**Add** | `PATH-B-SIMPLE`, `PATH-B-COMPLEX`, `PATH-B-ROW-OPEN`, and `PATH-B-EDIT` in `references/table-list.md`. Simple tables scroll vertically only and stick the header to the page. Complex tables own both scroll axes, scroll one axis per gesture, and get a density toggle.
+
+**Change** | Row detail container. The `PATH-B` outcome used to say: quick edit uses a right sidebar, view-first uses a modal. Now: a drawer by default for both, with an Open action that escalates to a full page when the record has tabs, a timeline, related records, or a long form. A dialog is for confirmations only. Mobbin showed a side panel for row detail in every example found, including view-first ones. Set by Om. This changes existing guidance, which is why it is a minor version.
+
+**Change** | `PATH-B-NARROW` is unchanged, but `table-list.md` now says a table in the narrow scroll layout follows the complex-table scroll rules.
+
+**Change** | `design-previews/patterns/table-with-sidebar-detail.html` copy updated to match.
+
+---
+
 ## [1.10.1] - 2026-10-01
 
 **Change** | Relationship section points data screens (dashboards, analytics views, anything with charts or KPI tiles) to the new `vois-dataviz` skill after the page structure is decided. No rule changes.

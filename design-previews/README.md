@@ -24,8 +24,8 @@ _shared/base.css       reset + shared component primitives (button, input, dialo
 foundations/           color, typography, spacing, elevation, radius, iconography, motion
 components/            10 highest-confusion component-pair comparisons, sourced from
                         vois-components/data/components-rules.json's "why not X" reasoning
-patterns/               5 full-page layouts from vois-patterns' container types
-anti-patterns/          DS-SLOP-* anti-tells from vois-tokens, wrong vs. right
+patterns/               full-page layouts from vois-patterns' container types, including simple and complex tables and table states
+anti-patterns/          DS-SLOP-* anti-tells and the DS-TABLE-001 overflow anti-pattern from vois-tokens, wrong vs. right
 index.html              local nav for browsing the kit in a browser (not synced)
 scripts/validate-previews.sh   checks every preview's @dsCard marker + no external URLs
 ```

@@ -1,0 +1,152 @@
+<!-- @dsCard group="Patterns" -->
+<!-- content: structure from vois-patterns PATH-B-COMPLEX and vois-tokens DS-TABLE-002, 006, 010, 011, 012, 013, 014, 015; rows, labels, and copy invented for this kit -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Table, complex</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  :root {
+    --scrollbar-thumb: var(--color-muted-foreground);
+    --table-offset: 280px;
+    --table-header-h: 40px;
+    --z-table-pinned: 1;
+    --z-table-header: 2;
+    --z-table-corner: 3;
+  }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .toolbar { display: flex; gap: var(--space-12); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-12); }
+  .toolbar .input { max-inline-size: 240px; }
+  .density { display: inline-flex; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .density label { padding: var(--space-8) var(--space-12); font-size: var(--text-h5-size); cursor: pointer; }
+  .density input { position: absolute; opacity: 0; }
+  .density label:has(input:checked) { background: var(--color-muted); font-weight: 600; }
+  .density label:has(input:focus-visible) { outline: 2px solid var(--color-ring); outline-offset: -2px; }
+  .bulk { display: none; align-items: center; gap: var(--space-12); padding: var(--space-8) var(--space-12); margin-bottom: var(--space-12); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: var(--shadow-raised); }
+  .bulk[data-open="true"] { display: flex; }
+  .bulk .grow { flex: 1; }
+
+  /* DS-TABLE-002: the wrapper owns both axes and has a bounded block size. */
+  .table-wrap {
+    --row-pad: var(--space-12);
+    overflow: auto;
+    max-block-size: min(60dvh, 440px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    scrollbar-width: thin;                              /* DS-TABLE-010 */
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-gutter: stable;                           /* DS-TABLE-011 */
+    overscroll-behavior-x: contain;                     /* DS-TABLE-012 */
+    scroll-padding-block-start: var(--table-header-h);  /* DS-TABLE-013 */
+    scroll-padding-inline-start: 240px;
+  }
+  .table-wrap[data-density="dense"] { --row-pad: var(--space-4); }
+  .table-wrap[data-density="comfortable"] { --row-pad: var(--space-20); }
+  .table-wrap:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+
+  table.complex { border-collapse: separate; border-spacing: 0; table-layout: fixed; inline-size: 1280px; /* DS-TABLE-007, 009 */ }
+  table.complex th, table.complex td { padding: var(--row-pad) var(--space-12); border-block-end: 1px solid var(--color-border); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--color-background); }
+  table.complex thead th { position: sticky; inset-block-start: 0; z-index: var(--z-table-header); block-size: var(--table-header-h); color: var(--color-muted-foreground); font-size: var(--text-h6-size); text-transform: uppercase; letter-spacing: .03em; }
+  /* DS-TABLE-006: pinned columns are opaque, layered, and use logical offsets. */
+  table.complex :is(th, td):nth-child(1) { position: sticky; inset-inline-start: 0; z-index: var(--z-table-pinned); }
+  table.complex :is(th, td):nth-child(2) { position: sticky; inset-inline-start: 44px; z-index: var(--z-table-pinned); border-inline-end: 1px solid var(--color-border); font-weight: 600; }
+  table.complex thead :is(th):nth-child(-n+2) { z-index: var(--z-table-corner); }
+  table.complex td.num, table.complex th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.complex tbody tr:hover td { background: var(--color-muted); }
+  table.complex tbody tr[aria-selected="true"] td { background: var(--color-accent); }
+  .footer { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-12); gap: var(--space-12); flex-wrap: wrap; }
+  .opt { display: inline-flex; gap: var(--space-8); align-items: center; font-size: var(--text-h5-size); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-24);">
+    <span class="kit-rule">Pattern B · Table/List with details · complex</span>
+    <h1 class="h1">Table, complex</h1>
+    <p class="text-description">More than six columns, bulk actions, and a density toggle. The wrapper owns both scroll axes at a bounded height, so the header and the first two columns stay pinned inside it. A wheel handler scrolls one axis per gesture. Try a diagonal trackpad swipe with the lock on, then off.</p>
+  </div>
+
+  <div class="toolbar">
+    <input class="input" type="search" placeholder="Search accounts" aria-label="Search accounts">
+    <select class="input" aria-label="Filter by status" style="max-inline-size: 170px;"><option>All statuses</option><option>Active</option><option>Paused</option></select>
+    <fieldset class="density" style="border: 1px solid var(--color-border); margin: 0; padding: 0;">
+      <legend class="sr-only">Row density</legend>
+      <label><input type="radio" name="density" value="dense">Dense</label>
+      <label><input type="radio" name="density" value="regular" checked>Regular</label>
+      <label><input type="radio" name="density" value="comfortable">Comfortable</label>
+    </fieldset>
+    <label class="opt"><input type="checkbox" id="lock" checked> One axis at a time</label>
+  </div>
+
+  <div class="bulk" id="bulk" role="status">
+    <span id="bulkCount">0 selected</span>
+    <span class="grow"></span>
+    <button class="btn btn-ghost">Assign</button>
+    <button class="btn btn-ghost">Export</button>
+    <button class="btn btn-destructive">Delete</button>
+    <button class="btn btn-ghost" id="clear">Clear</button>
+  </div>
+
+  <!-- DS-TABLE-015: the scroll owner is focusable, a labeled region, and holds a real table. -->
+  <div class="table-wrap" id="wrap" data-density="regular" tabindex="0" role="region" aria-label="Accounts table, scrollable">
+    <table class="complex">
+      <colgroup><col style="width:44px"><col style="width:196px"><col style="width:120px"><col style="width:120px"><col style="width:120px"><col style="width:120px"><col style="width:140px"><col style="width:140px"><col style="width:140px"><col style="width:140px"></colgroup>
+      <thead>
+        <tr>
+          <th scope="col"><input type="checkbox" id="all" aria-label="Select all rows on this page"></th>
+          <th scope="col">Account</th><th scope="col">Status</th><th scope="col">Region</th><th scope="col">Owner</th>
+          <th scope="col" class="num">Seats</th><th scope="col" class="num">MRR</th><th scope="col" class="num">Usage</th><th scope="col">Renews</th><th scope="col">Last active</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span class="text-description">Showing 1-60 of 1,240</span>
+    <span class="text-description">Rows per page: 25 / <strong>50</strong> / 100</span>
+  </div>
+</div>
+<script>
+  const regions = ["US East","US West","EU","APAC"], owners = ["Ana","Ben","Chidi","Dara","Eli"];
+  const rows = document.getElementById("rows");
+  let h = "";
+  for (let i = 0; i < 60; i++) {
+    h += `<tr aria-selected="false"><td><input type="checkbox" class="pick" aria-label="Select account ${i + 1}"></td><td>Account ${String(i + 1).padStart(3, "0")}</td><td>${i % 5 === 3 ? "Paused" : "Active"}</td><td>${regions[i % 4]}</td><td>${owners[i % 5]}</td><td class="num">${40 + i * 3}</td><td class="num">$${(1200 + i * 87).toLocaleString()}</td><td class="num">${(97 - (i % 40)).toString()}%</td><td>Apr ${(i % 28) + 1}</td><td>${i % 7 + 1}h ago</td></tr>`;
+  }
+  rows.innerHTML = h;
+
+  // Density
+  const wrap = document.getElementById("wrap");
+  document.querySelectorAll('input[name="density"]').forEach(r => r.addEventListener("change", e => { wrap.dataset.density = e.target.value; }));
+
+  // Selection and bulk bar
+  const picks = [...document.querySelectorAll(".pick")], all = document.getElementById("all"), bulk = document.getElementById("bulk"), count = document.getElementById("bulkCount");
+  function sync() {
+    const n = picks.filter(p => p.checked).length;
+    picks.forEach(p => p.closest("tr").setAttribute("aria-selected", p.checked));
+    all.checked = n === picks.length; all.indeterminate = n > 0 && n < picks.length;
+    bulk.dataset.open = n > 0; count.textContent = n + " selected";
+  }
+  picks.forEach(p => p.addEventListener("change", sync));
+  all.addEventListener("change", () => { picks.forEach(p => p.checked = all.checked); sync(); });
+  document.getElementById("clear").addEventListener("click", () => { picks.forEach(p => p.checked = false); sync(); });
+
+  // DS-TABLE-014: scroll one axis per gesture. Only the dominant axis moves. Pinch-zoom (ctrlKey) passes through.
+  wrap.addEventListener("wheel", (e) => {
+    if (!document.getElementById("lock").checked || e.ctrlKey) return;
+    e.preventDefault();
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) wrap.scrollLeft += e.deltaX;
+    else wrap.scrollTop += e.deltaY;
+  }, { passive: false });
+</script>
+</body>
+</html>

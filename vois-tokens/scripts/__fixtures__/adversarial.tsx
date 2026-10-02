@@ -12,3 +12,9 @@ export function ArbitraryHexGradient() {
   // family. This bypasses the detector while producing an identical result.
   return <div className="bg-gradient-to-r from-[#7c3aed] to-[#3b82f6]" />;
 }
+
+// KNOWN GAP (DS-TABLE-001): the wrapper lives here and the sticky header lives in another file
+// that imports this component. The detector reads one file at a time, so it cannot see the problem.
+function SharedTableWrapper({ children }: { children: React.ReactNode }) {
+  return <div className="relative w-full overflow-x-auto">{children}</div>;
+}

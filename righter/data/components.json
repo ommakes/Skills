@@ -171,7 +171,9 @@
       "variants": [
         { "name": "First use", "description": "the user hasn't created anything yet; explain what fills this space and how to start", "example": "No invoices yet / Create an invoice and it shows up here. / Create invoice" },
         { "name": "User cleared", "description": "the user finished or removed everything; confirm it, then offer the next item", "example": "All tasks done / Add a task to plan your next steps. / Add task" },
-        { "name": "No results", "description": "a search or filter matched nothing; the next step is changing the query, not creating content", "example": "No results for \"invoice 204\" / Try a different search or clear your filters. / Clear filters" }
+        { "name": "No results", "description": "a search or filter matched nothing; the next step is changing the query, not creating content", "example": "No results for \"invoice 204\" / Try a different search or clear your filters. / Clear filters" },
+        { "name": "Empty by nature", "description": "zero rows is the normal, good state, such as no live calls or no open issues; say so plainly and add no action", "example": "No open issues / Nothing needs your attention right now." },
+        { "name": "No access", "description": "the user's role cannot see any rows; say that access is the reason and who can grant it, and never offer a create action", "example": "You don't have access to invoices / Ask an admin to add you to the Billing team." }
       ]
     },
     {

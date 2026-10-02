@@ -76,6 +76,8 @@ everything down proportionally until it fits) is usually the wrong one:
 - Images with set dimensions need `object-fit`. `[DS-LAYOUT-COMP-006]`
 - Use `aspect-ratio` instead of the padding-top percentage hack. `[DS-LAYOUT-COMP-005]`
 
+Tables have their own scroll, sticky, and scrollbar rules. See `references/data-tables.md` (`DS-TABLE-*`).
+
 ## Form, Field, and Dialog Widths `[DS-LAYOUT-WIDTH]`
 
 Widths come from tokens in `data/tokens.json` (`widths`). Never a raw value.

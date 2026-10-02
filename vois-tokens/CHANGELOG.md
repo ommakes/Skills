@@ -4,6 +4,21 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.15.0] - 2026-10-02
+
+### Added
+
+- **`references/data-tables.md`** and `DS-TABLE-001` to `019` (new category `DS-TABLE`, rule count 118 to 137). One scroll owner per table: the page for a simple table, the wrapper for a complex one. Sticky header and first column, scrollbar styling with `scrollbar-width` and `scrollbar-color`, `scrollbar-gutter`, one-axis wheel lock for tables that scroll both ways, container-query layout, scroll-region accessibility, virtualization threshold.
+- **Detector rule `DS-TABLE-001`** (advisory). Flags `overflow: auto clip` and `overflow-x: auto` with `overflow-y: clip`, and a scroll wrapper with no bounded block size next to a sticky `thead` or `th` in the same file. Fixtures in `bad.tsx`, `bad.css`, `good.tsx`. Known gap, documented in `adversarial.tsx`: a wrapper and a sticky header in different files.
+- Pre-Submit Checklist group "Data tables" and two Common Scenarios rows.
+
+### Notes
+
+- Two claims were checked in Chromium before they went in. `overflow: auto clip` computes to `auto / hidden`, so it does not make a header stick to the page. `border-collapse: collapse` borders do not travel with a sticky header, but `separate` borders do.
+- `DS-TABLE-019` assumes tokens that `data/tokens.json` does not have yet: `--scrollbar-thumb`, `--table-offset`, `--table-header-h`, `--app-header-h`, `--z-table-header`, `--z-table-pinned`, `--z-table-corner`, and a row height per density. The rule says to propose them, not hardcode. Adding them is a separate change.
+
+---
+
 ## [1.14.0] - 2026-10-01
 
 ### Added

@@ -25,3 +25,18 @@ export function BadCard() {
 function CustomDialog() {
   return <div role="dialog">custom modal</div>;
 }
+
+// DS-TABLE-001: scroll wrapper with no bounded height around a sticky header (the shape of a shared Table wrapper).
+function BadTable() {
+  return (
+    <div className="relative w-full overflow-x-auto">
+      <table>
+        <thead className="sticky top-0">
+          <tr>
+            <th>Name</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  );
+}

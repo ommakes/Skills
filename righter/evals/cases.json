@@ -120,6 +120,37 @@
       "input": "Pick how your team gets updates.",
       "expected_violations": [],
       "notes": "Ambiguous audience: the request says only 'a settings label for our app'. Stays on the consumer tier and prints no tier line. ARI 2.0, under the consumer target."
+    },
+    {
+      "id": "case-16",
+      "copy_type": "table empty state (filtered)",
+      "input": "Oops! Nothing found.",
+      "expected_violations": ["limit-exclamation-marks"],
+      "expected_component": "empty-state",
+      "notes": "A table whose filters removed every row. This is the no-results variant, so the rewrite names the search and offers Clear filters. The title is also one of empty-state's own bad examples."
+    },
+    {
+      "id": "case-17",
+      "copy_type": "table cell validation",
+      "input": "You entered an invalid price.",
+      "expected_violations": ["error-no-blame"],
+      "expected_component": "helper-text",
+      "notes": "Attached to one editable cell, so Helper Text under the decision tree. Blames the user and gives no way to fix it. A rewrite says what the field accepts."
+    },
+    {
+      "id": "case-18",
+      "copy_type": "table partial import failure",
+      "input": "Import failed \u2014 3 rows have errors!",
+      "expected_violations": ["no-em-dashes", "limit-exclamation-marks", "error-next-step"],
+      "expected_component": "inline-alert",
+      "notes": "Contextual to the table and non-blocking, so Inline Alert, not Alert Banner (which is for system-level issues). Also says 'failed' when the other rows may have imported. A good rewrite gives the counts and the choice to continue with the rows that are ready."
+    },
+    {
+      "id": "case-19",
+      "copy_type": "table row action failure",
+      "input": "The system was unable to archive this invoice.",
+      "expected_violations": ["user-goal-framing", "error-next-step"],
+      "notes": "No expected_component: the decision tree has no clear slot for a failed single-row action. Treat the pick as a judgment call, anchored to the row, and record which component was chosen. If this case keeps needing a judgment call, add a row to the decision tree."
     }
   ]
 }

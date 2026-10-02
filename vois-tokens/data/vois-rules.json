@@ -1,5 +1,5 @@
 {
-  "source": "vois-tokens/references/*.md (13 files; excludes anti-slop.md and hooks.md — see note)",
+  "source": "vois-tokens/references/*.md (14 files; excludes anti-slop.md and hooks.md — see note)",
   "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either.",
   "categories": {
     "DS-A11Y": "Accessibility",
@@ -16,7 +16,8 @@
     "DS-STYLEX": "StyleX",
     "DS-SURFACE": "Surfaces and Motion Polish",
     "DS-TAILWIND": "Tailwind v4",
-    "DS-TYPOGRAPHY": "Typography"
+    "DS-TYPOGRAPHY": "Typography",
+    "DS-TABLE": "Data Tables"
   },
   "rules": [
     {
@@ -1097,6 +1098,177 @@
       "category_label": "Layout",
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Wrap field-sizing styles in @supports (field-sizing: content). Keep the rows attribute and resize: vertical as the fallback for browsers without support.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-001",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A table has exactly one scroll owner, chosen on purpose. A sticky header sticks to its nearest scroll-container ancestor, and any overflow other than visible or clip creates one, so nothing between the header and the intended owner may change that by accident.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-002",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A complex table's wrapper owns both axes: overflow: auto with a bounded block size, a sticky header inside it, scrollbar-gutter: stable, overscroll-behavior-x: contain, and scroll-padding-block-start equal to the header height.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-003",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A simple table sets no overflow on its wrapper, so its sticky header sticks to the page (offset by any fixed app header), and it never scrolls sideways.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-004",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Do not use overflow: auto clip, or overflow-x: auto with overflow-y: clip, to keep a header sticky to the page. clip computes to hidden next to auto, which is still a scroll container.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-005",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Every flex or grid ancestor between the app shell and a table wrapper has min-inline-size: 0 and min-block-size: 0, so the table neither widens the page nor loses its bounded height.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-006",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A pinned first column uses position: sticky with inset-inline-start: 0, an opaque background, and layered z-index tokens: body cells lowest, pinned column, header row, then the corner cell highest. Add scroll-padding-inline-start equal to its width.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-007",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Tables with sticky cells use border-collapse: separate with border-spacing: 0. Collapsed borders do not travel with sticky cells.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-008",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Table layout changes key off the container, not the viewport: container-type: inline-size on an element outside the scroll wrapper, and @container (width < 40em) for the narrow layout.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-009",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Use table-layout: fixed with explicit column widths, text-overflow: ellipsis on text cells, right-aligned numbers with tabular-nums, and left-aligned text.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-010",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Style table scrollbars with scrollbar-width: thin and scrollbar-color from a token. No ::-webkit-scrollbar. Do not hide the scrollbar on a table that scrolls sideways.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-011",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "scrollbar-gutter: stable on the scroll owner, so header and body columns stay aligned when a scrollbar appears.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-012",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "overscroll-behavior-x: contain on the scroll owner. Do not contain the vertical axis.",
+      "severity": "preferred",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-013",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "scroll-padding-block-start equal to the sticky header height on the scroll owner, so focused rows are not hidden under it.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-014",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A complex table that scrolls on both axes scrolls one axis per gesture: a wheel handler (passive: false, ctrlKey passes through) that scrolls only the dominant axis, shared as one hook, with an opt-out. Simple tables do not use it. Leave touch alone.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-015",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A scroll owner has tabindex=\"0\", role=\"region\", and an aria-label. Keep real table elements, a button inside a sortable th, and aria-sort on the sorted th. Use role=\"grid\" only with arrow-key cell navigation.",
+      "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-016",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Paginate by default. Virtualize only for database-style grids with thousands of rows, and test the sticky header and pinned column with a long scroll.",
+      "severity": "preferred",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-017",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Highlights for just-added or just-saved rows and any scroll-shadow transition respect prefers-reduced-motion.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-018",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "A table that scrolls sideways shows a cue that more content exists, such as an edge shadow on the pinned column or a partly visible column, because overlay scrollbars are hidden until scroll.",
+      "severity": "preferred",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-TABLE-019",
+      "category": "DS-TABLE",
+      "category_label": "Data Tables",
+      "source_file": "vois-tokens/references/data-tables.md",
+      "rule": "Scrollbar thumb color, row height per density, the offset above the table, header height, and sticky layers come from tokens. Check the workspace token set first. If one is missing, propose adding it, never hardcode.",
       "severity": "required",
       "enforcement": "advisory"
     }

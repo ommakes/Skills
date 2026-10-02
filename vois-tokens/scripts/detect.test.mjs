@@ -76,3 +76,24 @@ test("KNOWN GAP: DS-SLOP-002 does not catch arbitrary-hex CSS linear-gradient()"
   const hit = adversarialCssFindings.some((f) => f.ruleId === "DS-SLOP-002");
   assert.equal(hit, false, "if this now fires, registry.mjs's regex was extended to hex values — update this test to assert a finding instead");
 });
+
+test("KNOWN GAP: DS-TABLE-001 does not catch a wrapper and a sticky header split across files", () => {
+  const hit = adversarialTsxFindings.some((f) => f.ruleId === "DS-TABLE-001");
+  assert.equal(hit, false, "if this now fires, the detector learned to see across files (or flagged the wrapper alone, which would be noisy) - update this test");
+});
+
+test("DS-TABLE-001 flags overflow-x auto with overflow-y clip in one CSS block", () => {
+  const css = ".w { overflow-x: auto; overflow-y: clip; }\n.w thead th { position: sticky; top: 0; }\n";
+  const found = detectFile("x.css", css);
+  assert.ok(found.some((f) => f.ruleId === "DS-TABLE-001"));
+});
+
+test("DS-TABLE-001 does not flag a wrapper with a bounded block size", () => {
+  const css = ".w { overflow: auto; max-block-size: 70dvh; }\n.w thead th { position: sticky; top: 0; }\n";
+  assert.equal(detectFile("x.css", css).some((f) => f.ruleId === "DS-TABLE-001"), false);
+});
+
+test("DS-TABLE-001 does not flag a simple table with no overflow on the wrapper", () => {
+  const css = ".w { }\n.w thead th { position: sticky; top: var(--app-header-h); }\n";
+  assert.equal(detectFile("x.css", css).some((f) => f.ruleId === "DS-TABLE-001"), false);
+});

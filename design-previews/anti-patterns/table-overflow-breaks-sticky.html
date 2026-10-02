@@ -1,0 +1,90 @@
+<!-- @dsCard group="Anti-Patterns (Avoid)" -->
+<!-- content: DS-TABLE-001 and DS-TABLE-004 in vois-tokens/references/data-tables.md; layout and copy invented for this kit. Computed values are read live from the browser, not typed in. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Anti-pattern: overflow on the table wrapper</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: var(--space-24); }
+  .case { border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+  .case header { padding: var(--space-12) var(--space-16); border-bottom: 1px solid var(--color-border); background: var(--color-surface); display: flex; flex-direction: column; gap: var(--space-4); }
+  .case code { font-family: var(--font-mono); font-size: var(--text-h6-size); }
+  .verdict { font-size: var(--text-h6-size); font-weight: 600; }
+  .bad .verdict { color: var(--color-destructive); }
+  .good .verdict { color: var(--color-success); }
+  .computed { font-size: var(--text-h6-size); color: var(--color-muted-foreground); }
+  /* A stand-in for the page: scroll this box to see what the header does. */
+  .fake-page { block-size: 280px; overflow-y: auto; scrollbar-width: thin; background: var(--color-background); }
+  .fake-page .spacer { block-size: 90px; padding: var(--space-12) var(--space-16); color: var(--color-muted-foreground); font-size: var(--text-h6-size); }
+  .fake-page .after { block-size: 400px; }
+  table { border-collapse: separate; border-spacing: 0; font-size: var(--text-h5-size); }
+  th, td { padding: var(--space-8) var(--space-12); text-align: left; white-space: nowrap; border-block-end: 1px solid var(--color-border); background: var(--color-background); }
+  thead th { position: sticky; inset-block-start: 0; background: var(--color-primary); color: var(--color-primary-foreground); z-index: 1; }
+  .w-a { overflow-x: auto; }
+  .w-b { overflow: auto clip; }
+  .w-c { /* no overflow at all */ }
+  .w-d { overflow: auto; max-block-size: 190px; scrollbar-width: thin; }
+  .wide { inline-size: 760px; }
+  .fit { inline-size: 100%; }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Anti-pattern · DS-TABLE-001, DS-TABLE-004</span>
+    <h1 class="h1">Overflow on the table wrapper</h1>
+    <p class="text-description">A sticky header sticks to its nearest scroll container. <code>overflow-x: auto</code> makes the wrapper one on both axes, so the header sticks to the wrapper and scrolls away with the page. <code>overflow: auto clip</code> does not fix it: <code>clip</code> computes to <code>hidden</code>, which is still a scroll container. Scroll inside each box to see what the header does.</p>
+  </div>
+
+  <div class="grid">
+    <section class="case bad">
+      <header><code>.wrap { overflow-x: auto }</code><span class="verdict">Wrong. The header scrolls away.</span><span class="computed" data-for="a"></span></header>
+      <div class="fake-page"><div class="spacer">Page content above the table. Scroll down.</div>
+        <div class="w-a" id="a"><table class="wide"><thead><tr><th>Account</th><th>Region</th><th>Owner</th><th>Seats</th><th>MRR</th><th>Renews</th></tr></thead><tbody class="r"></tbody></table></div>
+        <div class="after"></div></div>
+    </section>
+
+    <section class="case bad">
+      <header><code>.wrap { overflow: auto clip }</code><span class="verdict">Wrong. Same result.</span><span class="computed" data-for="b"></span></header>
+      <div class="fake-page"><div class="spacer">Page content above the table. Scroll down.</div>
+        <div class="w-b" id="b"><table class="wide"><thead><tr><th>Account</th><th>Region</th><th>Owner</th><th>Seats</th><th>MRR</th><th>Renews</th></tr></thead><tbody class="r"></tbody></table></div>
+        <div class="after"></div></div>
+    </section>
+
+    <section class="case good">
+      <header><code>simple: no overflow on the wrapper</code><span class="verdict">Right for a simple table. The header sticks to the page.</span><span class="computed" data-for="c"></span></header>
+      <div class="fake-page"><div class="spacer">Page content above the table. Scroll down.</div>
+        <div class="w-c" id="c"><table class="fit"><thead><tr><th>Account</th><th>Region</th><th>Seats</th></tr></thead><tbody class="r"></tbody></table></div>
+        <div class="after"></div></div>
+    </section>
+
+    <section class="case good">
+      <header><code>complex: overflow: auto + max-block-size</code><span class="verdict">Right for a complex table. The wrapper scrolls and the header sticks inside it.</span><span class="computed" data-for="d"></span></header>
+      <div class="fake-page"><div class="spacer">Page content above the table. The table scrolls in its own box.</div>
+        <div class="w-d" id="d" tabindex="0" role="region" aria-label="Complex table, scrollable"><table class="wide"><thead><tr><th>Account</th><th>Region</th><th>Owner</th><th>Seats</th><th>MRR</th><th>Renews</th></tr></thead><tbody class="r"></tbody></table></div>
+        <div class="after" style="block-size: 40px;"></div></div>
+    </section>
+  </div>
+</div>
+<script>
+  document.querySelectorAll("tbody.r").forEach(tb => {
+    let h = ""; const wide = tb.closest("table").classList.contains("wide");
+    for (let i = 1; i <= 24; i++) h += wide ? `<tr><td>Account ${i}</td><td>US East</td><td>Ana</td><td>${40 + i}</td><td>$${1200 + i * 9}</td><td>Apr ${i % 28 + 1}</td></tr>` : `<tr><td>Account ${i}</td><td>US East</td><td>${40 + i}</td></tr>`;
+    tb.innerHTML = h;
+  });
+  document.querySelectorAll("[data-for]").forEach(el => {
+    const s = getComputedStyle(document.getElementById(el.dataset.for));
+    el.textContent = "Computed overflow: " + s.overflowX + " / " + s.overflowY;
+  });
+</script>
+</body>
+</html>

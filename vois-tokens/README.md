@@ -53,6 +53,7 @@ Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. If a `voi
 | `DS-COMPONENT` | shadcn/ui components, CVA, variants |
 | `DS-MODAL` | Modal focus trapping, scroll bleed, layout shift |
 | `DS-LAYOUT` | Viewport units, `content-visibility` |
+| `DS-TABLE` | Table scroll owner, sticky header and column, scrollbar styling, one-axis wheel lock |
 | `DS-TAILWIND` | Tailwind v4 migration patterns, utility rules |
 | `DS-ANIMATION` | Timing, easing, reduced motion, scale/origin |
 | `DS-A11Y` | Accessibility — touch targets, focus, contrast, semantic HTML |
