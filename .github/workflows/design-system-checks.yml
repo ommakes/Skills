@@ -10,6 +10,9 @@ on:
       - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
+      - "**/SKILL.md"
+      - "**/references/**"
+      - "**/data/**"
   pull_request:
     paths:
       - "vois-tokens/**"
@@ -18,6 +21,9 @@ on:
       - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
+      - "**/SKILL.md"
+      - "**/references/**"
+      - "**/data/**"
 
 jobs:
   checks:
@@ -43,3 +49,6 @@ jobs:
 
       - name: SKILL.md frontmatter validation
         run: bash scripts/validate-skills.sh
+
+      - name: Routing and link audit (paths, skills, work types, graph, rule IDs)
+        run: python3 scripts/check-routing.py
