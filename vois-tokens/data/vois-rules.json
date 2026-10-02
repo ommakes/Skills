@@ -1151,7 +1151,7 @@
       "category": "DS-TABLE",
       "category_label": "Data Tables",
       "source_file": "vois-tokens/references/data-tables.md",
-      "rule": "A pinned first column uses position: sticky with inset-inline-start: 0, an opaque background, and layered z-index tokens: body cells lowest, pinned column, header row, then the corner cell highest. Add scroll-padding-inline-start equal to its width.",
+      "rule": "A pinned first column uses position: sticky with inset-inline-start: 0 and an opaque background. Layers are small local z-index values (pinned column 1, header row 2, corner cell 3) inside a stacking context made by isolation: isolate on the scroll owner, so they never outrank an overlay. Add scroll-padding-inline-start equal to the column width.",
       "severity": "recommended",
       "enforcement": "advisory"
     },
@@ -1187,7 +1187,7 @@
       "category": "DS-TABLE",
       "category_label": "Data Tables",
       "source_file": "vois-tokens/references/data-tables.md",
-      "rule": "Style table scrollbars with scrollbar-width: thin and scrollbar-color from a token. No ::-webkit-scrollbar. Do not hide the scrollbar on a table that scrolls sideways.",
+      "rule": "Style table scrollbars with scrollbar-width: thin and scrollbar-color from an existing neutral token such as the muted foreground. No ::-webkit-scrollbar. Do not hide the scrollbar on a table that scrolls sideways.",
       "severity": "recommended",
       "enforcement": "advisory"
     },
@@ -1268,7 +1268,7 @@
       "category": "DS-TABLE",
       "category_label": "Data Tables",
       "source_file": "vois-tokens/references/data-tables.md",
-      "rule": "Scrollbar thumb color, row height per density, the offset above the table, header height, and sticky layers come from tokens. Check the workspace token set first. If one is missing, propose adding it, never hardcode.",
+      "rule": "Header height and row height per density come from the table_sizes tokens. Check the workspace token set first. If one is missing, propose adding it, never hardcode. The space above a complex table and a fixed app header's height are set by the page, not tokens, and the component supplies a fallback.",
       "severity": "required",
       "enforcement": "advisory"
     }

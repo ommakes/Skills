@@ -109,6 +109,8 @@ Below the `sm` container width (`40em`):
 - **4 or fewer columns** (not counting the actions column): rows stack as list items, with the first column as the title and the remaining values beneath it
 - **More than 4 columns:** the table scrolls horizontally with the first column and header row pinned, as above. A table in this state is a scroll owner, so it follows the complex-table scroll rules whether or not it counts as complex otherwise.
 
+Row anatomy, how a row opens, and selection on a narrow screen are in `table-interactions.md` under Narrow screens.
+
 ## States, errors, and interactions
 
 Selection, bulk actions, columns, density, keyboard, URL state, loading, empty, error, and partial-failure handling are in `table-interactions.md` (the `PATH-TABLE-*` rules).

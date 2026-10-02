@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.15.0
+version: 1.16.0
 ---
 
 # Vois Tokens Skill
@@ -176,11 +176,11 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] One scroll owner per table: the page for a simple table, the wrapper for a complex one `[DS-TABLE-001]` `[DS-TABLE-002]` `[DS-TABLE-003]`
 - [ ] No `overflow: auto clip` or `overflow-y: clip` workaround. `clip` computes to `hidden` `[DS-TABLE-004]`
 - [ ] A complex table's wrapper has a bounded block size, and its flex or grid parents have `min-block-size: 0` `[DS-TABLE-002]` `[DS-TABLE-005]`
-- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and layered z-index tokens `[DS-TABLE-006]` `[DS-TABLE-007]`
+- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and local z layers inside `isolation: isolate` `[DS-TABLE-006]` `[DS-TABLE-007]`
 - [ ] Scrollbars styled with `scrollbar-width: thin` and `scrollbar-color`, no `::-webkit-scrollbar` `[DS-TABLE-010]` `[DS-TABLE-011]`
 - [ ] A complex table that scrolls both ways uses the one-axis wheel lock `[DS-TABLE-014]`
 - [ ] The scroll region is focusable, labeled, and the table keeps real table elements `[DS-TABLE-015]`
-- [ ] Table dimensions and the scrollbar color come from tokens `[DS-TABLE-019]`
+- [ ] Header and row heights come from the `table_sizes` tokens, and the page sets the table offset `[DS-TABLE-019]`
 
 **CSS**
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`

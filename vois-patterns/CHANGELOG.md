@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.12.0] - 2026-10-02
+
+**Add** | Three narrow-screen rules in `references/table-interactions.md`: `PATH-TABLE-NARROW-ROW` (stacked row anatomy), `PATH-TABLE-NARROW-OPEN` (full-width drawer with a back control), `PATH-TABLE-NARROW-SELECT` (selection as a mode, with a bottom bulk bar). From a Mobbin pass on iOS list and selection screens.
+
+**Note** | The 4-column cutoff in `PATH-B-NARROW` is unchanged. Mobbin showed phone apps using list rows, not shrunken tables, and had no narrow web table to test the cutoff against. `PATH-TABLE-NARROW-OPEN` is judgment, not observed.
+
+---
+
 ## [1.11.0] - 2026-10-02
 
 **Add** | New `references/table-interactions.md` (companion to PATH-B): selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty, and error states, partial failures. 32 `PATH-TABLE-*` rules.

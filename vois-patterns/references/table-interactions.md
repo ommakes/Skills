@@ -200,6 +200,28 @@ Extends `table-list.md`. That file says which kind of table to build and how a r
 **Basis:** judgment.
 
 
+## Narrow screens
+
+These extend `[PATH-B-NARROW]` in `table-list.md`. Mobbin shows phone apps, which use list rows and a selection mode, not shrunken tables. It had no narrow web table to check the 4-column cutoff against, so that cutoff stays as it was.
+
+### `[PATH-TABLE-NARROW-ROW]` Stacked row anatomy
+**When:** A table is below the sm container width and stacks its rows (4 or fewer columns, see PATH-B-NARROW).
+**Do:** The first column is the row title. Show up to three more values under or beside it: one or two secondary values below the title, one trailing value aligned to the end, and status as a Badge. Nothing is dropped. With 4 or fewer columns every value fits. The whole row is the tap target and opens the record.
+**Builds on:** PATH-B-NARROW, PATH-B-ROW-OPEN, JOB-DISPLAY-DATA
+**Basis:** observed. Seen: [Matter](https://mobbin.com/screens/a7a67be8-ab72-4e0e-acf7-0312de48b41d), [Yazio](https://mobbin.com/screens/9fd9026d-9e5d-412d-8d84-5c9c60f3645f), [Quo](https://mobbin.com/screens/d22b92a8-9d12-44c3-8cfc-3bf7ef403518), [Todoist](https://mobbin.com/screens/508025b6-7176-4ccd-a6f4-ea5962685a78).
+
+### `[PATH-TABLE-NARROW-OPEN]` Row open on a narrow screen
+**When:** A row opens its record below the sm container width.
+**Do:** The drawer takes the full width and shows a back control instead of a close control. Back and the URL behave as they do on a wide screen. A record with tabs, a timeline, or related records still escalates to a full page.
+**Builds on:** PATH-B-ROW-OPEN, PATH-TABLE-URL-STATE, JOB-OVERLAY-INTERACTION
+**Basis:** judgment. Seen: [Matter](https://mobbin.com/screens/a7a67be8-ab72-4e0e-acf7-0312de48b41d), [Quo](https://mobbin.com/screens/d22b92a8-9d12-44c3-8cfc-3bf7ef403518).
+
+### `[PATH-TABLE-NARROW-SELECT]` Selection on a narrow screen
+**When:** A narrow list has bulk actions.
+**Do:** Selection is a mode. An explicit Select action enters it, and the checkbox column appears only then. The header shows "N selected" with Select all and Cancel. The bulk bar sits at the bottom of the screen with 2 to 4 actions, the destructive one last and in the destructive color. A destructive action confirms with the count before it runs. Leaving the mode clears the selection.
+**Builds on:** PATH-TABLE-SELECT-CHECKBOX, PATH-TABLE-BULK-BAR, PATH-TABLE-BULK-DESTRUCTIVE, JOB-CONFIRM-DESTRUCTIVE
+**Basis:** observed. Seen: [Matter](https://mobbin.com/screens/a7a67be8-ab72-4e0e-acf7-0312de48b41d), [Pi](https://mobbin.com/screens/addb06f6-6131-41f5-a1f8-c9b12eadbc86), [Apple Wallet](https://mobbin.com/screens/e288a904-17a9-40cd-b79f-404e6b5558c7), [Todoist](https://mobbin.com/screens/508025b6-7176-4ccd-a6f4-ea5962685a78), [Yazio](https://mobbin.com/screens/9fd9026d-9e5d-412d-8d84-5c9c60f3645f), [GitHub](https://mobbin.com/screens/5edb4b50-e0ce-4571-ac92-dc6af0f05cea), [Stake](https://mobbin.com/screens/6964c526-e241-4be1-82b3-fc57658e5366), [Quo](https://mobbin.com/screens/d22b92a8-9d12-44c3-8cfc-3bf7ef403518).
+
 ## Structure
 
 ### `[PATH-TABLE-SEMANTICS]` Table semantics

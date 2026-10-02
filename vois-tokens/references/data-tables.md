@@ -25,11 +25,12 @@ CSS cannot make a header stick to the page while the table scrolls sideways. A w
   scrollbar-gutter: stable;
   overscroll-behavior-x: contain;
   scroll-padding-block-start: var(--table-header-h);
+  isolation: isolate;                /* local stacking context, see DS-TABLE-006 */
 }
 .table-wrap thead th {
   position: sticky;
   inset-block-start: 0;
-  z-index: var(--z-table-header);
+  z-index: 2;
 }
 ```
 
@@ -58,18 +59,18 @@ A table inside a flex or grid layout sizes to its content unless the parents all
 ## 6. Sticky first column `[DS-TABLE-006]`
 
 ```css
+.table-wrap { isolation: isolate; }          /* layers below stay inside the table */
 .table-wrap :is(th, td):first-child {
   position: sticky;
   inset-inline-start: 0;
-  background: var(--color-background);   /* opaque, content scrolls under it */
-  z-index: var(--z-table-pinned);
+  background: var(--color-background);      /* opaque, content scrolls under it */
+  z-index: 1;
 }
-.table-wrap thead th:first-child {
-  z-index: var(--z-table-corner);        /* above both */
-}
+.table-wrap thead th { z-index: 2; }
+.table-wrap thead th:first-child { z-index: 3; }  /* corner cell */
 ```
 
-Three layers, lowest to highest: body cells, pinned first column, header row, then the corner cell where the header and the pinned column meet. Take the values from the elevation tokens and keep them inside the sticky layer, below overlays (`[DS-ELEVATION-002]`). Do not invent numbers. Add `scroll-padding-inline-start` equal to the pinned column's width, so a focused cell is not hidden behind it.
+Three layers, lowest to highest: the pinned column in the body, the header row, then the corner cell where the header and the pinned column meet. Put `isolation: isolate` on the scroll owner so these small numbers stay inside the table and can never outrank a dropdown, popover, or dialog. That is why they are local numbers and not tokens. Verified in Chromium: with `isolation: isolate`, an overlay at `z-index: 2` paints above the corner cell (`z-index: 3`). Without it, the corner cell paints above the overlay. Add `scroll-padding-inline-start` equal to the pinned column's width, so a focused cell is not hidden behind it.
 
 ## 7. Borders on sticky cells `[DS-TABLE-007]`
 
@@ -104,11 +105,11 @@ Style the scroll wrapper with the standard properties:
 ```css
 .table-wrap {
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-color: var(--color-muted-foreground) transparent;
 }
 ```
 
-Do not use `::-webkit-scrollbar`. It switches off native behavior, defeats overlay scrollbars on macOS, and is easy to make inaccessible. Do not hide the scrollbar on a table that scrolls sideways. Verified in Chromium: `thin`, the thumb color, and the stable gutter all compute as written.
+Take the thumb color from an existing neutral token, such as the muted foreground. It does not need a token of its own. Do not use `::-webkit-scrollbar`. It switches off native behavior, defeats overlay scrollbars on macOS, and is easy to make inaccessible. Do not hide the scrollbar on a table that scrolls sideways. Verified in Chromium: `thin`, the thumb color, and the stable gutter all compute as written.
 
 ## 11. Reserve the scrollbar's space `[DS-TABLE-011]`
 
@@ -158,9 +159,18 @@ macOS overlay scrollbars are invisible until you scroll. Give sideways-scrolling
 
 ## 19. Table dimensions come from tokens `[DS-TABLE-019]`
 
-The scrollbar thumb color, row heights for each density, the offset above the table, the header height, and the sticky layers all come from tokens. Check the workspace token set before you write any of them (`vois_get_token`, or `tokens.json`). If one is missing, propose adding it. Do not hardcode the value.
+Header height and the row height for each density are tokens (`data/tokens.json`, group `table_sizes`), in `rem`:
 
-Tokens this reference assumes: `--scrollbar-thumb`, `--table-offset`, `--table-header-h`, `--app-header-h`, `--z-table-header`, `--z-table-pinned`, `--z-table-corner`, and a row height per density.
+| Token | Value | Use |
+| --- | --- | --- |
+| `--table-header-h` | `2.5rem` | Header row height. Also the `scroll-padding-block-start` and the sticky offset. |
+| `--table-row-h-dense` | `2rem` | Dense. Pointer devices only. |
+| `--table-row-h-regular` | `2.75rem` | Regular. Matches `--hit-area-min`, so rows are tappable. |
+| `--table-row-h-comfortable` | `3.5rem` | Comfortable. |
+
+Check the workspace token set before you use them (`vois_get_token`, or `tokens.json`). If one is missing, propose adding it. Do not hardcode the value.
+
+Two things are **not** tokens, because each page sets them: `--table-offset` (the space above the table, which bounds a complex table's height) and `--app-header-h` (a fixed app header the simple table's header sticks below). Set both in the page layout, and give the component a fallback. The scrollbar thumb color uses an existing neutral token, and the sticky layers are local numbers (`[DS-TABLE-006]`).
 
 ## Detector
 
