@@ -79,6 +79,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.17.0**: `references/marketing-type-and-spacing.md` and `DS-MKT-*` rules for marketing surfaces. `DS-SLOP-009` is now a blanket ban on em dashes in shipped copy.
 - **1.10.0** — Two new `references/anti-slop.md` rules: `DS-SLOP-010` (card-ifying every static section; drop shadows reserved for interactive elements) and `DS-SLOP-011` (left-border + corner-radius combo on active nav/sidebar items; prefer a subtle color shift).
 - **1.9.1** — Removed a dangling cross-reference in `references/iconography.md` (`DS-ICON-002` cited a nonexistent `DS-CSS-008`).
 - **1.9.0** — `data/vois-rules.json` (structured lookup for all 102 numbered `DS-*` rules) and `data/tokens.json` (actual token values), for lookup without reading full reference files.

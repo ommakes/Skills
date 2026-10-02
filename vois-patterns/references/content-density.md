@@ -60,6 +60,10 @@ up), fewer things visible at once, more whitespace around the one thing that
 matters. The goal here isn't efficiency — it's making one decision or one
 piece of content unmistakably the point of the screen.
 
+## Marketing pages
+
+Marketing and landing surfaces are spacious by default. What spacious means on a page that sells something (one idea per section, three blocks max, loose sections, tight text) is in `marketing-pages.md` (`[PATH-G]`). Type and spacing values are in `vois-tokens/references/marketing-type-and-spacing.md`.
+
 ## Relationship to the DENSITY taste dial
 
 `vois-tokens`' `SKILL.md` defines a `DENSITY` taste dial (1-10) that "biases

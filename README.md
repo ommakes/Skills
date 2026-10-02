@@ -15,7 +15,7 @@ These skills work together as a stack, and each one works standalone — no orch
 Each skill's `data/*.json` is the canonical source for its rules — `references/*.md` restates them for readability and worked examples, but the JSON wins on conflict. [`scripts/check-rule-sync.mjs`](./scripts/check-rule-sync.mjs) enforces that the two never silently disagree, and runs in CI alongside `vois-tokens`' own detector regression suite (see [`.github/workflows/design-system-checks.yml`](./.github/workflows/design-system-checks.yml)).
 
 ### Vois Patterns
-Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages, pricing pages), state management (view/edit), and routing to righter skill for all microcopy. Tables cover simple vs complex, how a row opens (drawer by default, full page for big records), where editing happens, selection and bulk actions, and loading, empty, and error states. 
+Structural decision trees and UI patterns that tell agents *what to build* before implementing it. Covers container types (forms, tables, dialogs, settings pages, pricing pages), state management (view/edit), and routing to righter skill for all microcopy. Marketing pages (landing pages, homepages) have their own taste rules: one idea per section, three blocks max, detail behind a link, no dividers. Tables cover simple vs complex, how a row opens (drawer by default, full page for big records), where editing happens, selection and bulk actions, and loading, empty, and error states. 
 
 **Read first** to determine the structure and architecture of what you're building.
 
@@ -62,7 +62,7 @@ A skill for AI coding agents (Cursor, Claude Code, v0) that encodes design syste
 
 Tunes within the design system's guardrails using taste dials (VARIANCE/MOTION/DENSITY, 1–10, defaulting to 5/4/5 if none are supplied) — dials adjust degree, never override safety, accessibility, or hard token rules. Flags DS-SLOP-* anti-tells (centered-hero, AI-gradient backgrounds, uniform three-card grids, eyebrow overuse, zigzag sections, spec-sheet tables) as advisory warnings, and enforces the redesign no-silent-changes contract when working on existing UI.
 
-Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, data tables, anti-slop, etc.) — read only the reference file(s) relevant to what you're building instead of the whole skill. Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules (including DS-SLOP-002 and the table-wrapper check DS-TABLE-001) and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
+Ships as `SKILL.md` plus a `references/` folder split by topic (spacing, color, typography, components, accessibility, animation, CSS architecture, data tables, anti-slop, etc.) — read only the reference file(s) relevant to what you're building instead of the whole skill. Marketing surfaces get their own type scale and spacing ratios (`references/marketing-type-and-spacing.md`). Also ships a zero-dependency `scripts/` detector that mechanically checks the regex-verifiable subset of the rules (including DS-SLOP-002 and the table-wrapper check DS-TABLE-001) and can run as a per-edit hook in Claude Code, Cursor, or Codex — complementary to, not a replacement for, the GitHub-integrated token-drift app.
 
 → [`vois-tokens/`](./vois-tokens)
 
@@ -75,7 +75,7 @@ Every principle and error-message rule carries a stable `id` for cross-referenci
 
 **Read throughout.** Vois Patterns and Vois Components route to this skill for all copy: button labels, error messages, field descriptions, helper text, status labels, empty states, toasts, confirmations.
 
-**Use when:** writing, reviewing, or improving any UI copy, error messages, button labels, tooltips, empty states, onboarding copy, form text, or product emails.
+**Use when:** writing, reviewing, or improving any UI copy, error messages, button labels, tooltips, empty states, onboarding copy, form text, product emails, or marketing-page copy. Marketing slots (hero, section head, card, button) have word limits in `data/marketing-limits.json`, checked by `scripts/check-slots.mjs`.
 
 → [`righter/`](./righter)
 

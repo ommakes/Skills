@@ -151,6 +151,41 @@
       "input": "The system was unable to archive this invoice.",
       "expected_violations": ["user-goal-framing", "error-next-step"],
       "notes": "No expected_component: the decision tree has no clear slot for a failed single-row action. Treat the pick as a judgment call, anchored to the row, and record which component was chosen. If this case keeps needing a judgment call, add a row to the decision tree."
+    },
+    {
+      "id": "case-20",
+      "copy_type": "marketing hero h1",
+      "input": "Ashburn's premier martial arts facility for all ages",
+      "expected_violations": ["mkt-concrete-over-adjective"],
+      "notes": "Marketing slot. check-slots.mjs also fails it for 8 words against a limit of 7. Passing version: 'Martial arts for all ages in Ashburn' (7 words)."
+    },
+    {
+      "id": "case-21",
+      "copy_type": "marketing hero sub",
+      "input": "Kids and adult martial arts in Ashburn, VA. Brazilian Jiu Jitsu (BJJ), Mixed Martial Arts (MMA), and Krav Maga for every level and every age. Join your first class for free",
+      "expected_violations": ["mkt-one-idea-per-sentence", "mkt-one-acronym"],
+      "notes": "31 words against a limit of 12, three sentences, and two acronyms in one sentence. Passing version: 'Jiu Jitsu and Krav MMA for kids and adults. First class free.'"
+    },
+    {
+      "id": "case-22",
+      "copy_type": "marketing section head",
+      "input": "We'd Love to Hear From You",
+      "expected_violations": ["mkt-lead-with-the-goal"],
+      "notes": "6 words against a limit of 5 and names the mood, not the job. Passing version: 'Ask us anything'."
+    },
+    {
+      "id": "case-23",
+      "copy_type": "marketing CTAs",
+      "input": "Start free / Book a free class / Start for Free",
+      "expected_violations": ["mkt-one-name-per-thing", "mkt-buttons-say-what-happens"],
+      "notes": "One action with three labels, and 'Start free' does not say what happens. Passing version: 'Book a free class' everywhere."
+    },
+    {
+      "id": "case-24",
+      "copy_type": "marketing hero sub, em dash",
+      "input": "Jiu Jitsu for kids and adults — first class free.",
+      "expected_violations": ["no-em-dashes"],
+      "notes": "Marketing copy does not get an em dash carve-out. Passing version: 'Jiu Jitsu for kids and adults. First class free.'"
     }
   ]
 }

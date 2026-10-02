@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.16.0
+version: 1.17.0
 ---
 
 # Vois Tokens Skill
@@ -85,7 +85,8 @@ building fresh, not just the bare rule text:**
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
-| `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |
+| `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 96px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
+| `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse, em dashes) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |
 | `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
 **Scoped loading:** if you only need one or two rules (e.g. vois-router sent you here for a single component decision), query `data/vois-rules.json` for those rule IDs, or read only the matching reference file plus this SKILL.md if you need the examples too. You don't need the full set for a scoped task.
@@ -188,6 +189,13 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
 - [ ] StyleX projects only: build plugin confirmed wired up `[DS-STYLEX-001]`, tokens sourced from `defineVars()` not literals `[DS-STYLEX-002]`
 
+**Marketing surfaces** (only; see `references/marketing-type-and-spacing.md`)
+- [ ] Display face only for display and h2, never below 28px `[DS-MKT-002]`
+- [ ] One display headline per page, one h2 per section `[DS-MKT-003]`
+- [ ] Body text capped at `56ch` `[DS-MKT-005]`
+- [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
+- [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
+
 **Anti-slop** (see `references/anti-slop.md` — read it before flagging; several are dial-gated)
 - [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
 - [ ] No purple/indigo→blue "AI gradient" as a default `[DS-SLOP-002]`
@@ -197,7 +205,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No more than 2 consecutive zigzag sections `[DS-SLOP-006]`
 - [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
 - [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
-- [ ] Em-dash density appropriate to context — righter owns prose `[DS-SLOP-009]`
+- [ ] No em dashes in shipped copy `[DS-SLOP-009]`
 - [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
 - [ ] No left-border + corner-radius combo (especially with a shadow) on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
 

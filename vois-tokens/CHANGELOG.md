@@ -4,6 +4,21 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.17.0] - 2026-10-02
+
+### Added
+
+- **`references/marketing-type-and-spacing.md`** and `DS-MKT-001` to `008` (new category `DS-MKT`). A type scale and spacing for marketing surfaces only: display face for display and h2, one display per page, `56ch` body, section gaps about 4x the heading-to-content gap, and section gaps above 96px. The ratios are the rules. The pixel values are starting points: they were estimated from one reference site and tuned by eye on one mockup.
+- **A "Marketing surfaces" group** in the Pre-Submit Checklist, and a note in `DS-SLOP-003` that three blocks per row is a ceiling, not a target.
+- Pointers from `typography.md` and `spacing.md` to the marketing file.
+
+### Changed
+
+- **`DS-SLOP-009` is now a blanket ban on em dashes in shipped copy.** Before, it allowed them in editorial text and flagged only high density. This now matches `righter`'s `no-em-dashes`. The `design-previews` page for this rule was rewritten to match.
+- **Version bump:** `1.16.0` → `1.17.0`
+
+---
+
 ## [1.16.0] - 2026-10-02
 
 ### Added

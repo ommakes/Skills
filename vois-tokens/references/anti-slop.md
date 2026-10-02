@@ -50,6 +50,8 @@ title length, same body, same everything) is a tell. Real feature sets are
 uneven — vary card sizes, promote the primary one, use a bento/asymmetric grid,
 or drop the grid entirely if there are only three things to say.
 
+On marketing pages, `vois-patterns/references/marketing-pages.md` caps a row or stack at three blocks. Three is the ceiling, not the target. The blocks should still differ in size, emphasis, or content.
+
 ### `[DS-SLOP-004]` Eyebrow overuse
 The uppercase, letter-spaced "eyebrow" label above a heading is fine once. It
 becomes a tell when it sits above *every* section. Cap it at roughly **one per
@@ -80,22 +82,14 @@ rhythm, top to bottom. Even at low `VARIANCE`, a page needs *some* change in
 pace — a full-bleed break, a tighter cluster, a wider gutter. Uniformity from
 top to bottom is a tell even when each individual section is fine.
 
-### `[DS-SLOP-009]` Em-dash as an AI tell — *scoped, judgment-only*
-This is a deliberate, scoped stance, not a blanket ban (some other skills ban the
-em-dash outright; Vois does not).
+### `[DS-SLOP-009]` No em dashes in copy
+Em dashes are a well-known AI writing tell, and they read as a hedge in short copy. Don't use them in UI copy, marketing copy, or any text the product or page ships. Use a period, a comma, or a colon. If a sentence needs a dash to hold together, rewrite it.
 
-- **In typographic UI and editorial/prose content** where punctuation is being
-  set with care — em-dashes are correct and encouraged. `—` is a real
-  typographic mark; using it well is craft, not slop. This is consistent with
-  the rest of `references/typography.md` (curly quotes, real ellipsis).
-- **In generated marketing/body copy** — a high density of em-dashes (multiple
-  per paragraph, em-dash as the default connector for every clause) is a
-  recognizable generated-text signature. When it reads that way, restructure:
-  a period, a colon, or a rewrite is usually stronger than a third em-dash.
+This matches `righter` (`no-em-dashes`).
 
-Judgment-only by design — the mechanical detector cannot tell a well-set
-editorial dash from a slop one, so it does not try. Route any copy this rule
-touches through **righter**, which owns the final call on prose.
+Judgment-only: the mechanical detector does not check for it. Route any copy this rule touches through **righter**.
+
+---
 
 ### `[DS-SLOP-010]` Card-ifying everything
 Wrapping every section, list, or grouped set of fields in its own
@@ -132,6 +126,6 @@ Fold these into the build's Pre-Submit pass alongside the main checklist:
 - [ ] No more than 2 consecutive zigzag sections `[DS-SLOP-006]`
 - [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
 - [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
-- [ ] Em-dash density appropriate to context (righter owns prose) `[DS-SLOP-009]`
+- [ ] No em dashes in shipped copy `[DS-SLOP-009]`
 - [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
 - [ ] No left-border + corner-radius combo (especially with a shadow) on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`

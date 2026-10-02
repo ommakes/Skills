@@ -15,4 +15,6 @@ Use `gap` for layout spacing between elements. Use padding for internal componen
 
 **StyleX note:** `stylex.create()` spacing properties (`padding`, `gap`, `marginTop`, etc.) are plain numbers or strings with no arbitrary-value guard at all — nothing stops you from writing `padding: 11`. The same discipline applies, just with less of a syntactic nudge to break it: reference a spacing token from `defineVars()` rather than a bare number.
 
+Marketing surfaces may use section gaps above 96px. See `marketing-type-and-spacing.md` (`[DS-MKT-008]`).
+
 Verify spacing holds at every responsive breakpoint before considering a component done. `[DS-SPACING-004]`

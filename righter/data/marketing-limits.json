@@ -1,0 +1,25 @@
+{
+  "source": "righter/data/marketing-limits.json",
+  "description": "Word limits per marketing-page slot, plus the banned-word and acronym checks that go with them. Marketing surfaces only: product UI keeps using data/components.json. Counts are whitespace-separated tokens that contain a letter or digit, so a hyphenated word like \"in-house\" counts as one. Run scripts/check-slots.mjs instead of counting by hand.",
+  "scope": "marketing-surfaces",
+  "slots": [
+    { "id": "hero-h1", "label": "Hero h1", "max_words": 7, "max_sentences": 1, "notes": "Say what it is and where. No adjectives." },
+    { "id": "hero-sub", "label": "Hero sub", "max_words": 12, "max_sentences": 2, "max_acronyms": 1, "notes": "One idea. One acronym max. The longest example in the source is two short sentences." },
+    { "id": "section-head", "label": "Section head", "max_words": 5, "max_sentences": 1, "notes": "Name the job, not the mood." },
+    { "id": "card-title", "label": "Card title", "max_words": 4, "max_sentences": 1, "notes": "Use the thing's real name." },
+    { "id": "card-description", "label": "Card description", "max_words": 20, "max_sentences": 2, "notes": "Two sentences max." },
+    { "id": "button", "label": "Button or link", "min_words": 2, "max_words": 4, "max_sentences": 1, "notes": "Verb first. Say what happens." },
+    { "id": "eyebrow", "label": "Eyebrow or label", "max_words": 2, "max_sentences": 1, "notes": "Only if it carries information." },
+    { "id": "form-helper", "label": "Form helper", "max_words": 12, "max_sentences": 2, "notes": "" }
+  ],
+  "banned_terms": {
+    "description": "Puffery. Use a number, a place, or a fact instead. 'leading' is a warning, not a failure, because it is also a normal verb.",
+    "fail": ["premier", "unique", "world-class", "world class", "best-in-class", "passionate", "we strive to"],
+    "warn": ["leading"]
+  },
+  "checks": {
+    "em_dash": "fail",
+    "multiple_acronyms_in_one_sentence": "warn",
+    "weakeners": "warn"
+  }
+}

@@ -17,7 +17,8 @@
     "DS-SURFACE": "Surfaces and Motion Polish",
     "DS-TAILWIND": "Tailwind v4",
     "DS-TYPOGRAPHY": "Typography",
-    "DS-TABLE": "Data Tables"
+    "DS-TABLE": "Data Tables",
+    "DS-MKT": "Marketing Type and Spacing"
   },
   "rules": [
     {
@@ -1270,6 +1271,78 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Header height and row height per density come from the table_sizes tokens. Check the workspace token set first. If one is missing, propose adding it, never hardcode. The space above a complex table and a fixed app header's height are set by the page, not tokens, and the component supplies a fallback.",
       "severity": "required",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-001",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Apply the marketing type and spacing rules only on marketing surfaces (landing pages, product marketing, public site pages). Product UI keeps DS-TYPOGRAPHY and DS-SPACING as written.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-002",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "The display face (`--font-heading`) carries display and h2 only and is never used below 28px. The text face (`--font-body`) carries everything else. Both roles can be one family at different weights.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-003",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "One display headline per page and one h2 per section.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-004",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Use the marketing type scale as a starting point: display 40/44 mobile and 72/76 desktop, h2 28/34 and 44/50, h3 20/26 and 24/30, lead 18/26 and 20/30, body 16/24 and 17/26, small 14/20 and 15/22. Values are estimates. Keep the ratios and adjust per site.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-005",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Cap marketing body text at `56ch`. This replaces the 65ch cap in DS-TYPOGRAPHY-008 on marketing surfaces. Headings may run narrower.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-006",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "The gap between sections is about 4x the gap between a section heading and its content, and 12 to 15x the gap between a heading and its body text. If a page feels cramped, widen the section gap first, then cut content. Do not add dividers to compensate.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-007",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Keep the gap inside a block smaller than the gap between blocks. If they match, the page reads as one pile.",
+      "severity": "recommended",
+      "enforcement": "advisory"
+    },
+    {
+      "id": "DS-MKT-008",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "On marketing surfaces, section-to-section gaps may exceed 96px, up to 240px, in steps of 8, using a spacing token. This is an exception to the allowed-values list in spacing.md. DS-SPACING-001 (divisible by 4 or 8) still holds.",
+      "severity": "recommended",
       "enforcement": "advisory"
     }
   ]
