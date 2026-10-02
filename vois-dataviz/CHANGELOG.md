@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.0.2] - 2026-10-02
+
+### Fixed
+
+- `SKILL.md` said `scripts/validate-data.py` at the repo root checks the prose-to-JSON ID sync. That script only exists in the private repo. In this repo the check runs in `scripts/dataviz.test.mjs`.
+
+---
+
 ## [1.0.1] - 2026-10-01
 
 ### Changed

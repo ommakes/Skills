@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.8.1] - 2026-10-02
+
+### Fixed
+
+- **`source_file` in `data/components-rules.json`** pointed 20 jobs at seven reference files (`references/overlays-and-containers.md` and others) that no longer exist. They now point to `SKILL.md`, where each `JOB-*` ID is tagged. `SKILL.md` now says the JSON is the only source for decision-tree content.
+
+---
+
 ## [1.8.0] - 2026-10-02
 
 ### Changed
