@@ -6,10 +6,12 @@ A skill for analyzing UI mockups, screenshots, or prototype frames to identify a
 
 Drop in a screen or describe a UI and the skill produces:
 
-- A full event taxonomy table with five columns: Event or Action, ID or Variable, Definition, Purpose, and Event Name
+- A full event taxonomy table with six columns: Event or Action, ID or Variable, Definition, Properties, Purpose, and Event Name
 - CASCADE and HIGH IMPACT flags on inputs that affect downstream flow behavior or business outcomes
+- A Task-Level Events table pairing a start event with an end event through a shared `flow_id`, when the screen has a multi-step create, edit, or delete flow
 - A Coverage Gaps section calling out screen states not visible in the mockup
 - A naming convention reference using camelCase `nounVerb` pattern
+- A check against `references/event-registry.md`, so the same interaction keeps the same event name across sessions
 
 ## When it triggers
 
