@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.10.1
+version: 1.11.0
 ---
 
 # Vois Patterns Skill
@@ -60,7 +60,7 @@ START: What is the user trying to accomplish?
 │     └─ IF: 4+ sections            → [PATH-A-DEPTH-DEEP]
 │
 ├─ PATH B: View, filter, and act on a list of items
-│  └─ → read references/table-list.md                       [PATH-B]
+│  └─ → read references/table-list.md, then references/table-interactions.md   [PATH-B]
 │
 ├─ PATH C: Create a new item OR edit an existing item
 │  └─ → read references/forms.md, then references/form-field-groups.md
@@ -91,7 +91,7 @@ product-specific feature instead — "approval queue," "impersonate a user,"
 structure. Most of those translate to a direct fit or a combination of two
 existing paths.
 
-**Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` (nodes may also carry optional `pattern_name`, `builds_on`, `basis`, `basis_note`, and `evidence`) — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's sidebar-vs-modal choice) only exist in the `.md` files.
+**Structured lookup:** `data/patterns-rules.json` holds every tagged `[PATH-X]`/`[PATH-X-Y]` node from the tree above as `{ id, condition, outcome, source_file }` (nodes may also carry optional `pattern_name`, `builds_on`, `basis`, `basis_note`, and `evidence`) — useful for a quick condition/outcome check by `pathId` without reading a whole file. It doesn't replace the reference files: worked examples, righter-routing call-outs, and untagged conditional branches (e.g. table-list.md's table-or-list choice) only exist in the `.md` files.
 
 **Source of truth:** `data/patterns-rules.json` is canonical for a path's `condition`/`outcome`. `references/*.md` may restate a path for readability and carries the worked examples JSON doesn't — but if the two ever disagree, the JSON wins. `scripts/check-rule-sync.mjs` (repo root) checks in CI that every `[PATH-*]` tag cited in `references/*.md` resolves to a real entry in `patterns-rules.json` and vice versa.
 
@@ -103,7 +103,8 @@ existing paths.
 |---|---|---|
 | `references/settings-pages.md` | Profile, workspace, billing, notifications, members sections; view/edit state | `[PATH-A]` |
 | `references/settings-interactions.md` | Save model, notifications, members, integrations, removal, danger zone, email change with one-time code | rules for settings interactions (see `data/patterns-rules.json`) |
-| `references/table-list.md` | Browse/filter/act on lists, sidebar vs modal detail view, pagination | `[PATH-B]` `[PATH-B-ROW-ACTIONS]` `[PATH-B-ROW-ACTIONS-REVEAL]` `[PATH-B-NARROW]` |
+| `references/table-list.md` | Table or list, simple vs complex, row open (drawer, full page, dialog), where editing happens, pagination, narrow layout | `[PATH-B]` `[PATH-B-SIMPLE]` `[PATH-B-COMPLEX]` `[PATH-B-ROW-OPEN]` `[PATH-B-EDIT]` `[PATH-B-ROW-ACTIONS]` `[PATH-B-ROW-ACTIONS-REVEAL]` `[PATH-B-NARROW]` |
+| `references/table-interactions.md` | Selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty and error states, partial failures | `[PATH-TABLE-*]` rules (see `data/patterns-rules.json`) |
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/form-field-groups.md` | Field widths, columns, spacing, name, address, phone, email, one-time code, auto-growing textareas, AI chat input | rules for form field groups (see `data/patterns-rules.json`) |
 | `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` |

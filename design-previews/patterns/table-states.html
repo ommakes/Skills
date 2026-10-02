@@ -1,0 +1,134 @@
+<!-- @dsCard group="Patterns" -->
+<!-- content: states from vois-patterns PATH-TABLE-STATE-* and PATH-TABLE-ERROR-*; layout and copy invented for this kit, copy follows righter's rules -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vois · Table states</title>
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/base.css">
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: var(--space-24); }
+  .tile { border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-background); }
+  .tile > .cap { padding: var(--space-8) var(--space-16); font-size: var(--text-h6-size); text-transform: uppercase; letter-spacing: .03em; color: var(--color-muted-foreground); border-bottom: 1px solid var(--color-border); background: var(--color-surface); display: flex; justify-content: space-between; gap: var(--space-8); }
+  .tile .body { padding: 0; }
+  table.kit-table { border-collapse: separate; border-spacing: 0; }
+  table.kit-table th { background: var(--color-background); }
+  .sk { block-size: 14px; inline-size: 70%; }
+  .sk.short { inline-size: 40%; }
+  .center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-8); padding: var(--space-32) var(--space-16); }
+  .center .h4 { margin: 0; }
+  .panel-err { margin: var(--space-16); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-16); display: flex; gap: var(--space-12); align-items: center; justify-content: space-between; }
+  .inline-alert { margin: var(--space-12) var(--space-16); }
+  .rowerr td { background: color-mix(in oklch, var(--color-destructive) 8%, var(--color-background)); }
+  .errmark { display: inline-flex; align-items: center; gap: var(--space-4); color: var(--color-destructive); font-weight: 600; font-size: var(--text-h6-size); }
+  .cellmsg { display: block; color: var(--color-destructive); font-size: var(--text-h6-size); margin-top: var(--space-4); }
+  .busy { display: inline-flex; gap: var(--space-8); align-items: center; font-size: var(--text-h6-size); color: var(--color-muted-foreground); }
+  .busy .spinner { inline-size: 14px; block-size: 14px; }
+  .opt { display: inline-flex; gap: var(--space-8); align-items: center; font-size: var(--text-h5-size); padding: 0 var(--space-16) var(--space-12); }
+</style>
+</head>
+<body>
+<div class="kit-page">
+  <header class="kit-header">
+    <a href="../index.html">&larr; Vois design previews</a>
+    <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle dark mode</button>
+  </header>
+
+  <div class="kit-title" style="margin-bottom: var(--space-32);">
+    <span class="kit-rule">Pattern B · Table states</span>
+    <h1 class="h1">Table states</h1>
+    <p class="text-description">Loading, empty, and error states for a table. The real column headers stay visible in every state, so the toolbar and the user's filters survive. Each failure is shown where it happened: the table, the row, the cell, or a bulk operation.</p>
+  </div>
+
+  <div class="grid">
+
+    <section class="tile" aria-label="Initial load">
+      <div class="cap"><span>Initial load</span><span>STATE-LOADING</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead><tbody>
+        <tr><td><div class="skeleton sk"></div></td><td><div class="skeleton sk"></div></td><td><div class="skeleton sk short"></div></td></tr>
+        <tr><td><div class="skeleton sk"></div></td><td><div class="skeleton sk"></div></td><td><div class="skeleton sk short"></div></td></tr>
+        <tr><td><div class="skeleton sk"></div></td><td><div class="skeleton sk"></div></td><td><div class="skeleton sk short"></div></td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="tile" aria-label="Refetch">
+      <div class="cap"><span>Refetch</span><span>STATE-REFETCH</span></div>
+      <div class="body"><div style="padding: var(--space-8) var(--space-16);"><span class="busy"><span class="spinner"></span>Updating</span></div>
+      <table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead><tbody>
+        <tr><td>INV-204</td><td>Acme Corp</td><td>$1,240</td></tr>
+        <tr><td>INV-205</td><td>Globex</td><td>$860</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="tile" aria-label="Empty, first use">
+      <div class="cap"><span>Empty, first use</span><span>STATE-EMPTY-FIRST</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead></table>
+        <div class="center"><h2 class="h4">No invoices yet</h2><p class="text-description">Create an invoice and it shows up here.</p><button class="btn btn-primary">Create invoice</button></div></div>
+    </section>
+
+    <section class="tile" aria-label="Empty, filtered">
+      <div class="cap"><span>Empty, filtered</span><span>STATE-EMPTY-FILTERED</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead></table>
+        <div class="center"><h2 class="h4">No results for "invoice 204"</h2><p class="text-description">Try a different search or clear your filters.</p><button class="btn btn-ghost">Clear filters</button></div></div>
+    </section>
+
+    <section class="tile" aria-label="Empty by nature and by permission">
+      <div class="cap"><span>Empty by nature</span><span>STATE-EMPTY-NATURE</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Issue</th><th>Owner</th><th>Opened</th></tr></thead></table>
+        <div class="center"><h2 class="h4">No open issues</h2><p class="text-description">Nothing needs your attention right now.</p></div></div>
+    </section>
+
+    <section class="tile" aria-label="Empty, no access">
+      <div class="cap"><span>Empty, no access</span><span>STATE-EMPTY-PERMISSION</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead></table>
+        <div class="center"><h2 class="h4">You don't have access to invoices</h2><p class="text-description">Ask an admin to add you to the Billing team.</p></div></div>
+    </section>
+
+    <section class="tile" aria-label="Table failed to load">
+      <div class="cap"><span>Table failed to load</span><span>STATE-LOAD-ERROR</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Amount</th></tr></thead></table>
+        <div class="panel-err" role="alert"><span>We couldn't load your invoices. Check your connection and try again.</span><button class="btn btn-ghost">Try again</button></div></div>
+    </section>
+
+    <section class="tile" aria-label="Row action failed">
+      <div class="cap"><span>Row action failed</span><span>ERROR-ROW-ACTION</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Status</th></tr></thead><tbody>
+        <tr><td>INV-204</td><td>Acme Corp</td><td>Open</td></tr>
+        <tr class="rowerr"><td>INV-205</td><td>Globex</td><td><span class="errmark" role="img" aria-label="Error">&#9888;</span> Couldn't archive <button class="btn btn-ghost" style="margin-left: var(--space-8);">Try again</button></td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="tile" aria-label="Cell validation">
+      <div class="cap"><span>Cell validation</span><span>ERROR-CELL</span></div>
+      <div class="body"><table class="kit-table"><thead><tr><th>Item</th><th>Price</th></tr></thead><tbody>
+        <tr><td>Wireless mouse</td><td>19.99</td></tr>
+        <tr class="rowerr"><td>USB-C charger</td><td><input class="input" value="25,x" aria-invalid="true" aria-describedby="m1" style="max-inline-size: 140px;"><span id="m1" class="cellmsg"><span aria-hidden="true">&#9888;</span> Enter a price like 25.00</span></td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="tile" aria-label="Bulk operation partly failed" style="grid-column: 1 / -1;">
+      <div class="cap"><span>Import partly failed</span><span>ERROR-BULK-PARTIAL</span></div>
+      <div class="body">
+        <div class="alert inline-alert" role="alert"><span><strong>3 rows can't be imported.</strong> The other 22 are ready. Fix the 3 here, or continue without them.</span><button class="btn btn-primary">Import 22 rows</button></div>
+        <label class="opt"><input type="checkbox" id="onlyErr"> Show only rows with errors</label>
+        <table class="kit-table" id="imp"><thead><tr><th style="inline-size:48px;"><span class="sr-only">Row status</span></th><th>Name</th><th>Email</th><th>Role</th></tr></thead><tbody>
+          <tr data-ok="1"><td><span aria-label="Ready" role="img">&#10003;</span></td><td>Robert Choi</td><td>robert@example.com</td><td>Chef</td></tr>
+          <tr data-ok="0" class="rowerr"><td><span class="errmark" role="img" aria-label="1 error">&#9888; 1</span></td><td>Jane Smith</td><td>jane@example</td><td>Server <span class="cellmsg">Email needs an @ and a domain</span></td></tr>
+          <tr data-ok="1"><td><span aria-label="Ready" role="img">&#10003;</span></td><td>Ana Ruiz</td><td>ana@example.com</td><td>Host</td></tr>
+          <tr data-ok="0" class="rowerr"><td><span class="errmark" role="img" aria-label="1 error">&#9888; 1</span></td><td>Ben Lee</td><td>ben@example.com</td><td>Manager <span class="cellmsg">This role isn't available for your location</span></td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+  </div>
+</div>
+<style>.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }</style>
+<script>
+  document.getElementById("onlyErr").addEventListener("change", (e) => {
+    document.querySelectorAll("#imp tbody tr").forEach(tr => { tr.hidden = e.target.checked && tr.dataset.ok === "1"; });
+  });
+</script>
+</body>
+</html>

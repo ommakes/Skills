@@ -4,6 +4,16 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.7.0] - 2026-10-02
+
+### Added
+
+- **Two `empty-state` variants** in `data/components.json`: `Empty by nature` (zero rows is normal, no action) and `No access` (the user's role cannot see any rows, no create action).
+- **A "Table copy" note** in `SKILL.md` that routes table states to existing components: empty table to `empty-state`, one cell's validation to Helper Text, a table-level partial failure to Inline Alert, a bulk delete confirmation to Alert Dialog. No new components, because the existing ones already cover these.
+- **Eval cases 16 to 19** for table copy. Case 19 deliberately has no `expected_component`: the error decision tree has no clear slot for a failed single-row action. If it keeps needing a judgment call, add a row to the tree.
+
+---
+
 ## [1.6.0] - 2026-09-29
 
 The gap analysis behind this release comes from [content-designer/ux-writing-skill](https://github.com/content-designer/ux-writing-skill) (MIT). No text was copied. Ideas only, rewritten in Righter's voice.

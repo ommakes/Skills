@@ -25,3 +25,18 @@ function GoodDialog() {
     </div>
   );
 }
+
+function GoodComplexTable() {
+  // Wrapper owns both axes and has a bounded height, so the sticky header sticks inside it.
+  return (
+    <div className="overflow-auto max-h-96">
+      <table>
+        <thead className="sticky top-0">
+          <tr>
+            <th>Name</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  );
+}

@@ -85,15 +85,19 @@ START: What is the user trying to accomplish?
 
 **When to use:** browsing, searching, filtering, and acting on multiple items, with occasional dives into single-item detail. Bulk actions might be needed.
 
-**Details container:** quick edit needed (checkboxes, sliders, dropdowns, a handful of fields) → right sidebar, edit-focused, form inputs with conditional logic, close button top right. Viewing details first (user might edit after) → modal, view-focused; clicking "Edit" navigates to a dedicated form page.
+**Simple or complex:** a simple table has 6 columns or fewer, is mostly read, and has no bulk actions or inline edit. It scrolls vertically only, with the header sticking to the page. A complex table has more columns, bulk actions, inline edit, or many filters. It owns its own scroll on both axes at a bounded height, pins the header and first column, and offers Dense, Regular, and Comfortable densities.
+
+**Row open:** a drawer (right-side sheet, table stays visible) for a record with 8 or fewer fields and no related records. A full page, reached from an Open action in the drawer, for a record with tabs, a timeline, related records, or a long form. A dialog only for confirmations. The open row goes in the URL.
+
+**Where editing happens:** one low-risk value → in the cell. Several fields → the drawer form. The same change on many rows → a bulk action bar. Irreversible → the drawer form plus a confirmation.
 
 **Table display:**
-- First column bold, pinned on horizontal scroll. Header row pinned on vertical scroll.
-- Row hover → click opens sidebar or modal. Quick action buttons: max 3, visible on hover, right-aligned, floating above content.
-- Pagination: 25 entries per page.
+- First column bold, pinned on horizontal scroll. Header row pinned.
+- Row hover → click opens the drawer. Quick action buttons: max 3, visible on hover, right-aligned, floating above content.
+- Pagination: 25 entries per page, with the range and total in the footer.
 - Filtering/sorting: buttons anchored top right; active filters shown as dismissible chips; sort indicator shows column + direction.
 - Row actions: if a row is deleted/archived, dim it visually and disable its actions.
-- Editing from a modal navigates to a dedicated form page with a breadcrumb above the title (Home > Items > [Item Name] > Edit), or a ghost close button top right that returns to the table.
+- States: skeleton rows under real headers while loading. Different empty states for first use, filtered, empty by nature, and no access. Load errors show in the table area with a retry. Failed rows are marked in place. A partly failed bulk operation shows counts and lets users continue with the rows that are ready.
 
 ### PATH C — Form (Create/Edit)
 

@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.6.0
+version: 1.7.0
 ---
 
 # Righter
@@ -315,8 +315,10 @@ None of the above?
 
 ### Other components
 The tree above is for errors only. For non-error surfaces, look up the component by `id` in `data/components.json`:
-- `empty-state`: a list, page, or section has nothing to show (first use, user cleared it, no results).
+- `empty-state`: a list, page, or section has nothing to show (first use, user cleared it, no results, empty by nature, no access).
 - `permission-prompt`: the app asks for a device or account permission (location, notifications, camera, contacts, storage).
+
+**Table copy.** Tables use the components above. An empty table is `empty-state`. A validation message on one editable cell is Helper Text. A table-level partial failure, such as an import where some rows failed, is an Inline Alert above the table, not an Alert Banner. A bulk delete confirmation is an Alert Dialog. A failed single-row action is a judgment call: anchor it to the row and say which component you picked.
 
 ---
 

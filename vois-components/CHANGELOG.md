@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.8.0] - 2026-10-02
+
+### Changed
+
+- **`JOB-OVERLAY-INTERACTION`** gains a branch for opening a record from a table row: Sheet for 8 or fewer fields and no related records, full page for big records, Dialog only for confirmations. Matches `PATH-B-ROW-OPEN` in vois-patterns 1.11.0.
+- **`JOB-DISPLAY-DATA`** gains paging (pagination, virtualization only for thousands of rows) and in-table editing branches.
+- **`JOB-LOADING-STATE`** gains a table branch: skeleton rows under real headers on first load, stale rows kept on refetch.
+- **`JOB-EMPTY-CONTENT`** gains empty-by-nature, empty-by-permission, and plan-limit cases.
+- Quick Reference gains two rows.
+
+---
+
 ## [1.7.0] - 2026-10-01
 
 ### Added

@@ -19,3 +19,10 @@
   /* DS-CSS-007: hand-authored breakpoint in px, not em */
   .layout { height: 100vh; } /* DS-LAYOUT-001 */
 }
+
+.table-wrap {
+  overflow: auto clip; /* DS-TABLE-001: clip computes to hidden, header still does not stick to the page */
+}
+.table-wrap thead th {
+  position: sticky;
+}

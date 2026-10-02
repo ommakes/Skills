@@ -1,6 +1,6 @@
 {
   "source": "vois-patterns/references/*.md",
-  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here. pricing-pages.md adds PATH-F (top-level) with PATH-F-* sub-decisions, plus PATH-PRICE-* cross_cutting_rule nodes (U universal, T tier count, S seat, X usage, H hybrid, C consumer).",
+  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here. pricing-pages.md adds PATH-F (top-level) with PATH-F-* sub-decisions, plus PATH-PRICE-* cross_cutting_rule nodes (U universal, T tier count, S seat, X usage, H hybrid, C consumer). table-interactions.md adds PATH-TABLE-* cross_cutting_rule nodes (selection and bulk, toolbar and view state, editing and saving, loading, empty and error states, structure). table-list.md also carries the PATH-B-SIMPLE, PATH-B-COMPLEX, PATH-B-ROW-OPEN, and PATH-B-EDIT sub_decision nodes.",
   "nodes": [
     {
       "id": "PATH-A",
@@ -34,7 +34,7 @@
       "source_file": "vois-patterns/references/table-list.md",
       "pattern_name": "Table/List with Details",
       "condition": "User needs to browse, search, filter, and act on multiple items. User occasionally dives into single item details. Bulk actions might be needed.",
-      "outcome": "Use the Table/List with Details pattern. Details container: quick edit needed (checkboxes, sliders, dropdowns, a handful of fields) → right sidebar, edit-focused. Viewing details first (default view state, might edit after) → modal, view-focused, with an \"Edit\" action that navigates to a dedicated form page."
+      "outcome": "Use the Table/List with Details pattern. Decide simple or complex (PATH-B-SIMPLE, PATH-B-COMPLEX), then how a row opens (PATH-B-ROW-OPEN) and where editing happens (PATH-B-EDIT). Row detail: a drawer by default, with an Open action that escalates to a full page when the record has tabs, a timeline, related records, or a long form. Behavior inside the table is covered by the PATH-TABLE-* rules."
     },
     {
       "id": "PATH-C",
@@ -1599,6 +1599,656 @@
       "basis": "decision",
       "basis_note": "Set by Om. The 4-column cutoff is Claude's proposal, accepted by Om. Not counting the actions column is Claude's interpretation.",
       "evidence": []
+    },
+    {
+      "id": "PATH-B-SIMPLE",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Simple table",
+      "condition": "6 or fewer columns, mostly read, no bulk actions, no inline edit, one or two filter dimensions.",
+      "outcome": "Fixed columns. Search, one filter, and sort. 25 per page. Vertical scroll only: the page scrolls and the header sticks to the page, with no sideways scroll. One density.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-TABLE-003"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. The 6-column cutoff is Claude's proposal.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-B-COMPLEX",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Complex table",
+      "condition": "More than 6 columns, user-chosen columns or saved views, bulk actions, inline edit, many filter dimensions, or thousands of rows.",
+      "outcome": "Toolbar with search, filter builder, columns, density, and saved views. Checkbox column and bulk bar. The table wrapper owns scroll on both axes with a bounded height, header and first column pinned, scroll locked to one axis per gesture. Dense, Regular, and Comfortable densities.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-TABLE-002",
+        "DS-TABLE-014",
+        "PATH-TABLE-DENSITY"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: gesture lock for complex tables, vertical-only for simple ones, density toggle on complex tables only.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-B-ROW-OPEN",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Row open container",
+      "condition": "A user opens a row to see its record.",
+      "outcome": "Record has 8 or fewer fields and no related records: right-side drawer (the Sheet component in vois-components), view first with an Edit action or edit directly. Record has tabs, a timeline, related records, or a long form: full page, reached from an Open action in the drawer. Only a confirmation: Dialog. The open row id is in the URL and the active row stays highlighted.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-CONTAIN-CONTENT",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-TABLE-URL-STATE"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Confirmed by Om. Replaces the earlier rule that view-first uses a modal. The 8-field threshold is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/79a31934-4ca2-4700-86a5-c180fa735404",
+        "https://mobbin.com/screens/af6a9d55-8c5c-41b5-b742-edea7495065c",
+        "https://mobbin.com/screens/19da6460-e187-41dc-b969-a5a8159f974b",
+        "https://mobbin.com/screens/ddc70bb6-5a08-444c-8ef8-a12a0050a428",
+        "https://mobbin.com/screens/116c1238-3c3c-45e4-9034-20528b320a86",
+        "https://mobbin.com/screens/1348f031-6be2-40f2-8aee-96f5f0c76b04",
+        "https://mobbin.com/screens/9d24497c-18be-490d-aace-3226d0214d1a"
+      ]
+    },
+    {
+      "id": "PATH-B-EDIT",
+      "node_type": "sub_decision",
+      "parent": "PATH-B",
+      "source_file": "vois-patterns/references/table-list.md",
+      "pattern_name": "Where editing happens",
+      "condition": "A user edits data from a table.",
+      "outcome": "One atomic, low-risk value: inline cell edit. Several fields or cross-field validation: the drawer form. The same change on many rows: a bulk bar action or bulk edit page. Irreversible or high-impact: the drawer form plus a confirmation dialog.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-TABLE-COMMIT-INSTANT",
+        "PATH-TABLE-COMMIT-BATCH"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/98c2905e-c842-4895-b730-c35ce951eabf",
+        "https://mobbin.com/screens/c72f7765-7966-4a1e-bf36-92b5f9cb90a2",
+        "https://mobbin.com/screens/9d24497c-18be-490d-aace-3226d0214d1a"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-SELECT-CHECKBOX",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Checkbox column",
+      "condition": "A table has bulk actions.",
+      "outcome": "Add a leading checkbox column. The header checkbox is tri-state (none, some, all on this page). Shift-click selects a range. Selected rows get a tint and a checked box, never tint alone. Simple tables have no checkbox column.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "DS-A11Y-017"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/ff3024b1-5264-483e-afa7-460a0224ff89",
+        "https://mobbin.com/screens/f08c0bf3-14ab-437e-9c15-0475bebbe4fc",
+        "https://mobbin.com/screens/b9d8a719-226b-4c7c-9268-45b0f1fa875e"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-SELECT-ALL-PAGES",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Select across pages",
+      "condition": "A paginated table has a full page selected and more results exist.",
+      "outcome": "Offer a \"select all N\" control next to the selection count. Say how many rows an action will touch before the user confirms it.",
+      "builds_on": [
+        "PATH-TABLE-SELECT-CHECKBOX"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/ff3024b1-5264-483e-afa7-460a0224ff89"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-BULK-BAR",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Bulk action bar",
+      "condition": "One or more rows are selected.",
+      "outcome": "Show a bar anchored to the table with the selected count, 2 to 3 visible actions with the rest in a DropdownMenu, and a clear-selection control. The destructive action is last and visually distinct. A persistent bar with disabled actions at zero selected is fine when the table is mainly used for bulk work.",
+      "builds_on": [
+        "JOB-EXPOSE-ACTIONS",
+        "PATH-B-ROW-ACTIONS"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Floating bar and persistent bar both appear. The floating bar is the default, judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/ff3024b1-5264-483e-afa7-460a0224ff89",
+        "https://mobbin.com/screens/b9d8a719-226b-4c7c-9268-45b0f1fa875e",
+        "https://mobbin.com/screens/f08c0bf3-14ab-437e-9c15-0475bebbe4fc",
+        "https://mobbin.com/screens/ccc39d99-73a0-4807-a839-132653162060",
+        "https://mobbin.com/screens/e9639493-e0a6-46c9-93d1-d3189cbdc3c7"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-BULK-DESTRUCTIVE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Bulk destructive actions",
+      "condition": "A bulk action deletes, archives, or otherwise cannot be undone cheaply.",
+      "outcome": "Confirm first and state the count. Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.",
+      "builds_on": [
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "JOB-TRANSIENT-FEEDBACK"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-SORT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Sorting",
+      "condition": "A column can be sorted.",
+      "outcome": "Clicking its header cycles ascending, descending, none. The sorted header shows direction and carries aria-sort. One active sort unless the product genuinely needs more. Sort resets paging to page 1.",
+      "builds_on": [
+        "PATH-B"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/406b9908-584c-4f05-8432-abd77533bfa4",
+        "https://mobbin.com/screens/5b7f8ac3-1059-401f-a3ee-88e553391166"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-FILTER-SIMPLE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Filters on a simple table",
+      "condition": "A simple table has one or two filter dimensions.",
+      "outcome": "Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits beside it.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-OVERLAY-INTERACTION"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/406b9908-584c-4f05-8432-abd77533bfa4",
+        "https://mobbin.com/screens/5b7f8ac3-1059-401f-a3ee-88e553391166"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-FILTER-BUILDER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Filter builder on a complex table",
+      "condition": "A complex table has many filterable fields.",
+      "outcome": "Use rows of field, operator, value, with Add filter, Apply, and Clear filters. Keep applied filters visible as chips after the builder closes.",
+      "builds_on": [
+        "PATH-TABLE-FILTER-SIMPLE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/926541e1-1d12-4677-8faf-54193a709b17"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-COLUMNS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Column management",
+      "condition": "A complex table has more columns than most users need at once.",
+      "outcome": "Offer show or hide, reorder, and pin, plus a Reset to default. A column header menu holds per-column actions (sort, move, hide). The first column cannot be hidden.",
+      "builds_on": [
+        "PATH-B-COMPLEX"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. First column cannot be hidden is judgment.",
+      "evidence": [
+        "https://mobbin.com/screens/7f317ce6-2e6e-4fb2-929d-c8de5b2c2f75",
+        "https://mobbin.com/screens/b1f51bfb-4b7f-4d77-a7ce-9a1568db223e",
+        "https://mobbin.com/screens/832e5719-7133-4733-a7d2-87061364df60"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-DENSITY",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Density toggle",
+      "condition": "A complex table has a density control.",
+      "outcome": "Offer Dense, Regular, and Comfortable. Row height and cell padding come from tokens. Simple tables have one density and no toggle. Remember the choice per user.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD",
+        "PATH-DENSITY-SPACIOUS",
+        "DS-TABLE-019"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: density toggle on complex tables only.",
+      "evidence": [
+        "https://mobbin.com/screens/7f317ce6-2e6e-4fb2-929d-c8de5b2c2f75"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-SAVED-VIEWS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Saved views",
+      "condition": "Users repeat the same combination of filters, sort, and columns.",
+      "outcome": "Offer named views as tabs or a view switcher above the toolbar. A view stores filters, sort, columns, and density. Show an unsaved-changes state when the current setup differs from the saved view.",
+      "builds_on": [
+        "JOB-SWITCH-VIEWS"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/b1f51bfb-4b7f-4d77-a7ce-9a1568db223e",
+        "https://mobbin.com/screens/ff3024b1-5264-483e-afa7-460a0224ff89"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-URL-STATE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "State lives in the URL",
+      "condition": "A table has search, filters, sort, page, or an open row.",
+      "outcome": "Keep each of them in the URL. Reload, back, and a shared link restore the same view, including the open drawer.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-KEYBOARD",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Keyboard",
+      "condition": "A table has rows users act on repeatedly.",
+      "outcome": "Up and Down move row focus. Enter opens the row. Space toggles selection. Esc closes the drawer. Cmd or Ctrl plus Enter saves an edit. Show the shortcut hints where a drawer has them.",
+      "builds_on": [
+        "DS-A11Y-002",
+        "DS-A11Y-005"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Shortcut hints appear in Supabase, Twenty, and Midday drawers.",
+      "evidence": [
+        "https://mobbin.com/screens/19da6460-e187-41dc-b969-a5a8159f974b",
+        "https://mobbin.com/screens/9d24497c-18be-490d-aace-3226d0214d1a"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-DRAWER-STEP",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Step through rows from the drawer",
+      "condition": "A user reviews many rows one after another.",
+      "outcome": "Put previous and next controls in the drawer, bound to the Up and Down keys. The table row highlight follows. Stepping past the last row on a page loads the next page.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/19da6460-e187-41dc-b969-a5a8159f974b"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-COMMIT-INSTANT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Instant save",
+      "condition": "A user edits one low-risk value in a cell.",
+      "outcome": "Save on commit (Enter or blur) and confirm with a toast that offers Undo. If the save fails, revert the cell, mark the row, and keep the typed value available to retry. Surface the failure as `PATH-TABLE-ERROR-ROW-ACTION` says.",
+      "builds_on": [
+        "PATH-SET-SAVE-INSTANT",
+        "JOB-TRANSIENT-FEEDBACK",
+        "PATH-TABLE-ERROR-ROW-ACTION"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-COMMIT-BATCH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Batch save",
+      "condition": "A user edits several cells or rows, or one value's validity depends on another.",
+      "outcome": "Hold edits locally and show an unsaved-changes bar with Save and Discard. Edited cells are visibly marked. Save is blocked while any edit is invalid, with a summary of what to fix. Never drop valid edits because one is invalid. Leaving the page with unsaved edits asks first.",
+      "builds_on": [
+        "PATH-SET-SAVE-EXPLICIT",
+        "PATH-TABLE-ERROR-CELL"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/98c2905e-c842-4895-b730-c35ce951eabf",
+        "https://mobbin.com/screens/c72f7765-7966-4a1e-bf36-92b5f9cb90a2"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-INLINE-EDIT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Inline cell edit",
+      "condition": "A cell is editable in place.",
+      "outcome": "A single click or Enter on a focused cell enters edit mode. Esc cancels and restores the value. Enter commits. Show the cell's edit state with a visible border, not just a cursor. If the table is a grid with arrow-key cell navigation, use role=\"grid\". Otherwise keep a plain table.",
+      "builds_on": [
+        "DS-A11Y-002",
+        "JOB-DATA-ENTRY"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/98c2905e-c842-4895-b730-c35ce951eabf",
+        "https://mobbin.com/screens/c72f7765-7966-4a1e-bf36-92b5f9cb90a2"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-LOADING",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Initial load",
+      "condition": "A table is loading for the first time.",
+      "outcome": "Show the real column headers and skeleton rows that match the loaded column widths. Never a full-area spinner.",
+      "builds_on": [
+        "JOB-LOADING-STATE"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/9b5b1374-c015-495b-abcb-9cce659c741b",
+        "https://mobbin.com/screens/09371ef3-f0d0-4fc9-8ab1-607ab3d0e4ab"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-REFETCH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Refetch",
+      "condition": "A filter, sort, or page change reloads data.",
+      "outcome": "Keep the stale rows on screen with a small busy indicator. Do not blank the table.",
+      "builds_on": [
+        "JOB-LOADING-STATE"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-STATE-EMPTY-FIRST",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Empty, first use",
+      "condition": "The user has never created anything here and can create from this screen.",
+      "outcome": "Show an EmptyState with the primary create action. Headers stay visible.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/8cfa5755-0b2a-4648-9c58-987c2b039223",
+        "https://mobbin.com/screens/9026e201-39d6-4640-b0f0-4e7c264c41b8"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-EMPTY-FILTERED",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Empty, filtered",
+      "condition": "Search or filters removed every row.",
+      "outcome": "Say that filters caused it and offer Clear filters. Use an inline message, not a full EmptyState.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/14f1556c-eba4-427e-aa8d-8bb7c20008c8"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-EMPTY-NATURE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Empty by nature",
+      "condition": "No rows is a normal, good state, such as no live calls or no open issues.",
+      "outcome": "Say so plainly. No call to action.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/159bdfb5-28a8-45ff-b5da-7236df48f6c2"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-EMPTY-PERMISSION",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Empty by permission",
+      "condition": "The user cannot see any rows because of their role.",
+      "outcome": "Say that access is the reason and who can grant it. Do not show the first-use create action.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE",
+        "JOB-EMPTY-CONTENT"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-STATE-TRUNCATED",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Results limited by plan",
+      "condition": "A plan limit hides some rows.",
+      "outcome": "Put a notice above the table that says so, with the upgrade action. Do not leave it to the footer.",
+      "builds_on": [
+        "JOB-CONTEXTUAL-INFO"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/9fb0b917-eff7-437a-9d16-24a27db70f4a"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-STATE-LOAD-ERROR",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Table failed to load",
+      "condition": "The table's data request fails.",
+      "outcome": "Replace the rows with an inline panel in the table area: the cause when known and a Retry. Toolbar and headers stay, so filters survive. Not a full-screen modal.",
+      "builds_on": [
+        "PATH-TABLE-ERROR-FOCUS",
+        "DS-A11Y-009"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. A full-screen modal for a single failure is the anti-example (Asana).",
+      "evidence": [
+        "https://mobbin.com/screens/4dc33031-a543-4dfe-aa1c-b185f2736222",
+        "https://mobbin.com/screens/23aaaa8d-2bda-4cce-9bfb-23f3b7f1489e"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-ROW-STATES",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Row states",
+      "condition": "Rows can change state.",
+      "outcome": "Support these: default, hover, focus-visible, selected, active (its drawer is open), editing, saving, error, just-added, and disabled or archived. Each has a distinct visual that does not rely on color alone.",
+      "builds_on": [
+        "DS-A11Y-017",
+        "DS-A11Y-002",
+        "PATH-B"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-ERROR-ROW-ACTION",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "A row action failed",
+      "condition": "A delete, archive, status change, or similar action on one row fails.",
+      "outcome": "If the UI updated optimistically, roll it back. Mark that row with an error state and offer Retry. Surface the failure with whichever component righter's error decision tree picks, anchored to the row where it can be. The row is the anchor for the error, not the page.",
+      "builds_on": [
+        "JOB-TRANSIENT-FEEDBACK",
+        "error-decision-tree"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-ERROR-CELL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "A cell or field is invalid",
+      "condition": "An edited cell fails validation.",
+      "outcome": "Show the message next to the field. In a drawer form it sits under the field. For a cell it opens in a tooltip or popover. Validate on commit or blur, not on every keystroke. Tint the cell and add an icon. Keep what the user typed.",
+      "builds_on": [
+        "DS-A11Y-009",
+        "DS-A11Y-017",
+        "error-decision-tree"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/ab52924c-333f-42fb-bc19-659aa03720e0",
+        "https://mobbin.com/screens/6b45f042-7f89-46f1-b46f-8270604842b8"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-ERROR-BULK-PARTIAL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "A bulk or import operation partly failed",
+      "condition": "Some rows in a bulk action or import succeed and some fail.",
+      "outcome": "Show an Inline Alert above the table with the counts. It is contextual to the table, so it is not an Alert Banner. Mark failed rows with an icon or count in the row gutter. Offer a \"show only rows with errors\" toggle and the choice to continue with the rows that are ready. When users cannot fix rows in place, offer an export of the failed rows. Name the real cause on each failure.",
+      "builds_on": [
+        "JOB-CONTEXTUAL-INFO",
+        "error-decision-tree"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/ab52924c-333f-42fb-bc19-659aa03720e0",
+        "https://mobbin.com/screens/6b45f042-7f89-46f1-b46f-8270604842b8",
+        "https://mobbin.com/screens/8d017614-92b0-4db5-ac52-be97356d42d1",
+        "https://mobbin.com/screens/8adf1037-caef-4e73-8c29-7c97e34c1c0d"
+      ]
+    },
+    {
+      "id": "PATH-TABLE-ERROR-FOCUS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Focus and announcement",
+      "condition": "A commit, save, or load fails.",
+      "outcome": "Move focus to the first error. Announce errors through an aria-live=\"polite\" region. Never clear the user's data to show an error.",
+      "builds_on": [
+        "DS-A11Y-009"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-SEMANTICS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Table semantics",
+      "condition": "Rendering any table.",
+      "outcome": "Use a real table element with th and scope. Do not rebuild it from div elements. The sortable header is a button inside the th.",
+      "builds_on": [
+        "DS-A11Y-005",
+        "DS-TABLE-015"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-ROW-CLICK",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Row click target",
+      "condition": "A row opens a detail view when clicked.",
+      "outcome": "The first-column value is the real link or button, so keyboard, screen readers, and middle-click work. The row click is an enhancement on top. Clicks on checkboxes, action menus, and links inside the row do not open the drawer.",
+      "builds_on": [
+        "DS-A11Y-005",
+        "PATH-B"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-TABLE-EXPAND-ROWS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/table-interactions.md",
+      "pattern_name": "Expandable rows",
+      "condition": "A row has sub-rows or a short secondary detail.",
+      "outcome": "Use a leading chevron button that toggles aria-expanded. Expanded content stays inside the table. If the detail is a full record, use the drawer instead.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "observed",
+      "basis_note": "observed.",
+      "evidence": [
+        "https://mobbin.com/screens/52edddf8-c426-4ef0-b389-defb03472349"
+      ]
     }
   ]
 }

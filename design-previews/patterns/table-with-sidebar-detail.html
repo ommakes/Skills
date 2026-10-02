@@ -16,9 +16,9 @@
   </header>
 
   <div class="kit-title" style="margin-bottom: var(--space-32);">
-    <span class="kit-rule">Pattern B · Table/List with details · quick-edit</span>
+    <span class="kit-rule">Pattern B · Table/List with details · row open</span>
     <h1 class="h1">Table with sidebar detail</h1>
-    <p class="text-description">Quick edits open in a right-side Sheet that keeps the table visible &mdash; view-first flows would instead navigate a modal to a full edit page. First column stays pinned, and no more than three hover row actions.</p>
+    <p class="text-description">A row opens its record in a right-side Sheet that keeps the table visible. Records with tabs, a timeline, or related records escalate to a full page from an Open action. First column stays pinned, and no more than three hover row actions.</p>
   </div>
 
   <table class="kit-table">
@@ -37,6 +37,7 @@
         <select class="input"><option>Starter</option><option selected>Team</option><option>Enterprise</option></select>
       </div>
       <div class="dialog-footer">
+        <button class="btn btn-ghost" onclick="detailSheet.close()">Open full page</button>
         <button class="btn btn-secondary" onclick="detailSheet.close()">Cancel</button>
         <button class="btn btn-primary" onclick="detailSheet.close()">Save</button>
       </div>

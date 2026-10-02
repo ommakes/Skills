@@ -423,6 +423,56 @@ export const RULES = [
       return findings;
     },
   },
+  {
+    id: "DS-TABLE-001",
+    title: "Scroll wrapper that cannot hold a sticky table header",
+    severity: "quality", // advisory-only: one file at a time, so it cannot see a wrapper and header split across files
+    extensions: ALL_EXT,
+    fixHint: "Pick one scroll owner. Complex table: wrapper with overflow: auto and a bounded block size, header sticky inside it. Simple table: no overflow on the wrapper, header sticky to the page. overflow: auto clip does not help, because clip computes to hidden. See references/data-tables.md.",
+    check({ content, lines }) {
+      const findings = [];
+      const seen = new Set();
+      const push = (line, message) => {
+        if (seen.has(line)) return;
+        seen.add(line);
+        findings.push({ line, snippet: snippetAt(lines, line), message });
+      };
+      const clipMessage = "clip next to auto computes to hidden, so the wrapper is still a scroll container and a sticky header does not stick to the page.";
+
+      // Shape 1: clip used as a workaround next to a scrolling axis.
+      for (const raw of scanRegex(content, lines, /overflow\s*:\s*(?:auto|scroll)\s+clip\b/, clipMessage)) push(raw.line, raw.message);
+      const blockRe = /([^{}]*)\{([^{}]*)\}/g;
+      const blocks = [];
+      let m;
+      while ((m = blockRe.exec(content)) !== null) {
+        blocks.push({ selector: m[1], body: m[2], index: m.index + m[1].length });
+      }
+      for (const b of blocks) {
+        if (/overflow-x\s*:\s*(?:auto|scroll)\b/.test(b.body) && /overflow-y\s*:\s*clip\b/.test(b.body)) {
+          push(lineAt(content, b.index), clipMessage);
+        }
+      }
+      lines.forEach((l, i) => {
+        if (/\boverflow-x-(?:auto|scroll)\b/.test(l) && /\boverflow-y-clip\b/.test(l)) push(i + 1, clipMessage);
+      });
+
+      // Shape 2: a scroll wrapper with no bounded block size, plus a sticky header, in the same file.
+      const stickyCss = blocks.some((b) => /\b(?:thead|th)\b/.test(b.selector) && /position\s*:\s*sticky/.test(b.body));
+      const stickyJsx = lines.some((l) => /<(?:thead|th|TableHeader|TableHead)\b[^>]*\bsticky\b/.test(l));
+      if (stickyCss || stickyJsx) {
+        const wrapMessage = "This scroll wrapper has no bounded block size, so it never scrolls vertically and the sticky table header sticks to nothing. Bound the height, or remove the overflow.";
+        for (const b of blocks) {
+          if (/overflow(?:-x|-y)?\s*:\s*(?:auto|scroll)\b/.test(b.body) && !/(?:max-)?(?:height|block-size)\s*:/.test(b.body)) {
+            push(lineAt(content, b.index), wrapMessage);
+          }
+        }
+        lines.forEach((l, i) => {
+          if (/\boverflow(?:-x|-y)?-(?:auto|scroll)\b/.test(l) && !/(?:^|[\s"'`:])(?:max-)?(?:h|block)-[^\s"'`]+/.test(l)) push(i + 1, wrapMessage);
+        });
+      }
+      return findings;
+    },
+  },
 ];
 
 export function rulesForFile(filePath) {

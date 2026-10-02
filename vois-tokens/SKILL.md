@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.14.0
+version: 1.15.0
 ---
 
 # Vois Tokens Skill
@@ -79,6 +79,7 @@ building fresh, not just the bare rule text:**
 | `references/elevation.md` | Shadow/elevation tiers, modal scrim, z-index pairing | `[DS-ELEVATION]` |
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints, form, field, dialog widths, auto-growing textareas | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
+| `references/data-tables.md` | Table scroll owner, sticky header and first column, scrollbar styling, one-axis wheel lock, responsive table layout, scroll-region accessibility | `[DS-TABLE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
@@ -171,6 +172,16 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Images with set dimensions have `object-fit` `[DS-LAYOUT-COMP-006]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
 
+**Data tables** (details in `references/data-tables.md`)
+- [ ] One scroll owner per table: the page for a simple table, the wrapper for a complex one `[DS-TABLE-001]` `[DS-TABLE-002]` `[DS-TABLE-003]`
+- [ ] No `overflow: auto clip` or `overflow-y: clip` workaround. `clip` computes to `hidden` `[DS-TABLE-004]`
+- [ ] A complex table's wrapper has a bounded block size, and its flex or grid parents have `min-block-size: 0` `[DS-TABLE-002]` `[DS-TABLE-005]`
+- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and layered z-index tokens `[DS-TABLE-006]` `[DS-TABLE-007]`
+- [ ] Scrollbars styled with `scrollbar-width: thin` and `scrollbar-color`, no `::-webkit-scrollbar` `[DS-TABLE-010]` `[DS-TABLE-011]`
+- [ ] A complex table that scrolls both ways uses the one-axis wheel lock `[DS-TABLE-014]`
+- [ ] The scroll region is focusable, labeled, and the table keeps real table elements `[DS-TABLE-015]`
+- [ ] Table dimensions and the scrollbar color come from tokens `[DS-TABLE-019]`
+
 **CSS**
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
 - [ ] Selectors no deeper than 2 levels without a class `[DS-CSS-003]`
@@ -223,6 +234,8 @@ Run this regardless of which reference files you read — it's the universal gat
 | Textarea that grows with content | `field-sizing: content`, explicit width, `lh` min and max | `references/layout-and-responsive.md` |
 | Control smaller than its click area | Extend the hit area to `var(--hit-area-min)` | `references/accessibility.md` |
 | Form, field, or dialog width | Use the `widths` tokens in `data/tokens.json` | `references/layout-and-responsive.md` |
+| Sticky table header does not stick | A table has one scroll owner. `overflow-x: auto` on the wrapper makes it the owner. Bound its height or remove the overflow | `references/data-tables.md` |
+| Table scrolls diagonally | Wheel lock on complex tables: scroll only the dominant axis | `references/data-tables.md` |
 | Group of radio or checkbox inputs | Wrap in `<fieldset>` with `<legend>` | `references/accessibility.md` |
 | Date or time in content | `<time datetime="...">` | `references/accessibility.md` |
 | Hand-authoring a media query | Use `em` not `px` for the breakpoint value | `references/css-architecture.md` |
