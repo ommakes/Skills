@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.0.1] - 2026-10-01
+
+### Changed
+
+- **Rules are platform-agnostic.** Removed the `material` and `uswds` source tags from 15 rules and from the docs. Rules now cite only the playbook, Mobbin evidence, WCAG, the design-system-agnostic dataviz skill and, for implementation rules, the Vois stack. A test fails if a rule cites any other source. No rule text changed.
+
+---
+
 ## [1.0.0] - 2026-10-01
 
 ### Added
