@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.10.0
+version: 1.10.2
 ---
 
 # Vois Component Selection Skill
@@ -152,7 +152,7 @@ Why not Drawer for persistent navigation? Drawer is temporary; navigation the us
 
 **Job 5 — Switch between views or filter to a subset** `JOB-SWITCH-VIEWS`
 *Navigate between distinct views, or filter content into categories.*
-- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs
+- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs. A settings page with 4 or more sections uses sidebar navigation instead
 - Filtering to a category, 2–4 mutually exclusive options → Segmented Control (or pill-styled Tabs)
 - Filtering, 5+ options or options that change dynamically → Select or Combobox (see Job 6)
 - Applying non-exclusive labels/types (tagging, multi-select filter) → Checkbox group or Badge filters, not Tabs
@@ -165,7 +165,7 @@ Why not Segmented Control for major navigation? It communicates narrowing a view
 - 1 level deep, came from a specific list/context → Back link (arrow + parent page name)
 - Top-level page with sibling pages → Navigation (sidebar/top nav) — no breadcrumb needed
 
-Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
+Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels counting the current page (the current page plus 2 or more parents, the "2+ levels deep" above). Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
 
 ### Selection & Input
 

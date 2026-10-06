@@ -471,7 +471,7 @@
       "id": "EVAL-034",
       "source_job": "JOB-SWITCH-VIEWS",
       "tree_path": [0],
-      "user_prompt": "The account settings screen has four areas: Profile, Billing, Members and Security. People move between them.",
+      "user_prompt": "The account settings screen has three areas: Profile, Billing and Members. People move between them.",
       "condition": "Switching between distinct pages or major content areas (Settings: Profile, Billing, Members)",
       "expected_outcome": "Tabs (persistent selection, full content swap)",
       "forbidden_outcomes": [
@@ -479,6 +479,7 @@
         "Select (hides the areas)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "revision_note": "Run 2 (2026-10-06) used four areas and missed: the agent followed vois-patterns PATH-A-DEPTH-DEEP (4 or more sections use a sidebar), which the job did not mention. Reworded to three areas, which PATH-A-DEPTH-SHALLOW and this job agree on, and the job now points to the sidebar rule for 4 or more.",
       "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
     },
     {
