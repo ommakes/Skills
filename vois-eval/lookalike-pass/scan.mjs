@@ -3,7 +3,7 @@
 // without using the component. Zero dependencies. Heuristic: it flags candidates
 // for a human to read, it does not decide anything.
 //
-// Usage: node scan.mjs runs/<run-name>      (files named LP-01a.tsx, LP-01b.tsx ...)
+// Usage: node scan.mjs runs/<run-name> [prompts-file]   (default prompts.json; pass prompts-hard.json for run2)
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -33,6 +33,20 @@ const SIGNALS = [
     (s) => /\{\s*open\w*\s*&&/.test(s) && /\babsolute\b/.test(s) && !imp(s, "dropdown-menu") && !imp(s, "popover")],
   ["fake-breadcrumb", "path joined with / or > in plain markup", "Breadcrumb",
     (s) => /(">"|'>'|"\/"|'\/'|>\s*[>/]\s*<|ChevronRight)/.test(s) && /path|crumb|folder/i.test(s) && !imp(s, "breadcrumb")],
+  ["native-select", "native <select>", "Select",
+    (s) => /<select\b/.test(s) && !imp(s, "select")],
+  ["native-checkbox", "native checkbox input", "Checkbox",
+    (s) => /<input\b[^>]*type=["']checkbox["']/.test(s) && !imp(s, "checkbox")],
+  ["native-radio", "native radio input", "RadioGroup",
+    (s) => /<input\b[^>]*type=["']radio["']/.test(s) && !imp(s, "radio-group")],
+  ["title-tooltip", "title attribute as tooltip", "Tooltip",
+    (s) => /\btitle=["'{]/.test(s) && !imp(s, "tooltip")],
+  ["fake-progress", "hand-built progress bar", "Progress",
+    (s) => /(w-\[\$\{|style=\{\{\s*width:)/.test(s) && /progress|step/i.test(s) && !imp(s, "progress")],
+  ["fake-alert", "bordered colored box with role alert, not Alert", "Alert",
+    (s) => /role=["']alert["']/.test(s) && /(border-l-4|bg-red-|bg-destructive\/\d)/.test(s) && !imp(s, "alert")],
+  ["fake-avatar", "rounded-full div with initials", "Avatar",
+    (s) => /<div\b[^>]*rounded-full[^>]*>\s*\{?[^<]{0,12}(initials|\.charAt|\[0\])/i.test(s) && !imp(s, "avatar")],
   ["native-dialog", "window.confirm / alert / prompt", "AlertDialog / Sonner",
     (s) => /\b(window\.)?(confirm|alert|prompt)\(/.test(s)],
 ];
@@ -46,7 +60,7 @@ export function scan(src, expected) {
 if (process.argv[1] && process.argv[1].endsWith("scan.mjs")) {
   const dir = process.argv[2];
   if (!dir) { console.error("usage: node scan.mjs <run-dir>"); process.exit(1); }
-  const prompts = JSON.parse(readFileSync(new URL("./prompts.json", import.meta.url))).scenarios;
+  const prompts = JSON.parse(readFileSync(new URL(process.argv[3] ?? "./prompts.json", import.meta.url))).scenarios;
   const byId = Object.fromEntries(prompts.map((p) => [p.id, p]));
   const rows = [];
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".tsx"))) {
