@@ -43,7 +43,7 @@ The skill covers 21 high-ambiguity component pairs organized by job, with decisi
 | Communicate loading state | Skeleton vs Spinner vs Progress |
 | Handle empty content | EmptyState vs ZeroState vs Onboarding |
 | Expose actions | Menu vs DropdownMenu vs ContextMenu |
-| Guide through steps | Stepper vs Wizard vs Progress |
+| Guide through steps | Stepper vs Wizard vs Progress. `references/stepper.md` is the Stepper spec |
 | Indicate position | Breadcrumb vs Back Link vs Navigation |
 | Display data | List vs Table vs DataTable |
 | Build a form | Form vs FormSection vs Field |
@@ -88,7 +88,7 @@ If the tool isn't available, this skill still works standalone — just make the
 
 ## Version
 
-**v1.4.2** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.10.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 

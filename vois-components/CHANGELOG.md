@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.10.0] - 2026-10-06
+
+### Added
+
+- **Lookalikes.** A table of shortcuts agents take when they build something that looks like a component but isn't one, each with the component to use instead. `data/components-rules.json` has the rows (`lookalikes`): 4 `observed` in 40 blind builds and 7 `watch` rows that an existing rule already forbids but were not seen. `SKILL.md` has a short two-table version.
+- A line on prompts that describe a look: pick the component by its job, then style it.
+
+### Fixed
+
+- `data/components-rules.json` `source` pointed at `vois-components/references/*.md` for the job trees, which live in `SKILL.md`. It now names both.
+
+### Changed
+
+- **Version bump:** `1.9.0` → `1.10.0`
+
+---
+
+## [1.9.0] - 2026-10-06
+
+### Added
+
+- **`references/stepper.md`,** the Stepper spec: what it is and isn't, anatomy, the four states, behavior, layout, motion, and accessibility. shadcn/ui ships no Stepper, so agents were hand-building one with no spec. Marked `judgment`.
+- **Two "why not" entries and one naming entry** on `JOB-MULTISTEP-GUIDE`: why not Tabs for steps, why the limit is 5 and 6, and that a plus and minus control is a quantity control, not a Stepper.
+
+### Fixed
+
+- **Stepper and Wizard overlapped at exactly 5 steps.** The tree said 2 to 5 for a Stepper and 5 or more for a Wizard. It now says 2 to 5 steps that fit a page container for a Stepper, and 6 or more, or any step that needs its own full page, for a Wizard.
+
+### Changed
+
+- **Version bump:** `1.8.1` → `1.9.0`
+
+---
+
 ## [1.8.1] - 2026-10-02
 
 ### Fixed

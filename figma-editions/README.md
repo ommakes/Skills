@@ -6,6 +6,17 @@ Flattened, single-file `.md` builds of select skills for upload to Figma's custo
 
 **Design Rationale is out of scope** — it depends on `data/principles.json` and doesn't fit Figma's single-file format without permanent, un-synced curation.
 
+## Status: these builds are behind the sources
+
+Last checked 2026-10-06. There is no build script, and each edition was condensed by hand, so they were not regenerated in the same pass as the source changes. Don't upload them to Figma Community as current until they are rebuilt.
+
+| Edition | Built from | Source now |
+|---|---|---|
+| `vois-tokens.md` | v1.12.0 | 1.18.1 (adds marketing type rules, tables, field sizing, status color roles) |
+| `vois-patterns.md` | v1.6.1 | 1.14.1 (adds pricing, settings, table interaction and PII rules) |
+| `vois-components.md` | 20 jobs | 1.9.0, 21 jobs and the Stepper spec |
+| `righter.md` | 1.6-era | 1.9.0 (adds marketing copy, `no-invented-claims`, `no-pii-in-copy`) |
+
 ## Community listing taglines
 
 Frontmatter `description` fields are written to trigger correctly for an agent. These taglines are for the Figma Community listing itself — what a person scrolling Community actually reads before installing.

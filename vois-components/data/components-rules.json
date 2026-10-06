@@ -1,5 +1,5 @@
 {
-  "source": "vois-components/references/*.md",
+  "source": "vois-components/SKILL.md (job index); vois-components/references/*.md (component specs)",
   "description": "Every [JOB-...] tagged component-selection decision tree, one entry per job. Each node's decision tree is condition → recommended component; the accompanying 'Why not X?' explanations are preserved as rationale, not dropped, since they're what makes the recommendation defensible.",
   "jobs": [
     {
@@ -204,14 +204,17 @@
       "framing": "The user needs to complete multiple steps in sequence to accomplish a larger goal.",
       "decision_tree": [
         { "condition": "Steps are all required, user must complete them in order, progress is visible", "sub_branches": [
-          { "condition": "2–5 steps, fits on one page with sections", "recommendation": "Stepper (inline step indicator)" },
-          { "condition": "5+ steps, each step fills the screen", "recommendation": "Wizard (full-page steps with own layout)" }
+          { "condition": "2 to 5 steps, and each step's content fits in a page container (a form, a short list)", "recommendation": "Stepper (inline step indicator; spec in references/stepper.md)" },
+          { "condition": "6 or more steps, or any number of steps where a step needs its own full-screen layout", "recommendation": "Wizard (full-page steps with own layout)" }
         ] },
         { "condition": "Steps represent phases of an ongoing process the user checks back on", "recommendation": "Progress component (read-only status tracker, not a navigation element)" },
         { "condition": "Steps can be completed in any order, none are blocking", "recommendation": "Checklist or task list (not a Stepper — Stepper implies sequential dependency)" }
       ],
       "rationale": [
-        { "question": "Why not Progress for onboarding flows?", "answer": "Progress is a display component — it shows how far along something is. It doesn't provide navigation between steps or form state. A Stepper or Wizard provides the navigation scaffolding; Progress can be used inside it as a visual indicator." }
+        { "question": "Why not Progress for onboarding flows?", "answer": "Progress is a display component — it shows how far along something is. It doesn't provide navigation between steps or form state. A Stepper or Wizard provides the navigation scaffolding; Progress can be used inside it as a visual indicator." },
+        { "question": "Why not Tabs for steps?", "answer": "Tabs let the user jump to any panel and gate nothing. Steps are ordered and each one validates before the next opens. Tabs would also hide the order the user is supposed to follow." },
+        { "question": "Why is the Stepper limit 5 and the Wizard start at 6?", "answer": "The old wording said 2 to 5 for a Stepper and 5 or more for a Wizard, so exactly 5 steps fit both. The boundary is now 5 and 6. Past five markers the labels don't fit in one row at form width. Judgment, not observed. Any count where a step needs its own full-screen layout goes to a Wizard." },
+        { "question": "Is a plus and minus control a Stepper?", "answer": "No. A control that adds or removes a quantity, such as seats on a pricing card, is a quantity control. Stepper only means the step indicator." }
       ]
     },
     {
@@ -428,5 +431,21 @@
         { "question": "Why hand off to vois-dataviz instead of picking a chart type here?", "answer": "Chart choice depends on the viewer's job, the audience, the series count and honesty rules (baseline, axes, partial periods) that this skill doesn't cover. vois-dataviz owns that tree and the chart-specific do's and don'ts." }
       ]
     }
-  ]
+  ],
+  "lookalikes": {
+    "description": "Shortcuts agents take when they build something that looks like a component but isn't one, each with the component to use instead. `observed` rows were seen in blind builds (vois-eval/lookalike-pass, 40 builds). `watch` rows are forbidden by an existing rule and were not seen. `signal` is what a script could match on.",
+    "rows": [
+      {"id": "LOOKALIKE-001", "tier": "observed", "built": "A raw `<button>` with a hand-written focus ring (`focus-visible:ring-2 ...`) used as a text link, an icon inside an input (clear x), or a Tooltip or Popover trigger", "instead": "Button. `variant=\"link\"` for text, `variant=\"ghost\"` with an icon size and an `aria-label` for icons. As a trigger, `asChild` on the Button", "why": "Focus ring, hit area and press state drift from screen to screen, and each copy has to be fixed by hand", "rule_ids": ["DS-COMPONENT-001", "DS-A11Y-001", "DS-A11Y-007"], "evidence": "8 of 40 builds: LP-06a, LP-06b, LP-06c, LP-10a, LP-10b, HP-03, HP-05, HP-10", "signal": "`<button` in a file that also writes `focus-visible:ring`"},
+      {"id": "LOOKALIKE-002", "tier": "observed", "built": "A `Loader2` icon with `animate-spin`", "instead": "Spinner", "why": "One spinner means one size, one speed, and one place to fix reduced motion", "rule_ids": ["DS-COMPONENT-001", "DS-ANIMATION-004"], "evidence": "2 of 12 spinner uses: LP-03b, HP-02. Both inside a \"deleting\" button", "signal": "`animate-spin` with no `@/components/ui/spinner` import"},
+      {"id": "LOOKALIKE-003", "tier": "observed", "built": "Buttons with `role=\"radio\"` and a hand-set `aria-checked`", "instead": "RadioGroup for a choice among options, or ToggleGroup (single) for a segmented control", "why": "A role on a Button doesn't give arrow-key movement or a single tab stop. RadioGroup and ToggleGroup do", "rule_ids": ["DS-COMPONENT-001"], "evidence": "1 of 40 builds: HP-07", "signal": "`role=\"radio\"` with no `radio-group` import"},
+      {"id": "LOOKALIKE-004", "tier": "observed", "built": "Numbered circles joined by lines, written fresh on the screen", "instead": "The shared Stepper, built once per workspace to `references/stepper.md`", "why": "shadcn ships no Stepper. A per-screen copy drifts, and the state and accessibility rules get skipped", "rule_ids": ["DS-COMPONENT-001", "DS-COLOR-003"], "evidence": "1 of 40 builds: HP-07, written before the spec existed", "signal": "An `ol` of numbered `rounded-full` markers with no Stepper import"},
+      {"id": "LOOKALIKE-005", "tier": "watch", "built": "A `div` or `span` with `onClick`", "instead": "Button for an action, a link for navigation", "why": "No keyboard activation, no focus, no role", "rule_ids": ["DS-A11Y-005"], "evidence": "Not seen in 40 builds. Forbidden by an existing rule", "signal": "`<div`/`<span` with `onClick` and no `role`"},
+      {"id": "LOOKALIKE-006", "tier": "watch", "built": "A `fixed inset-0` backdrop with a centered box", "instead": "Dialog, AlertDialog or Sheet (`JOB-OVERLAY-INTERACTION`, `JOB-CONFIRM-DESTRUCTIVE`)", "why": "No focus trap, no scroll lock, no Escape handling", "rule_ids": ["DS-MODAL-001", "DS-MODAL-002", "DS-MODAL-003"], "evidence": "Not seen in 40 builds. HP-02 described this exact look and still got an AlertDialog", "signal": "`fixed inset-0` with no dialog, sheet or alert-dialog import"},
+      {"id": "LOOKALIKE-007", "tier": "watch", "built": "A `setTimeout` that hides a message held in state", "instead": "Sonner toast (`JOB-TRANSIENT-FEEDBACK`)", "why": "No announcement to screen readers, and no shared timing or stacking", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`setTimeout` calling a state setter with `false` or `null`, and no `sonner` import"},
+      {"id": "LOOKALIKE-008", "tier": "watch", "built": "\"x\", \"×\" or `&times;` as text for a close control", "instead": "The close control that comes with Dialog or Sheet, or a ghost icon Button with an `aria-label`", "why": "Tiny hit area and no accessible name", "rule_ids": ["DS-A11Y-001", "DS-A11Y-007"], "evidence": "Not seen in 40 builds. HP-01 described a red \"×\" and used a labelled ghost icon Button", "signal": "`>×<`, `&times;`, `✕` or `>x<` inside a button"},
+      {"id": "LOOKALIKE-009", "tier": "watch", "built": "`window.confirm`, `alert` or `prompt`", "instead": "AlertDialog for a confirmation, Sonner for a message", "why": "Unstyled, can't carry the typed confirmation or the consequences, and blocks the page", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`confirm(`, `alert(` or `prompt(`"},
+      {"id": "LOOKALIKE-010", "tier": "watch", "built": "A colored box with `border-l-4`, an icon and text for a message", "instead": "Alert with a status role (`info`, `positive`, `negative`, `warning`)", "why": "Status colors come from the role tokens, and Alert carries the right role and announcement", "rule_ids": ["DS-COLOR-008", "DS-COLOR-009", "DS-A11Y-009"], "evidence": "Not seen in 40 builds. LP-05b built a failure panel from a `<p role=\"alert\">`", "signal": "`border-l-4` or a `bg-red-*` box with `role=\"alert\"` and no `alert` import"},
+      {"id": "LOOKALIKE-011", "tier": "watch", "built": "A `title=\"...\"` attribute as a tooltip", "instead": "Tooltip (`JOB-CONTEXTUAL-INFO`)", "why": "Doesn't show on keyboard focus or touch, and can't be styled", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`title=` on an element, and no `tooltip` import"}
+    ]
+  }
 }

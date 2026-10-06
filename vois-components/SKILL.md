@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.8.1
+version: 1.10.0
 ---
 
 # Vois Component Selection Skill
@@ -77,8 +77,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Filtered to zero results | Inline message + clear | EmptyState |
 | Row-level actions | DropdownMenu | ContextMenu, Command |
 | Right-click enhancement | ContextMenu | DropdownMenu |
-| 2–5 sequential required steps | Stepper | Progress, Wizard |
-| 5+ full-page sequential steps | Wizard | Stepper |
+| 2–5 sequential required steps, each fits a page container | Stepper (`references/stepper.md`) | Progress, Tabs, Wizard |
+| 6+ steps, or a step that needs its own full page | Wizard | Stepper |
 | 2+ levels deep in hierarchy | Breadcrumb | Back link |
 | 1 level deep | Back link | Breadcrumb |
 | Simple collection, no sorting | List | Table |
@@ -93,9 +93,38 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ---
 
+## Lookalikes: Don't Hand-Build These
+
+Agents often write markup that looks like a component but isn't one. A screen can follow every rule in this skill and still contain one. Before you write markup for any of these, use the component. The full rows (why, rule IDs, evidence, a signal a script can match) are in `data/components-rules.json` under `lookalikes`.
+
+**Seen in blind builds** (`vois-eval/lookalike-pass`, 40 builds):
+
+| If you are about to write | Use instead |
+|---|---|
+| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger |
+| `Loader2` with `animate-spin` | Spinner |
+| Buttons with `role="radio"` | RadioGroup, or ToggleGroup (single) for a segmented control |
+| Numbered circles joined by lines | The shared Stepper (`references/stepper.md`) |
+
+**Not seen, but already forbidden by a rule:**
+
+| If you are about to write | Use instead |
+|---|---|
+| `div` or `span` with `onClick` | Button, or a link for navigation |
+| `fixed inset-0` backdrop and a centered box | Dialog, AlertDialog or Sheet |
+| `setTimeout` that hides a message | Sonner toast |
+| "x" or "×" text as a close | The Dialog or Sheet close, or a ghost icon Button with `aria-label` |
+| `window.confirm`, `alert` or `prompt` | AlertDialog, or Sonner |
+| A colored `border-l-4` box with an icon and text | Alert with a status role |
+| `title="..."` as a tooltip | Tooltip |
+
+When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
+
 ## Job Index
 
 `data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 21 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
+
+**Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. Today that is `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks).
 
 **Source of truth:** `data/components-rules.json` is canonical and, since the prose reference files were removed, the only source for decision-tree content. The Job Index table above is the one place each `JOB-*` ID is tagged in prose, and each JSON entry's `source_file` points here.
 
