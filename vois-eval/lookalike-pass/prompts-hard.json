@@ -1,0 +1,118 @@
+{
+ "description": "Lookalike pass 2: harder prompts. Each describes the screen by how it looks and mixes 3+ jobs. No component named.",
+ "scenarios": [
+  {
+   "id": "HP-01",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "button",
+    "badge",
+    "sonner"
+   ],
+   "user_prompt": "Build the settings page from this brief: a card with a rounded rectangle button labeled 'Save changes', a red \u00d7 in the top-right corner of the card that dismisses the card, an orange pill that says 'Beta' next to the title, and after saving, a small green message slides in at the top of the screen for a couple of seconds."
+  },
+  {
+   "id": "HP-02",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "alert-dialog"
+   ],
+   "user_prompt": "Danger zone on the account page: a big red button at the bottom that says 'Delete account'. Clicking it should pop up a box in the middle of the screen with a dark overlay behind it, asking if they're sure, with Cancel and Delete."
+  },
+  {
+   "id": "HP-03",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "dropdown-menu",
+    "tooltip",
+    "badge"
+   ],
+   "user_prompt": "Project cards in a grid. Each has a little three-dot icon in the corner that opens a small list under it with Edit, Duplicate, Delete. Each card also shows a colored dot and a word for its status. Hovering the status word shows a small bubble explaining it."
+  },
+  {
+   "id": "HP-04",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "radio-group",
+    "checkbox",
+    "switch",
+    "alert",
+    "input"
+   ],
+   "user_prompt": "A signup form: email, password, plan (pick one of Free, Pro, Team, shown as three side-by-side boxes you click), a tick box for terms, and a toggle that says 'Send me product news'. Show errors in red under each field and a banner at the top if the server fails."
+  },
+  {
+   "id": "HP-05",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "breadcrumb",
+    "input",
+    "tabs",
+    "toggle-group"
+   ],
+   "user_prompt": "A dashboard header with a path like Home > Projects > Acme > Settings, a search box with a little x to clear it, and a row of three clickable text labels (Day, Week, Month) where the chosen one is underlined."
+  },
+  {
+   "id": "HP-06",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "table",
+    "avatar",
+    "badge",
+    "checkbox"
+   ],
+   "user_prompt": "A table of users. Each row has an avatar circle with initials, a name, a role label, a last-seen time that says 'Active now' with a green dot, and a checkbox to select. When rows are selected, a bar slides up from the bottom with 'Remove' and 'Export'."
+  },
+  {
+   "id": "HP-07",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "progress",
+    "button"
+   ],
+   "user_prompt": "A multi-step onboarding with numbered circles across the top (1 Account, 2 Team, 3 Done) connected by lines, where the current one is filled in. Next and Back buttons at the bottom. A thin bar under the header shows overall progress."
+  },
+  {
+   "id": "HP-08",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "skeleton",
+    "alert",
+    "button"
+   ],
+   "user_prompt": "An empty inbox: a big gray envelope icon, 'No messages yet', and a button 'Compose'. While loading it shows gray pulsing bars. If loading fails, a red box with 'Something went wrong' and a Retry link."
+  },
+  {
+   "id": "HP-09",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "switch",
+    "select",
+    "textarea"
+   ],
+   "user_prompt": "Notification preferences: a list of rows, each a label on the left and an on/off switch on the right that looks like a little pill with a circle. Under it, a dropdown for 'Digest frequency' (Daily, Weekly) and a text area with a character counter."
+  },
+  {
+   "id": "HP-10",
+   "source_job": "MULTI",
+   "style": "appearance",
+   "expected_imports": [
+    "badge",
+    "toggle-group",
+    "tooltip",
+    "popover",
+    "card"
+   ],
+   "user_prompt": "Pricing page: three plan columns, the middle one with a 'Most popular' ribbon, a monthly/yearly pill toggle at the top that switches the prices, and a small info icon next to 'Seats' that explains seat limits when hovered or tapped."
+  }
+ ]
+}
