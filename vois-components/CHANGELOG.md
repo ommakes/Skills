@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.10.0] - 2026-10-06
+
+### Added
+
+- **Lookalikes.** A table of shortcuts agents take when they build something that looks like a component but isn't one, each with the component to use instead. `data/components-rules.json` has the rows (`lookalikes`): 4 `observed` in 40 blind builds and 7 `watch` rows that an existing rule already forbids but were not seen. `SKILL.md` has a short two-table version.
+- A line on prompts that describe a look: pick the component by its job, then style it.
+
+### Fixed
+
+- `data/components-rules.json` `source` pointed at `vois-components/references/*.md` for the job trees, which live in `SKILL.md`. It now names both.
+
+### Changed
+
+- **Version bump:** `1.9.0` → `1.10.0`
+
+---
+
 ## [1.9.0] - 2026-10-06
 
 ### Added
