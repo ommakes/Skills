@@ -337,7 +337,7 @@
       "category": "DS-COLOR",
       "category_label": "Color",
       "source_file": "vois-tokens/references/color.md",
-      "rule": "Pick the status role by meaning, not by hue. `info` is neutral context. `positive` is success or completion. `negative` is an error or failure state. `warning` is caution or something that needs attention before it becomes an error. `destructive` stays the action role for destructive buttons and may alias `negative`, but a status never uses `destructive`. If the workspace token set is missing a role, propose it. Don't fall back to stock component variants or a palette color.",
+      "rule": "Pick the status role by meaning, not by hue. `info` is neutral context. `positive` is success or completion. `negative` is an error, a failure, or a destructive action. `warning` is caution or something that needs attention before it becomes an error. There is no separate `destructive` token: a destructive Button reads `--color-negative`, and `destructive` is only the shadcn variant name. Don't keep `--color-destructive` or `--color-success`; use `negative` and `positive`. If the workspace token set is missing a role, propose it. Don't fall back to stock component variants or a palette color.",
       "severity": "required",
       "enforcement": "advisory"
     },

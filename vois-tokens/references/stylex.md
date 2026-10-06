@@ -95,7 +95,7 @@ import * as stylex from "@stylexjs/stylex";
 const styles = stylex.create({
   base: { borderRadius: 6, fontWeight: 500 },
   variantDefault: { backgroundColor: "var(--color-primary)" },
-  variantDestructive: { backgroundColor: "var(--color-destructive)" },
+  variantDestructive: { backgroundColor: "var(--color-negative)" },
   variantOutline: { borderWidth: 1, borderStyle: "solid" },
   sizeDefault: { height: 36, paddingInline: 16 },
   sizeSm: { height: 32, paddingInline: 12 },

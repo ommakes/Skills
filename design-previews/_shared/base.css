@@ -110,7 +110,7 @@ h1, h2, h3, h4, h5, h6, p { margin: 0; }
 .btn-primary { background: var(--color-primary); color: var(--color-primary-foreground); }
 .btn-secondary { background: var(--color-secondary); color: var(--color-secondary-foreground); }
 .btn-ghost { background: transparent; color: var(--color-foreground); border-color: var(--color-border); }
-.btn-destructive { background: var(--color-destructive); color: var(--color-destructive-foreground); }
+.btn-destructive { background: var(--color-negative); color: var(--color-negative-foreground); }
 .btn-icon { padding: var(--space-8); border-radius: var(--radius-md); background: transparent; border-color: var(--color-border); color: var(--color-foreground); }
 
 /* ---- Inputs ---- */
@@ -130,8 +130,8 @@ h1, h2, h3, h4, h5, h6, p { margin: 0; }
 .textarea { min-height: 96px; resize: vertical; }
 .input:focus, .textarea:focus, select.input:focus { border-color: var(--color-primary); }
 .input:disabled, .textarea:disabled, select.input:disabled { opacity: .6; cursor: not-allowed; background: var(--color-muted); }
-.input[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--color-destructive); }
-.field-error { color: var(--color-destructive); font-size: var(--text-h6-size); margin-top: calc(var(--space-8) * -1); }
+.input[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--color-negative); }
+.field-error { color: var(--color-negative); font-size: var(--text-h6-size); margin-top: calc(var(--space-8) * -1); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn:disabled:active { transform: none; }
 
@@ -299,7 +299,7 @@ table.kit-table tbody tr:hover { background: var(--color-muted); }
 .avatar-group { display: inline-flex; }
 .avatar-group .avatar { margin-left: -10px; }
 .avatar-group .avatar:first-child { margin-left: 0; }
-.avatar .presence { position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-radius: var(--radius-full); background: var(--color-success); box-shadow: 0 0 0 2px var(--color-surface); }
+.avatar .presence { position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-radius: var(--radius-full); background: var(--color-positive); box-shadow: 0 0 0 2px var(--color-surface); }
 
 /* ---- Icons (inline SVG sizing helper) ---- */
 .icon { width: var(--icon-5); height: var(--icon-5); stroke-width: var(--icon-stroke); flex: none; }

@@ -8,8 +8,9 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ### Added
 
-- **Status color roles.** `DS-COLOR-008` fixes four semantic roles (`info`, `positive`, `negative`, `warning`), each with four tokens (base, `-foreground`, `-surface`, `-border`). `DS-COLOR-009` says to pick a role by meaning and keeps `destructive` as the action role. New "Status Colors" section in `references/color.md`, a `status_roles` group in `data/tokens.json`, and a line in the Pre-Submit Checklist.
+- **Status color roles.** `DS-COLOR-008` fixes four semantic roles (`info`, `positive`, `negative`, `warning`), each with four tokens (base, `-foreground`, `-surface`, `-border`). `DS-COLOR-009` says to pick a role by meaning, and merges `destructive` into `negative`: there is no separate `destructive` token, and a destructive Button reads `--color-negative`. `success` becomes `positive`. New "Status Colors" section in `references/color.md`, a `status_roles` group in `data/tokens.json`, and a line in the Pre-Submit Checklist.
 - Names only. The OKLCH values stay per workspace, as before.
+- Examples in `components.md` and `stylex.md` now read `--color-negative`. The `destructive` Button variant keeps its name, since that is the shadcn API.
 
 ### Why
 
