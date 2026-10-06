@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.13.0
+version: 1.18.1
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -33,7 +33,9 @@ If your workspace defines **VARIANCE** (layout asymmetry), **MOTION** (animation
 | Surfaces (radius, alignment, shadows, motion polish) | `[DS-SURFACE]` |
 | Elevation | `[DS-ELEVATION]` |
 | Iconography | `[DS-ICON]` |
-| Layout & responsive | `[DS-LAYOUT]` `[DS-RESPONSIVE]` |
+| Layout & responsive (incl. form, field, and dialog widths, auto-growing textareas) | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
+| Data tables (scroll owner, sticky header and column, scrollbars) | `[DS-TABLE]` |
+| Marketing type and spacing (marketing surfaces only) | `[DS-MKT]` |
 | Tailwind v4 | `[DS-TAILWIND]` |
 | StyleX (alternative to Tailwind) | `[DS-STYLEX]` |
 | Animation | `[DS-ANIMATION]` |
@@ -65,6 +67,7 @@ Run this before calling anything done.
 **Color**
 - [ ] No hardcoded hex values `[DS-COLOR-001]`
 - [ ] No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]`
+- [ ] Status uses the `info`/`positive`/`negative`/`warning` role tokens, never a palette class or stock variant `[DS-COLOR-008]`
 - [ ] Both light and dark mode verified manually `[DS-COLOR-007]`
 - [ ] Color is not the only signal for error/success/warning `[DS-COLOR-003]`
 - [ ] Decorative icons have `aria-hidden="true"` `[DS-COLOR-005]`
@@ -99,7 +102,7 @@ Run this before calling anything done.
 **Accessibility**
 - [ ] All interactive elements have `:focus-visible` styles `[DS-A11Y-002]`
 - [ ] No `outline: none` without a replacement `[DS-A11Y-003]`
-- [ ] Touch targets minimum 44×44px `[DS-A11Y-001]`
+- [ ] Interactive elements have a hit area of at least `var(--hit-area-min)`. The token never sets the visible size `[DS-A11Y-001]`
 - [ ] Contrast passes WCAG AA `[DS-A11Y-004]`
 - [ ] No `div`/`span` as interactive elements without ARIA `[DS-A11Y-005]`
 - [ ] All images have `alt` `[DS-A11Y-010]`
@@ -113,6 +116,25 @@ Run this before calling anything done.
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
+- [ ] Form, field, and dialog widths use width tokens `[DS-LAYOUT-WIDTH-001]` `[DS-LAYOUT-WIDTH-002]` `[DS-LAYOUT-WIDTH-003]` `[DS-LAYOUT-WIDTH-004]`
+- [ ] Auto-growing textareas use `field-sizing: content` with an explicit `inline-size`, `lh` min and max, and an `@supports` fallback `[DS-LAYOUT-FIELD-001]` `[DS-LAYOUT-FIELD-002]` `[DS-LAYOUT-FIELD-003]` `[DS-LAYOUT-FIELD-004]`
+
+**Data tables** (see Data Tables section)
+- [ ] One scroll owner per table: the page for a simple table, the wrapper for a complex one `[DS-TABLE-001]` `[DS-TABLE-002]` `[DS-TABLE-003]`
+- [ ] No `overflow: auto clip` or `overflow-y: clip` workaround. `clip` computes to `hidden` `[DS-TABLE-004]`
+- [ ] A complex table's wrapper has a bounded block size, and its flex or grid parents have `min-block-size: 0` `[DS-TABLE-002]` `[DS-TABLE-005]`
+- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and local z layers inside `isolation: isolate` `[DS-TABLE-006]` `[DS-TABLE-007]`
+- [ ] Scrollbars styled with `scrollbar-width: thin` and `scrollbar-color`, no `::-webkit-scrollbar` `[DS-TABLE-010]` `[DS-TABLE-011]`
+- [ ] A complex table that scrolls both ways uses the one-axis wheel lock `[DS-TABLE-014]`
+- [ ] The scroll region is focusable, labeled, and the table keeps real table elements `[DS-TABLE-015]`
+- [ ] Header and row heights come from the `table_sizes` tokens, and the page sets the table offset `[DS-TABLE-019]`
+
+**Marketing surfaces** (only; see Marketing Type & Spacing section)
+- [ ] Display face only for display and h2, never below 28px `[DS-MKT-002]`
+- [ ] One display headline per page, one h2 per section `[DS-MKT-003]`
+- [ ] Body text capped at `56ch` `[DS-MKT-005]`
+- [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
+- [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
 
 **CSS**
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
@@ -129,7 +151,7 @@ Run this before calling anything done.
 - [ ] No more than 2 consecutive zigzag sections `[DS-SLOP-006]`
 - [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
 - [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
-- [ ] Em-dash density appropriate to context — Righter owns prose `[DS-SLOP-009]`
+- [ ] No em dashes in shipped copy `[DS-SLOP-009]`
 - [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
 - [ ] No left-border + corner-radius combo on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
 
@@ -174,6 +196,8 @@ Fonts are workspace-specific via `--font-heading`, `--font-body`, `--font-mono` 
 - **60/30/10 distribution:** ~60% neutral, 30% complementary/secondary, 10% accent/brand `[DS-COLOR-004]`.
 - Decorative icons get `aria-hidden="true"` `[DS-COLOR-005]`.
 
+**Status colors** — four semantic roles, `info`, `positive`, `negative`, and `warning`, each with four tokens: `--color-{role}`, `--color-{role}-foreground`, `--color-{role}-surface`, `--color-{role}-border` `[DS-COLOR-008]`. Alert, Badge, Toast, inline validation, and banners read these tokens; never a palette class, a literal color, or a one-off token for status. Pick the role by meaning, not hue: `info` is neutral context, `positive` is success or completion, `negative` is an error, a failure, or a destructive action, `warning` is caution or something that needs attention before it becomes an error `[DS-COLOR-009]`. There is no separate `destructive` token: a destructive Button reads `--color-negative`, and `destructive` is only the shadcn variant name. Older kits used `--color-destructive` and `--color-success`; those become `negative` and `positive`. The names are fixed and the values are defined per workspace, each with a light and a dark value. `-foreground` on `-surface` is normal text (4.5:1); the base color and `-border` against the page are UI components (3:1). If a role is missing, propose the four tokens; don't borrow a palette color.
+
 Tailwind v4 uses **OKLCH** for color definitions — perceptually uniform, so lighter values are actually lighter. Example: `--color-primary: oklch(0.637 0.237 259.4)`. The full workspace palette is defined per-project via `@theme`; these are illustrative examples, not the complete set.
 
 **Dark mode** — every color token must have a dark value `[DS-COLOR-006]`, implemented via `@custom-variant dark (&:is(.dark *))`. Use `light-dark()` for simple two-value swaps (`color: light-dark(oklch(0.145 0 0), oklch(0.985 0 0))`, with `color-scheme: light dark` set on `html`); stick with the `dark:` modifier for complex variants. Verify both modes manually before shipping `[DS-COLOR-007]`.
@@ -188,7 +212,7 @@ Tailwind v4 uses **OKLCH** for color definitions — perceptually uniform, so li
 ```tsx
 const buttonVariants = cva("inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors", {
   variants: {
-    variant: { default: "bg-primary text-primary-foreground hover:bg-primary/90", destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90", outline: "border border-input bg-background hover:bg-accent", ghost: "hover:bg-accent hover:text-accent-foreground" },
+    variant: { default: "bg-primary text-primary-foreground hover:bg-primary/90", destructive: "bg-negative text-negative-foreground hover:bg-negative/90", outline: "border border-input bg-background hover:bg-accent", ghost: "hover:bg-accent hover:text-accent-foreground" },
     size: { default: "h-9 px-4 py-2", sm: "h-8 px-3 text-xs", lg: "h-10 px-8" },
   },
   defaultVariants: { variant: "default", size: "default" },
@@ -253,6 +277,45 @@ For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on 
 
 **Component-level:** no `padding-bottom`/`margin-top` for sibling spacing — use `gap` on the parent `[DS-LAYOUT-COMP-001]`. No purposeless wrapper divs `[DS-LAYOUT-COMP-002]`. `min-width: 0` on flex children with text/overflow-prone content `[DS-LAYOUT-COMP-003]`. `object-fit` on images with set dimensions `[DS-LAYOUT-COMP-006]`. `aspect-ratio` instead of the padding-top percentage hack `[DS-LAYOUT-COMP-005]`.
 
+**Widths** — form, field, and dialog widths come from tokens, never hardcoded. Form containers use `max-width: var(--width-form-max)` `[DS-LAYOUT-WIDTH-001]`. Single-line fields use `var(--width-field-max)` by default and short fixed-format values use `var(--width-field-narrow)`; only textareas may extend to `--width-form-max` `[DS-LAYOUT-WIDTH-002]`. Layouts hold at `var(--width-viewport-min)` with no horizontal scroll `[DS-LAYOUT-WIDTH-003]`. Desktop dialogs use `--width-dialog-sm` or `--width-dialog-lg`; which tier applies is decided in `vois-patterns` (`PATH-D-SIZE`) `[DS-LAYOUT-WIDTH-004]`.
+
+| Token | Value | Use |
+|---|---|---|
+| `--width-form-max` | 48rem (768px) | Form container ceiling, and the ceiling for textareas |
+| `--width-field-max` | 25rem (400px) | Default ceiling for a single-line field |
+| `--width-field-narrow` | 15rem (240px) | Postal code, state code, expiry, security code |
+| `--width-viewport-min` | 22.5rem (360px) | Narrowest viewport a layout must support without horizontal scroll |
+| `--width-dialog-sm` | 32.5rem (520px) | Confirmations, AlertDialogs, typed confirmation, single-column content |
+| `--width-dialog-lg` | 45rem (720px) | A textarea or content that needs the extra width. Dialogs are always one column |
+| `--hit-area-min` | 2.75rem (44px) | Minimum click or tap area. Never sets visual size |
+
+Widths are in `rem` so they respect the user's browser font size.
+
+**Auto-growing textareas** — use `field-sizing: content` (Tailwind v4: `field-sizing-content`), never JavaScript autosizing (no `scrollHeight` measuring, `ResizeObserver`, or autosize libraries) `[DS-LAYOUT-FIELD-001]`. Always set an explicit `inline-size`, because content sizing also shrinks the width and an unset width collapses to a sliver `[DS-LAYOUT-FIELD-002]`. Set `min-block-size` and `max-block-size` from the line-count tokens using the `lh` unit plus the field's block padding; don't rely on `rows` for the minimum, because browsers ignore it under `field-sizing: content`; scroll inside with `overflow-y: auto` at the maximum `[DS-LAYOUT-FIELD-003]`. Wrap the styles in `@supports (field-sizing: content)` and keep `rows` and `resize: vertical` as the fallback `[DS-LAYOUT-FIELD-004]`. Line tokens (unitless, multiplied by `1lh`): `--textarea-min-lines` 3, `--textarea-max-lines` 12, `--chat-input-min-lines` 1, `--chat-input-max-lines` 8.
+
+## Data Tables `[DS-TABLE]`
+
+- **One scroll owner, chosen on purpose** `[DS-TABLE-001]`. A sticky header sticks to its nearest scroll-container ancestor, and any `overflow` other than `visible` or `clip` creates one, so nothing between the header and the intended owner may change that by accident.
+- **Complex table:** the wrapper owns both axes: `overflow: auto` with a bounded block size, a sticky header inside, `scrollbar-gutter: stable`, `overscroll-behavior-x: contain`, and `scroll-padding-block-start` equal to the header height `[DS-TABLE-002]`. **Simple table:** no overflow on the wrapper, so the header sticks to the page (offset by any fixed app header), and it never scrolls sideways `[DS-TABLE-003]`.
+- Don't use `overflow: auto clip`, or `overflow-x: auto` with `overflow-y: clip`, to keep a header sticky to the page: `clip` computes to `hidden` next to `auto`, which is still a scroll container `[DS-TABLE-004]`. Every flex or grid ancestor between the app shell and the wrapper has `min-inline-size: 0` and `min-block-size: 0` `[DS-TABLE-005]`.
+- **Pinned first column:** `position: sticky`, `inset-inline-start: 0`, an opaque background, and small local z-index values (column 1, header row 2, corner cell 3) inside `isolation: isolate` on the scroll owner so they never outrank an overlay; add `scroll-padding-inline-start` equal to the column width `[DS-TABLE-006]`. Tables with sticky cells use `border-collapse: separate` with `border-spacing: 0` `[DS-TABLE-007]`.
+- Layout changes key off the container, not the viewport: `container-type: inline-size` on an element outside the scroll wrapper and `@container (width < 40em)` for the narrow layout `[DS-TABLE-008]`. Use `table-layout: fixed` with explicit column widths, `text-overflow: ellipsis`, right-aligned numbers with `tabular-nums`, and left-aligned text `[DS-TABLE-009]`.
+- **Scrollbars:** `scrollbar-width: thin` and `scrollbar-color` from a neutral token, no `::-webkit-scrollbar`, and don't hide the scrollbar on a table that scrolls sideways `[DS-TABLE-010]`; `scrollbar-gutter: stable` so columns stay aligned `[DS-TABLE-011]`; `overscroll-behavior-x: contain`, not the vertical axis `[DS-TABLE-012]`; `scroll-padding-block-start` equal to the header height so focused rows aren't hidden `[DS-TABLE-013]`.
+- **Wheel lock:** a complex table that scrolls both ways scrolls one axis per gesture: a wheel handler (`passive: false`, `ctrlKey` passes through) that scrolls only the dominant axis, shared as one hook with an opt-out. Simple tables don't use it. Leave touch alone `[DS-TABLE-014]`.
+- **Accessibility:** the scroll owner has `tabindex="0"`, `role="region"`, and an `aria-label`; keep real table elements, a button inside a sortable `th`, and `aria-sort` on the sorted `th`; use `role="grid"` only with arrow-key cell navigation `[DS-TABLE-015]`.
+- Paginate by default; virtualize only for database-style grids with thousands of rows, and test the sticky header and pinned column with a long scroll `[DS-TABLE-016]`. Highlights for just-added rows and scroll-shadow transitions respect `prefers-reduced-motion` `[DS-TABLE-017]`. A table that scrolls sideways shows a cue that more content exists, such as an edge shadow on the pinned column or a partly visible column `[DS-TABLE-018]`.
+- **Sizes come from tokens** `[DS-TABLE-019]`: `--table-header-h` 2.5rem (40px, also the sticky offset), `--table-row-h-dense` 2rem (32px, pointer devices only), `--table-row-h-regular` 2.75rem (44px, matches `--hit-area-min` so rows are tappable), `--table-row-h-comfortable` 3.5rem (56px). The space above a complex table and a fixed app header's height are set by the page, not tokens, and the component supplies a fallback. Check the workspace token set first; if a size is missing, propose it, never hardcode.
+
+## Marketing Type & Spacing `[DS-MKT]`
+
+Marketing surfaces only (landing pages, product marketing, public site pages). Product UI keeps the Typography and Spacing rules as written `[DS-MKT-001]`.
+
+- The display face (`--font-heading`) carries display and h2 only and is never used below 28px; the text face (`--font-body`) carries everything else. Both roles can be one family at different weights `[DS-MKT-002]`. One display headline per page and one h2 per section `[DS-MKT-003]`.
+- **Scale (a starting point; values are estimates, keep the ratios):** display 40/44 mobile and 72/76 desktop; h2 28/34 and 44/50; h3 20/26 and 24/30; lead 18/26 and 20/30; body 16/24 and 17/26; small 14/20 and 15/22 `[DS-MKT-004]`.
+- Cap marketing body text at `56ch`, replacing the 65ch cap on marketing surfaces. Headings may run narrower `[DS-MKT-005]`.
+- The gap between sections is about 4x the gap between a section heading and its content, and 12 to 15x the gap between a heading and its body text. If the page feels cramped, widen the section gap first, then cut content; don't add dividers to compensate `[DS-MKT-006]`. Keep the gap inside a block smaller than the gap between blocks, or the page reads as one pile `[DS-MKT-007]`.
+- Section-to-section gaps may exceed 96px, up to 240px, in steps of 8, using a spacing token. This is an exception to the allowed-values list; divisible by 4 or 8 still holds `[DS-MKT-008]`.
+
 ## Tailwind v4 `[DS-TAILWIND]`
 
 Replace `@layer base` with `@theme` `[DS-TAILWIND-001]`; use `@import "tailwindcss"` instead of the separate base/components/utilities imports `[DS-TAILWIND-002]`. Container queries are built in — use `@container` and `@min-`/`@max-` variants. `hover:` only applies on hover-capable devices in v4, but verify on touch anyway. Arbitrary values (`w-[237px]`) are a smell — round to the scale or flag a missing token `[DS-TAILWIND-003]`. No `!important` except explicitly-owned, documented overrides `[DS-TAILWIND-004]`. Never `transition: all` — list properties explicitly `[DS-TAILWIND-005]`.
@@ -294,7 +357,7 @@ No bounce by default in Motion — spring animations are a native-iOS pattern, n
 
 These are not optional.
 
-Minimum touch target **44×44px** — expand the hit area with a pseudo-element if the visual element is smaller `[DS-A11Y-001]`.
+Every interactive element has a hit area of at least `var(--hit-area-min)` (44px) in both dimensions. The token sets the click or tap area only, never the visual size of the control. If the visible element is smaller, extend the hit area with a pseudo-element centered on it, sized `width: 100%; height: 100%` with `min-width` and `min-height` of `var(--hit-area-min)` `[DS-A11Y-001]`.
 
 **Focus:** `:focus-visible` for visual focus rings (keyboard/assistive tech, not mouse clicks) `[DS-A11Y-002]`; `:focus-within` to style a whole form section when a child is focused; `:focus` only when you need to respond to all focus events regardless of input method. Never remove `outline` without a `:focus-visible` replacement `[DS-A11Y-003]`.
 
@@ -334,13 +397,13 @@ Several rules are dial-gated — read VARIANCE before flagging; a deliberately s
 
 - **`[DS-SLOP-001]` Centered-everything as a default** — above VARIANCE 4, a centered hero (centered headline + subtext + single CTA) is the most common AI layout default. Reach for split-screen, asymmetric, or offset structures instead; centered should be a deliberate choice, not the thing you land on by default.
 - **`[DS-SLOP-002]` The AI gradient** — purple/violet/indigo → blue/cyan gradients (backgrounds, gradient text, `linear-gradient()`) are template-output's visual signature. Use the workspace's own accent tokens instead.
-- **`[DS-SLOP-003]` Three equal feature cards** — the identical `grid-cols-3` card row is a tell. Vary sizes, promote the primary one, or use an asymmetric/bento grid.
+- **`[DS-SLOP-003]` Three equal feature cards** — the identical `grid-cols-3` card row is a tell. Vary sizes, promote the primary one, or use an asymmetric/bento grid. On marketing pages a row or stack has at most three blocks: three is the ceiling, not the target, and the blocks should still differ in size, emphasis, or content.
 - **`[DS-SLOP-004]` Eyebrow overuse** — the uppercase label above a heading is fine once; cap it at roughly 1 per 3 sections.
 - **`[DS-SLOP-005]` Emoji as UI iconography** — use the real icon set for interface chrome; emoji in user-authored content is fine.
 - **`[DS-SLOP-006]` Zigzag repetition** — alternating image-left/image-right sections are fine up to 2 in a row; a third must break the pattern.
 - **`[DS-SLOP-007]` Spec-sheet tables for marketing** — a label/value table for features or plans on a marketing surface is boilerplate; use grouped cards or clustered stats instead (genuine product data tables are unaffected).
 - **`[DS-SLOP-008]` Symmetry as the only rhythm** — even at low VARIANCE, a page needs some change in pace, not identical width/padding/alignment top to bottom.
-- **`[DS-SLOP-009]` Em-dash as an AI tell** — scoped, not a ban: fine in careful editorial/typographic prose, a tell when it's the default connector for every clause in generated marketing copy. Route through Righter, which owns the final call on prose.
+- **`[DS-SLOP-009]` No em dashes in copy** — a well-known AI writing tell that reads as a hedge in short copy. Don't use them in UI copy, marketing copy, or any text the product or page ships; use a period, comma, or colon, and rewrite a sentence that needs a dash to hold together. Judgment-only (the detector doesn't check it); route copy through Righter (`no-em-dashes`).
 - **`[DS-SLOP-010]` Card-ifying everything** — wrapping every static section in a bordered/shadowed card is unearned structure. Reserve drop shadows for things a user picks up, hovers, or acts on.
 - **`[DS-SLOP-011]` Over-styled active states** — a colored left border plus corner radius (worse with a shadow on top) on active nav/sidebar items gets uglier as it compounds. A subtle background or text-color shift usually reads clearly enough on its own.
 
@@ -368,6 +431,11 @@ Several rules are dial-gated — read VARIANCE before flagging; a deliberately s
 | Fixed-size image looks stretched | `object-fit: cover` or `contain` |
 | 16:9 or other ratio container | `aspect-ratio: 16 / 9`, not the padding-top hack |
 | Group of radio or checkbox inputs | Wrap in `<fieldset>` with `<legend>` |
+| Textarea that grows with content | `field-sizing: content`, explicit width, `lh` min and max |
+| Control smaller than its click area | Extend the hit area to `var(--hit-area-min)` |
+| Form, field, or dialog width | Use the width tokens |
+| Sticky table header does not stick | A table has one scroll owner. `overflow-x: auto` on the wrapper makes it the owner. Bound its height or remove the overflow |
+| Table scrolls diagonally | Wheel lock on complex tables: scroll only the dominant axis |
 | Layout keeps landing on a centered hero | Above VARIANCE 4, break it — split/asymmetric/offset |
 | Reaching for a purple→blue gradient | Stop — use accent tokens instead |
 | Three identical feature cards in a row | Vary sizes or use a bento/asymmetric grid |
