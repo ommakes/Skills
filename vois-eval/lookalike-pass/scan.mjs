@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+// Scans TSX outputs from a lookalike run for markup that does a component's job
+// without using the component. Zero dependencies. Heuristic: it flags candidates
+// for a human to read, it does not decide anything.
+//
+// Usage: node scan.mjs runs/<run-name>      (files named LP-01a.tsx, LP-01b.tsx ...)
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const imp = (src, name) => new RegExp(`from\\s+["']@/components/ui/${name}["']`).test(src);
+
+// Each signal: id, what the agent built, the real component, test(src) -> bool
+const SIGNALS = [
+  ["fake-button", "div/span/li/a with onClick, no role", "Button",
+    (s) => /<(div|span|li|p|a)\b(?![^>]*\brole=)(?![^>]*\bhref=)[^>]*\bonClick=/.test(s)],
+  ["fake-close", "plain x / times text as a close control", "Dialog/Sheet close (labelled)",
+    (s) => />\s*(×|✕|✖|x|X)\s*<|&times;/.test(s)],
+  ["fake-overlay", "fixed inset-0 backdrop built by hand", "Dialog / Sheet / AlertDialog",
+    (s) => /fixed\s+inset-0|position:\s*["']?fixed/.test(s) && !/(dialog|sheet|alert-dialog)["']/.test(s.match(/from\s+["']@\/components\/ui\/[a-z-]+["']/g)?.join(" ") ?? "")],
+  ["fake-toast", "setTimeout that hides a message in local state", "Sonner toast",
+    (s) => /setTimeout\([^)]*set[A-Z]\w*\((false|null|""|'')\)/.test(s) && !imp(s, "sonner")],
+  ["fake-skeleton", "animate-pulse blocks without Skeleton", "Skeleton",
+    (s) => /animate-pulse/.test(s) && !imp(s, "skeleton")],
+  ["fake-spinner", "hand-rolled animate-spin element", "Spinner",
+    (s) => /animate-spin/.test(s) && !imp(s, "spinner")],
+  ["fake-switch", "translate-x knob or styled checkbox as a toggle", "Switch",
+    (s) => (/translate-x-\d/.test(s) || /role=["']switch["']/.test(s)) && !imp(s, "switch")],
+  ["fake-badge", "rounded-full px-* span as a status label", "Badge",
+    (s) => /<span\b[^>]*className=["'{`][^>]*rounded-(full|md|lg)[^>]*\bpx-\d/.test(s) && !imp(s, "badge")],
+  ["fake-tabs", "buttons that swap a state variable as tabs", "Tabs / ToggleGroup",
+    (s) => /onClick=\{\(\)\s*=>\s*set(Tab|Active|View|Section)\w*\(/.test(s) && !imp(s, "tabs") && !imp(s, "toggle-group")],
+  ["fake-dropdown", "absolute menu shown from useState open flag", "DropdownMenu",
+    (s) => /\{\s*open\w*\s*&&/.test(s) && /\babsolute\b/.test(s) && !imp(s, "dropdown-menu") && !imp(s, "popover")],
+  ["fake-breadcrumb", "path joined with / or > in plain markup", "Breadcrumb",
+    (s) => /(">"|'>'|"\/"|'\/'|>\s*[>/]\s*<|ChevronRight)/.test(s) && /path|crumb|folder/i.test(s) && !imp(s, "breadcrumb")],
+  ["native-dialog", "window.confirm / alert / prompt", "AlertDialog / Sonner",
+    (s) => /\b(window\.)?(confirm|alert|prompt)\(/.test(s)],
+];
+
+export function scan(src, expected) {
+  const hits = SIGNALS.filter(([, , , t]) => t(src)).map(([id]) => id);
+  const usedExpected = expected.filter((e) => imp(src, e));
+  return { hits, usedExpected, missingExpected: usedExpected.length === 0 };
+}
+
+if (process.argv[1] && process.argv[1].endsWith("scan.mjs")) {
+  const dir = process.argv[2];
+  if (!dir) { console.error("usage: node scan.mjs <run-dir>"); process.exit(1); }
+  const prompts = JSON.parse(readFileSync(new URL("./prompts.json", import.meta.url))).scenarios;
+  const byId = Object.fromEntries(prompts.map((p) => [p.id, p]));
+  const rows = [];
+  for (const f of readdirSync(dir).filter((f) => f.endsWith(".tsx"))) {
+    const id = f.replace(/\.tsx$/, "");
+    const p = byId[id];
+    if (!p) continue;
+    rows.push({ id, job: p.source_job, style: p.style, ...scan(readFileSync(join(dir, f), "utf8"), p.expected_imports) });
+  }
+  rows.sort((a, b) => a.id.localeCompare(b.id));
+  console.log("file    job                         style     hits / expected-used");
+  for (const r of rows)
+    console.log(`${r.id.padEnd(8)}${r.job.padEnd(28)}${r.style.padEnd(10)}${r.hits.join(",") || "-"}  /  ${r.usedExpected.join(",") || "NONE (read this one)"}`);
+  const counts = {};
+  for (const r of rows) for (const h of r.hits) counts[h] = (counts[h] ?? 0) + 1;
+  console.log("\nSignal counts (keep a row in the table only if it repeats, count >= 2):");
+  for (const [k, v] of Object.entries(counts).sort((a, b) => b[1] - a[1])) console.log(`  ${String(v).padStart(2)}  ${k}`);
+  console.log(`\n${rows.length} files, ${rows.filter((r) => r.missingExpected).length} used none of the expected components.`);
+}
