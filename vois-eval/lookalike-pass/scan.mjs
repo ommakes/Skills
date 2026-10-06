@@ -40,7 +40,8 @@ const SIGNALS = [
   ["fake-dropdown", "absolute menu shown from useState open flag", "DropdownMenu",
     (s) => /\{\s*open\w*\s*&&/.test(s) && /\babsolute\b/.test(s) && !imp(s, "dropdown-menu") && !imp(s, "popover")],
   ["fake-breadcrumb", "path joined with / or > in plain markup", "Breadcrumb",
-    (s) => /(">"|'>'|"\/"|'\/'|>\s*[>/]\s*<|ChevronRight)/.test(s) && /path|crumb|folder/i.test(s) && !imp(s, "breadcrumb")],
+    // A separator rendered between elements. A bare "/" string is mock data (a URL path), not a separator.
+    (s) => /(\{\s*["']\s*[>/]\s*["']\s*\}|>\s*[>/]\s*<|ChevronRight)/.test(s) && /path|crumb|folder/i.test(s) && !imp(s, "breadcrumb")],
   ["native-select", "native <select>", "Select",
     (s) => /<select\b/.test(s) && !imp(s, "select")],
   ["native-checkbox", "native checkbox input", "Checkbox",
@@ -49,20 +50,27 @@ const SIGNALS = [
     (s) => /<input\b[^>]*type=["']radio["']/.test(s) && !imp(s, "radio-group")],
   ["title-tooltip", "title attribute as tooltip", "Tooltip",
     (s) => /<(?:div|span|button|a|svg|img|td|th|p|i|abbr)\b[^>]*\btitle=["'{]/.test(s) && !imp(s, "tooltip")],
-  ["fake-progress", "hand-built progress bar", "Progress",
-    (s) => /(w-\[\$\{|style=\{\{\s*width:)/.test(s) && /progress/i.test(s) && !imp(s, "progress")],
+  ["fake-progress", "div with role progressbar", "Progress",
+    // Needs the role: a width-styled bar can be a data bar in a chart or funnel, which is not a progress indicator.
+    (s) => /<div\b[^>]*role=["']progressbar["']/.test(s) && !imp(s, "progress")],
   ["fake-alert", "colored box with role alert on the same element, not Alert", "Alert",
     (s) => !imp(s, "alert") && /<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g.test(s) &&
       [...s.matchAll(/<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g)].some((m) => /border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(m[0]))],
   ["fake-avatar", "rounded-full div with initials", "Avatar",
     (s) => /<div\b[^>]*rounded-full[^>]*>\s*\{?[^<]{0,12}(initials|\.charAt|\[0\])/i.test(s) && !imp(s, "avatar")],
+  ["raw-palette-color", "Tailwind palette color class (bg-red-500, text-green-700) instead of a system token", "Status color tokens (DS-COLOR-008)",
+    (s) => /\b(?:bg|text|border|ring|fill|stroke)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/.test(s)],
+  ["raw-button-focus-ring", "raw <button> carrying a copy-pasted focus ring", "Button (a variant, so focus styles stay shared)",
+    // "=>" in an onClick would end the [^>]* early, so hide arrows first.
+    (s) => /<button\b[^>]*focus-visible:(?:ring|outline)/.test(s.replace(/=>/g, "=_"))],
   ["native-dialog", "window.confirm / alert / prompt", "AlertDialog / Sonner",
     (s) => /\b(window\.)?(confirm|alert|prompt)\(/.test(s)],
 ];
 
 export function scan(src, expected) {
   const hits = SIGNALS.filter(([, , , t]) => t(src)).map(([id]) => id);
-  const usedExpected = expected.filter((e) => imp(src, e));
+  // Sonner's toast() is normally imported from the "sonner" package itself, not from the ui wrapper.
+  const usedExpected = expected.filter((e) => imp(src, e) || (e === "sonner" && /from\s+["']sonner["']/.test(src)));
   return { hits, usedExpected, missingExpected: usedExpected.length === 0 };
 }
 
