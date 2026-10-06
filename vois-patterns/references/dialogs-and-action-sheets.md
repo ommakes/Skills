@@ -22,7 +22,7 @@
 
 **NEVER use action sheet if text input/keyboard required.** Text input requires full modal. Action sheets are for:
 
-- Number input (spinner, stepper)
+- Number input (spinner, quantity control)
 - Slider
 - Dropdown selection
 - Binary confirmation (yes/no, approve/reject)

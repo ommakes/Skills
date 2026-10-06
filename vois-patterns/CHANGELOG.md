@@ -6,6 +6,14 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.14.1] - 2026-10-06
+
+**Fix** | `PATH-C-SIMPLE`, `PATH-C-MEDIUM` and `PATH-D` in `data/patterns-rules.json` still said `24px (spacing-md in vois-tokens)`, `40px` and `20px`. `spacing-md` doesn't exist, and the 1.9.0 fix to `forms.md` and `dialogs-and-action-sheets.md` never reached the JSON, which wins on conflict. They now name the scale step and the Tailwind class (`gap-6`, `gap-10`, `gap-5`), as the markdown does.
+
+**Fix** | "Stepper" meant two things: the step indicator in `vois-components` and a plus and minus quantity control in the pricing rules. The pricing rules (`PATH-PRICE-S3`, `PATH-PRICE-T1`) and the action-sheet list now say "quantity control". Stepper means only the step indicator. `README.md` version corrected from 1.12.0.
+
+---
+
 ## [1.14.0] - 2026-10-06
 
 **Added** | Personal data rules in `references/permissions-and-conditional-logic.md`: `PATH-PERM-PII-MASK` (mask by default, on the server), `PATH-PERM-PII-REVEAL` (per-field reveal, re-mask, log high-risk reveals), and `PATH-PERM-PII-KEEP-OUT` (no personal data in URLs, titles, file names, or analytics). Marked `judgment`: the decision to add them is confirmed, the wording has not been reviewed and no Mobbin evidence was checked. Copy rules live in righter `no-pii-in-copy`.

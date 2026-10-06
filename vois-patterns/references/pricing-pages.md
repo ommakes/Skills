@@ -6,7 +6,7 @@ Reference for `vois-patterns`. Read this when the goal is "show people what it c
 
 **Routing:**
 - All words (tier names, badges, CTAs, footnotes, trial terms) go to `righter`.
-- Component picks (toggle vs segmented control, slider vs stepper, table vs cards) go to `vois-components`.
+- Component picks (toggle vs segmented control, slider vs quantity control, table vs cards) go to `vois-components`.
 - Tokens, spacing, dark/light handling go to `vois-tokens`.
 
 ---
@@ -112,7 +112,7 @@ TIER COUNT (applies to flat, seat, and usage-tiered):
 
 **[PATH-PRICE-S2] Show included seats.** Copy.ai: "5 user seats included." Lyssna shows both "included seats" and "maximum seats" per tier.
 
-**[PATH-PRICE-S3] Add a stepper on the card when seat count changes the price.** Mistral puts "$50/mo, 2 users" with +/- on the Team card. GitBook uses a number input and shows a running total. Show monthly and annual totals.
+**[PATH-PRICE-S3] Add a quantity control on the card when seat count changes the price.** Mistral puts "$50/mo, 2 users" with +/- on the Team card. GitBook uses a number input and shows a running total. Show monthly and annual totals.
 
 **[PATH-PRICE-S4] Separate seat types and say so.** Lyssna has viewer seats. Retool has standard users and end users with different prices. If you have free viewers or cheaper light users, show that as a feature, not fine print.
 

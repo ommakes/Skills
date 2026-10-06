@@ -26,7 +26,7 @@ Not automated. There's no runner script. Running a scenario means: hand its `use
 (Now 11, after run 1 above added one to close a gap it found — the number was never meant to be fixed, see the run log.)
 
 
-`components-rules.json` has 20 job trees; this first pass only draws from five confirmed to have clean, unambiguous condition → recommendation trees with rationale already written: `JOB-CONFIRM-DESTRUCTIVE`, `JOB-TRANSIENT-FEEDBACK`, `JOB-OVERLAY-INTERACTION`, `JOB-LOADING-STATE`, `JOB-EMPTY-CONTENT`. The other 15 jobs are legitimate scenario material too, but writing scenarios for a job that hasn't been re-checked for decision-layer gaps risks baking a stale assumption into a test. Extend this file job by job as each one gets that check, not all at once.
+`components-rules.json` has 21 job trees; this first pass only draws from five confirmed to have clean, unambiguous condition → recommendation trees with rationale already written: `JOB-CONFIRM-DESTRUCTIVE`, `JOB-TRANSIENT-FEEDBACK`, `JOB-OVERLAY-INTERACTION`, `JOB-LOADING-STATE`, `JOB-EMPTY-CONTENT`. The other 15 jobs are legitimate scenario material too, but writing scenarios for a job that hasn't been re-checked for decision-layer gaps risks baking a stale assumption into a test. Extend this file job by job as each one gets that check, not all at once.
 
 ## Using a run's results
 

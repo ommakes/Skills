@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.18.0
+version: 1.18.1
 ---
 
 # Vois Tokens Skill
@@ -51,7 +51,7 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 
 **Structured lookups — query these instead of scanning a whole reference file
 when you already know the rule ID, category, or token you need:**
-- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 13 files
+- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 15 files
   below, keyed by `id`, with `category` for filtering. Covers spacing,
   typography, color, components/modals, css-architecture, elevation,
   iconography, layout/responsive, surfaces, tailwind-v4, stylex, accessibility, and

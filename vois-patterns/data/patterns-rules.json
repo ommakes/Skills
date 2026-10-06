@@ -51,7 +51,7 @@
       "parent": "PATH-C",
       "source_file": "vois-patterns/references/forms.md",
       "condition": "1-6 fields (simple form).",
-      "outcome": "Single column, stack vertically. No grouping needed. Space between fields: 24px (spacing-md in vois-tokens)."
+      "outcome": "Single column, stack vertically. No grouping needed. Space between fields: the 24px scale step (`gap-6` in Tailwind)."
     },
     {
       "id": "PATH-C-MEDIUM",
@@ -59,7 +59,7 @@
       "parent": "PATH-C",
       "source_file": "vois-patterns/references/forms.md",
       "condition": "7-15 fields (medium form).",
-      "outcome": "Single column OR 2 columns. Group related inputs with section headers (e.g. an address group: street, city, state, zip). Space within section: 24px between fields, 40px between sections."
+      "outcome": "Single column OR 2 columns. Group related inputs with section headers (e.g. an address group: street, city, state, zip). Space within a section: the 24px scale step (`gap-6`) between fields, the 40px step (`gap-10`) between sections."
     },
     {
       "id": "PATH-C-COMPLEX",
@@ -76,7 +76,7 @@
       "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
       "pattern_name": "Dialog / Action Sheet",
       "condition": "Single quick input needed (amount, selection, confirmation). Simple confirmation (yes/no, approve/reject). Dropdown selection, especially on mobile.",
-      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: action sheet, slides up from bottom, covers 80-90% screen height for multi-step. Never use an action sheet if text input/keyboard is required — that needs a full modal. Footer button placement: primary right, secondary 20px left of primary, optional tertiary on the left."
+      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: action sheet, slides up from bottom, covers 80-90% screen height for multi-step. Never use an action sheet if text input/keyboard is required — that needs a full modal. Footer button placement: primary right, secondary the 20px scale step (`gap-5`) left of primary, optional tertiary on the left."
     },
     {
       "id": "PATH-E",
@@ -263,7 +263,7 @@
       "parent": "PATH-F",
       "source_file": "vois-patterns/references/pricing-pages.md",
       "condition": "Seat-based, one plan.",
-      "outcome": "Single card with per-seat price, included seats, and a seat stepper or input if count changes the price. See PATH-PRICE-T1, PATH-PRICE-S1 to S5."
+      "outcome": "Single card with per-seat price, included seats, and a seat quantity control (minus and plus around a number) or an input if count changes the price. See PATH-PRICE-T1, PATH-PRICE-S1 to S5."
     },
     {
       "id": "PATH-F-SEAT-3",
@@ -523,7 +523,7 @@
       "node_type": "cross_cutting_rule",
       "parent": null,
       "source_file": "vois-patterns/references/pricing-pages.md",
-      "rule_name": "Add a stepper on the card when seat count changes the price",
+      "rule_name": "Add a quantity control on the card when seat count changes the price",
       "condition": "Pricing that scales with seats (per-user, per-member).",
       "outcome": "Mistral puts \"$50/mo, 2 users\" with +/- on the Team card. GitBook uses a number input and shows a running total. Show monthly and annual totals."
     },

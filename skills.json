@@ -7,7 +7,7 @@
     {
       "name": "vois-patterns",
       "path": "vois-patterns",
-      "version": "1.14.0",
+      "version": "1.14.1",
       "author": "Personify Labs",
       "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Works standalone — telemetry tool calls are optional. Use when building pages, forms, features, workflows.",
       "tags": ["design", "vois", "design-system", "patterns"]
@@ -15,7 +15,7 @@
     {
       "name": "vois-components",
       "path": "vois-components",
-      "version": "1.8.1",
+      "version": "1.9.0",
       "author": "Personify Labs",
       "description": "Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available.",
       "tags": ["design", "vois", "design-system", "components"]
@@ -41,7 +41,7 @@
     {
       "name": "vois-tokens",
       "path": "vois-tokens",
-      "version": "1.18.0",
+      "version": "1.18.1",
       "author": "Personify Labs",
       "description": "Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Tunes within guardrails using taste dials, flags DS-SLOP-* anti-tells (AI-gradient heroes, three-card grids, eyebrow overuse, etc.), and enforces the redesign no-silent-changes contract. Works standalone — no orchestrator required.",
       "tags": ["design", "vois", "design-system", "tokens", "implementation", "stylex"]

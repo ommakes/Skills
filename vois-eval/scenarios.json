@@ -148,6 +148,33 @@
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
       "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result."
+    },
+    {
+      "id": "EVAL-012",
+      "source_job": "JOB-MULTISTEP-GUIDE",
+      "user_prompt": "Build a five-step account setup for a new workspace: profile, team, billing, integrations, review. Each step is a short form, and the user has to finish them in order.",
+      "condition": "2 to 5 steps, and each step's content fits in a page container",
+      "expected_outcome": "Stepper (inline step indicator), built to vois-components/references/stepper.md",
+      "forbidden_outcomes": [
+        "Wizard (five short forms don't need full-screen layouts, and the old tree matched exactly 5 steps to both)",
+        "Tabs (tabs let the user jump to any step and gate nothing)",
+        "Progress alone (it shows how far along, but gives no step labels or order)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 with the 5 and 6 boundary fix in vois-components 1.9.0. Not run yet."
+    },
+    {
+      "id": "EVAL-013",
+      "source_job": "JOB-MULTISTEP-GUIDE",
+      "user_prompt": "Build a seven-step insurance claim intake. Each step is a full screen with its own layout: photo capture, a map, a long questionnaire, and so on. Users must go in order.",
+      "condition": "6 or more steps, or a step that needs its own full-screen layout",
+      "expected_outcome": "Wizard (full-page steps with own layout)",
+      "forbidden_outcomes": [
+        "Stepper (seven markers don't fit in one row at form width, and the steps need full screens)",
+        "Tabs (tabs gate nothing and hide the order)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Other side of the 5 and 6 boundary from EVAL-012. Added 2026-10-06. Not run yet."
     }
   ]
 }

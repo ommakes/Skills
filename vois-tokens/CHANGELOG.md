@@ -4,6 +4,18 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.18.1] - 2026-10-06
+
+### Fixed
+
+- **File counts.** `SKILL.md` said the rules come from 13 files and `data/vois-rules.json` said 14. The rules come from 15: 17 reference files minus `anti-slop.md` and `hooks.md`. `README.md` said version 1.14.0.
+
+### Changed
+
+- **Version bump:** `1.18.0` → `1.18.1`
+
+---
+
 ## [1.18.0] - 2026-10-06
 
 ### Added
