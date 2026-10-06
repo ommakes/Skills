@@ -25,6 +25,8 @@ Token values are live, not stored here. Ask for these roles. If the workspace la
 | chart-grid, chart-axis, chart-label | Furniture: solid 1px hairlines and text | `[DV-CLARITY-002]` |
 | chart-surface | The color the plot sits on, for 2px gaps and marker rings | `[DV-CLARITY-006]` |
 
+**Status roles map to the system roles.** `chart-status-good` is the system `positive` role, `chart-status-warning` is `warning`, and `chart-status-critical` is `negative` (`[DS-COLOR-008]` in `vois-tokens`). `chart-status-serious` is chart-only: a fourth level between warning and negative that the system roles don't have. The workspace token set defines the aliases, so a chart never writes a value `[DV-IMPL-004]`.
+
 Dark mode is its own selection of steps from the same ramps, checked against the dark surface `[DV-COLOR-008]`. If the environment has the `dataviz` skill, run its `validate_palette.js` on the resolved categorical palette once per mode. Contrast targets: marks 3:1, text 4.5:1 `[DV-A11Y-002]`.
 
 ## The config is the contract

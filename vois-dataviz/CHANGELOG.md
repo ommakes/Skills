@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.0.3] - 2026-10-06
+
+### Fixed
+
+- **Test count.** `SKILL.md` said `scripts/dataviz.test.mjs` has 54 tests. It has 58.
+- **Two status vocabularies.** The chart status tokens (`chart-status-good`, `-warning`, `-serious`, `-critical`) and the system status roles (`positive`, `negative`, `warning`, `info`, `DS-COLOR-008` in `vois-tokens`) had no stated relationship. `references/implementation.md` now maps good to `positive`, warning to `warning`, and critical to `negative`, and says `serious` is chart-only, a fourth level with no system role. The workspace token set defines the aliases.
+
+### Changed
+
+- **Version bump:** `1.0.2` → `1.0.3`
+
+---
+
 ## [1.0.2] - 2026-10-02
 
 ### Fixed
