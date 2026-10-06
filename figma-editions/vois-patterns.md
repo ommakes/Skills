@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.14.1
+version: 1.14.2
 ---
 
 # Vois Patterns Skill
@@ -235,7 +235,7 @@ Cross-cutting rules that apply across every container type above.
 
 **Primary button state** `[PATH-COND-PRIMARY-BUTTON]` — disable the primary button until all required fields are valid; on hover, show a tooltip like "Fill in all required fields to continue."
 
-**Personal data (PII)** — mask by default: when a list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to someone whose task doesn't need the full value, show a masked value (`j***@acme.com`, `•••• 4821`). A name stays visible on a screen whose job is that person. Show the full value only on a detail view, only to roles that need it, and mask on the server so the full value never reaches the page for roles that can't see it; CSS blur is not masking `[PATH-PERM-PII-MASK]`. Reveal on request: put a reveal control on that one field (an icon button labelled "Show email"), re-mask when the user leaves the view or after a timeout, log reveals of high-risk fields (government ID, payment, health data) on the server, and let copy to clipboard copy the full value only for roles that may reveal it `[PATH-PERM-PII-REVEAL]`. Keep it out of URLs, titles, file names, and analytics: use opaque IDs (`/customers/c_8f2a`, not an email), show a name in a title or breadcrumb only on a screen whose job is that person, name exports by content and date, and give analytics IDs, never values `[PATH-PERM-PII-KEEP-OUT]`. Copy rules are in Righter (`no-pii-in-copy`).
+**Personal data (PII)** — mask by default: when a list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to someone whose task doesn't need the full value, show a masked value (`j***@acme.com`, `•••• 4821`). A name stays visible on a screen whose job is that person. Show the full value only to roles that need it, through the reveal control or on a detail view, and mask on the server so the full value never reaches the page for roles that can't see it; CSS blur is not masking `[PATH-PERM-PII-MASK]`. Reveal on request: put a reveal control on that one field, wherever the masked value appears (a list row, a card, a header, or a detail view), as an icon button labelled "Show email", re-mask when the user leaves the view or after a timeout, log reveals of high-risk fields (government ID, payment, health data) on the server, and let copy to clipboard copy the full value only for roles that may reveal it `[PATH-PERM-PII-REVEAL]`. Keep it out of URLs, titles, file names, and analytics: use opaque IDs (`/customers/c_8f2a`, not an email), show a name in a title or breadcrumb only on a screen whose job is that person, name exports by content and date, and give analytics IDs, never values `[PATH-PERM-PII-KEEP-OUT]`. Copy rules are in Righter (`no-pii-in-copy`).
 
 **Cascading accordion/expansion** `[PATH-COND-ACCORDION-EXCLUSIVE]` — only one expandable form in a layout stays open at a time; opening a new one auto-collapses the previous.
 

@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.10.0
+version: 1.10.1
 ---
 
 # Vois Component Selection Skill
@@ -294,7 +294,7 @@ shadcn/ui ships no Stepper. Build it once per workspace and reuse it; don't rebu
 - **What it is:** a step indicator for a sequential, required flow of 2 to 5 steps, shown above the step content. Not a quantity control (minus, number, plus), not Tabs, not Progress, not a Breadcrumb. One step is not a flow.
 - **Anatomy:** a `nav` with an `aria-label` that names the flow, holding an `ol`. Each `li` has a marker (a circle with the step number, or a check when complete), a one or two word noun label, and a connector line that fills when the step before it is complete. An optional one-line description shows on the current step only.
 - **States** (each carries more than color): Upcoming = number, neutral border, muted label. Current = filled with the primary color, `aria-current="step"`. Complete = check icon, "Completed" in visually hidden text. Error = alert icon in the `negative` status role, "Needs attention" in visually hidden text.
-- **Behavior:** Back and Next move between steps; the indicator is not in the tab order. A completed step is clickable only when going back loses nothing the user typed. Each step validates before the next opens. Back keeps what the user typed. On a step change, move focus to the new step's heading. The last step is a result ("Done") with no Next.
+- **Behavior:** Back and Next move between steps; the indicator is not in the tab order. A completed step is clickable only when going back loses nothing the user typed. Each step validates before the next opens. Back keeps what the user typed. On a step change, move focus to the new step's heading. The last step ends the flow: its primary button finishes it (Verify, Create, Finish) instead of Next. A closing "Done" step is optional; don't add one just to have a result, because it counts toward the 5-step limit.
 - **Layout:** top of the form container, above the step content. One Stepper per flow. Below the `sm` breakpoint, show only the current label and a line such as "Step 2 of 3: Team", and keep the markers. Markers are 32px; connectors are 1px lines.
 - **Motion and contrast:** color changes take 200ms or less and respect `prefers-reduced-motion`. Label on its background is normal text (4.5:1); the marker border against the page is a UI component (3:1).
 
