@@ -4,6 +4,20 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.9.0] - 2026-10-06
+
+### Added
+
+- **`no-invented-claims`** (principle 19). No numbers, times, guarantees, prices, legal terms, or compliance and security claims unless the product team or legal supplied them. Write copy that makes no promise and flag the gap.
+- **`no-pii-in-copy`** (principle 20). Keep personal data out of errors, toasts, titles, URLs, subjects, notification previews, and analytics labels. Name the record by role or mask the value. Points to `vois-patterns` for on-screen PII display.
+- **Eval cases 25 to 27,** and a "Claims and data" block in the Review Checklist.
+
+### Changed
+
+- **Version bump:** `1.8.0` → `1.9.0`
+
+---
+
 ## [1.8.0] - 2026-10-02
 
 ### Added

@@ -106,6 +106,51 @@
       "outcome": "Keep the element visible but disabled, in a view-only/disabled state, so the user can visually map the cause/effect relationship. Route the disabled-state explanation (tooltip or helper text) to righter skill."
     },
     {
+      "id": "PATH-PERM-PII-MASK",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Mask personal data by default",
+      "condition": "A list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to a user whose task doesn't need the full value.",
+      "outcome": "Show a masked value by default: `j***@acme.com`, `•••• 4821`, last four digits only. A person's name stays visible on a screen whose job is that person (a people list, a profile). Show the full value only on a detail view, and only to roles that need it. Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. Masked values keep the column width so the layout doesn't jump.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drafted at Om's request on 2026-10-06. The decision to add PII rules is confirmed. The rule wording has not been reviewed, and no Mobbin evidence was checked.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PERM-PII-REVEAL",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Reveal a masked value on request",
+      "condition": "A role that is allowed to see a masked value needs the full one.",
+      "outcome": "Put a reveal control on that one field, not on the whole page: an icon Button with a label such as \"Show email\". The value re-masks when the user leaves the view or after a timeout. Log reveals of high-risk fields (government ID, payment, health data) on the server. Copy to clipboard copies the full value only for roles that may reveal it.",
+      "builds_on": [
+        "PATH-PERM-PII-MASK"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drafted at Om's request on 2026-10-06. The decision to add PII rules is confirmed. The rule wording has not been reviewed, and no Mobbin evidence was checked.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PERM-PII-KEEP-OUT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
+      "rule_name": "Keep personal data out of URLs, titles, file names, and analytics",
+      "condition": "Building a URL, query string, page title, breadcrumb, browser history entry, export file name, or analytics event for a screen that involves a person.",
+      "outcome": "Use opaque IDs, not personal data: `/customers/c_8f2a`, not `/customers/jane.doe@acme.com`. A title or breadcrumb may show a name only on a screen whose job is that person, and never an email, phone number, address, or ID. Name exports by content and date, such as `customers-2026-10-06.csv`. Analytics properties carry IDs, never values (see `metrics-tagging`). For error, toast, and notification copy, see righter `no-pii-in-copy`.",
+      "builds_on": [
+        "PATH-PERM-PII-MASK"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drafted at Om's request on 2026-10-06. The decision to add PII rules is confirmed. The rule wording has not been reviewed, and no Mobbin evidence was checked.",
+      "evidence": []
+    },
+    {
       "id": "PATH-COND-PARENT-CHILD",
       "node_type": "cross_cutting_rule",
       "parent": null,

@@ -43,6 +43,39 @@ Select: [Disabled, shows current value]
 Helper text (righter): "Edit your billing plan to change payment method"
 ```
 
+## Personal Data (PII)
+
+Rules for showing personal data on screen. For the words around it (errors, toasts, subjects), use righter (`no-pii-in-copy`).
+
+### Mask by default `[PATH-PERM-PII-MASK]`
+
+When a list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to someone whose task doesn't need the full value:
+
+- Show a masked value: `j***@acme.com`, `•••• 4821`, last four digits only.
+- A person's name stays visible on a screen whose job is that person (a people list, a profile).
+- Show the full value only on a detail view, and only to roles that need it.
+- Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. This is `[PATH-PERM-HIDE-BY-ROLE]` applied to a value instead of an element.
+- Keep the column width the same for masked and full values so the layout doesn't jump.
+
+### Reveal on request `[PATH-PERM-PII-REVEAL]`
+
+When a role that is allowed to see a masked value needs the full one:
+
+- Put the reveal control on that one field, not on the whole page: an icon Button labelled "Show email" (→ **tooltip and label copy: righter**).
+- Re-mask when the user leaves the view or after a timeout.
+- Log reveals of high-risk fields (government ID, payment, health data) on the server.
+- Copy to clipboard copies the full value only for roles that may reveal it.
+
+### Keep it out of URLs, titles, file names, and analytics `[PATH-PERM-PII-KEEP-OUT]`
+
+When building a URL, query string, page title, breadcrumb, browser history entry, export file name, or analytics event for a screen that involves a person:
+
+- Use opaque IDs: `/customers/c_8f2a`, not `/customers/jane.doe@acme.com`.
+- A title or breadcrumb may show a name only on a screen whose job is that person. Never an email, phone number, address, or ID.
+- Name exports by content and date: `customers-2026-10-06.csv`.
+- Analytics properties carry IDs, never values (→ **`metrics-tagging`**).
+- Error, toast, and notification copy: righter `no-pii-in-copy`.
+
 ## Conditional Logic Rules
 
 ### Parent/Child Input Dependencies `[PATH-COND-PARENT-CHILD]`

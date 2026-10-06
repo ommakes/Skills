@@ -186,6 +186,27 @@
       "input": "Jiu Jitsu for kids and adults — first class free.",
       "expected_violations": ["no-em-dashes"],
       "notes": "Marketing copy does not get an em dash carve-out. Passing version: 'Jiu Jitsu for kids and adults. First class free.'"
+    },
+    {
+      "id": "case-25",
+      "copy_type": "contact page helper text",
+      "input": "We'll reply within 2 hours. Your data is always safe with us.",
+      "expected_violations": ["no-invented-claims"],
+      "notes": "Invented response time and an absolute security promise. Passing version makes no promise and flags the gap: 'We'll reply by email.' Needs an owner for reply time and any security claim."
+    },
+    {
+      "id": "case-26",
+      "copy_type": "error toast",
+      "input": "We couldn't send the invoice to jane.doe@acme.com.",
+      "expected_violations": ["no-pii-in-copy"],
+      "notes": "A personal email in a toast that can be logged, screenshotted, and shown in notification previews. Passing version: 'We couldn't send the invoice. Check the recipient's email and try again.'"
+    },
+    {
+      "id": "case-27",
+      "copy_type": "marketing hero sub",
+      "input": "SOC 2 certified. 99.99% uptime guaranteed.",
+      "expected_violations": ["no-invented-claims"],
+      "notes": "Certification and uptime guarantee with no source. Valid only if the product team supplies both. Otherwise leave the slot out and flag it."
     }
   ]
 }
