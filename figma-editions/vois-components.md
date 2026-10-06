@@ -165,7 +165,7 @@ Why not Segmented Control for major navigation? It communicates narrowing a view
 - 1 level deep, came from a specific list/context → Back link (arrow + parent page name)
 - Top-level page with sibling pages → Navigation (sidebar/top nav) — no breadcrumb needed
 
-Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels counting the current page (the current page plus 2 or more parents, the "2+ levels deep" above). Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
+Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
 
 ### Selection & Input
 

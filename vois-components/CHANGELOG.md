@@ -11,7 +11,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **`JOB-SWITCH-VIEWS` and `PATH-A` disagreed.** The job said Tabs for a settings page (Profile, Billing, Members), while `PATH-A-DEPTH-DEEP` in `vois-patterns` says 4 or more sections use a sidebar with sub-pages. A blind build of a four-section settings screen followed the pattern and missed the job's answer (EVAL-034). The Tabs branch now says a settings page with 4 or more sections uses sidebar navigation instead.
-- **`JOB-NAVIGATION-POSITION` counted levels two ways.** The tree said "2+ levels deep" and the rationale said "3+ meaningful levels". They are the same case, a current page with 2 or more parents, but two agents read them as a conflict. The rationale now says so.
 
 ### Changed
 

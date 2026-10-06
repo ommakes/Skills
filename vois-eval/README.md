@@ -21,12 +21,30 @@ Not automated. There's no runner script. Running a scenario means: hand its `use
 
 **Re-run, same session:** both the reworded EVAL-006 and the new EVAL-011 run blind again, fresh agents, same method as run 1. EVAL-006 (assignee/due-date/priority, three fields) → Sheet, citing `table-list.md`'s "handful of fields" language and the updated Quick Reference. EVAL-011 (single-field status change) → Popover, with the agent's own report noting `components-rules.json`'s rationale "explicitly addresses 'changing one row's status from a table.'" Both passed; the ambiguity that caused the original miss is gone.
 
-## Why 10 scenarios, and why these five jobs
+**Run 2 — 2026-10-06.** The 40 new scenarios plus the two Stepper scenarios (EVAL-012 and EVAL-013), 42 in all. Same blind method as run 1, with one difference: run 1 had each agent build the screen, and run 2 asked for the decision only, as a three-line report (what it would use, which rules it looked up, what was unclear). That makes 42 runs cheap, but it tests the decision and not whether the finished screen follows through. The "rules looked up" line is the agent's own account, and it was wrong twice: two agents named job ids that don't exist (one for the secondary-content job, one for the contain-content job).
 
-(Now 11, after run 1 above added one to close a gap it found — the number was never meant to be fixed, see the run log.)
+- **41 of 42 matched `expected_outcome` and avoided every `forbidden_outcomes` entry.**
+- **One miss: EVAL-034.** The prompt had four settings areas. The agent chose sidebar navigation with sub-pages, because `vois-patterns` `PATH-A-DEPTH-DEEP` says 4 or more settings sections use a sidebar. `JOB-SWITCH-VIEWS` said Tabs for a settings page and never mentioned that rule. That is a real conflict between two skills. **Fix:** the Tabs branch now says a settings page with 4 or more sections uses sidebar navigation instead (`vois-components` 1.10.1 → 1.10.2). EVAL-034 was reworded to three areas, which both rules agree on. It was re-run and chose Tabs.
+- **One contested: EVAL-038, not fixed.** An invoice detail page reached from the Invoices list. The first run chose a back link, which is what `JOB-NAVIGATION-POSITION` says for one level deep. The re-run chose a breadcrumb (Home > Invoices > invoice), citing `PATH-E` (a read-only record page puts a breadcrumb above the title) and `PATH-B-ROW-OPEN`, and counted Home as a level. Those two rules do prescribe a breadcrumb for this page, so the job and the patterns disagree. I tried a wording fix to the job's rationale in between, it made the re-run worse, and I reverted it. This needs a decision on which rule wins for a detail page reached from its list, and whether Home counts as a level. Until then EVAL-038 can go either way.
 
+Gaps the agents named in their reports. They are gaps, not conflicts, and I have not checked each one:
+- HoverCard is missing from the Quick Reference (EVAL-016).
+- No spec for a dismissible Badge: markup, `aria-label`, focus after removal (EVAL-018).
+- No guidance on how to make a whole Card clickable, or on actions nested inside one (EVAL-040).
+- Panel has no shadcn component and no spec (EVAL-042).
+- Mobile filters in a Drawer are stated only in one job line, with no pattern (EVAL-043).
+- Click-to-edit outside a table is not covered; one agent borrowed the table cell rule (EVAL-033).
+- Toggle versus ToggleGroup for independent toolbar buttons is unspecified (EVAL-019).
+- The presence indicator has no spec or token (EVAL-026).
+- 12 monthly points sits on the boundary between a column chart and a line chart, with no tiebreaker in `vois-dataviz` (EVAL-053).
+- One agent said the 1 to 3 line Textarea guidance conflicts with the 3-line token minimum (EVAL-049).
+- One agent said a checkout form of about 16 fields lands in `PATH-C-COMPLEX`, which suggests Tabs, which conflicts with a single submit button (EVAL-032).
 
-`components-rules.json` has 21 job trees; this first pass only draws from five confirmed to have clean, unambiguous condition → recommendation trees with rationale already written: `JOB-CONFIRM-DESTRUCTIVE`, `JOB-TRANSIENT-FEEDBACK`, `JOB-OVERLAY-INTERACTION`, `JOB-LOADING-STATE`, `JOB-EMPTY-CONTENT`. The other 15 jobs are legitimate scenario material too, but writing scenarios for a job that hasn't been re-checked for decision-layer gaps risks baking a stale assumption into a test. Extend this file job by job as each one gets that check, not all at once.
+## Coverage
+
+All 21 jobs in `components-rules.json` have at least one scenario: 53 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` starts with a different component than the tree recommends, or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
+
+Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none. Where a job has several branches that recommend different components, there is one scenario per branch, up to three or four.
 
 ## Using a run's results
 

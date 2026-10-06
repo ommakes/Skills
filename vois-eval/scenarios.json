@@ -173,7 +173,7 @@
         "Progress alone (it shows how far along, but gives no step labels or order)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 with the 5 and 6 boundary fix in vois-components 1.9.0. Not run yet."
+      "added_note": "Added 2026-10-06 with the 5 and 6 boundary fix in vois-components 1.9.0. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-013",
@@ -187,7 +187,7 @@
         "Tabs (tabs gate nothing and hide the order)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Other side of the 5 and 6 boundary from EVAL-012. Added 2026-10-06. Not run yet."
+      "added_note": "Other side of the 5 and 6 boundary from EVAL-012. Added 2026-10-06. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-014",
@@ -201,7 +201,7 @@
         "A native title attribute (not styled, not reliably keyboard-reachable; see the lookalike table)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-015",
@@ -215,7 +215,7 @@
         "HoverCard (a passive hover preview, not something the user opens on purpose)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-016",
@@ -229,7 +229,7 @@
         "Popover (the preview is passive, not opened by a click)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-017",
@@ -243,7 +243,7 @@
         "An icon Button with no aria-label"
       ],
       "score_categories_checked": ["component_selection", "accessibility_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-018",
@@ -256,7 +256,7 @@
         "Button for each filter (a Button says 'click to do something', not 'this is an attribute you can remove')"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-019",
@@ -270,7 +270,7 @@
         "Checkbox or Switch (wrong control for a toolbar)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-020",
@@ -284,7 +284,7 @@
         "A hand-positioned div menu (use the component)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-021",
@@ -298,7 +298,7 @@
         "Select or Combobox (picks a value, doesn't run actions or navigate)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-022",
@@ -312,7 +312,7 @@
         "Command (a global tool, not row-level)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-023",
@@ -327,7 +327,7 @@
         "A hand-styled span (use the component)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-024",
@@ -341,7 +341,7 @@
         "Plain text with a separate remove link"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-025",
@@ -355,7 +355,7 @@
         "Only the text '12 members' (drops the faces)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-026",
@@ -369,7 +369,7 @@
         "A Badge that says 'Online' (loses who is online)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-027",
@@ -383,7 +383,7 @@
         "A generic person icon for everyone (loses who it is)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-028",
@@ -397,7 +397,7 @@
         "DataTable (pagination, column and bulk-action machinery nobody asked for)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-029",
@@ -411,7 +411,7 @@
         "Infinite scroll (users lose their place and the count)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-030",
@@ -424,7 +424,7 @@
         "Table (tables say the items are comparable; cards say they are browsable)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-031",
@@ -438,7 +438,7 @@
         "Grid of Cards (the columns are meant to be compared)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-032",
@@ -452,7 +452,7 @@
         "Three separate forms with three submit buttons"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-033",
@@ -465,7 +465,7 @@
         "A full Form or FormProvider around one field (more setup than the job needs)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-034",
@@ -480,7 +480,7 @@
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
       "revision_note": "Run 2 (2026-10-06) used four areas and missed: the agent followed vois-patterns PATH-A-DEPTH-DEEP (4 or more sections use a sidebar), which the job did not mention. Reworded to three areas, which PATH-A-DEPTH-SHALLOW and this job agree on, and the job now points to the sidebar rule for 4 or more.",
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: missed with four sections, then passed after the vois-components 1.10.2 fix and a reword to three. See revision_note."
     },
     {
       "id": "EVAL-035",
@@ -494,7 +494,7 @@
         "Checkbox group (the options are mutually exclusive)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-036",
@@ -508,7 +508,7 @@
         "Segmented Control (also mutually exclusive)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-037",
@@ -522,7 +522,7 @@
         "Relying on the browser back button"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-038",
@@ -536,7 +536,7 @@
         "Relying on the browser back button"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed once, then chose a breadcrumb on a re-run, citing vois-patterns PATH-E. Contested, see the run log in README.md."
     },
     {
       "id": "EVAL-039",
@@ -549,7 +549,7 @@
         "A Card around every group (flattens the hierarchy)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-040",
@@ -563,7 +563,7 @@
         "A div with onClick (a link or Button is the real target)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-041",
@@ -577,7 +577,7 @@
         "Sheet (contextual, not structural)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-042",
@@ -591,7 +591,7 @@
         "Sidebar (structural, and its width would change with the selection)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-043",
@@ -605,7 +605,7 @@
         "A centered Dialog (a full-height task, not a short one)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-044",
@@ -619,7 +619,7 @@
         "Command (a power-user tool for a plain form field)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-045",
@@ -633,7 +633,7 @@
         "Command (a power-user tool for a plain form field)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-046",
@@ -647,7 +647,7 @@
         "Checkbox (implies more than one can be chosen)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-047",
@@ -660,7 +660,7 @@
         "A plain Input (hides the expected length and invites typos in the middle)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-048",
@@ -673,7 +673,7 @@
         "Textarea (can't carry the formatting)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-049",
@@ -687,7 +687,7 @@
         "RichTextEditor (heavy, and formatting doesn't matter here)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-050",
@@ -701,7 +701,7 @@
         "A Button labeled 'Enable' (a command, not a state)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-051",
@@ -714,7 +714,7 @@
         "Switch (implies the change takes effect the moment it's flipped)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-052",
@@ -727,7 +727,7 @@
         "A one-bar chart or a two-slice pie (the number is the chart)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-053",
@@ -740,7 +740,7 @@
         "A Table with no chart (gives exact values but hides the shape)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Not run yet."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
     }
   ]
 }
