@@ -2,7 +2,7 @@
 // No new dependency — uses Node's built-in test runner.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
@@ -21,7 +21,7 @@ const badCssFindings = findingsFor("bad.css");
 const goodTsxFindings = findingsFor("good.tsx");
 
 const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-007"]);
-const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002"]);
+const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
 
 for (const rule of RULES) {
   if (CSS_EXT_ONLY_RULE_IDS.has(rule.id)) {
@@ -96,4 +96,41 @@ test("DS-TABLE-001 does not flag a wrapper with a bounded block size", () => {
 test("DS-TABLE-001 does not flag a simple table with no overflow on the wrapper", () => {
   const css = ".w { }\n.w thead th { position: sticky; top: var(--app-header-h); }\n";
   assert.equal(detectFile("x.css", css).some((f) => f.ruleId === "DS-TABLE-001"), false);
+});
+
+// Lookalike rules. Ids must match the rows in vois-components, and the primitives folder is exempt.
+const COMPONENTS_RULES = join(HERE, "..", "..", "vois-components", "data", "components-rules.json");
+
+test("every LOOKALIKE-* rule id is a row in vois-components lookalikes", { skip: !existsSync(COMPONENTS_RULES) }, () => {
+  const rows = JSON.parse(readFileSync(COMPONENTS_RULES, "utf8")).lookalikes.rows.map((r) => r.id);
+  for (const rule of RULES.filter((r) => r.id.startsWith("LOOKALIKE-"))) {
+    assert.ok(rows.includes(rule.id), `${rule.id} is not a lookalikes row`);
+  }
+});
+
+test("LOOKALIKE-* rules skip files under components/ui", () => {
+  const src = '<button className="focus-visible:ring-2">x</button><div onClick={go}>y</div><Loader2 className="animate-spin" />';
+  assert.equal(detectFile("src/components/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length, 0);
+  assert.ok(detectFile("src/screens/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
+});
+
+test("LOOKALIKE-005 handles arrow functions inside attributes and skips role= and stopPropagation", () => {
+  const hit = detectFile("a.tsx", "<div onClick={() => go(1)} className=\"x\">row</div>");
+  assert.ok(hit.some((f) => f.ruleId === "LOOKALIKE-005"));
+  assert.equal(detectFile("a.tsx", '<div role="button" tabIndex={0} onClick={go}>row</div>').some((f) => f.ruleId === "LOOKALIKE-005"), false);
+  assert.equal(detectFile("a.tsx", "<div onClick={(e) => e.stopPropagation()}>row</div>").some((f) => f.ruleId === "LOOKALIKE-005"), false);
+});
+
+test("LOOKALIKE-007 ignores a loading flag and short delays", () => {
+  assert.equal(detectFile("a.tsx", "setTimeout(() => setLoading(false), 3000)").some((f) => f.ruleId === "LOOKALIKE-007"), false);
+  assert.equal(detectFile("a.tsx", "setTimeout(() => setOpen(false), 300)").some((f) => f.ruleId === "LOOKALIKE-007"), false);
+  assert.ok(detectFile("a.tsx", "setTimeout(() => setShown(false), 3000)").some((f) => f.ruleId === "LOOKALIKE-007"));
+});
+
+test("LOOKALIKE-009 matches the native call but not a method or a longer name", () => {
+  assert.ok(detectFile("a.tsx", "if (confirm('x')) go()").some((f) => f.ruleId === "LOOKALIKE-009"));
+  assert.ok(detectFile("a.tsx", "const n = window.prompt('x')").some((f) => f.ruleId === "LOOKALIKE-009"));
+  for (const src of ["toast.alert('x')", "onConfirm()", "confirmAction()", "const prompted = 1"]) {
+    assert.equal(detectFile("a.tsx", src).some((f) => f.ruleId === "LOOKALIKE-009"), false, src);
+  }
 });

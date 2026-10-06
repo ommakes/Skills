@@ -5,7 +5,7 @@
 //
 // Note on `severity` below: this is a narrower, detector-specific vocabulary
 // ("quality" | "slop") that only exists to decide hook-blocking behavior for
-// the ~18 rules covered here. It's a different axis from the `severity`
+// the DS-* rules covered here. It's a different axis from the `severity`
 // ("required"/"recommended"/"preferred") and `enforcement`
 // ("blocking"/"advisory") fields on every rule in ../data/vois-rules.json —
 // that pair is the corpus-wide, normative-weight signal; this one is
@@ -474,6 +474,144 @@ export const RULES = [
     },
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Lookalikes: markup that does a component's job without the component.
+// Ids match the rows in vois-components/data/components-rules.json under
+// `lookalikes`; detect.test.mjs checks every id here exists there. Rows 004
+// (numbered circles) and 006 (a fixed inset-0 backdrop) have no precise regex
+// and stay judgment-only. All of these are advisory ("quality").
+// ---------------------------------------------------------------------------
+
+// A JSX opening tag, allowing "=>" inside attribute expressions.
+const TAG_BODY = "(?:=>|[^>])*";
+
+// shadcn primitives (components/ui/*) are where the raw elements legitimately live.
+function isUiPrimitive(filePath) {
+  return /[\\/]components[\\/]ui[\\/]/.test(filePath || "");
+}
+
+function importsFrom(content, names) {
+  return names.some((n) => new RegExp(`from\\s+["'](?:@/components/ui/|@radix-ui/react-)?${n}["']`).test(content));
+}
+
+/** First match only: one finding per file for rules about a whole-file pattern. */
+function firstMatch(content, lines, pattern, message) {
+  const found = scanRegex(content, lines, pattern, message);
+  return found.length ? [found[0]] : [];
+}
+
+const LOOKALIKE_RULES = [
+  {
+    id: "LOOKALIKE-001",
+    title: "Raw <button> with a hand-written focus ring",
+    fixHint: 'Use Button: variant="link" for text, variant="ghost" with an icon size and aria-label for icons, asChild as a trigger.',
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath)) return [];
+      return scanRegex(content, lines, new RegExp(`<button\\b${TAG_BODY}?\\bfocus-visible:(?:ring|outline)`), "Raw <button> with its own focus ring. Use Button.");
+    },
+  },
+  {
+    id: "LOOKALIKE-002",
+    title: "Hand-rolled spinner",
+    fixHint: "Use the Spinner component.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath) || importsFrom(content, ["spinner"])) return [];
+      return firstMatch(content, lines, /\banimate-spin\b/, "animate-spin on a hand-built element. Use Spinner.");
+    },
+  },
+  {
+    id: "LOOKALIKE-003",
+    title: 'Buttons with role="radio"',
+    fixHint: "Use RadioGroup, or ToggleGroup (single) for a segmented control.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath) || importsFrom(content, ["radio-group", "toggle-group"])) return [];
+      return firstMatch(content, lines, /\brole=["']radio["']/, 'role="radio" on hand-built markup. Use RadioGroup or ToggleGroup.');
+    },
+  },
+  {
+    id: "LOOKALIKE-005",
+    title: "div, span, li or p with onClick",
+    fixHint: "Use Button, or a link for navigation.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath)) return [];
+      const findings = [];
+      const tagRe = new RegExp(`<(?:div|span|li|p)\\b(${TAG_BODY})>`, "g");
+      let m;
+      while ((m = tagRe.exec(content)) !== null) {
+        const attrs = m[1];
+        if (!/\bonClick=/.test(attrs) || /\brole=/.test(attrs) || /stopPropagation/.test(attrs)) continue;
+        const line = lineAt(content, m.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "Clickable non-button element. Use Button, or a link for navigation." });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "LOOKALIKE-007",
+    title: "setTimeout that hides a message held in state",
+    fixHint: "Use a Sonner toast.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath) || /from\s+["'](?:@\/components\/ui\/)?sonner["']/.test(content)) return [];
+      // () => setX(false) as the first argument, then a delay of 1.5s or more. Loading and busy flags are not toasts.
+      const re = /setTimeout\(\s*(?:\(\s*\)\s*=>|function\s*\(\s*\))\s*\{?\s*(set[A-Z]\w*)\(\s*(?:false|null|""|'')\s*\)\s*;?\s*\}?\s*,\s*(\d+)/g;
+      const findings = [];
+      let m;
+      while ((m = re.exec(content)) !== null) {
+        if (/load|pending|busy|saving|fetch|submit/i.test(m[1]) || Number(m[2]) < 1500) continue;
+        const line = lineAt(content, m.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "A timer hides a message held in state. Use a Sonner toast." });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "LOOKALIKE-008",
+    title: "x or × as text for a close control",
+    fixHint: "Use the Dialog or Sheet close, or a ghost icon Button with aria-label.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath)) return [];
+      return scanRegex(content, lines, />\s*(?:×|✕|✖|&times;)\s*</, "A glyph used as a close control. Use the component's close, or an icon Button with aria-label.");
+    },
+  },
+  {
+    id: "LOOKALIKE-009",
+    title: "window.confirm, alert or prompt",
+    fixHint: "Use AlertDialog for confirmation, Sonner for notices, a Dialog with an Input for a prompt.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath)) return [];
+      return scanRegex(content, lines, /(?:\bwindow\.|(?<![.\w$]))(?:confirm|alert|prompt)\s*\(/, "Native browser dialog. Use AlertDialog, Sonner or a Dialog.");
+    },
+  },
+  {
+    id: "LOOKALIKE-010",
+    title: "Hand-built alert box",
+    fixHint: "Use Alert with a status role (info, positive, negative, warning).",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath) || importsFrom(content, ["alert"])) return [];
+      const findings = [];
+      const tagRe = new RegExp(`<(?:div|p|section|span)\\b(${TAG_BODY}\\brole=["']alert["']${TAG_BODY})>`, "g");
+      let m;
+      while ((m = tagRe.exec(content)) !== null) {
+        if (!/border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(m[1])) continue;
+        const line = lineAt(content, m.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "A colored box with role=alert. Use Alert with a status role." });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "LOOKALIKE-011",
+    title: "title attribute as a tooltip",
+    fixHint: "Use Tooltip.",
+    check({ content, lines, filePath }) {
+      if (isUiPrimitive(filePath) || importsFrom(content, ["tooltip"])) return [];
+      return scanRegex(content, lines, new RegExp(`<(?:div|span|button|a|svg|img|td|th|p|i)\\b${TAG_BODY}?\\btitle=["'{]`), "title= used as a tooltip. Use Tooltip.");
+    },
+  },
+].map((r) => ({ severity: "quality", extensions: CODE_EXT, ...r }));
+
+RULES.push(...LOOKALIKE_RULES);
 
 export function rulesForFile(filePath) {
   const ext = filePath.slice(filePath.lastIndexOf(".")).toLowerCase();

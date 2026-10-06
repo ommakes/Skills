@@ -1,36 +1,33 @@
 #!/usr/bin/env node
 // Scans TSX outputs from a lookalike run for markup that does a component's job
-// without using the component. Zero dependencies. Heuristic: it flags candidates
+// without using the component. Heuristic: it flags candidates
 // for a human to read, it does not decide anything.
 //
 // Usage: node scan.mjs runs/<run-name> [prompts-file]   (default: loads prompts.json and prompts-hard.json)
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { detectFile } from "../../vois-tokens/scripts/detect.mjs";
+
+// The lookalike checks that also run as the vois-tokens hook come from the hook's registry, so the
+// scanner and the hook cannot drift apart. The rest are scanner-only.
+const viaHook = (ruleId) => (s) => detectFile("scan.tsx", s).some((f) => f.ruleId === ruleId);
 
 const imp = (src, name) => new RegExp(`from\\s+["']@/components/ui/${name}["']`).test(src);
 
 // Each signal: id, what the agent built, the real component, test(src) -> bool
 const SIGNALS = [
-  ["fake-button", "div/span/li/a with onClick, no role", "Button",
-    (s) => /<(div|span|li|p|a)\b(?![^>]*\brole=)(?![^>]*\bhref=)[^>]*\bonClick=/.test(s)],
+  ["fake-button", "div/span/li/p with onClick, no role", "Button",
+    viaHook("LOOKALIKE-005")],
   ["fake-close", "plain x / times text as a close control", "Dialog/Sheet close (labelled)",
-    (s) => />\s*(×|✕|✖|x|X)\s*<|&times;/.test(s)],
+    viaHook("LOOKALIKE-008")],
   ["fake-overlay", "fixed inset-0 backdrop built by hand", "Dialog / Sheet / AlertDialog",
     (s) => /fixed\s+inset-0|position:\s*["']?fixed/.test(s) && !/(dialog|sheet|alert-dialog)["']/.test(s.match(/from\s+["']@\/components\/ui\/[a-z-]+["']/g)?.join(" ") ?? "")],
   ["fake-toast", "setTimeout (1.5s or more) that hides a message held in state", "Sonner toast",
-    (s) => {
-      // () => setX(false) as the first argument, then the delay. Loading and hover-close delays are not toasts.
-      const re = /setTimeout\(\s*(?:\(\s*\)\s*=>|function\s*\(\s*\))\s*\{?\s*(set[A-Z]\w*)\(\s*(?:false|null|""|'')\s*\)\s*;?\s*\}?\s*,\s*(\d+)/g;
-      const usesSonner = /from\s+["'](?:@\/components\/ui\/)?sonner["']/.test(s);
-      for (const m of s.matchAll(re)) {
-        if (!/load|pending|busy|saving|fetch|submit/i.test(m[1]) && Number(m[2]) >= 1500 && !usesSonner) return true;
-      }
-      return false;
-    }],
+    viaHook("LOOKALIKE-007")],
   ["fake-skeleton", "animate-pulse blocks without Skeleton", "Skeleton",
     (s) => /animate-pulse/.test(s) && !imp(s, "skeleton")],
   ["fake-spinner", "hand-rolled animate-spin element", "Spinner",
-    (s) => /animate-spin/.test(s) && !imp(s, "spinner")],
+    viaHook("LOOKALIKE-002")],
   ["fake-switch", "translate-x knob or styled checkbox as a toggle", "Switch",
     (s) => (/(checked|isOn|enabled)[^\n]{0,80}\btranslate-x-\d/.test(s) || /role=["']switch["']/.test(s)) && !imp(s, "switch")],
   ["fake-badge", "rounded-full px-* span as a status label", "Badge",
@@ -49,22 +46,20 @@ const SIGNALS = [
   ["native-radio", "native radio input", "RadioGroup",
     (s) => /<input\b[^>]*type=["']radio["']/.test(s) && !imp(s, "radio-group")],
   ["title-tooltip", "title attribute as tooltip", "Tooltip",
-    (s) => /<(?:div|span|button|a|svg|img|td|th|p|i|abbr)\b[^>]*\btitle=["'{]/.test(s) && !imp(s, "tooltip")],
+    viaHook("LOOKALIKE-011")],
   ["fake-progress", "div with role progressbar", "Progress",
     // Needs the role: a width-styled bar can be a data bar in a chart or funnel, which is not a progress indicator.
     (s) => /<div\b[^>]*role=["']progressbar["']/.test(s) && !imp(s, "progress")],
   ["fake-alert", "colored box with role alert on the same element, not Alert", "Alert",
-    (s) => !imp(s, "alert") && /<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g.test(s) &&
-      [...s.matchAll(/<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g)].some((m) => /border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(m[0]))],
+    viaHook("LOOKALIKE-010")],
   ["fake-avatar", "rounded-full div with initials", "Avatar",
     (s) => /<div\b[^>]*rounded-full[^>]*>\s*\{?[^<]{0,12}(initials|\.charAt|\[0\])/i.test(s) && !imp(s, "avatar")],
   ["raw-palette-color", "Tailwind palette color class (bg-red-500, text-green-700) instead of a system token", "Status color tokens (DS-COLOR-008)",
     (s) => /\b(?:bg|text|border|ring|fill|stroke)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/.test(s)],
   ["raw-button-focus-ring", "raw <button> carrying a copy-pasted focus ring", "Button (a variant, so focus styles stay shared)",
-    // "=>" in an onClick would end the [^>]* early, so hide arrows first.
-    (s) => /<button\b[^>]*focus-visible:(?:ring|outline)/.test(s.replace(/=>/g, "=_"))],
+    viaHook("LOOKALIKE-001")],
   ["native-dialog", "window.confirm / alert / prompt", "AlertDialog / Sonner",
-    (s) => /\b(window\.)?(confirm|alert|prompt)\(/.test(s)],
+    viaHook("LOOKALIKE-009")],
 ];
 
 export function scan(src, expected) {

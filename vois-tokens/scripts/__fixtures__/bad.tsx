@@ -1,5 +1,6 @@
 // Fixture: one deliberate violation per CODE_EXT-applicable [DS-*] rule.
 import { motion } from "motion/react";
+import { useState } from "react";
 
 const legacyOverride = "color: red !important;"; // DS-TAILWIND-004
 
@@ -37,6 +38,27 @@ function BadTable() {
           </tr>
         </thead>
       </table>
+    </div>
+  );
+}
+
+// Lookalikes: one deliberate violation per LOOKALIKE-* rule. Each marker is the rule it should trip.
+function BadLookalikes() {
+  const [shown, setShown] = useState(false);
+  const flash = () => {
+    setShown(true);
+    setTimeout(() => setShown(false), 3000); // LOOKALIKE-007
+    if (window.confirm("Sure?")) setShown(false); // LOOKALIKE-009
+  };
+  return (
+    <div>
+      <button className="rounded-sm focus-visible:ring-2">Open</button> {/* LOOKALIKE-001 */}
+      <Loader2 className="size-4 animate-spin" /> {/* LOOKALIKE-002 */}
+      <button role="radio" aria-checked="true">Monthly</button> {/* LOOKALIKE-003 */}
+      <div onClick={flash}>Row</div> {/* LOOKALIKE-005 */}
+      <span>×</span> {/* LOOKALIKE-008 */}
+      <div role="alert" className="border-l-4 border-red-500 p-3">Failed</div> {/* LOOKALIKE-010 */}
+      <span title="More info">?</span> {/* LOOKALIKE-011 */}
     </div>
   );
 }
