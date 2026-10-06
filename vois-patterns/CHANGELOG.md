@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.14.0] - 2026-10-06
+
+**Added** | Personal data rules in `references/permissions-and-conditional-logic.md`: `PATH-PERM-PII-MASK` (mask by default, on the server), `PATH-PERM-PII-REVEAL` (per-field reveal, re-mask, log high-risk reveals), and `PATH-PERM-PII-KEEP-OUT` (no personal data in URLs, titles, file names, or analytics). Marked `judgment`: the decision to add them is confirmed, the wording has not been reviewed and no Mobbin evidence was checked. Copy rules live in righter `no-pii-in-copy`.
+
+---
+
 ## [1.13.1] - 2026-10-02
 
 **Fix** | `references/form-field-groups.md` pointed to `data/tokens.additions.json`, which does not exist. It now points to the `widths` group in `vois-tokens/data/tokens.json`, where those four tokens live.

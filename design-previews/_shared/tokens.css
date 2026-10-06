@@ -47,13 +47,17 @@
   --color-accent-foreground: oklch(0.205 0 0); /* status: illustrative */
   --color-ring: oklch(0.637 0.237 259.4 / 0.5); /* status: illustrative — derived from the canonical primary, but the ring treatment itself isn't sourced */
 
-  /* ---- Color: semantic ---- INVENTED · status: illustrative */
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-success: oklch(0.6 0.15 145);
-  --color-success-foreground: oklch(1 0 0);
+  /* ---- Color: status roles ---- INVENTED · status: illustrative
+     Roles per vois-tokens DS-COLOR-008/009: info, positive, negative, warning.
+     This kit defines base and foreground only. The -surface and -border tokens are not defined here. */
+  --color-negative: oklch(0.577 0.245 27.325);
+  --color-negative-foreground: oklch(1 0 0);
+  --color-positive: oklch(0.6 0.15 145);
+  --color-positive-foreground: oklch(1 0 0);
   --color-warning: oklch(0.75 0.16 80);
   --color-warning-foreground: oklch(0.205 0 0);
+  --color-info: oklch(0.62 0.14 240);
+  --color-info-foreground: oklch(1 0 0);
 
   /* ---- Spacing scale (px, divisible by 4/8 — DS-SPACING-001) ---- SOURCED · status: canonical */
   --space-4: 4px;
@@ -158,12 +162,14 @@
   --color-primary-foreground: oklch(1 0 0);
   --color-ring: oklch(0.637 0.237 259.4 / 0.5);
 
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-success: oklch(0.6 0.15 145);
-  --color-success-foreground: oklch(1 0 0);
+  --color-negative: oklch(0.577 0.245 27.325);
+  --color-negative-foreground: oklch(1 0 0);
+  --color-positive: oklch(0.6 0.15 145);
+  --color-positive-foreground: oklch(1 0 0);
   --color-warning: oklch(0.75 0.16 80);
   --color-warning-foreground: oklch(0.145 0 0);
+  --color-info: oklch(0.62 0.14 240);
+  --color-info-foreground: oklch(1 0 0);
 
   --shadow-border: 0 0 0 1px rgba(255, 255, 255, .08);
   --shadow-border-hover: 0 0 0 1px rgba(255, 255, 255, .13);

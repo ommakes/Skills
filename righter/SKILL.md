@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Righter
@@ -255,6 +255,24 @@ Screen reader users often hear labels and links as a list, out of context. Write
 - ✗ Red text: "Email"
 - ✓ "Error: Email is required"
 
+### 19. Don't invent claims or commitments `id: no-invented-claims`
+Never write a number, time, guarantee, price, legal term, or compliance or security claim that the product team or legal didn't give you. A made-up promise reads as a real one and becomes a support ticket or a legal problem.
+- Covers response times ("within 2 hours"), uptime and SLAs, refund or retention windows, certifications ("SOC 2", "HIPAA compliant"), security claims ("end-to-end encrypted"), and absolute promises ("never", "always safe", "guaranteed").
+- If the copy needs one and you don't have it, write copy that makes no promise, and flag the gap for the owner: "Needs a number from support: reply time."
+- Placeholders in drafts are marked, not invented: `[reply time]`, not "2 hours".
+- ✗ "We'll reply within 2 hours. Your data is always safe with us."
+- ✓ "We'll reply by email." Flag: reply time and any security claim need an owner.
+
+### 20. Keep personal data out of shared copy `id: no-pii-in-copy`
+Don't put personal data in copy that gets logged, shared, previewed, or shown outside the screen: error messages, toasts, page titles, URLs, push and email subjects, notification previews, and analytics labels. Name the record by its role, or mask the value.
+- PII means names, email addresses, phone numbers, street addresses, government or payment IDs, and anything that identifies one person on its own.
+- Refer to the record, not the person: "the invoice for this customer", not "the invoice for Jane Doe".
+- If an identifier helps, mask it: "the card ending 4821", "j***@acme.com".
+- Examples and mock data use obviously fake values: `user@example.com`, "Jane Doe".
+- How to display PII inside a screen (masking, reveal, export) is a structure decision. See `vois-patterns` (`[PATH-PERM-PII-MASK]`).
+- ✗ "We couldn't send the invoice to jane.doe@acme.com."
+- ✓ "We couldn't send the invoice. Check the recipient's email and try again."
+
 ---
 
 ## Error Message Guidelines
@@ -435,6 +453,10 @@ Run through this for every piece of copy before finalizing.
 - [ ] Unnecessary apology?
 - [ ] Overuse of exclamation marks?
 - [ ] Any weakener words? (see `data/weakeners.json`)
+
+**Claims and data**
+- [ ] Any number, time, guarantee, price, certification, or security claim nobody supplied?
+- [ ] Any name, email, phone, address, or ID in an error, toast, title, URL, subject, or analytics label?
 
 **Mechanics**
 - [ ] Inconsistent terminology?
