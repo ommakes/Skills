@@ -112,7 +112,7 @@
       "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
       "rule_name": "Mask personal data by default",
       "condition": "A list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to a user whose task doesn't need the full value.",
-      "outcome": "Show a masked value by default: `j***@acme.com`, `•••• 4821`, last four digits only. A person's name stays visible on a screen whose job is that person (a people list, a profile). Show the full value only on a detail view, and only to roles that need it. Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. Masked values keep the column width so the layout doesn't jump.",
+      "outcome": "Show a masked value by default: `j***@acme.com`, `•••• 4821`, last four digits only. A person's name stays visible on a screen whose job is that person (a people list, a profile). Show the full value only to roles that need it, and only through the reveal control (`PATH-PERM-PII-REVEAL`) or on a detail view. A role that never needs it never receives it. Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. Masked values keep the column width so the layout doesn't jump.",
       "builds_on": [
         "PATH-PERM-HIDE-BY-ROLE"
       ],
@@ -127,7 +127,7 @@
       "source_file": "vois-patterns/references/permissions-and-conditional-logic.md",
       "rule_name": "Reveal a masked value on request",
       "condition": "A role that is allowed to see a masked value needs the full one.",
-      "outcome": "Put a reveal control on that one field, not on the whole page: an icon Button with a label such as \"Show email\". The value re-masks when the user leaves the view or after a timeout. Log reveals of high-risk fields (government ID, payment, health data) on the server. Copy to clipboard copies the full value only for roles that may reveal it.",
+      "outcome": "Put a reveal control on that one field, not on the whole page, and wherever the masked value appears (a list row, a card, a header, or a detail view): an icon Button with a label such as \"Show email\". The value re-masks when the user leaves the view or after a timeout. Log reveals of high-risk fields (government ID, payment, health data) on the server. Copy to clipboard copies the full value only for roles that may reveal it.",
       "builds_on": [
         "PATH-PERM-PII-MASK"
       ],

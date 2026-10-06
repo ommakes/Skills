@@ -6,7 +6,7 @@ Goal: find the shortcuts agents really take (markup that does a component's job 
 - `prompts.json`: 30 prompts, 10 jobs x 3 phrasings (concrete, vague, hurried). No prompt names a component.
 - `runner-prompt.md`: the blind prompt. Fill `{{user_prompt}}` and `{{out_path}}`.
 - `scan.mjs`: flags candidate lookalikes in the outputs. Zero dependencies.
-- `fixtures/`: three tiny files to check the scanner still works (`node scan.mjs fixtures`).
+- `fixtures/`: five tiny files that check each flagged pattern still matches (`node scan.mjs fixtures`). `node scan.mjs runs/<run-name>` loads both prompt files, so `LP-*` and `HP-*` runs both work, and it warns and exits 2 if a file has no matching prompt id.
 
 ## Run protocol
 1. One fresh agent per prompt, Vois skills active, no other context. Output goes to `runs/<run-name>/<id>.tsx`.

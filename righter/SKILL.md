@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.9.0
+version: 1.9.1
 ---
 
 # Righter
@@ -266,6 +266,7 @@ Never write a number, time, guarantee, price, legal term, or compliance or secur
 ### 20. Keep personal data out of shared copy `id: no-pii-in-copy`
 Don't put personal data in copy that gets logged, shared, previewed, or shown outside the screen: error messages, toasts, page titles, URLs, push and email subjects, notification previews, and analytics labels. Name the record by its role, or mask the value.
 - PII means names, email addresses, phone numbers, street addresses, government or payment IDs, and anything that identifies one person on its own.
+- One exception: a name may appear in a page title or breadcrumb on a screen whose job is that person (`[PATH-PERM-PII-KEEP-OUT]` in `vois-patterns`). Never an email, phone number, address, or ID there.
 - Refer to the record, not the person: "the invoice for this customer", not "the invoice for Jane Doe".
 - If an identifier helps, mask it: "the card ending 4821", "j***@acme.com".
 - Examples and mock data use obviously fake values: `user@example.com`, "Jane Doe".
@@ -456,7 +457,7 @@ Run through this for every piece of copy before finalizing.
 
 **Claims and data**
 - [ ] Any number, time, guarantee, price, certification, or security claim nobody supplied?
-- [ ] Any name, email, phone, address, or ID in an error, toast, title, URL, subject, or analytics label?
+- [ ] Any name, email, phone, address, or ID in an error, toast, title, URL, subject, or analytics label? (A name is fine in a title or breadcrumb only on a screen whose job is that person.)
 
 **Mechanics**
 - [ ] Inconsistent terminology?

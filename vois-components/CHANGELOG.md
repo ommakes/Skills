@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.10.1] - 2026-10-06
+
+### Fixed
+
+- **`references/stepper.md` forced the last step to be a result.** It said the last step is a result such as "Done" with no Next. That contradicted `PATH-SET-EMAIL-CHANGE`, whose last step is code entry with Verify, and it pushed five-step flows to six. It now says the last step ends the flow with its own primary button (Verify, Create, Finish), a closing "Done" step is optional, and a Done step counts toward the 5-step limit.
+
+### Changed
+
+- **Version bump:** `1.10.0` → `1.10.1`
+
+---
+
 ## [1.10.0] - 2026-10-06
 
 ### Added

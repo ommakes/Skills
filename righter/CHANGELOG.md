@@ -4,6 +4,18 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.9.1] - 2026-10-06
+
+### Fixed
+
+- **`no-pii-in-copy` and `PATH-PERM-PII-KEEP-OUT` disagreed about names in titles.** The principle banned names from page titles, while the pattern allowed one on a screen whose job is that person. The principle now has the same exception: a name may appear in a page title or breadcrumb on a person's own screen, never an email, phone number, address, or ID. The checklist line says so too.
+
+### Changed
+
+- **Version bump:** `1.9.0` → `1.9.1`
+
+---
+
 ## [1.9.0] - 2026-10-06
 
 ### Added

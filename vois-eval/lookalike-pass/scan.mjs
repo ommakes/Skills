@@ -3,7 +3,7 @@
 // without using the component. Zero dependencies. Heuristic: it flags candidates
 // for a human to read, it does not decide anything.
 //
-// Usage: node scan.mjs runs/<run-name> [prompts-file]   (default prompts.json; pass prompts-hard.json for run2)
+// Usage: node scan.mjs runs/<run-name> [prompts-file]   (default: loads prompts.json and prompts-hard.json)
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -17,8 +17,16 @@ const SIGNALS = [
     (s) => />\s*(×|✕|✖|x|X)\s*<|&times;/.test(s)],
   ["fake-overlay", "fixed inset-0 backdrop built by hand", "Dialog / Sheet / AlertDialog",
     (s) => /fixed\s+inset-0|position:\s*["']?fixed/.test(s) && !/(dialog|sheet|alert-dialog)["']/.test(s.match(/from\s+["']@\/components\/ui\/[a-z-]+["']/g)?.join(" ") ?? "")],
-  ["fake-toast", "setTimeout that hides a message in local state", "Sonner toast",
-    (s) => /setTimeout\([^)]*set[A-Z]\w*\((false|null|""|'')\)/.test(s) && !imp(s, "sonner")],
+  ["fake-toast", "setTimeout (1.5s or more) that hides a message held in state", "Sonner toast",
+    (s) => {
+      // () => setX(false) as the first argument, then the delay. Loading and hover-close delays are not toasts.
+      const re = /setTimeout\(\s*(?:\(\s*\)\s*=>|function\s*\(\s*\))\s*\{?\s*(set[A-Z]\w*)\(\s*(?:false|null|""|'')\s*\)\s*;?\s*\}?\s*,\s*(\d+)/g;
+      const usesSonner = /from\s+["'](?:@\/components\/ui\/)?sonner["']/.test(s);
+      for (const m of s.matchAll(re)) {
+        if (!/load|pending|busy|saving|fetch|submit/i.test(m[1]) && Number(m[2]) >= 1500 && !usesSonner) return true;
+      }
+      return false;
+    }],
   ["fake-skeleton", "animate-pulse blocks without Skeleton", "Skeleton",
     (s) => /animate-pulse/.test(s) && !imp(s, "skeleton")],
   ["fake-spinner", "hand-rolled animate-spin element", "Spinner",
@@ -40,11 +48,12 @@ const SIGNALS = [
   ["native-radio", "native radio input", "RadioGroup",
     (s) => /<input\b[^>]*type=["']radio["']/.test(s) && !imp(s, "radio-group")],
   ["title-tooltip", "title attribute as tooltip", "Tooltip",
-    (s) => /\btitle=["'{]/.test(s) && !imp(s, "tooltip")],
+    (s) => /<(?:div|span|button|a|svg|img|td|th|p|i|abbr)\b[^>]*\btitle=["'{]/.test(s) && !imp(s, "tooltip")],
   ["fake-progress", "hand-built progress bar", "Progress",
-    (s) => /(w-\[\$\{|style=\{\{\s*width:)/.test(s) && /progress|step/i.test(s) && !imp(s, "progress")],
-  ["fake-alert", "bordered colored box with role alert, not Alert", "Alert",
-    (s) => /role=["']alert["']/.test(s) && /(border-l-4|bg-red-|bg-destructive\/\d)/.test(s) && !imp(s, "alert")],
+    (s) => /(w-\[\$\{|style=\{\{\s*width:)/.test(s) && /progress/i.test(s) && !imp(s, "progress")],
+  ["fake-alert", "colored box with role alert on the same element, not Alert", "Alert",
+    (s) => !imp(s, "alert") && /<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g.test(s) &&
+      [...s.matchAll(/<(?:div|p|section|span)\b[^>]*role=["']alert["'][^>]*>/g)].some((m) => /border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(m[0]))],
   ["fake-avatar", "rounded-full div with initials", "Avatar",
     (s) => /<div\b[^>]*rounded-full[^>]*>\s*\{?[^<]{0,12}(initials|\.charAt|\[0\])/i.test(s) && !imp(s, "avatar")],
   ["native-dialog", "window.confirm / alert / prompt", "AlertDialog / Sonner",
@@ -59,15 +68,22 @@ export function scan(src, expected) {
 
 if (process.argv[1] && process.argv[1].endsWith("scan.mjs")) {
   const dir = process.argv[2];
-  if (!dir) { console.error("usage: node scan.mjs <run-dir>"); process.exit(1); }
-  const prompts = JSON.parse(readFileSync(new URL(process.argv[3] ?? "./prompts.json", import.meta.url))).scenarios;
+  if (!dir) { console.error("usage: node scan.mjs <run-dir> [prompts-file]"); process.exit(1); }
+  // Load every prompts file unless one is named, so run1 (LP-*) and run2 (HP-*) both resolve.
+  const promptFiles = process.argv[3] ? [process.argv[3]] : ["./prompts.json", "./prompts-hard.json"];
+  const prompts = promptFiles.flatMap((f) => JSON.parse(readFileSync(new URL(f, import.meta.url))).scenarios);
   const byId = Object.fromEntries(prompts.map((p) => [p.id, p]));
   const rows = [];
+  const skipped = [];
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".tsx"))) {
     const id = f.replace(/\.tsx$/, "");
     const p = byId[id];
-    if (!p) continue;
+    if (!p) { skipped.push(f); continue; }
     rows.push({ id, job: p.source_job, style: p.style, ...scan(readFileSync(join(dir, f), "utf8"), p.expected_imports) });
+  }
+  if (skipped.length) {
+    console.error(`WARNING: skipped ${skipped.length} file(s) with no matching prompt id (${promptFiles.join(", ")}): ${skipped.join(", ")}`);
+    process.exitCode = 2;
   }
   rows.sort((a, b) => a.id.localeCompare(b.id));
   console.log("file    job                         style     hits / expected-used");

@@ -53,3 +53,14 @@ Still no classic fakes. Across the 10 builds there was no `div` with `onClick`, 
 - A big lookalike table isn't supported by the evidence. A short one is. Three rows would cover what repeated: icon or text trigger (Button ghost icon, or link variant), spinner (Spinner component), and radio-style choice (RadioGroup or ToggleGroup).
 - Add a Stepper spec to `vois-components`, or say where it comes from.
 - Still untested: skills off, and non-shadcn codebases.
+
+---
+
+# Scanner corrections after review
+
+A code review found three bugs in `scan.mjs`, and fixing them showed two more:
+- The `fake-toast` pattern could never match `setTimeout(() => setX(false), n)`, because `[^)]*` stopped at the first `)`. It now needs a delay of 1.5s or more and ignores loading setters, so a mock-load delay or a hover-close delay is not a toast.
+- Files whose id had no matching prompt were skipped silently, so `node scan.mjs runs/run2` reported zero files. It now loads both prompt files and warns.
+- Found while testing: `title=` matched component props such as `<Panel title=...>`, `fake-progress` matched the word "step" in a funnel chart, and `fake-alert` matched a `hover:bg-destructive/90` button elsewhere in the file. Each is now scoped to the element it describes.
+
+I re-scanned both runs with the corrected scanner. The result is unchanged: `fake-spinner` in LP-03b and HP-02, and the `native-checkbox` demo control in HP-08. No hand-built toast in any of the 40 builds, so the findings above stand.

@@ -50,7 +50,7 @@ Every state carries more than color (`[DS-COLOR-003]`).
 - **Validate before Next.** Each step validates before the next one opens. Errors show on the step, and the step's marker shows the error state if the user has moved on.
 - **Back keeps what the user typed.**
 - **Move focus on a step change.** Focus goes to the new step's heading, so keyboard and screen reader users land at the start of the content.
-- **The last step is a result,** such as "Done". It has no Next.
+- **The last step ends the flow.** Its primary button finishes it (Verify, Create, Finish) instead of Next. A closing "Done" step is optional. Don't add one just to have a result: it counts toward the 5-step limit.
 
 ## Layout
 
