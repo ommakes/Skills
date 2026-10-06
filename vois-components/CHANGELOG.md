@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.9.0] - 2026-10-06
+
+### Added
+
+- **`references/stepper.md`,** the Stepper spec: what it is and isn't, anatomy, the four states, behavior, layout, motion, and accessibility. shadcn/ui ships no Stepper, so agents were hand-building one with no spec. Marked `judgment`.
+- **Two "why not" entries and one naming entry** on `JOB-MULTISTEP-GUIDE`: why not Tabs for steps, why the limit is 5 and 6, and that a plus and minus control is a quantity control, not a Stepper.
+
+### Fixed
+
+- **Stepper and Wizard overlapped at exactly 5 steps.** The tree said 2 to 5 for a Stepper and 5 or more for a Wizard. It now says 2 to 5 steps that fit a page container for a Stepper, and 6 or more, or any step that needs its own full page, for a Wizard.
+
+### Changed
+
+- **Version bump:** `1.8.1` → `1.9.0`
+
+---
+
 ## [1.8.1] - 2026-10-02
 
 ### Fixed

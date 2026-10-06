@@ -204,14 +204,17 @@
       "framing": "The user needs to complete multiple steps in sequence to accomplish a larger goal.",
       "decision_tree": [
         { "condition": "Steps are all required, user must complete them in order, progress is visible", "sub_branches": [
-          { "condition": "2–5 steps, fits on one page with sections", "recommendation": "Stepper (inline step indicator)" },
-          { "condition": "5+ steps, each step fills the screen", "recommendation": "Wizard (full-page steps with own layout)" }
+          { "condition": "2 to 5 steps, and each step's content fits in a page container (a form, a short list)", "recommendation": "Stepper (inline step indicator; spec in references/stepper.md)" },
+          { "condition": "6 or more steps, or any number of steps where a step needs its own full-screen layout", "recommendation": "Wizard (full-page steps with own layout)" }
         ] },
         { "condition": "Steps represent phases of an ongoing process the user checks back on", "recommendation": "Progress component (read-only status tracker, not a navigation element)" },
         { "condition": "Steps can be completed in any order, none are blocking", "recommendation": "Checklist or task list (not a Stepper — Stepper implies sequential dependency)" }
       ],
       "rationale": [
-        { "question": "Why not Progress for onboarding flows?", "answer": "Progress is a display component — it shows how far along something is. It doesn't provide navigation between steps or form state. A Stepper or Wizard provides the navigation scaffolding; Progress can be used inside it as a visual indicator." }
+        { "question": "Why not Progress for onboarding flows?", "answer": "Progress is a display component — it shows how far along something is. It doesn't provide navigation between steps or form state. A Stepper or Wizard provides the navigation scaffolding; Progress can be used inside it as a visual indicator." },
+        { "question": "Why not Tabs for steps?", "answer": "Tabs let the user jump to any panel and gate nothing. Steps are ordered and each one validates before the next opens. Tabs would also hide the order the user is supposed to follow." },
+        { "question": "Why is the Stepper limit 5 and the Wizard start at 6?", "answer": "The old wording said 2 to 5 for a Stepper and 5 or more for a Wizard, so exactly 5 steps fit both. The boundary is now 5 and 6. Past five markers the labels don't fit in one row at form width. Judgment, not observed. Any count where a step needs its own full-screen layout goes to a Wizard." },
+        { "question": "Is a plus and minus control a Stepper?", "answer": "No. A control that adds or removes a quantity, such as seats on a pricing card, is a quantity control. Stepper only means the step indicator." }
       ]
     },
     {

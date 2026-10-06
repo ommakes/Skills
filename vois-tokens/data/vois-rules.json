@@ -1,5 +1,5 @@
 {
-  "source": "vois-tokens/references/*.md (14 files; excludes anti-slop.md and hooks.md — see note)",
+  "source": "vois-tokens/references/*.md (15 files; excludes anti-slop.md and hooks.md — see note)",
   "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either.",
   "categories": {
     "DS-A11Y": "Accessibility",
