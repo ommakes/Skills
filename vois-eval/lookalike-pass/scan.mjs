@@ -24,7 +24,7 @@ const SIGNALS = [
   ["fake-spinner", "hand-rolled animate-spin element", "Spinner",
     (s) => /animate-spin/.test(s) && !imp(s, "spinner")],
   ["fake-switch", "translate-x knob or styled checkbox as a toggle", "Switch",
-    (s) => (/translate-x-\d/.test(s) || /role=["']switch["']/.test(s)) && !imp(s, "switch")],
+    (s) => (/(checked|isOn|enabled)[^\n]{0,80}\btranslate-x-\d/.test(s) || /role=["']switch["']/.test(s)) && !imp(s, "switch")],
   ["fake-badge", "rounded-full px-* span as a status label", "Badge",
     (s) => /<span\b[^>]*className=["'{`][^>]*rounded-(full|md|lg)[^>]*\bpx-\d/.test(s) && !imp(s, "badge")],
   ["fake-tabs", "buttons that swap a state variable as tabs", "Tabs / ToggleGroup",

@@ -28,3 +28,28 @@ No classic lookalikes. Across 30 files there was no `div`/`span` with `onClick`,
 1. Baseline run: same 30 prompts with the skills off, to see what the rules are preventing.
 2. Harder prompts: no component hints, a codebase with no shadcn, or tasks mixing 3+ jobs.
 3. Skip the table and fix what this pass found: link-variant Button guidance, Alert for failure panels, success and warning tokens.
+
+---
+
+# Pass 2: harder prompts (run2)
+
+10 blind builds. Each prompt describes the screen by how it looks ("a red × in the corner", "a pill with a circle", "a box in the middle with a dark overlay") and mixes 3 to 5 jobs. Same method as pass 1: `scan.mjs` (now with 7 more signals) plus targeted greps and reading the flagged spots. I did not read every file line by line.
+
+## Headline
+Still no classic fakes. Across the 10 builds there was no `div` with `onClick`, no hand-built overlay, no `setTimeout` toast, no `title=` tooltip, no native `<select>` or checkbox in product UI, and no hand-built alert box. Agents often overrode the look in the prompt to follow the Vois rules: a red × became a neutral ghost icon Button, an orange pill became a secondary Badge, a "green message" became a Sonner toast, underlined labels became a ToggleGroup, and a "big" empty-state icon was capped at the Vois size.
+
+## What repeated (pass 1 and pass 2 together, 40 files)
+| Shortcut | Files | Notes |
+|---|---|---|
+| Raw `<button>` with a copy-pasted focus ring (`focus-visible:ring-2 ...`) | 8: LP-06a/b/c, LP-10a/b, HP-03, HP-05, HP-10 | Three kinds: a link-style row title, an icon inside an input (clear x), and a Tooltip or Popover trigger. All accessible. The cost is drifting focus styles and no shared Button variant. |
+| `Loader2` + `animate-spin` instead of the Spinner component | 2: LP-03b, HP-02 | Both inside a "deleting..." button. 10 other builds used Spinner. |
+| `role="radio"` on Buttons instead of RadioGroup | 1: HP-07 | The agent added a team-size picker the prompt didn't ask for. HP-04 used RadioGroup correctly. |
+
+## Not agent mistakes
+- **Scanner false positives.** The `fake-switch` signal matched `-translate-x-1/2` used for positioning in HP-05 and HP-10. I tightened it. HP-08's native checkbox is a "simulate failed load" demo control the agent added.
+- **Stepper.** Vois says to use a Stepper for 2 to 5 steps, but shadcn ships none, so HP-07's hand-built stepper is expected. That's a Vois gap: no spec or source for the Stepper.
+
+## What to do with this
+- A big lookalike table isn't supported by the evidence. A short one is. Three rows would cover what repeated: icon or text trigger (Button ghost icon, or link variant), spinner (Spinner component), and radio-style choice (RadioGroup or ToggleGroup).
+- Add a Stepper spec to `vois-components`, or say where it comes from.
+- Still untested: skills off, and non-shadcn codebases.
