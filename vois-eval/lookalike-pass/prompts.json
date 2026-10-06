@@ -1,0 +1,290 @@
+{
+ "description": "Lookalike pass 1: 10 jobs x 3 phrasings. Prompts never name a component.",
+ "scenarios": [
+  {
+   "id": "LP-01a",
+   "source_job": "JOB-TRIGGER-ACTION",
+   "style": "concrete",
+   "expected_imports": [
+    "button"
+   ],
+   "user_prompt": "On an invoice detail page, add a primary 'Send invoice' action and a secondary 'Download PDF' action in the page header."
+  },
+  {
+   "id": "LP-01b",
+   "source_job": "JOB-TRIGGER-ACTION",
+   "style": "vague",
+   "expected_imports": [
+    "button"
+   ],
+   "user_prompt": "Add something to the invoice page so people can send it."
+  },
+  {
+   "id": "LP-01c",
+   "source_job": "JOB-TRIGGER-ACTION",
+   "style": "hurried",
+   "expected_imports": [
+    "button"
+   ],
+   "user_prompt": "Quick one: the header of the invoice page needs Send and Download. Keep it minimal."
+  },
+  {
+   "id": "LP-02a",
+   "source_job": "JOB-EXPOSE-ACTIONS",
+   "style": "concrete",
+   "expected_imports": [
+    "dropdown-menu"
+   ],
+   "user_prompt": "Each row in a projects table has Rename, Duplicate, Archive and Delete actions. Add a way to reach them without taking up row width."
+  },
+  {
+   "id": "LP-02b",
+   "source_job": "JOB-EXPOSE-ACTIONS",
+   "style": "vague",
+   "expected_imports": [
+    "dropdown-menu"
+   ],
+   "user_prompt": "Rows in the projects table need more actions available."
+  },
+  {
+   "id": "LP-02c",
+   "source_job": "JOB-EXPOSE-ACTIONS",
+   "style": "hurried",
+   "expected_imports": [
+    "dropdown-menu"
+   ],
+   "user_prompt": "Add a three-dots thing to each project row with the usual actions. Keep it lightweight."
+  },
+  {
+   "id": "LP-03a",
+   "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+   "style": "concrete",
+   "expected_imports": [
+    "alert-dialog"
+   ],
+   "user_prompt": "Users can permanently delete a workspace, which removes all its projects and can't be undone. Build the delete flow."
+  },
+  {
+   "id": "LP-03b",
+   "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+   "style": "vague",
+   "expected_imports": [
+    "alert-dialog"
+   ],
+   "user_prompt": "Add a delete workspace option to settings."
+  },
+  {
+   "id": "LP-03c",
+   "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+   "style": "hurried",
+   "expected_imports": [
+    "alert-dialog"
+   ],
+   "user_prompt": "Add delete workspace to settings, and make sure people don't do it by accident."
+  },
+  {
+   "id": "LP-04a",
+   "source_job": "JOB-TRANSIENT-FEEDBACK",
+   "style": "concrete",
+   "expected_imports": [
+    "sonner"
+   ],
+   "user_prompt": "After a user saves their profile, tell them it saved. The message should go away on its own."
+  },
+  {
+   "id": "LP-04b",
+   "source_job": "JOB-TRANSIENT-FEEDBACK",
+   "style": "vague",
+   "expected_imports": [
+    "sonner"
+   ],
+   "user_prompt": "Let users know when their changes are saved."
+  },
+  {
+   "id": "LP-04c",
+   "source_job": "JOB-TRANSIENT-FEEDBACK",
+   "style": "hurried",
+   "expected_imports": [
+    "sonner"
+   ],
+   "user_prompt": "Show a quick 'Saved' message after the profile form submits. Don't build a whole notification system."
+  },
+  {
+   "id": "LP-05a",
+   "source_job": "JOB-LOADING-STATE",
+   "style": "concrete",
+   "expected_imports": [
+    "skeleton",
+    "spinner"
+   ],
+   "user_prompt": "The team members page fetches its list from an API and takes 1-2 seconds. Build the loading state for the member list."
+  },
+  {
+   "id": "LP-05b",
+   "source_job": "JOB-LOADING-STATE",
+   "style": "vague",
+   "expected_imports": [
+    "skeleton",
+    "spinner"
+   ],
+   "user_prompt": "Make the members page feel less janky while it loads."
+  },
+  {
+   "id": "LP-05c",
+   "source_job": "JOB-LOADING-STATE",
+   "style": "hurried",
+   "expected_imports": [
+    "skeleton",
+    "spinner"
+   ],
+   "user_prompt": "Add a loading indicator to the members list. Simple is fine."
+  },
+  {
+   "id": "LP-06a",
+   "source_job": "JOB-OVERLAY-INTERACTION",
+   "style": "concrete",
+   "expected_imports": [
+    "dialog",
+    "sheet",
+    "popover"
+   ],
+   "user_prompt": "From a task list, let users edit a task's title, assignee, due date and priority without leaving the list."
+  },
+  {
+   "id": "LP-06b",
+   "source_job": "JOB-OVERLAY-INTERACTION",
+   "style": "vague",
+   "expected_imports": [
+    "dialog",
+    "sheet",
+    "popover"
+   ],
+   "user_prompt": "Users want to quickly edit tasks from the list."
+  },
+  {
+   "id": "LP-06c",
+   "source_job": "JOB-OVERLAY-INTERACTION",
+   "style": "hurried",
+   "expected_imports": [
+    "dialog",
+    "sheet",
+    "popover"
+   ],
+   "user_prompt": "Add a quick edit popup for tasks in the task list."
+  },
+  {
+   "id": "LP-07a",
+   "source_job": "JOB-SWITCH-VIEWS",
+   "style": "concrete",
+   "expected_imports": [
+    "tabs",
+    "toggle-group"
+   ],
+   "user_prompt": "An analytics page has three sections: Overview, Traffic, Conversions. Only one shows at a time and users switch between them."
+  },
+  {
+   "id": "LP-07b",
+   "source_job": "JOB-SWITCH-VIEWS",
+   "style": "vague",
+   "expected_imports": [
+    "tabs",
+    "toggle-group"
+   ],
+   "user_prompt": "Split the analytics page so it's less overwhelming."
+  },
+  {
+   "id": "LP-07c",
+   "source_job": "JOB-SWITCH-VIEWS",
+   "style": "hurried",
+   "expected_imports": [
+    "tabs",
+    "toggle-group"
+   ],
+   "user_prompt": "Add a quick way to switch between the Overview, Traffic and Conversions views."
+  },
+  {
+   "id": "LP-08a",
+   "source_job": "JOB-BINARY-PREFERENCE",
+   "style": "concrete",
+   "expected_imports": [
+    "switch",
+    "checkbox"
+   ],
+   "user_prompt": "In notification settings, let users turn email notifications on or off. The change applies immediately."
+  },
+  {
+   "id": "LP-08b",
+   "source_job": "JOB-BINARY-PREFERENCE",
+   "style": "vague",
+   "expected_imports": [
+    "switch",
+    "checkbox"
+   ],
+   "user_prompt": "Add an email notifications option to settings."
+  },
+  {
+   "id": "LP-08c",
+   "source_job": "JOB-BINARY-PREFERENCE",
+   "style": "hurried",
+   "expected_imports": [
+    "switch",
+    "checkbox"
+   ],
+   "user_prompt": "Add a toggle for email notifications. Make it look nice."
+  },
+  {
+   "id": "LP-09a",
+   "source_job": "JOB-LABEL-CONTENT",
+   "style": "concrete",
+   "expected_imports": [
+    "badge"
+   ],
+   "user_prompt": "In an orders table, show each order's status (Pending, Shipped, Delivered, Cancelled) so it can be scanned quickly."
+  },
+  {
+   "id": "LP-09b",
+   "source_job": "JOB-LABEL-CONTENT",
+   "style": "vague",
+   "expected_imports": [
+    "badge"
+   ],
+   "user_prompt": "Show order status in the orders list."
+  },
+  {
+   "id": "LP-09c",
+   "source_job": "JOB-LABEL-CONTENT",
+   "style": "hurried",
+   "expected_imports": [
+    "badge"
+   ],
+   "user_prompt": "Add colored status labels to the orders table."
+  },
+  {
+   "id": "LP-10a",
+   "source_job": "JOB-NAVIGATION-POSITION",
+   "style": "concrete",
+   "expected_imports": [
+    "breadcrumb"
+   ],
+   "user_prompt": "A file browser nests folders up to six levels deep. Show where the user is and let them jump back to any parent folder."
+  },
+  {
+   "id": "LP-10b",
+   "source_job": "JOB-NAVIGATION-POSITION",
+   "style": "vague",
+   "expected_imports": [
+    "breadcrumb"
+   ],
+   "user_prompt": "Users get lost in the nested folder view."
+  },
+  {
+   "id": "LP-10c",
+   "source_job": "JOB-NAVIGATION-POSITION",
+   "style": "hurried",
+   "expected_imports": [
+    "breadcrumb"
+   ],
+   "user_prompt": "Add a path display at the top of the folder view."
+  }
+ ]
+}
