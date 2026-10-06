@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.14.2] - 2026-10-06
+
+**Fix** | `PATH-PERM-PII-MASK` said the full value appears only on a detail view, while `PATH-PERM-PII-REVEAL` puts a per-field reveal on the list, card, or header. Both now say the full value reaches only roles that need it, through the reveal control wherever the masked value appears or on a detail view, and a role that never needs it never receives it.
+
+---
+
 ## [1.14.1] - 2026-10-06
 
 **Fix** | `PATH-C-SIMPLE`, `PATH-C-MEDIUM` and `PATH-D` in `data/patterns-rules.json` still said `24px (spacing-md in vois-tokens)`, `40px` and `20px`. `spacing-md` doesn't exist, and the 1.9.0 fix to `forms.md` and `dialogs-and-action-sheets.md` never reached the JSON, which wins on conflict. They now name the scale step and the Tailwind class (`gap-6`, `gap-10`, `gap-5`), as the markdown does.

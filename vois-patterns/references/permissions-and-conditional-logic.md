@@ -53,7 +53,7 @@ When a list, table, card, or header shows personal data (email, phone, street ad
 
 - Show a masked value: `j***@acme.com`, `•••• 4821`, last four digits only.
 - A person's name stays visible on a screen whose job is that person (a people list, a profile).
-- Show the full value only on a detail view, and only to roles that need it.
+- Show the full value only to roles that need it, and only through the reveal control (`[PATH-PERM-PII-REVEAL]`) or on a detail view. A role that never needs it never receives it.
 - Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. This is `[PATH-PERM-HIDE-BY-ROLE]` applied to a value instead of an element.
 - Keep the column width the same for masked and full values so the layout doesn't jump.
 
@@ -61,7 +61,7 @@ When a list, table, card, or header shows personal data (email, phone, street ad
 
 When a role that is allowed to see a masked value needs the full one:
 
-- Put the reveal control on that one field, not on the whole page: an icon Button labelled "Show email" (→ **tooltip and label copy: righter**).
+- Put the reveal control on that one field, not on the whole page, and wherever the masked value appears (a list row, a card, a header, or a detail view): an icon Button labelled "Show email" (→ **tooltip and label copy: righter**).
 - Re-mask when the user leaves the view or after a timeout.
 - Log reveals of high-risk fields (government ID, payment, health data) on the server.
 - Copy to clipboard copies the full value only for roles that may reveal it.
