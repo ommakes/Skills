@@ -22,6 +22,8 @@ export const TUNABLES = {
   "DS-SPACING-001": { spacing_divisors: { type: "set", base: [4, 8], stricter: "subset", allowed: [4, 8] } },
 };
 
+// For a set the hook uses the smallest divisor, so [4] and [4,8] check the same thing.
+const sameValue = (spec, a, b) => (spec.type === "number" ? a === b : Math.min(...a) === Math.min(...b));
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
 
 /** A value for a tunable limit, or undefined if it is missing, malformed, or looser than the base. */
@@ -44,7 +46,8 @@ function stricterThan(spec, candidate, current) {
   return candidate.length < current.length || (candidate.length === current.length && !sameSet(candidate, current) && Math.min(...candidate) > Math.min(...current));
 }
 
-// A path glob, read the same way vois-teams/scripts/lib.mjs reads it: ** crosses folders, * and ?
+// A path glob, as vois-teams/README.md describes scope.paths (the validator only compares the text
+// before the first wildcard, so it is case-insensitive and the hook is not): ** crosses folders, * and ?
 // stay inside one, {a,b} and [abc] work, a leading ./ or / is ignored, \ counts as /, and a glob
 // that names a folder also covers everything inside it. Case matters here.
 const normalizeGlob = (g) => g.replace(/\\/g, "/").replace(/^(?:\.?\/)+/, "").replace(/\/+$/, "");
@@ -74,13 +77,13 @@ function globToRegExp(glob) {
 /** A scope is well formed when it is absent (whole repo) or { paths: [one or more strings] }. */
 export function validScope(scope) {
   if (scope === undefined) return true;
-  return !!scope && typeof scope === "object" && !Array.isArray(scope) && Array.isArray(scope.paths) && scope.paths.length > 0 && scope.paths.every((p) => typeof p === "string" && p !== "");
+  return !!scope && typeof scope === "object" && !Array.isArray(scope) && Array.isArray(scope.paths) && scope.paths.length > 0 && scope.paths.every((p) => typeof p === "string" && p.trim() !== "");
 }
 
 export function matchesScope(scopePaths, relPath) {
   if (scopePaths === undefined) return true; // no scope: the whole repo
   if (!Array.isArray(scopePaths) || scopePaths.length === 0) return false; // malformed: match nothing
-  return scopePaths.some((g) => typeof g === "string" && g !== "" && globToRegExp(normalizeGlob(g)).test(relPath));
+  return scopePaths.some((g) => typeof g === "string" && g.trim() !== "" && globToRegExp(normalizeGlob(g)).test(relPath));
 }
 
 /** Every well-formed team override file under <root>/.vois/teams. Never throws. */
@@ -117,7 +120,7 @@ export function paramsFor(teams, root, filePath) {
         const spec = TUNABLES[o.rule]?.[o.param];
         if (!spec) continue;
         const value = acceptedValue(spec, o.value);
-        if (value === undefined) continue;
+        if (value === undefined || sameValue(spec, value, spec.base)) continue; // a value equal to the base changes nothing, so no team is credited
         const key = `${o.rule}\u0000${o.param}`;
         const have = chosen.get(key);
         if (!have || stricterThan(spec, value, have.value)) chosen.set(key, { value, team: team.team });
@@ -158,6 +161,7 @@ export function summarizeTeams(teams) {
       const spec = TUNABLES[o.rule]?.[o.param];
       const label = `${o.rule} ${o.param} = ${JSON.stringify(o.value)}`;
       if (!spec) lines.push(`  not checked by the hook: ${label}`);
+      else if (acceptedValue(spec, o.value) !== undefined && sameValue(spec, acceptedValue(spec, o.value), spec.base)) lines.push(`  no change from the base: ${label}`);
       else if (acceptedValue(spec, o.value) === undefined) lines.push(`  ignored, not on the stricter side of the base or outside its range: ${label}`);
       else lines.push(`  applied: ${label}`);
     }
