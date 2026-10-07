@@ -4,7 +4,7 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 
 **This is purely additive.** It catches violations the instant they're written — seconds after generation, inside the same harness that wrote the code. It does not replace this checklist (most rules still require visual/layout judgment an LLM provides), and it does not touch, call, or compete with the separate GitHub-integrated token-drift app that reconciles raw values against the live token list on its own schedule. The hook only ever writes new files under the consumer project's `.vois/` directory; it never edits token source files and never calls GitHub.
 
-**Two different `severity` fields exist in this skill — they answer different questions.** `data/vois-rules.json` carries `severity` (`required`/`recommended`/`preferred`) and `enforcement` (`blocking`/`advisory`) on every rule — the corpus-wide, normative-weight signal. `scripts/registry.mjs`'s `severity` (`quality`/`slop`) is a narrower, detector-specific tier that only exists to decide hook-blocking behavior for the 19 rules below. They agree where it matters: `enforcement: "blocking"` in `vois-rules.json` is set on exactly the two rules marked "blockable" here.
+**Two different `severity` fields exist in this skill — they answer different questions.** `data/vois-rules.json` carries `severity` (`required`/`recommended`/`preferred`) and `enforcement` (`blocking`/`advisory`) on every rule — the corpus-wide, normative-weight signal. `scripts/registry.mjs`'s `severity` (`quality`/`slop`) is a narrower, detector-specific tier that only exists to decide hook-blocking behavior for the rules below. They agree where it matters: `enforcement: "blocking"` in `vois-rules.json` is set on exactly the two rules marked "blockable" here.
 
 ## What's auto-verified vs. judgment-only
 
@@ -30,7 +30,28 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `DS-MODAL-001`/`002` | Yes | Custom (non-Radix) Dialog/Modal missing `inert` or `overscroll-behavior: contain`. |
 | `DS-TABLE-001` | Yes, advisory only | Scroll wrapper that cannot hold a sticky table header: `overflow: auto clip` or `overflow-x: auto` with `overflow-y: clip`, or a wrapper with no bounded block size next to a sticky `thead`/`th` in the same file. **Known gap:** reads one file at a time, so a shared `Table` wrapper in one file and a sticky header in another is not seen. Documented in `scripts/__fixtures__/adversarial.tsx` and `detect.test.mjs`. |
 | `DS-SLOP-002` | Yes — advisory only | Purple/indigo→blue "AI gradient" (Tailwind `from-*`/`to-*` or CSS `linear-gradient`). Heuristic — a genuine brand can waive it; the other `DS-SLOP-*` rules stay judgment-only. **Known gap:** the pattern matches named hue keywords/Tailwind palette classes only — the same gradient spelled with arbitrary hex values (`from-[#7c3aed] to-[#3b82f6]`) bypasses it. Documented, not fixed, in `scripts/__fixtures__/adversarial.{tsx,css}` and `detect.test.mjs` — recognizing hue family from raw hex needs color-space math this zero-dependency detector doesn't do. |
-| Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*` and all of `DS-STYLEX-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, `div`-onClick-without-role, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. The `DS-STYLEX-*` rules (build-plugin wiring, `createTheme` usage, variant composition) similarly require knowing what's configured/imported, not just what's on the page — keep grading these by reading the code, the way this skill always has. |
+| `LOOKALIKE-001` to `LOOKALIKE-011` (9 of the 11) | Yes, advisory only | Markup that does a component's job without the component. These ids are the rows of the lookalike table in `vois-components` (`data/components-rules.json`, `lookalikes`), not `DS-*` rules. See [Lookalike checks](#lookalike-checks). |
+| Everything else in the Pre-Submit Checklist (incl. all other `DS-SLOP-*` and all of `DS-STYLEX-*`) | No — judgment only | Touch-target sizing, contrast ratios, optical alignment, 60/30/10 color distribution, concentric radius, enter/exit choreography, and similar require layout/contrast computation or visual judgment a regex can't do. The `DS-STYLEX-*` rules (build-plugin wiring, `createTheme` usage, variant composition) similarly require knowing what's configured/imported, not just what's on the page — keep grading these by reading the code, the way this skill always has. |
+
+## Lookalike checks
+
+The hook also flags markup that does a component's job without the component, the shortcuts listed in the lookalike table in `vois-components`. Each rule uses the table row's id, is advisory only, and never blocks. The `components/ui/` folder is skipped, because shadcn primitives are where the raw elements legitimately live.
+
+| Rule | Flags | Use instead |
+|---|---|---|
+| `LOOKALIKE-001` | A raw `<button>` with a hand-written `focus-visible:ring` or `outline` | Button (`link` or `ghost` variant, or `asChild` as a trigger) |
+| `LOOKALIKE-002` | `animate-spin` in a file with no Spinner import | Spinner |
+| `LOOKALIKE-003` | `role="radio"` in a file with no RadioGroup or ToggleGroup import | RadioGroup, or ToggleGroup |
+| `LOOKALIKE-005` | A `div`, `span`, `li` or `p` with `onClick` and no `role`, unless the handler calls `stopPropagation` | Button, or a link |
+| `LOOKALIKE-007` | `setTimeout` of 1.5s or more that sets a state value to `false`, `null` or an empty string, with no Sonner import. Loading, pending and busy flags are ignored | Sonner toast |
+| `LOOKALIKE-008` | `×`, `✕`, `✖` or `&times;` as the only text inside an element | The component's close, or an icon Button with `aria-label` |
+| `LOOKALIKE-009` | A call to `confirm`, `alert` or `prompt`, bare or on `window`. A method (`toast.alert`) or a longer name (`onConfirm`) does not match | AlertDialog, Sonner or a Dialog |
+| `LOOKALIKE-010` | A `role="alert"` box with `border-l-4`, `bg-red-*` or `bg-destructive/*` and no Alert import | Alert with a status role |
+| `LOOKALIKE-011` | `title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, in a file with no Tooltip import. `abbr` is left alone, since `title` is its job | Tooltip |
+
+Two rows have no regex that is precise enough, so they stay judgment-only: `LOOKALIKE-004` (numbered circles joined by lines, which the Stepper replaces) and `LOOKALIKE-006` (a `fixed inset-0` backdrop, which is also how a full-page loader is written).
+
+The eval scanner in `vois-eval/lookalike-pass/scan.mjs` imports these rules from `registry.mjs`, so the blind-build runs and the hook cannot disagree. `detect.test.mjs` checks that every `LOOKALIKE-*` id here is a row in the table.
 
 ## Setup
 

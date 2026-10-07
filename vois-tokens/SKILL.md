@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.18.1
+version: 1.19.0
 ---
 
 # Vois Tokens Skill
@@ -12,7 +12,7 @@ You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4 o
 
 This SKILL.md is the entry point. Detailed rules for each topic live in `references/` — read only the file(s) relevant to what you're building, not all of them every time.
 
-**Automated checks:** a deterministic detector (`scripts/detect.mjs`) covers the mechanically-verifiable subset of the Pre-Submit Checklist below and can run as a per-edit hook in Claude Code, Cursor, or Codex. See `references/hooks.md` for setup and which rules are covered.
+**Automated checks:** a deterministic detector (`scripts/detect.mjs`) covers the mechanically-verifiable subset of the Pre-Submit Checklist below, plus nine lookalike checks from `vois-components`, and can run as a per-edit hook in Claude Code, Cursor, or Codex. See `references/hooks.md` for setup and which rules are covered.
 
 ---
 

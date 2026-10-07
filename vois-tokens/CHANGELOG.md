@@ -4,6 +4,21 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.19.0] - 2026-10-06
+
+### Added
+
+- **Lookalike checks in the hook.** Nine rules, `LOOKALIKE-001`, `002`, `003`, `005`, `007`, `008`, `009`, `010` and `011`, flag markup that does a component's job without the component: a raw `<button>` with its own focus ring, `animate-spin`, `role="radio"`, a clickable `div`, a `setTimeout` that hides a message, a close glyph, `window.confirm`, `alert` or `prompt`, a hand-built alert box and `title=` as a tooltip. The ids are the rows of the lookalike table in `vois-components`. They are advisory only, skip `components/ui/`, and use the same ignore and dedup settings as the other rules. `LOOKALIKE-004` and `006` have no precise regex and stay judgment-only.
+- `detect.test.mjs` checks that every `LOOKALIKE-*` id is a row in the table, that `components/ui/` is skipped, and the edge cases for `005`, `007` and `009`.
+
+### Changed
+
+- `hooks.md` no longer lists `div`-onClick-without-role as judgment-only, and has a Lookalike checks section.
+- The `good.tsx` fixture uses a link for its focus-ring example, since a raw `<button>` with a focus ring is now a finding.
+- **Version bump:** `1.18.1` → `1.19.0`
+
+---
+
 ## [1.18.1] - 2026-10-06
 
 ### Fixed

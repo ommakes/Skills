@@ -7,6 +7,7 @@ on:
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
+      - "vois-eval/**"
       - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
@@ -18,6 +19,7 @@ on:
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
+      - "vois-eval/**"
       - "vois-dataviz/**"
       - "scripts/**"
       - "skills.json"
@@ -37,6 +39,9 @@ jobs:
 
       - name: Detector regression suite (vois-tokens)
         run: node vois-tokens/scripts/detect.test.mjs
+
+      - name: Lookalike scanner fixtures (vois-eval)
+        run: node vois-eval/lookalike-pass/scan.test.mjs
 
       - name: Data viz scripts and data integrity (vois-dataviz)
         run: node vois-dataviz/scripts/dataviz.test.mjs
