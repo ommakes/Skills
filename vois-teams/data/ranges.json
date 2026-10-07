@@ -1,0 +1,309 @@
+{
+  "schema": "vois-ranges/1",
+  "description": "Which numeric limits in the base rules a team may change, and in which direction. A rule listed here can be tightened (restrict) or, where it has no strictness direction, set inside its range (refine). A rule not listed here cannot be tuned by a team override. `match` is text that must appear in the base rule, so this file fails validation if a rule is reworded or renumbered. See README.md.",
+  "ranges": [
+    {
+      "rule": "DS-ANIMATION-001",
+      "param": "max_duration_ms",
+      "unit": "ms",
+      "type": "number",
+      "base": 300,
+      "stricter": "lower",
+      "min": 100,
+      "max": 300,
+      "match": "under `300ms`",
+      "note": "Default ceiling for UI animation."
+    },
+    {
+      "rule": "DS-ANIMATION-002",
+      "param": "max_duration_ms",
+      "unit": "ms",
+      "type": "number",
+      "base": 500,
+      "stricter": "lower",
+      "min": 200,
+      "max": 500,
+      "match": "up to `500ms`",
+      "at_least": {
+        "rule": "DS-ANIMATION-001",
+        "param": "max_duration_ms"
+      },
+      "note": "Ceiling for large elements entering. It can't be set below the DS-ANIMATION-001 value, which is checked."
+    },
+    {
+      "rule": "DS-ANIMATION-005",
+      "param": "min_start_scale",
+      "unit": "",
+      "type": "number",
+      "base": 0.9,
+      "stricter": "higher",
+      "min": 0.9,
+      "max": 1,
+      "match": "Start at `0.9` or higher",
+      "note": "Lowest scale an enter animation may start from. 1 means no scale."
+    },
+    {
+      "rule": "DS-ANIMATION-008",
+      "param": "min_press_scale",
+      "unit": "",
+      "type": "number",
+      "base": 0.95,
+      "stricter": "higher",
+      "min": 0.95,
+      "max": 1,
+      "match": "Never go below `0.95`",
+      "note": "Lowest scale a button press may reach. 1 means no press scale."
+    },
+    {
+      "rule": "DS-A11Y-004",
+      "param": "min_contrast_normal_text",
+      "unit": "",
+      "type": "number",
+      "base": 4.5,
+      "stricter": "higher",
+      "min": 4.5,
+      "max": 7,
+      "match": "4.5:1 for normal text",
+      "note": "Contrast ratio floor for normal text. 7 is WCAG AAA."
+    },
+    {
+      "rule": "DS-A11Y-004",
+      "param": "min_contrast_large_text_and_ui",
+      "unit": "",
+      "type": "number",
+      "base": 3,
+      "stricter": "higher",
+      "min": 3,
+      "max": 4.5,
+      "match": "3:1 for large text",
+      "note": "Contrast ratio floor for large text, UI components and graphics."
+    },
+    {
+      "rule": "DS-TYPOGRAPHY-001",
+      "param": "max_text_styles",
+      "unit": "",
+      "type": "number",
+      "base": 3,
+      "stricter": "lower",
+      "min": 1,
+      "max": 3,
+      "match": "no more than 3 text styles",
+      "note": "Text styles allowed in one component or section."
+    },
+    {
+      "rule": "DS-TYPOGRAPHY-008",
+      "param": "max_text_width_ch",
+      "unit": "ch",
+      "type": "number",
+      "base": 65,
+      "stricter": "lower",
+      "min": 40,
+      "max": 65,
+      "match": "Cap text containers at `65ch`",
+      "note": "Reading width cap for text containers."
+    },
+    {
+      "rule": "DS-MKT-002",
+      "param": "min_display_font_size_px",
+      "unit": "px",
+      "type": "number",
+      "base": 28,
+      "stricter": "higher",
+      "min": 28,
+      "max": 48,
+      "match": "never used below 28px",
+      "note": "Smallest size the display face may be used at."
+    },
+    {
+      "rule": "DS-MKT-005",
+      "param": "max_marketing_body_width_ch",
+      "unit": "ch",
+      "type": "number",
+      "base": 56,
+      "stricter": "lower",
+      "min": 40,
+      "max": 56,
+      "match": "Cap marketing body text at `56ch`",
+      "note": "Reading width cap for marketing body text."
+    },
+    {
+      "rule": "DS-MKT-008",
+      "param": "max_section_gap_px",
+      "unit": "px",
+      "type": "number",
+      "base": 240,
+      "stricter": "lower",
+      "min": 96,
+      "max": 240,
+      "match": "up to 240px",
+      "note": "Largest gap between marketing sections."
+    },
+    {
+      "rule": "DS-CSS-003",
+      "param": "max_selector_nesting",
+      "unit": "",
+      "type": "number",
+      "base": 2,
+      "stricter": "lower",
+      "min": 1,
+      "max": 2,
+      "match": "more than 2 levels of nesting",
+      "note": "Selector nesting levels allowed."
+    },
+    {
+      "rule": "DS-ICON-001",
+      "param": "stroke_width_px",
+      "unit": "px",
+      "type": "number",
+      "base": 1.5,
+      "stricter": null,
+      "min": 1,
+      "max": 2,
+      "match": "1.5px for the default",
+      "note": "Icon stroke width. A team may choose its own inside the range, as long as it uses one across the set."
+    },
+    {
+      "rule": "DS-SPACING-001",
+      "param": "spacing_divisors",
+      "unit": "",
+      "type": "set",
+      "base": [
+        4,
+        8
+      ],
+      "stricter": "subset",
+      "allowed": [
+        4,
+        8
+      ],
+      "match": "divisible by 4 or 8",
+      "note": "A team may require 8 only."
+    },
+    {
+      "rule": "DS-ICON-002",
+      "param": "icon_sizes_px",
+      "unit": "px",
+      "type": "set",
+      "base": [
+        16,
+        20,
+        24,
+        32
+      ],
+      "stricter": "subset",
+      "allowed": [
+        16,
+        20,
+        24,
+        32
+      ],
+      "match": "16/20/24/32px",
+      "note": "A team may use fewer icon sizes."
+    },
+    {
+      "rule": "DS-RESPONSIVE-002",
+      "param": "test_breakpoints_px",
+      "unit": "px",
+      "type": "set",
+      "base": [
+        640,
+        768,
+        1024
+      ],
+      "stricter": "superset",
+      "allowed": [
+        640,
+        768,
+        1024,
+        1280,
+        1536
+      ],
+      "match": "`sm` (640px), `md` (768px), `lg` (1024px)",
+      "note": "A team may test at more breakpoints."
+    },
+    {
+      "rule": "JOB-MULTISTEP-GUIDE",
+      "param": "stepper_max_steps",
+      "unit": "",
+      "type": "number",
+      "base": 5,
+      "stricter": "lower",
+      "min": 2,
+      "max": 5,
+      "match": "2 to 5",
+      "note": "Largest step count that still uses the Stepper. Above it, a Wizard."
+    },
+    {
+      "rule": "JOB-CHOOSE-FROM-LIST",
+      "param": "select_max_items",
+      "unit": "",
+      "type": "number",
+      "base": 8,
+      "stricter": "lower",
+      "min": 4,
+      "max": 8,
+      "match": "under 8",
+      "note": "Largest list a plain Select may hold. At or above it, a Combobox."
+    },
+    {
+      "rule": "JOB-DISPLAY-DATA",
+      "param": "table_max_rows",
+      "unit": "",
+      "type": "number",
+      "base": 100,
+      "stricter": "lower",
+      "min": 25,
+      "max": 100,
+      "match": "Under 100",
+      "note": "Largest data set that stays a plain Table. At or above it, a DataTable."
+    },
+    {
+      "rule": "JOB-CONTEXTUAL-INFO",
+      "param": "tooltip_max_words",
+      "unit": "",
+      "type": "number",
+      "base": 25,
+      "stricter": "lower",
+      "min": 5,
+      "max": 25,
+      "match": "25 words",
+      "note": "Longest label a Tooltip may carry. Above it, a Popover."
+    },
+    {
+      "rule": "JOB-EXPOSE-ACTIONS",
+      "param": "max_visible_actions",
+      "unit": "",
+      "type": "number",
+      "base": 3,
+      "stricter": "lower",
+      "min": 2,
+      "max": 3,
+      "match": "three is the ceiling",
+      "note": "Visible actions before the rest go in a menu. Two is the target, so the range starts at 2."
+    },
+    {
+      "rule": "JOB-OVERLAY-INTERACTION",
+      "param": "dialog_max_fields",
+      "unit": "",
+      "type": "number",
+      "base": 4,
+      "stricter": "lower",
+      "min": 1,
+      "max": 4,
+      "match": "1–4 fields",
+      "note": "Most fields a Dialog may hold. Above it, a Sheet."
+    },
+    {
+      "rule": "JOB-SWITCH-VIEWS",
+      "param": "segmented_max_options",
+      "unit": "",
+      "type": "number",
+      "base": 4,
+      "stricter": "lower",
+      "min": 2,
+      "max": 4,
+      "match": "2–4 options",
+      "note": "Most options a Segmented Control may hold. Above it, a Select or Combobox."
+    }
+  ]
+}

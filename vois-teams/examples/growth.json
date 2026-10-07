@@ -1,0 +1,32 @@
+{
+  "schema": "vois-team-override/1",
+  "team": "growth",
+  "description": "Example only. A second team in the same repo, with its own scope, so its limits do not collide with the payments team.",
+  "scope": { "paths": ["apps/growth/**", "apps/marketing/**"] },
+  "overrides": [
+    {
+      "id": "growth-001",
+      "op": "restrict",
+      "rule": "DS-ANIMATION-001",
+      "param": "max_duration_ms",
+      "value": 250,
+      "reason": "Marketing pages animate more, but should still settle inside a quarter second."
+    },
+    {
+      "id": "growth-002",
+      "op": "refine",
+      "rule": "DS-ICON-001",
+      "param": "stroke_width_px",
+      "value": 2,
+      "reason": "The brand icon set is drawn at a 2px stroke."
+    },
+    {
+      "id": "growth-003",
+      "op": "restrict",
+      "rule": "JOB-CHOOSE-FROM-LIST",
+      "param": "select_max_items",
+      "value": 6,
+      "reason": "Signup forms are short, so a list of 7 or more should be searchable."
+    }
+  ]
+}

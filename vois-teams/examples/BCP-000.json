@@ -1,0 +1,11 @@
+{
+  "schema": "vois-base-proposal/1",
+  "id": "BCP-000",
+  "from_team": "payments",
+  "created": "2026-10-06",
+  "status": "withdrawn",
+  "rule": "DS-ANIMATION-001",
+  "change": { "kind": "value", "param": "max_duration_ms", "from": 300, "to": 250 },
+  "reason": "Example only. Three teams have restricted this limit to 250ms or less, and none have used the extra 50.",
+  "why_everyone": "Every product team ships the same slow-device checkout and onboarding paths, so a shorter ceiling helps all of them."
+}
