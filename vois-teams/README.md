@@ -35,8 +35,8 @@ One file per team, at `.vois/teams/<team>.json` in that team's repo. The file na
 
 `examples/payments.json` and `examples/growth.json` are complete files.
 
-- `team`: 2 to 31 lowercase letters, digits or hyphens.
-- `scope.paths`: optional path globs the team's overrides apply to. Leave it out for a repo with one team and the overrides apply everywhere.
+- `team`: 2 to 31 lowercase letters, digits or hyphens, starting with a letter.
+- `scope.paths`: optional path globs the team's overrides apply to, relative to the project root. Leave it out for a repo with one team and the overrides apply everywhere. A glob can use `**` (any folders), `*` and `?` (inside one folder) and `{a,b}`. A folder name such as `apps/payments` covers everything under it. A leading `./` or `/` is ignored and `\` counts as `/`. Extglobs such as `@(a|b)` are rejected, and any other character is matched literally. Matching is case sensitive in the hook.
 - Every override has an `id` like `payments-001` and a `reason` of at least 12 characters that says why this team needs it.
 
 ### The three ops
@@ -54,7 +54,7 @@ There is no op that loosens. `relax`, `disable`, `ignore`, `exempt`, `waive` and
 Each team has its own file. When more than one file is validated together:
 
 - Team ids must be unique.
-- Two teams whose scopes overlap cannot set the same limit to different values. A team with no scope covers the whole repo, so it overlaps everything. Scopes are compared by the text before the first wildcard, which is conservative: `apps/payments/**` and `apps/payments/checkout/**` count as overlapping.
+- Two teams whose scopes overlap cannot set the same limit to different values. A team with no scope covers the whole repo, so it overlaps everything. Scopes are compared by the text before the first wildcard, after dropping a leading `./` or `/`, turning `\` into `/` and ignoring case, which is conservative: `apps/payments/**` and `apps/payments/checkout/**` count as overlapping.
 - Teams with separate scopes can set the same limit differently. That is the point.
 
 ## Which limits a team can change

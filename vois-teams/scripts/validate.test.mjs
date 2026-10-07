@@ -1,7 +1,8 @@
 // Run with: node validate.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadBase, validateRanges, validateOverride, validateProposal, validateTeams, validatePaths, RANGES_FILE } from "./lib.mjs";
@@ -32,7 +33,7 @@ test("ranges.json catches an entry whose base and bound disagree", () => {
 });
 
 test("the examples and proposals folders validate together", () => {
-  const r = validatePaths([join(HERE, "..", "examples"), join(HERE, "..", "proposals")], ctx);
+  const r = validatePaths([join(HERE, "..", "examples"), join(HERE, "..", "proposals")], ctx, { optional: [join(HERE, "..", "proposals")] });
   assert.deepEqual(r.errors, []);
   assert.ok(r.checked >= 3);
 });
@@ -205,4 +206,106 @@ test("a match that appears more than once in the base rule is rejected", () => {
   const doubled = new Map(baseRules);
   doubled.set("DS-ANIMATION-001", `${baseRules.get("DS-ANIMATION-001")} Also: under \`300ms\` for exits.`);
   assert.match(validateRanges(ranges, doubled).join("\n"), /DS-ANIMATION-001 max_duration_ms: match text .* appears 2 times/);
+});
+
+// ---------------------------------------------------------------------------
+// Findings from an independent review of the validator.
+// ---------------------------------------------------------------------------
+
+const scoped = (name, paths, value) => ({ file: `${name}.json`, data: file([restrict("DS-ANIMATION-001", "max_duration_ms", value, `${name}-001`)], { team: name, scope: { paths } }) });
+
+test("scopes that cover the same files overlap whatever the spelling", () => {
+  for (const other of ["./apps/payments/**", "/apps/payments/**", "apps\\payments\\**", "Apps/Payments/**", "apps/@(payments|growth)/**", ".//apps/payments/**"]) {
+    assert.match(validateTeams([scoped("payments", [other], 200), scoped("growth", ["apps/payments/**"], 250)]).join("\n"), /overlapping paths/, other);
+  }
+  assert.deepEqual(validateTeams([scoped("payments", ["apps/payments/**"], 200), scoped("growth", ["apps/growth/**"], 250)]), []);
+  assert.deepEqual(validateTeams([scoped("payments", ["./apps/payments/**"], 200), scoped("growth", ["/apps/growth/**"], 250)]), []);
+});
+
+function folder(files) {
+  const dir = mkdtempSync(join(tmpdir(), "vois-teams-test-"));
+  for (const [name, body] of Object.entries(files)) {
+    mkdirSync(dirname(join(dir, name)), { recursive: true });
+    writeFileSync(join(dir, name), typeof body === "string" ? body : JSON.stringify(body));
+  }
+  return dir;
+}
+const validPayments = () => file([restrict("DS-ANIMATION-001", "max_duration_ms", 200)]);
+
+test("the same proposal id in two folders is rejected", () => {
+  const a = folder({ "BCP-001.json": proposal() });
+  const b = folder({ "BCP-001.json": proposal() });
+  assert.match(validatePaths([a, b], ctx).errors.join("\n"), /proposal id BCP-001 is also used by/);
+});
+
+test("a file given twice, in different path shapes, is checked once", () => {
+  const dir = folder({ "payments.json": validPayments() });
+  const r = validatePaths([join(dir, "payments.json"), join(dir, ".", "payments.json"), dir], ctx);
+  assert.deepEqual(r.errors, []);
+  assert.equal(r.checked, 1);
+});
+
+test("a folder with nothing to check is an error, and a missing path is an error not a crash", () => {
+  assert.match(validatePaths([folder({ "sub/payments.json": validPayments() })], ctx).errors.join("\n"), /no \.json files in this folder/);
+  const empty = folder({ "README.md": "hello" });
+  assert.match(validatePaths([empty], ctx).errors.join("\n"), /no \.json files/);
+  assert.deepEqual(validatePaths([empty], ctx, { optional: [empty] }).errors, []);
+  assert.match(validatePaths([join(empty, "nope.json")], ctx).errors.join("\n"), /nope\.json: not found/);
+});
+
+test("an upper case .JSON extension is read", () => {
+  const dir = folder({ "payments.JSON": validPayments() });
+  const r = validatePaths([dir], ctx);
+  assert.equal(r.checked, 1);
+  assert.deepEqual(r.errors, []);
+});
+
+test("a match glued to more digits is not a match", () => {
+  const renumbered = new Map(baseRules);
+  for (const [rule, from, to] of [["JOB-CHOOSE-FROM-LIST", "under 8", "under 80"], ["JOB-DISPLAY-DATA", "Under 100", "Under 1000"], ["JOB-CONTEXTUAL-INFO", "25 words", "125 words"]]) {
+    const copy = new Map(baseRules);
+    copy.set(rule, baseRules.get(rule).replace(from, to));
+    assert.match(validateRanges(ranges, copy).join("\n"), new RegExp(`${rule} \\w+: match text .* is not in the base rule`), `${from} -> ${to}`);
+  }
+  assert.deepEqual(validateRanges(ranges, renumbered), []);
+});
+
+test("a set proposal needs a real list, and warns when it leaves the current range", () => {
+  const setProposal = (to) => proposal({ rule: "DS-SPACING-001", change: { kind: "value", param: "spacing_divisors", from: [4, 8], to } });
+  for (const bad of [[], [8, 8], ["8"], "8"]) assert.match(pErrors(setProposal(bad)), /non-empty list of unique numbers/, JSON.stringify(bad));
+  const outside = validateProposal(setProposal([12]), ctx);
+  assert.deepEqual(outside.errors, []);
+  assert.match(outside.warnings.join("\n"), /outside the current/);
+});
+
+test("a text proposal must quote words that appear once, from the rule wording and not its id", () => {
+  const textProposal = (rule, from) => proposal({ rule, change: { kind: "text", from, to: "replacement words go here" } });
+  assert.match(pErrors(textProposal("DS-A11Y-004", "under")), /appears 2 times/);
+  assert.match(pErrors(textProposal("JOB-CHOOSE-FROM-LIST", "JOB-CHOOSE-FROM-LIST")), /not in the base rule/);
+  assert.deepEqual(validateProposal(textProposal("DS-ANIMATION-001", "under `300ms`"), ctx).errors, []);
+});
+
+test("PATH rules include their other wording, such as rule_name", () => {
+  const found = [];
+  const walk = (o) => {
+    if (Array.isArray(o)) return o.forEach(walk);
+    if (o && typeof o === "object") {
+      if (typeof o.id === "string" && o.id.startsWith("PATH-") && typeof o.rule_name === "string") found.push(o);
+      Object.values(o).forEach(walk);
+    }
+  };
+  walk(JSON.parse(readFileSync(join(HERE, "..", "..", "vois-patterns", "data", "patterns-rules.json"), "utf8")));
+  assert.ok(found.length > 0);
+  for (const node of found.slice(0, 5)) assert.ok(baseRules.get(node.id).includes(node.rule_name), node.id);
+});
+
+test("created must be a real calendar date", () => {
+  for (const bad of ["2026-13-45", "2026-02-30", "2026-00-10", "26-10-06", ""]) assert.match(pErrors(proposal({ created: bad })), /real date/, bad);
+  assert.deepEqual(validateProposal(proposal({ created: "2028-02-29" }), ctx).errors, []);
+});
+
+
+test("scope paths with an extglob are rejected, plain wildcards and braces are fine", () => {
+  assert.match(errorsOf(file([restrict("DS-ANIMATION-001", "max_duration_ms", 200)], { scope: { paths: ["apps/@(payments|growth)/**"] } })), /extglob/);
+  assert.deepEqual(check(file([restrict("DS-ANIMATION-001", "max_duration_ms", 200)], { scope: { paths: ["apps/{payments,growth}/**", "lib/**/*.tsx"] } })).errors, []);
 });
