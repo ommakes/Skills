@@ -183,3 +183,26 @@ test("the JSON examples in the README are valid", () => {
   assert.deepEqual(validateOverride(blocks[0], ctx).errors, []);
   assert.deepEqual(validateProposal(blocks[1], ctx).errors, []);
 });
+
+test("a set limit is the same set in any order", () => {
+  const a = { file: "a.json", data: file([restrict("DS-SPACING-001", "spacing_divisors", [4, 8])]) };
+  const b = { file: "b.json", data: file([restrict("DS-SPACING-001", "spacing_divisors", [8, 4], "growth-001")], { team: "growth" }) };
+  assert.deepEqual(validateTeams([a, b]), []);
+  b.data.overrides[0].value = [8];
+  assert.match(validateTeams([a, b]).join("\n"), /overlapping paths/);
+  // A proposal's from value may list the base in a different order, but from and to may not be the same set.
+  const setProposal = (from, to) => proposal({ rule: "DS-SPACING-001", change: { kind: "value", param: "spacing_divisors", from, to } });
+  assert.deepEqual(validateProposal(setProposal([8, 4], [8]), ctx).errors, []);
+  assert.match(pErrors(setProposal([4, 8], [8, 4])), /from and to are the same/);
+});
+
+test("the same added rule id twice in one file is rejected", () => {
+  const add = (id, text) => ({ id, op: "add", rule: "TEAM-PAYMENTS-001", severity: "required", text, reason: "Columns of amounts must line up." });
+  assert.match(errorsOf(file([add("payments-001", "Amounts use tabular numerals."), add("payments-002", "Amounts always show the currency.")])), /added twice/);
+});
+
+test("a match that appears more than once in the base rule is rejected", () => {
+  const doubled = new Map(baseRules);
+  doubled.set("DS-ANIMATION-001", `${baseRules.get("DS-ANIMATION-001")} Also: under \`300ms\` for exits.`);
+  assert.match(validateRanges(ranges, doubled).join("\n"), /DS-ANIMATION-001 max_duration_ms: match text .* appears 2 times/);
+});

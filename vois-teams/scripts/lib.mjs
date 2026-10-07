@@ -53,6 +53,8 @@ export function loadBase(skillsDir = DEFAULT_SKILLS_DIR) {
 }
 
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+// A comparable form of a limit value. A set is the same set in any order, so sort it first.
+const canon = (v) => JSON.stringify(Array.isArray(v) ? [...v].sort((a, b) => a - b) : v);
 const subsetOf = (a, b) => a.every((x) => b.includes(x));
 const uniq = (a) => new Set(a).size === a.length;
 
@@ -69,7 +71,12 @@ export function validateRanges(file, baseRules) {
     if (!isStr(e.param)) err("missing param");
     if (seen.has(at)) err("listed twice");
     seen.add(at);
-    if (!isStr(e.match) || !text.includes(e.match)) err(`match text ${JSON.stringify(e.match)} is not in the base rule, so the rule was reworded or renumbered`);
+    if (!isStr(e.match)) err("missing match text");
+    else {
+      const found = text.split(e.match).length - 1;
+      if (found === 0) err(`match text ${JSON.stringify(e.match)} is not in the base rule, so the rule was reworded or renumbered`);
+      else if (found > 1) err(`match text ${JSON.stringify(e.match)} appears ${found} times in the base rule. Use longer text that appears once, so the check follows the rule that holds the limit and not another mention of the number`);
+    }
     if (e.at_least !== undefined) {
       const other = file.ranges.find((r) => r.rule === e.at_least?.rule && r.param === e.at_least?.param);
       if (!other || other.type !== "number" || e.type !== "number") err("at_least must name another number range in this file");
@@ -120,6 +127,7 @@ export function validateOverride(data, { file = "", baseRules, ranges }) {
   if (!Array.isArray(data.overrides) || data.overrides.length === 0) { err("overrides must be a non-empty list"); return { errors, warnings }; }
 
   const ids = new Set();
+  const addedRules = new Set();
   const targets = new Set();
   for (const [i, o] of data.overrides.entries()) {
     const at = `overrides[${i}]${isStr(o?.id) ? ` (${o.id})` : ""}`;
@@ -137,6 +145,8 @@ export function validateOverride(data, { file = "", baseRules, ranges }) {
       const want = `TEAM-${teamOk ? team.toUpperCase() : "<TEAM>"}-`;
       if (!teamOk || !new RegExp(`^${want}\\d{3}$`).test(o.rule ?? "")) e(`rule must be a new id like ${want}001`);
       if (baseRules.has(o.rule)) e("rule id is already a base rule");
+      if (addedRules.has(o.rule)) e(`rule id ${o.rule} is added twice in this file`);
+      addedRules.add(o.rule);
       if (!isStr(o.text, 20)) e("text is required, at least 20 characters");
       if (!SEVERITIES.includes(o.severity)) e(`severity must be one of ${SEVERITIES.join(", ")}`);
       if (o.enforcement !== undefined && !ENFORCEMENTS.includes(o.enforcement)) e(`enforcement must be one of ${ENFORCEMENTS.join(", ")}`);
@@ -205,7 +215,7 @@ export function validateTeams(files) {
       if (!scopesOverlap(A.data.scope?.paths, B.data.scope?.paths)) continue;
       for (const a of A.data.overrides) for (const b of B.data.overrides) {
         if (a.op === "add" || b.op === "add") continue;
-        if (a.rule === b.rule && a.param === b.param && JSON.stringify(a.value) !== JSON.stringify(b.value)) {
+        if (a.rule === b.rule && a.param === b.param && canon(a.value) !== canon(b.value)) {
           errors.push(`${A.data.team} and ${B.data.team} cover overlapping paths and set ${a.rule} ${a.param} to different values (${JSON.stringify(a.value)} and ${JSON.stringify(b.value)}). Give each team its own scope`);
         }
       }
@@ -249,8 +259,8 @@ export function validateProposal(data, { file = "", baseRules, ranges }) {
     if (!range) { err(`value: ${data.rule} has no "${c.param}" in ranges.json. Add it to the ranges file first, or propose a text change`); return { errors, warnings }; }
     const typeOk = range.type === "number" ? isNum(c.from) && isNum(c.to) : Array.isArray(c.from) && Array.isArray(c.to);
     if (!typeOk) { err("value: change.from and change.to must match the type of the range"); return { errors, warnings }; }
-    if (open && JSON.stringify(c.from) !== JSON.stringify(range.base)) err(`value: change.from is ${JSON.stringify(c.from)} but the base is now ${JSON.stringify(range.base)}. Update the proposal`);
-    if (JSON.stringify(c.from) === JSON.stringify(c.to)) err("value: from and to are the same");
+    if (open && canon(c.from) !== canon(range.base)) err(`value: change.from is ${JSON.stringify(c.from)} but the base is now ${JSON.stringify(range.base)}. Update the proposal`);
+    if (canon(c.from) === canon(c.to)) err("value: from and to are the same");
     if (range.type === "number" && (c.to < range.min || c.to > range.max)) warnings.push(`value: ${c.to} is outside the current range ${range.min} to ${range.max}, so the range changes too`);
   } else if (c.kind === "text") {
     if (!isStr(c.from) || !isStr(c.to)) err("text: change.from and change.to are required");
