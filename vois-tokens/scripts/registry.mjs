@@ -197,7 +197,7 @@ export const RULES = [
       const standardNote = limitNote(params, "DS-ANIMATION-001", "max_duration_ms");
       const ceilingNote = limitNote(params, "DS-ANIMATION-002", "max_duration_ms");
       // The ceiling note names a team only when a team set the ceiling in force.
-      const ceilingCredit = (ceiling === params.get("DS-ANIMATION-002", "max_duration_ms") ? ceilingNote : "") || (ceiling === standard ? standardNote : "");
+      const ceilingCredit = ceilingNote || (ceiling === standard ? standardNote : "");
       // Tailwind, CSS and StyleX spellings, in ms or s: duration-300, duration-[0.6s], transition-duration: 300ms, transitionDuration: "0.3s".
       const durationPattern = /\bduration-\[(\d*\.?\d+)(ms|s)\]|\bduration-(\d{3,4})\b|transition-duration:\s*(\d*\.?\d+)(ms|s)\b|transitionDuration:\s*["'](\d*\.?\d+)(ms|s)["']/g;
       let match;
@@ -581,13 +581,13 @@ const LOOKALIKE_RULES = [
       const findings = [];
       for (const name of ["confirm", "alert", "prompt"]) {
         // Declared in this file (a hook result, a parameter, a method): it is not the browser's.
-        const declared = new RegExp(`\\b(?:const|let|var|function|class)\\s+${name}\\b|[{,]\\s*${name}\\s*[,}=:]|\\b${name}\\s*=[^=>]|\\bimport\\b[^;]*\\b${name}\\b|\\(\\s*${name}\\s*[,)=:]|(?:^|[,{;]\\s*|\\basync\\s+|\\bstatic\\s+)${name}\\s*\\([^)]*\\)\\s*\\{`, "m").test(content);
+        const declared = new RegExp(`\\b(?:const|let|var|function|class)\\s+${name}\\b|[{,]\\s*${name}\\s*[,}]|\\bimport\\s+${name}\\b|\\bimport\\s+(?:[\\w$]+\\s*,\\s*)?\\{[^}]*\\b${name}\\b[^}]*\\}|\\(\\s*${name}\\s*[,)=:]|(?:^|[,{;]\\s*|\\basync\\s+|\\bstatic\\s+)${name}\\s*\\([^)]*\\)\\s*\\{`, "m").test(content);
         const re = new RegExp(declared ? `\\b(?:window|globalThis)\\.${name}\\s*\\(` : `(?:\\b(?:window|globalThis)\\.|(?<![.\\w$]))${name}\\s*\\(`, "g");
         let m;
         while ((m = re.exec(content)) !== null) {
           const line = lineAt(content, m.index);
           const before = (lines[line - 1] || "").slice(0, m.index - content.lastIndexOf("\n", m.index - 1) - 1);
-          if (/\/\/|^\s*(?:\/?\*)/.test(before)) continue; // in a comment
+          if (/(?<!:)\/\/|^\s*(?:\/?\*)/.test(before)) continue; // in a comment (a "//" in a URL does not count)
           // Prose in JSX text ("Please confirm (this ...)"): a call follows an operator, a bracket or one of these keywords, not another word.
           if (!/window\.$|globalThis\.$/.test(before) && /\w\s+$/.test(before) && !/\b(?:return|await|if|else|typeof|void|case|yield)\s+$/.test(before)) continue;
           findings.push({ line, snippet: snippetAt(lines, line), message: "Native browser dialog. Use AlertDialog, Sonner or a Dialog." });

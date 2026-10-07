@@ -4,6 +4,23 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.20.1] - 2026-10-07
+
+### Fixed
+
+A second independent review of 1.20.0 found these.
+
+- **`LOOKALIKE-009` missed bare calls in files written without semicolons.** The "declared in this file" test ran from the first `import` to the first `;`, so a file with no semicolons counted every call as declared. It now reads one import statement. A prop or object key named `confirm` or `alert` no longer counts as a declaration, and a `//` inside a URL is not a comment.
+- **Tags with an apostrophe in a comment or a regex were skipped.** `jsx-tags.mjs` now ends a JavaScript string at the end of its line, skips `/* */` and `//` comments inside braces, handles an escaped backslash, and treats JSX attribute strings as having no escapes.
+- **A team value that changes nothing is not credited.** `spacing_divisors: [4]` checks the same as the base, so no finding says a team set it, and `hook-admin status` says "no change from the base". A team ceiling for `DS-ANIMATION-002` below the standard one is credited when it applies.
+- A scope path of only spaces matches nothing. The scope-glob wording in `hooks.md` and `team-overrides.mjs` no longer says the validator matches globs; it only compares the text before the first wildcard.
+
+### Changed
+
+- **Version bump:** `1.20.0` → `1.20.1`
+
+---
+
 ## [1.20.0] - 2026-10-07
 
 ### Added

@@ -57,3 +57,11 @@ test("scanner: an import from ~/components/ui counts as using the component", ()
   assert.deepEqual(scan('import { Switch } from "~/components/ui/switch"', ["switch"]).usedExpected, ["switch"]);
   assert.deepEqual(scan('import { Spinner } from "./ui/spinner"', ["spinner"]).usedExpected, ["spinner"]);
 });
+
+test("scanner: pagination is not tabs, and a modal close button is not a dropdown", () => {
+  assert.deepEqual(hits("<Button onClick={() => setPage(page + 1)}>Next</Button>"), []);
+  assert.deepEqual(hits("<button onClick={() => setActiveIndex(1)}>One</button>"), ["fake-tabs"]);
+  const modal = '{isOpen && (<div className="fixed inset-0 bg-black/50"><div className="absolute right-4 top-4">x</div></div>)}';
+  assert.deepEqual(hits(modal), ["fake-overlay"]);
+  assert.deepEqual(hits('{isOpen && <ul className="absolute right-0" />}'), ["fake-dropdown"]);
+});

@@ -103,7 +103,7 @@ node /path/to/Skills/vois-tokens/scripts/hook-admin.mjs reset
 
 The hook reads team override files from `<project>/.vois/teams/*.json` and checks a team's files against the team's tighter limits. The file format, the three ops (`add`, `restrict`, `refine`) and the validator are in `vois-teams/README.md`. Files are matched by the override file's `scope.paths`, taken relative to the project root (the `cwd` the harness sends). A team with no scope covers every file. A scope that is not `{ "paths": [one or more strings] }` makes the hook skip the whole file, so it never widens to the repo.
 
-Scope globs read like the validator's: `**` crosses folders, `*` and `?` stay inside one, `{a,b}` and `[abc]` work, a leading `./` or `/` is ignored, `\` counts as `/`, and a folder name covers everything inside it. Case matters. An extglob such as `@(a|b)` is rejected by the validator and matches nothing in the hook.
+Scope globs follow the `vois-teams` README (the validator itself only compares the text before the first wildcard, ignoring case, while the hook matches case-sensitively): `**` crosses folders, `*` and `?` stay inside one, `{a,b}` and `[abc]` work, a leading `./` or `/` is ignored, `\` counts as `/`, and a folder name covers everything inside it. Case matters. An extglob such as `@(a|b)` is rejected by the validator and matches nothing in the hook.
 
 | Rule | Limit a team can tighten | Base | Team value must be |
 |---|---|---|---|

@@ -41,10 +41,10 @@ const SIGNALS = [
     // A kbd-style chip (font-mono) is not a badge.
     (s) => tagHas(s, ["span"], (a) => /rounded-(?:full|md|lg)\b/.test(a) && /\bpx-\d/.test(a) && !/\bfont-mono\b/.test(a)) && !imp(s, "badge")],
   ["fake-tabs", "buttons that swap a state variable as tabs", "Tabs / ToggleGroup",
-    (s) => /onClick=\{\(\)\s*=>\s*(?:set(?:Active)?(?:Tab|View|Section|Page)\w*|setActive)\(/.test(s) && !imp(s, "tabs") && !imp(s, "toggle-group")],
+    (s) => /onClick=\{\(\)\s*=>\s*(?:set(?:Active)?(?:Tab|View|Section)\w*|setActive(?:Index|Panel|Item)?)\(/.test(s) && !imp(s, "tabs") && !imp(s, "toggle-group")],
   ["fake-dropdown", "absolute menu shown from useState open flag", "DropdownMenu",
     // A flag named open, isOpen, menuOpen... that gates an element with "absolute" close behind it.
-    (s) => /\{\s*\w*[oO]pen\w*\s*&&[\s\S]{0,400}?\babsolute\b/.test(s) && !imp(s, "dropdown-menu") && !imp(s, "popover")],
+    (s) => /\{\s*\w*[oO]pen\w*\s*&&\s*\(?\s*<[A-Za-z.]+(?:=>|[^>])*?\babsolute\b/.test(s) && !imp(s, "dropdown-menu") && !imp(s, "popover")],
   ["fake-breadcrumb", "path joined with / or > in plain markup", "Breadcrumb",
     // A separator rendered between elements. A bare "/" string is mock data (a URL path), not a separator.
     // The word has to stand alone or end a camelCase name: "pathname" and an SVG <path> do not count.

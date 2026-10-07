@@ -419,3 +419,33 @@ test("LOOKALIKE-010 flags a role=alert box in any status palette color", () => {
   assert.equal(f('<div role="alert" className="border border-amber-300 bg-amber-50">x</div>'), true);
   assert.equal(f('<div role="alert" className="p-4">x</div>'), false);
 });
+
+test("LOOKALIKE-009 in a file with no semicolons, with props, keys and URLs", () => {
+  const f = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "LOOKALIKE-009");
+  assert.equal(f('import React from "react"\nimport { Foo } from "./foo"\nif (confirm("Delete?")) del()'), true);
+  assert.equal(f('import { confirm } from "./dialogs"\nif (confirm("Delete?")) del()'), false);
+  assert.equal(f('import confirm from "./confirm"\nconfirm("x")'), false);
+  assert.equal(f('const opts = { confirm: "Yes" }; if (confirm("Delete?")) del();'), true);
+  assert.equal(f('<Dialog alert="x" />; function f(){ alert("boom") }'), true);
+  assert.equal(f('interface P {\n confirm: boolean;\n}\nconfirm("x")'), true);
+  assert.equal(f('<a href="https://x.com" onClick={() => alert("hi")}>x</a>'), true);
+});
+
+test("tags with an apostrophe in a comment or regex, or an escaped backslash, still close", () => {
+  const f = (src) => detectFile("a.tsx", src).map((x) => x.ruleId);
+  assert.ok(f("<div onClick={() => { /* don't */ go() }}>x</div>").includes("LOOKALIKE-005"));
+  assert.ok(f('<div onClick={() => s.replace(/\'/g, "")} title="x">a</div>').includes("LOOKALIKE-011"));
+  assert.ok(f('<div onClick={() => f("\\\\")} >a</div>').includes("LOOKALIKE-005"));
+  assert.ok(f('<div title="C:\\" onClick={go}>a</div>').includes("LOOKALIKE-005"));
+  assert.ok(f("<div onClick={() => { // it's here\n go() }}>x</div>").includes("LOOKALIKE-005"));
+});
+
+test("a team value equal to the base credits no team, and a team ceiling below the standard is credited", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-SPACING-001", "spacing_divisors", [4])]) });
+  const msgs = findingsIn(root, "a.tsx", '<div className="p-[6px]" />').map((x) => x.message).join(" ");
+  assert.doesNotMatch(msgs, /set by the t team/);
+  assert.match(summarizeTeams(loadTeams(root)).join("\n"), /no change from the base/);
+  const root2 = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-002", "max_duration_ms", 250)]) });
+  assert.match(has(findingsIn(root2, "a.tsx", '<div className="duration-[400ms]" />'), "DS-ANIMATION-001")[0].message, /set by the t team/);
+  assert.equal(matchesScope([" "], "a.tsx"), false);
+});
