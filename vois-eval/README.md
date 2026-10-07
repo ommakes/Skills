@@ -42,9 +42,9 @@ Gaps the agents named in their reports. They are gaps, not conflicts, and I have
 
 ## Coverage
 
-All 21 jobs in `components-rules.json` have at least one scenario: 54 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` starts with a different component than the tree recommends, or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
+All 21 jobs in `components-rules.json` have at least one scenario: 54 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` does not start with the tree's recommendation (up to the first bracket or dash, ignoring case and punctuation), or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
 
-Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, and EVAL-054 was added afterwards for the back link branch. Where a job has several branches that recommend different components, there is one scenario per branch, up to three or four.
+Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, and EVAL-054 was added afterwards for the back link branch. Not every branch has one: 53 of the 97 branches that recommend something do, and the checker prints that count. The gaps include the Plain and Alert branches of the empty-content job, the Table, Tabs and Card branches of the data-visualization job, and the Input, Radio and Command branches of the text, binary-choice and list jobs.
 
 ## Using a run's results
 

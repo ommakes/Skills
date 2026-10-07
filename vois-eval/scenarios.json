@@ -125,7 +125,7 @@
       "tree_path": [1],
       "user_prompt": "Show feedback on a 'Save' button while the save request is in flight.",
       "condition": "Short action in progress, result will appear in place (button submitting, search running)",
-      "expected_outcome": "Spinner inside or replacing the button's label, trigger disabled while loading",
+      "expected_outcome": "Spinner inside or replacing the trigger element (disable the trigger while loading)",
       "forbidden_outcomes": [
         "Skeleton (wrong location for an in-place action result)",
         "A full-page loading overlay for a single button's request"
@@ -266,7 +266,7 @@
       "condition": "Grouped with other icon actions",
       "expected_outcome": "Toggle (for on/off) or Button (for one-shot)",
       "forbidden_outcomes": [
-        "Button as a one-shot action (the state has to show)",
+        "Button for a control that must stay switched on (the state has to show)",
         "Checkbox or Switch (wrong control for a toolbar)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
