@@ -64,3 +64,41 @@ A code review found three bugs in `scan.mjs`, and fixing them showed two more:
 - Found while testing: `title=` matched component props such as `<Panel title=...>`, `fake-progress` matched the word "step" in a funnel chart, and `fake-alert` matched a `hover:bg-destructive/90` button elsewhere in the file. Each is now scoped to the element it describes.
 
 I re-scanned both runs with the corrected scanner. The result is unchanged: `fake-spinner` in LP-03b and HP-02, and the `native-checkbox` demo control in HP-08. No hand-built toast in any of the 40 builds, so the findings above stand.
+
+---
+
+# Pass 3: skills-off baseline (baseline1)
+
+The same 40 prompts (30 from pass 1, 10 from pass 2), built again with the Vois line removed from the runner prompt and an instruction not to invoke or read any skill (`runner-prompt-baseline.md`). One fresh agent per prompt. Every agent that mentioned it said it read no skill or design-system file.
+
+Limits that matter: the harness can't truly turn skills off, I can't confirm the model matched the earlier runs, and it's one build per prompt. Treat a gap of 1 file as an anecdote.
+
+## Headline
+Without the skills, agents still don't build the classic fakes. Across 40 builds: no `div` with `onClick`, no hand-built overlay, no `setTimeout` toast, no "x" close glyph, no `title=` tooltip, no native select or checkbox. The top rows of the lookalike table (005 to 008, 011) guard against things this model doesn't do even with no guidance. They are cheap insurance for weaker models, not evidence.
+
+What the skills do change is color, alerts and a few smaller components.
+
+## Skills on vs skills off (same 40 prompts)
+| Signal | Skills on | Skills off | Files (skills off) |
+|---|---|---|---|
+| Tailwind palette color class (`bg-red-50`, `text-green-800`) instead of a system token | 0 | 5 | HP-01, HP-03, HP-04, HP-06, LP-09c |
+| Hand-built alert box (`role="alert"` on a colored div) | 0 | 2 | HP-04, HP-08 |
+| Initials circle instead of Avatar | 0 | 1 | HP-06 |
+| `div role="progressbar"` instead of Progress | 0 | 1 | HP-07 |
+| `window.prompt` for a rename | 0 | 1 | LP-02a |
+| Raw `<button>` with its own focus styles | 8 | 2 | HP-01, HP-10 |
+| `Loader2` + `animate-spin` | 2 | 0 | |
+| Native checkbox | 1 (a demo control) | 0 | |
+
+- **Color and Alert are the clear wins.** 5 and 2 files with the skills off, none with them on. These are the rules in `DS-COLOR-008/009` and the Alert row (LOOKALIKE-010). Row 010 now has skills-off evidence, so it's a candidate to move from `watch` to `observed`. I did not move it here because the table's `observed` tier means "seen with the skills on".
+- **Avatar, Progress, `window.prompt` are 1 file each.** Not enough to add rows under the 2+ rule. Worth watching in the next run.
+- **Raw `<button>` with focus styles went the other way: 8 skills on, 2 skills off.** I haven't found why. I didn't read the baseline row-title code to see whether those builds skipped the clickable title entirely. Don't read this as the skills causing it until someone checks.
+- **Stepper.** HP-07 hand-built numbered circles in both conditions, so the stepper gap was real. The spec added in vois-components 1.10.1 covers it.
+
+## Scanner changes in this pass
+- New signals: `raw-palette-color` and `raw-button-focus-ring`. The second reproduces the 8 files I had found by grep in passes 1 and 2.
+- `fake-progress` now needs `role="progressbar"`. The old test matched a funnel-chart bar plus the word "progress" in a description (LP-07b).
+- `fake-breadcrumb` no longer matches a bare `"/"` string, which was mock URL data (LP-07b).
+- The expected-component check now accepts `import { toast } from "sonner"`. Builds that import the package directly (17 of the 40 baseline builds) could be marked as using no expected component.
+- Fixtures: `LP-06a`, `LP-07b` (must hit nothing), `LP-09b`, `HP-07`.
+- Re-scanned run1, run2 and baseline1. Skills-on results are unchanged.

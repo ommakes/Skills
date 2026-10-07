@@ -5,6 +5,7 @@ Goal: find the shortcuts agents really take (markup that does a component's job 
 ## Files
 - `prompts.json`: 30 prompts, 10 jobs x 3 phrasings (concrete, vague, hurried). No prompt names a component.
 - `runner-prompt.md`: the blind prompt. Fill `{{user_prompt}}` and `{{out_path}}`.
+- `runner-prompt-baseline.md`: the same prompt with the Vois line removed and an instruction not to invoke or read any skill. Used for the skills-off baseline (`runs/baseline1`).
 - `scan.mjs`: flags candidate lookalikes in the outputs. Zero dependencies.
 - `fixtures/`: five tiny files that check each flagged pattern still matches (`node scan.mjs fixtures`). `node scan.mjs runs/<run-name>` loads both prompt files, so `LP-*` and `HP-*` runs both work, and it warns and exits 2 if a file has no matching prompt id.
 
@@ -19,3 +20,6 @@ Goal: find the shortcuts agents really take (markup that does a component's job 
 - No self-report is requested in the prompt, so we don't prime the agent to avoid shortcuts. The cost is we infer intent from code only.
 - Regex signals miss shortcuts we haven't thought of. The read in step 3 is where new ones turn up.
 - One run per prompt: a shortcut that appears in 1 of 30 may still be real but is noise at this size.
+
+## Baseline protocol
+Run the same 40 prompts with `runner-prompt-baseline.md` into `runs/baseline1/`, then `node scan.mjs runs/baseline1` and compare the signal counts with `runs/run1` and `runs/run2`. The harness cannot truly switch skills off, so the prompt forbids them and each agent reports whether it read any. The model is whatever the harness uses that day, so a difference of 1 file is an anecdote. Only 2+ file gaps mean anything.
