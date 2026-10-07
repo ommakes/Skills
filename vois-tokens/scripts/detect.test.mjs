@@ -115,6 +115,11 @@ test("LOOKALIKE-* rules skip files under components/ui", () => {
   const src = '<button className="focus-visible:ring-2">x</button><div onClick={go}>y</div><Loader2 className="animate-spin" />';
   assert.equal(detectFile("src/components/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length, 0);
   assert.ok(detectFile("src/screens/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
+  // A path relative to the project root has no separator in front of components/.
+  for (const p of ["components/ui/thing.tsx", "components\\ui\\thing.tsx"]) {
+    assert.equal(detectFile(p, src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length, 0, p);
+  }
+  assert.ok(detectFile("mycomponents/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
 });
 
 test("LOOKALIKE-005 handles arrow functions inside attributes and skips role= and stopPropagation", () => {

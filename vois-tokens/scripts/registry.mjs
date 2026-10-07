@@ -500,7 +500,7 @@ const TAG_BODY = "(?:=>|[^>])*";
 
 // shadcn primitives (components/ui/*) are where the raw elements legitimately live.
 function isUiPrimitive(filePath) {
-  return /[\\/]components[\\/]ui[\\/]/.test(filePath || "");
+  return /(?:^|[\\/])components[\\/]ui[\\/]/.test(filePath || "");
 }
 
 function importsFrom(content, names) {

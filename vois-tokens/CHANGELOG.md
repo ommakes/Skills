@@ -13,6 +13,10 @@ All notable changes to the Vois Tokens skill are documented here.
 - New `scripts/team-overrides.mjs`. `detect.test.mjs` covers scope matching, ignored values, several teams, the `vois-teams` payments example end to end, and a check that the hook's limits match `vois-teams/data/ranges.json`.
 - `hooks.md` has a Team overrides section.
 
+### Fixed
+
+- **The `components/ui/` skip missed project-relative paths.** The lookalike checks skip shadcn primitives, but the check needed a separator in front of `components/`, so `components/ui/button.tsx` was not skipped when the path had no `src/` or other folder before it. Those files are where raw `<button>` and `animate-spin` belong. The check now also matches at the start of the path.
+
 ### Changed
 
 - **Version bump:** `1.19.0` → `1.20.0`
