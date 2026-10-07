@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.10.3] - 2026-10-07
+
+### Fixed
+
+- **Lookalike `signal` text now matches what the checks do.** An independent review ran the `vois-tokens` detectors against each row. `LOOKALIKE-008` said a plain `>x<` inside a button, but the check only matches `×`, `✕`, `✖` and `&times;`. `001` needs the ring in the same tag and also matches `focus-visible:outline`. `003` is also skipped by a `toggle-group` import. `005` covers `li` and `p` and skips a handler that calls `stopPropagation`. `007` needs a delay of 1.5s or more, also matches `""`, and skips loading and saving setters. `009` ignores a function the file declares, `010` covers any status palette color, and `011` lists the elements checked. Each row's `signal` now says exactly that.
+
+### Changed
+
+- **Version bump:** `1.10.2` → `1.10.3`
+
+---
+
 ## [1.10.2] - 2026-10-06
 
 ### Fixed
