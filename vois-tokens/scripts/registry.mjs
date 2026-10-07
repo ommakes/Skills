@@ -437,12 +437,7 @@ export const RULES = [
 
       // Shape 1: clip used as a workaround next to a scrolling axis.
       for (const raw of scanRegex(content, lines, /overflow\s*:\s*(?:auto|scroll)\s+clip\b/, clipMessage)) push(raw.line, raw.message);
-      const blockRe = /([^{}]*)\{([^{}]*)\}/g;
-      const blocks = [];
-      let m;
-      while ((m = blockRe.exec(content)) !== null) {
-        blocks.push({ selector: m[1], body: m[2], index: m.index + m[1].length });
-      }
+      const blocks = cssBlocks(content);
       for (const b of blocks) {
         if (/overflow-x\s*:\s*(?:auto|scroll)\b/.test(b.body) && /overflow-y\s*:\s*clip\b/.test(b.body)) {
           push(lineAt(content, b.index), clipMessage);
@@ -498,6 +493,33 @@ function tagFindings(content, lines, names, keep, message) {
     findings.push({ line, snippet: snippetAt(lines, line), message });
   }
   return findings;
+}
+
+/**
+ * Flat CSS-like blocks: a run of text with no braces, then "{", a body with no braces, then "}".
+ * One pass over the text. (The regex /([^{}]*)\{([^{}]*)\}/g gives the same blocks but rescans every
+ * brace-free run from each start, which takes seconds on a large file with no braces.)
+ */
+export function cssBlocks(content) {
+  const blocks = [];
+  let runStart = 0;
+  let i = 0;
+  while (i < content.length) {
+    const c = content[i];
+    if (c === "}") { runStart = i + 1; i++; continue; }
+    if (c !== "{") { i++; continue; }
+    let j = i + 1;
+    while (j < content.length && content[j] !== "{" && content[j] !== "}") j++;
+    if (content[j] === "}") {
+      blocks.push({ selector: content.slice(runStart, i), body: content.slice(i + 1, j), index: i });
+      runStart = j + 1;
+      i = j + 1;
+    } else {
+      runStart = i + 1; // a "{" with no closing "}" before the next brace is not a block
+      i++;
+    }
+  }
+  return blocks;
 }
 
 /** First match only: one finding per file for rules about a whole-file pattern. */
