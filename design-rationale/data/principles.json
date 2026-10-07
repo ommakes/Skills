@@ -1,5 +1,5 @@
 {
-  "source": "design-rationale/references/principles.md",
+  "source": "design-rationale/data/principles.json",
   "tier1_cognitive_behavioral_principles": [
     {
       "id": "aesthetic-usability-effect",
