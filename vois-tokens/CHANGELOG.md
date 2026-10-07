@@ -4,6 +4,18 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.20.2] - 2026-10-07
+
+### Fixed
+
+- **`DS-TABLE-001` was quadratic on a large file with no braces.** Finding CSS-style blocks used a regex that rescanned every brace-free run from each start position, so 165KB of plain text took 43 seconds and could stall the per-edit hook. A one-pass scanner (`cssBlocks`) replaces it. A randomized test checks it finds the same blocks as the old regex, and another checks a large brace-free file stays fast.
+
+### Changed
+
+- **Version bump:** `1.20.1` → `1.20.2`
+
+---
+
 ## [1.20.1] - 2026-10-07
 
 ### Fixed

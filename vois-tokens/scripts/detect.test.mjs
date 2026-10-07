@@ -449,3 +449,30 @@ test("a team value equal to the base credits no team, and a team ceiling below t
   assert.match(has(findingsIn(root2, "a.tsx", '<div className="duration-[400ms]" />'), "DS-ANIMATION-001")[0].message, /set by the t team/);
   assert.equal(matchesScope([" "], "a.tsx"), false);
 });
+
+test("cssBlocks finds the same blocks as the regex it replaced", async () => {
+  const { cssBlocks } = await import("./registry.mjs");
+  const old = (content) => {
+    const re = /([^{}]*)\{([^{}]*)\}/g;
+    const out = [];
+    let m;
+    while ((m = re.exec(content)) !== null) out.push({ selector: m[1], body: m[2], index: m.index + m[1].length });
+    return out;
+  };
+  const alphabet = ["a", " ", "\n", "{", "}", "{", "}", "x:1;"];
+  let seed = 12345;
+  const rand = (n) => (seed = (seed * 1103515245 + 12345) % 2147483648) % n;
+  for (let k = 0; k < 3000; k++) {
+    let s = "";
+    for (let n = rand(14); n > 0; n--) s += alphabet[rand(alphabet.length)];
+    assert.deepEqual(cssBlocks(s), old(s), JSON.stringify(s));
+  }
+});
+
+test("DS-TABLE-001 stays fast on a large file with no braces", () => {
+  const text = "plain text with no braces at all ".repeat(5000);
+  const start = Date.now();
+  detectFile("a.tsx", text);
+  detectFile("a.css", text);
+  assert.ok(Date.now() - start < 2000, `took ${Date.now() - start}ms`);
+});
