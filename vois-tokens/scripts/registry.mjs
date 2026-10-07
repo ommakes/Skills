@@ -14,6 +14,9 @@
 // rules marked "blockable" here (DS-TAILWIND-004, DS-ANIMATION-005) — the
 // two vocabularies agree on those, they just answer different questions.
 
+import { BASE_PARAMS, limitNote } from "./team-overrides.mjs";
+import { openingTags } from "./jsx-tags.mjs";
+
 const CSS_EXT = [".css", ".scss"];
 const CODE_EXT = [".tsx", ".jsx", ".ts", ".js"];
 const ALL_EXT = [...CSS_EXT, ...CODE_EXT];
@@ -132,24 +135,27 @@ export const RULES = [
     severity: "quality",
     extensions: CODE_EXT,
     fixHint: "Round to the nearest value on the 4/8 spacing scale, or flag as a missing token.",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
+      // A team may require 8 only. The base accepts anything divisible by 4 (which includes every multiple of 8).
+      const divisor = Math.min(...params.get("DS-SPACING-001", "spacing_divisors"));
+      const note = limitNote(params, "DS-SPACING-001", "spacing_divisors");
       const pattern = /\b(?:p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|space-x|space-y)-\[(\d+(?:\.\d+)?)px\]/g;
       const findings = [];
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const px = parseFloat(match[1]);
-        if (px % 4 !== 0) {
+        if (px % divisor !== 0) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[0]}" is not divisible by 4.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[0]}" is not divisible by ${divisor}.${note}` });
         }
       }
       // StyleX: bare numeric (or quoted "Npx") spacing property values in a stylex.create() object.
       const stylexPattern = /\b(padding|margin|gap|rowGap|columnGap|paddingTop|paddingRight|paddingBottom|paddingLeft|paddingInline|paddingBlock|paddingInlineStart|paddingInlineEnd|marginTop|marginRight|marginBottom|marginLeft|marginInline|marginBlock|marginInlineStart|marginInlineEnd)\s*:\s*["']?(\d+(?:\.\d+)?)(?:px)?["']?\s*[,}]/g;
       while ((match = stylexPattern.exec(content)) !== null) {
         const val = parseFloat(match[2]);
-        if (val % 4 !== 0) {
+        if (val % divisor !== 0) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[1]}: ${match[2]}" is not divisible by 4.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[1]}: ${match[2]}" is not divisible by ${divisor}.${note}` });
         }
       }
       return findings;
@@ -183,46 +189,26 @@ export const RULES = [
     severity: "quality",
     extensions: ALL_EXT,
     fixHint: "Keep UI animations under 300ms (large elements up to 500ms).",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
       const findings = [];
-      const msPattern = /\bduration-\[(\d+)ms\]|\bduration-(\d{3,4})\b|transition-duration:\s*(\d+)ms/g;
+      const standard = params.get("DS-ANIMATION-001", "max_duration_ms");
+      // The large-element ceiling can never sit below the standard one.
+      const ceiling = Math.max(params.get("DS-ANIMATION-002", "max_duration_ms"), standard);
+      const standardNote = limitNote(params, "DS-ANIMATION-001", "max_duration_ms");
+      const ceilingNote = limitNote(params, "DS-ANIMATION-002", "max_duration_ms");
+      // The ceiling note names a team only when a team set the ceiling in force.
+      const ceilingCredit = (ceiling === params.get("DS-ANIMATION-002", "max_duration_ms") ? ceilingNote : "") || (ceiling === standard ? standardNote : "");
+      // Tailwind, CSS and StyleX spellings, in ms or s: duration-300, duration-[0.6s], transition-duration: 300ms, transitionDuration: "0.3s".
+      const durationPattern = /\bduration-\[(\d*\.?\d+)(ms|s)\]|\bduration-(\d{3,4})\b|transition-duration:\s*(\d*\.?\d+)(ms|s)\b|transitionDuration:\s*["'](\d*\.?\d+)(ms|s)["']/g;
       let match;
-      while ((match = msPattern.exec(content)) !== null) {
-        const ms = Number(match[1] ?? match[2] ?? match[3]);
-        if (ms > 500) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the 500ms ceiling (300ms for most UI).` });
-        } else if (ms > 300) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
-        }
-      }
-      const sPattern = /transition-duration:\s*(\d+(?:\.\d+)?)s\b/g;
-      while ((match = sPattern.exec(content)) !== null) {
-        const ms = Number(match[1]) * 1000;
-        if (ms > 300) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
-        }
-      }
-      // StyleX: camelCase transitionDuration as a quoted "Nms"/"Ns" string.
-      const stylexMsPattern = /transitionDuration:\s*["'](\d+)ms["']/g;
-      while ((match = stylexMsPattern.exec(content)) !== null) {
-        const ms = Number(match[1]);
-        if (ms > 500) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the 500ms ceiling (300ms for most UI).` });
-        } else if (ms > 300) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
-        }
-      }
-      const stylexSPattern = /transitionDuration:\s*["'](\d+(?:\.\d+)?)s["']/g;
-      while ((match = stylexSPattern.exec(content)) !== null) {
-        const ms = Number(match[1]) * 1000;
-        if (ms > 300) {
-          const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
+      while ((match = durationPattern.exec(content)) !== null) {
+        const [num, unit] = match[3] !== undefined ? [match[3], "ms"] : match[1] !== undefined ? [match[1], match[2]] : match[4] !== undefined ? [match[4], match[5]] : [match[6], match[7]];
+        const ms = Math.round(Number(num) * (unit === "s" ? 1000 : 1));
+        const line = lineAt(content, match.index);
+        if (ms > ceiling) {
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the ${ceiling}ms ceiling (${standard}ms for most UI).${ceilingCredit}` });
+        } else if (ms > standard) {
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds ${standard}ms — only acceptable for large elements.${standardNote}` });
         }
       }
       return findings;
@@ -259,32 +245,42 @@ export const RULES = [
     severity: "quality",
     extensions: CODE_EXT,
     fixHint: "Keep press/active scale at 0.96 or above; never below 0.95.",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
       const findings = [];
+      const floor = params.get("DS-ANIMATION-008", "min_press_scale");
+      const note = limitNote(params, "DS-ANIMATION-008", "min_press_scale");
       let match;
       const twPattern = /active:scale-(\d{1,3})\b/g;
       while ((match = twPattern.exec(content)) !== null) {
         const scale = Number(match[1]) / 100;
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `active:scale-${match[1]} (${scale}) is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `active:scale-${match[1]} (${scale}) is below the ${floor} floor.${note}` });
+        }
+      }
+      const twArbitrary = /active:scale-\[(\d*\.?\d+)\]/g;
+      while ((match = twArbitrary.exec(content)) !== null) {
+        const scale = Number(match[1]);
+        if (scale < floor) {
+          const line = lineAt(content, match.index);
+          findings.push({ line, snippet: snippetAt(lines, line), message: `active:scale-[${match[1]}] is below the ${floor} floor.${note}` });
         }
       }
       const motionPattern = /whileTap\s*=\s*\{\{[^}]*scale:\s*([\d.]+)/g;
       while ((match = motionPattern.exec(content)) !== null) {
         const scale = Number(match[1]);
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `whileTap scale ${scale} is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `whileTap scale ${scale} is below the ${floor} floor.${note}` });
         }
       }
       // StyleX: a ":active" pseudo-key with a scale value in the same stylex.create() object.
       const stylexPattern = /["']:active["']\s*:\s*\{[^}]*?\bscale:\s*([\d.]+)/g;
       while ((match = stylexPattern.exec(content)) !== null) {
         const scale = Number(match[1]);
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `:active scale ${scale} is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `:active scale ${scale} is below the ${floor} floor.${note}` });
         }
       }
       return findings;
@@ -483,16 +479,25 @@ export const RULES = [
 // and stay judgment-only. All of these are advisory ("quality").
 // ---------------------------------------------------------------------------
 
-// A JSX opening tag, allowing "=>" inside attribute expressions.
-const TAG_BODY = "(?:=>|[^>])*";
-
 // shadcn primitives (components/ui/*) are where the raw elements legitimately live.
 function isUiPrimitive(filePath) {
-  return /[\\/]components[\\/]ui[\\/]/.test(filePath || "");
+  return /(?:^|[\\/])components[\\/]ui[\\/]/.test(filePath || "");
 }
 
+/** Whether the file imports one of these components from anywhere: "@/components/ui/x", "./ui/x", "@workspace/ui/components/x", "react-x" or a bare "x". */
 function importsFrom(content, names) {
-  return names.some((n) => new RegExp(`from\\s+["'](?:@/components/ui/|@radix-ui/react-)?${n}["']`).test(content));
+  return names.some((n) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${n}["']`).test(content));
+}
+
+/** One finding per opening tag in `names` whose attribute text passes `keep`. */
+function tagFindings(content, lines, names, keep, message) {
+  const findings = [];
+  for (const t of openingTags(content, names)) {
+    if (!keep(t.attrs)) continue;
+    const line = lineAt(content, t.index);
+    findings.push({ line, snippet: snippetAt(lines, line), message });
+  }
+  return findings;
 }
 
 /** First match only: one finding per file for rules about a whole-file pattern. */
@@ -508,7 +513,7 @@ const LOOKALIKE_RULES = [
     fixHint: 'Use Button: variant="link" for text, variant="ghost" with an icon size and aria-label for icons, asChild as a trigger.',
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath)) return [];
-      return scanRegex(content, lines, new RegExp(`<button\\b${TAG_BODY}?\\bfocus-visible:(?:ring|outline)`), "Raw <button> with its own focus ring. Use Button.");
+      return tagFindings(content, lines, ["button"], (a) => /\bfocus-visible:(?:ring|outline)/.test(a), "Raw <button> with its own focus ring. Use Button.");
     },
   },
   {
@@ -535,16 +540,7 @@ const LOOKALIKE_RULES = [
     fixHint: "Use Button, or a link for navigation.",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath)) return [];
-      const findings = [];
-      const tagRe = new RegExp(`<(?:div|span|li|p)\\b(${TAG_BODY})>`, "g");
-      let m;
-      while ((m = tagRe.exec(content)) !== null) {
-        const attrs = m[1];
-        if (!/\bonClick=/.test(attrs) || /\brole=/.test(attrs) || /stopPropagation/.test(attrs)) continue;
-        const line = lineAt(content, m.index);
-        findings.push({ line, snippet: snippetAt(lines, line), message: "Clickable non-button element. Use Button, or a link for navigation." });
-      }
-      return findings;
+      return tagFindings(content, lines, ["div", "span", "li", "p"], (a) => /\bonClick=/.test(a) && !/\brole=/.test(a) && !/stopPropagation/.test(a), "Clickable non-button element. Use Button, or a link for navigation.");
     },
   },
   {
@@ -554,11 +550,13 @@ const LOOKALIKE_RULES = [
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || /from\s+["'](?:@\/components\/ui\/)?sonner["']/.test(content)) return [];
       // () => setX(false) as the first argument, then a delay of 1.5s or more. Loading and busy flags are not toasts.
-      const re = /setTimeout\(\s*(?:\(\s*\)\s*=>|function\s*\(\s*\))\s*\{?\s*(set[A-Z]\w*)\(\s*(?:false|null|""|'')\s*\)\s*;?\s*\}?\s*,\s*(\d+)/g;
+      const re = /setTimeout\(\s*(?:\(\s*\)\s*=>|function\s*\(\s*\))\s*\{?\s*(set[A-Z]\w*)\(\s*(?:false|null|""|'')\s*\)\s*;?\s*\}?\s*,\s*(\d[\d_]*(?:\s*\*\s*\d[\d_]*)*)/g;
+      const busyFlag = /^set(?:Is)?(?:Loading|Pending|Busy|Saving|Fetching|Submitting|Uploading|Processing)$/;
       const findings = [];
       let m;
       while ((m = re.exec(content)) !== null) {
-        if (/load|pending|busy|saving|fetch|submit/i.test(m[1]) || Number(m[2]) < 1500) continue;
+        const delay = m[2].split("*").reduce((n, part) => n * Number(part.replace(/_/g, "")), 1);
+        if (busyFlag.test(m[1]) || delay < 1500) continue;
         const line = lineAt(content, m.index);
         findings.push({ line, snippet: snippetAt(lines, line), message: "A timer hides a message held in state. Use a Sonner toast." });
       }
@@ -580,7 +578,22 @@ const LOOKALIKE_RULES = [
     fixHint: "Use AlertDialog for confirmation, Sonner for notices, a Dialog with an Input for a prompt.",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath)) return [];
-      return scanRegex(content, lines, /(?:\bwindow\.|(?<![.\w$]))(?:confirm|alert|prompt)\s*\(/, "Native browser dialog. Use AlertDialog, Sonner or a Dialog.");
+      const findings = [];
+      for (const name of ["confirm", "alert", "prompt"]) {
+        // Declared in this file (a hook result, a parameter, a method): it is not the browser's.
+        const declared = new RegExp(`\\b(?:const|let|var|function|class)\\s+${name}\\b|[{,]\\s*${name}\\s*[,}=:]|\\b${name}\\s*=[^=>]|\\bimport\\b[^;]*\\b${name}\\b|\\(\\s*${name}\\s*[,)=:]|(?:^|[,{;]\\s*|\\basync\\s+|\\bstatic\\s+)${name}\\s*\\([^)]*\\)\\s*\\{`, "m").test(content);
+        const re = new RegExp(declared ? `\\b(?:window|globalThis)\\.${name}\\s*\\(` : `(?:\\b(?:window|globalThis)\\.|(?<![.\\w$]))${name}\\s*\\(`, "g");
+        let m;
+        while ((m = re.exec(content)) !== null) {
+          const line = lineAt(content, m.index);
+          const before = (lines[line - 1] || "").slice(0, m.index - content.lastIndexOf("\n", m.index - 1) - 1);
+          if (/\/\/|^\s*(?:\/?\*)/.test(before)) continue; // in a comment
+          // Prose in JSX text ("Please confirm (this ...)"): a call follows an operator, a bracket or one of these keywords, not another word.
+          if (!/window\.$|globalThis\.$/.test(before) && /\w\s+$/.test(before) && !/\b(?:return|await|if|else|typeof|void|case|yield)\s+$/.test(before)) continue;
+          findings.push({ line, snippet: snippetAt(lines, line), message: "Native browser dialog. Use AlertDialog, Sonner or a Dialog." });
+        }
+      }
+      return findings.sort((x, y) => x.line - y.line);
     },
   },
   {
@@ -589,15 +602,7 @@ const LOOKALIKE_RULES = [
     fixHint: "Use Alert with a status role (info, positive, negative, warning).",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || importsFrom(content, ["alert"])) return [];
-      const findings = [];
-      const tagRe = new RegExp(`<(?:div|p|section|span)\\b(${TAG_BODY}\\brole=["']alert["']${TAG_BODY})>`, "g");
-      let m;
-      while ((m = tagRe.exec(content)) !== null) {
-        if (!/border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(m[1])) continue;
-        const line = lineAt(content, m.index);
-        findings.push({ line, snippet: snippetAt(lines, line), message: "A colored box with role=alert. Use Alert with a status role." });
-      }
-      return findings;
+      return tagFindings(content, lines, ["div", "p", "section", "span"], (a) => /\brole=["']alert["']/.test(a) && /border-l-4|\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d|(?<![:\w-])bg-destructive\/\d/.test(a), "A colored box with role=alert. Use Alert with a status role.");
     },
   },
   {
@@ -606,7 +611,7 @@ const LOOKALIKE_RULES = [
     fixHint: "Use Tooltip.",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || importsFrom(content, ["tooltip"])) return [];
-      return scanRegex(content, lines, new RegExp(`<(?:div|span|button|a|svg|img|td|th|p|i)\\b${TAG_BODY}?\\btitle=["'{]`), "title= used as a tooltip. Use Tooltip.");
+      return tagFindings(content, lines, ["div", "span", "button", "a", "svg", "img", "td", "th", "p", "i"], (a) => /(?<![\w-])title=["'{]/.test(a), "title= used as a tooltip. Use Tooltip.");
     },
   },
 ].map((r) => ({ severity: "quality", extensions: CODE_EXT, ...r }));

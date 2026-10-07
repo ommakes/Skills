@@ -7,6 +7,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, saveCache } from "./hook-lib.mjs";
+import { loadTeams, summarizeTeams } from "./team-overrides.mjs";
 
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = process.cwd();
@@ -40,6 +41,10 @@ function cmdStatus() {
   console.log(`Ignored files: ${config.ignoredFiles.join(", ") || "(none)"}`);
   const ignoredValueRules = Object.keys(config.ignoredValues);
   console.log(`Ignored values: ${ignoredValueRules.length ? ignoredValueRules.join(", ") : "(none)"}`);
+  const skipped = [];
+  const teamLines = [...summarizeTeams(loadTeams(ROOT, (file, why) => skipped.push(`skipped ${file}: ${why}`))), ...skipped];
+  console.log(`Team overrides: ${teamLines.length ? "" : "(none)"}`);
+  for (const l of teamLines) console.log(`  ${l}`);
 }
 
 function cmdToggle(enabled) {
