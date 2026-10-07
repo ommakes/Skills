@@ -46,7 +46,7 @@ The hook also flags markup that does a component's job without the component, th
 | `LOOKALIKE-007` | `setTimeout` of 1.5s or more that sets a state value to `false`, `null` or an empty string, with no Sonner import. The delay can be written `3000`, `3_000` or `3 * 1000`. Flags named exactly `setLoading`, `setIsLoading`, `setPending`, `setBusy`, `setSaving`, `setFetching`, `setSubmitting`, `setUploading` or `setProcessing` are ignored | Sonner toast |
 | `LOOKALIKE-008` | `×`, `✕`, `✖` or `&times;` as the only text inside an element | The component's close, or an icon Button with `aria-label` |
 | `LOOKALIKE-009` | A call to `confirm`, `alert` or `prompt`, bare or on `window`. A method (`toast.alert`), a longer name (`onConfirm`), a comment, or a function the file declares itself (`const confirm = useConfirm()`) does not match | AlertDialog, Sonner or a Dialog |
-| `LOOKALIKE-010` | A `role="alert"` box with `border-l-4`, `bg-red-*` or `bg-destructive/*` and no Alert import | Alert with a status role |
+| `LOOKALIKE-010` | A `role="alert"` box with `border-l-4`, a `bg-<palette color>-*` class (red, amber, green and the rest) or `bg-destructive/*`, in a file that does not import Alert | Alert with a status role |
 | `LOOKALIKE-011` | `title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, in a file that does not import Tooltip. `data-title` and `sub-title` do not count. `abbr` is left alone, since `title` is its job | Tooltip |
 
 Two rows have no regex that is precise enough, so they stay judgment-only: `LOOKALIKE-004` (numbered circles joined by lines, which the Stepper replaces) and `LOOKALIKE-006` (a `fixed inset-0` backdrop, which is also how a full-page loader is written).

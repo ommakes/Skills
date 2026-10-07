@@ -588,6 +588,8 @@ const LOOKALIKE_RULES = [
           const line = lineAt(content, m.index);
           const before = (lines[line - 1] || "").slice(0, m.index - content.lastIndexOf("\n", m.index - 1) - 1);
           if (/\/\/|^\s*(?:\/?\*)/.test(before)) continue; // in a comment
+          // Prose in JSX text ("Please confirm (this ...)"): a call follows an operator, a bracket or one of these keywords, not another word.
+          if (!/window\.$|globalThis\.$/.test(before) && /\w\s+$/.test(before) && !/\b(?:return|await|if|else|typeof|void|case|yield)\s+$/.test(before)) continue;
           findings.push({ line, snippet: snippetAt(lines, line), message: "Native browser dialog. Use AlertDialog, Sonner or a Dialog." });
         }
       }
@@ -600,7 +602,7 @@ const LOOKALIKE_RULES = [
     fixHint: "Use Alert with a status role (info, positive, negative, warning).",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || importsFrom(content, ["alert"])) return [];
-      return tagFindings(content, lines, ["div", "p", "section", "span"], (a) => /\brole=["']alert["']/.test(a) && /border-l-4|\bbg-red-|(?<![:\w-])bg-destructive\/\d/.test(a), "A colored box with role=alert. Use Alert with a status role.");
+      return tagFindings(content, lines, ["div", "p", "section", "span"], (a) => /\brole=["']alert["']/.test(a) && /border-l-4|\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d|(?<![:\w-])bg-destructive\/\d/.test(a), "A colored box with role=alert. Use Alert with a status role.");
     },
   },
   {

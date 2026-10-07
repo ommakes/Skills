@@ -18,7 +18,7 @@ All notable changes to the Vois Tokens skill are documented here.
 
 - **The `components/ui/` skip missed project-relative paths.** The lookalike checks skip shadcn primitives, but the check needed a separator in front of `components/`, so `components/ui/button.tsx` was not skipped when the path had no `src/` or other folder before it. Those files are where raw `<button>` and `animate-spin` belong. The check now also matches at the start of the path.
 
-- **Lookalike detectors read JSX tags properly.** A new `scripts/jsx-tags.mjs` skips braces and quotes, so `{count >= 3}` or `{a > b ? x : y}` no longer ends a tag early. `LOOKALIKE-009` ignores functions the file declares, methods and comments. `LOOKALIKE-011` ignores `data-title`. `LOOKALIKE-007` skips only exact busy-flag names and reads `3_000` and `3 * 1000`. Component imports count from any path.
+- **Lookalike detectors read JSX tags properly.** A new `scripts/jsx-tags.mjs` skips braces and quotes, so `{count >= 3}` or `{a > b ? x : y}` no longer ends a tag early. `LOOKALIKE-009` ignores functions the file declares, methods, comments and prose in JSX text. `LOOKALIKE-010` also flags amber, green and the other palette colors, not only red. `LOOKALIKE-011` ignores `data-title`. `LOOKALIKE-007` skips only exact busy-flag names and reads `3_000` and `3 * 1000`. Component imports count from any path.
 - **Animation checks.** `duration-[0.6s]` and every seconds spelling are compared against the ceiling, a message no longer credits a team for the base 500ms ceiling, and `active:scale-[0.9]` is checked against the press floor.
 
 ### Changed

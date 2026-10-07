@@ -366,6 +366,10 @@ test("LOOKALIKE-009 flags the browser dialogs, not functions the file declares o
   assert.equal(f("if (!confirm('Delete?')) return"), true);
   assert.equal(f("const confirm = useConfirm()\nwindow.confirm('x')"), true);
   assert.equal(f("alert('Saved')"), true);
+  assert.equal(f("<p>Please confirm (this cannot be undone)</p>"), false);
+  assert.equal(f("const ok = confirm('x')"), true);
+  assert.equal(f("if (ready) return confirm('x')"), true);
+  assert.equal(f("else window.confirm('x')"), true);
 });
 
 test("LOOKALIKE-007 skips exact busy flags only, and reads 3_000 and 3 * 1000", () => {
@@ -408,4 +412,10 @@ test("DS-ANIMATION-008 catches an arbitrary active scale", () => {
 test("status lists added rules and skipped files", () => {
   const lines = summarizeTeams([team("t", [{ id: "t-001", op: "add", reason: "x", text: "y" }])]).join("\n");
   assert.match(lines, /added rule, not checked by the hook: t-001/);
+});
+
+test("LOOKALIKE-010 flags a role=alert box in any status palette color", () => {
+  const f = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "LOOKALIKE-010");
+  assert.equal(f('<div role="alert" className="border border-amber-300 bg-amber-50">x</div>'), true);
+  assert.equal(f('<div role="alert" className="p-4">x</div>'), false);
 });
