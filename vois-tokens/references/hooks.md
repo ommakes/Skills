@@ -40,18 +40,20 @@ The hook also flags markup that does a component's job without the component, th
 | Rule | Flags | Use instead |
 |---|---|---|
 | `LOOKALIKE-001` | A raw `<button>` with a hand-written `focus-visible:ring` or `outline` | Button (`link` or `ghost` variant, or `asChild` as a trigger) |
-| `LOOKALIKE-002` | `animate-spin` in a file with no Spinner import | Spinner |
-| `LOOKALIKE-003` | `role="radio"` in a file with no RadioGroup or ToggleGroup import | RadioGroup, or ToggleGroup |
+| `LOOKALIKE-002` | `animate-spin` in a file that does not import Spinner | Spinner |
+| `LOOKALIKE-003` | `role="radio"` in a file that does not import RadioGroup or ToggleGroup | RadioGroup, or ToggleGroup |
 | `LOOKALIKE-005` | A `div`, `span`, `li` or `p` with `onClick` and no `role`, unless the handler calls `stopPropagation` | Button, or a link |
-| `LOOKALIKE-007` | `setTimeout` of 1.5s or more that sets a state value to `false`, `null` or an empty string, with no Sonner import. Loading, pending and busy flags are ignored | Sonner toast |
+| `LOOKALIKE-007` | `setTimeout` of 1.5s or more that sets a state value to `false`, `null` or an empty string, with no Sonner import. The delay can be written `3000`, `3_000` or `3 * 1000`. Flags named exactly `setLoading`, `setIsLoading`, `setPending`, `setBusy`, `setSaving`, `setFetching`, `setSubmitting`, `setUploading` or `setProcessing` are ignored | Sonner toast |
 | `LOOKALIKE-008` | `×`, `✕`, `✖` or `&times;` as the only text inside an element | The component's close, or an icon Button with `aria-label` |
-| `LOOKALIKE-009` | A call to `confirm`, `alert` or `prompt`, bare or on `window`. A method (`toast.alert`) or a longer name (`onConfirm`) does not match | AlertDialog, Sonner or a Dialog |
+| `LOOKALIKE-009` | A call to `confirm`, `alert` or `prompt`, bare or on `window`. A method (`toast.alert`), a longer name (`onConfirm`), a comment, or a function the file declares itself (`const confirm = useConfirm()`) does not match | AlertDialog, Sonner or a Dialog |
 | `LOOKALIKE-010` | A `role="alert"` box with `border-l-4`, `bg-red-*` or `bg-destructive/*` and no Alert import | Alert with a status role |
-| `LOOKALIKE-011` | `title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, in a file with no Tooltip import. `abbr` is left alone, since `title` is its job | Tooltip |
+| `LOOKALIKE-011` | `title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, in a file that does not import Tooltip. `data-title` and `sub-title` do not count. `abbr` is left alone, since `title` is its job | Tooltip |
 
 Two rows have no regex that is precise enough, so they stay judgment-only: `LOOKALIKE-004` (numbered circles joined by lines, which the Stepper replaces) and `LOOKALIKE-006` (a `fixed inset-0` backdrop, which is also how a full-page loader is written).
 
-The eval scanner in `vois-eval/lookalike-pass/scan.mjs` imports these rules from `registry.mjs`, so the blind-build runs and the hook cannot disagree. `detect.test.mjs` checks that every `LOOKALIKE-*` id here is a row in the table.
+An import counts from any path whose last part is the component (`@/components/ui/spinner`, `./ui/spinner`, `@workspace/ui/components/spinner`, `react-spinner`). Tags are read with a small scanner (`scripts/jsx-tags.mjs`) that skips braces and quotes, so a `>` inside `{count >= 3}` does not end the tag.
+
+The eval scanner in `vois-eval/lookalike-pass/scan.mjs` imports these rules through `detect.mjs`, so the blind-build runs and the hook cannot disagree. `detect.test.mjs` checks that every `LOOKALIKE-*` id here is a row in the table.
 
 ## Setup
 
@@ -99,23 +101,25 @@ node /path/to/Skills/vois-tokens/scripts/hook-admin.mjs reset
 
 ## Team overrides
 
-The hook reads team override files from `<project>/.vois/teams/*.json` and checks a team's files against the team's tighter limits. The file format, the three ops (`add`, `restrict`, `refine`) and the validator are in `vois-teams/README.md`. Files are matched by the override file's `scope.paths`, taken relative to the project root (the `cwd` the harness sends). A team with no scope covers every file.
+The hook reads team override files from `<project>/.vois/teams/*.json` and checks a team's files against the team's tighter limits. The file format, the three ops (`add`, `restrict`, `refine`) and the validator are in `vois-teams/README.md`. Files are matched by the override file's `scope.paths`, taken relative to the project root (the `cwd` the harness sends). A team with no scope covers every file. A scope that is not `{ "paths": [one or more strings] }` makes the hook skip the whole file, so it never widens to the repo.
+
+Scope globs read like the validator's: `**` crosses folders, `*` and `?` stay inside one, `{a,b}` and `[abc]` work, a leading `./` or `/` is ignored, `\` counts as `/`, and a folder name covers everything inside it. Case matters. An extglob such as `@(a|b)` is rejected by the validator and matches nothing in the hook.
 
 | Rule | Limit a team can tighten | Base | Team value must be |
 |---|---|---|---|
 | `DS-ANIMATION-001` | `max_duration_ms`, the standard animation ceiling | 300 | 100 to 300 |
 | `DS-ANIMATION-001` | `max_duration_ms` on `DS-ANIMATION-002`, the large-element ceiling | 500 | 200 to 500, and never below the standard one |
 | `DS-ANIMATION-008` | `min_press_scale` | 0.95 | 0.95 to 1 |
-| `DS-SPACING-001` | `spacing_divisors` | 4 and 8 | `[8]`, which makes the check flag anything not divisible by 8 |
+| `DS-SPACING-001` | `spacing_divisors` | 4 and 8 | `[8]`, which makes the check flag an arbitrary value (`p-[12px]`, a StyleX `"12px"`) that is not divisible by 8. Utility classes such as `p-3` are not checked |
 
-A finding that comes from a team limit says so: `Duration 250ms exceeds 200ms (limit set by the payments team)`.
+A finding that comes from a team limit says so: `Duration 250ms exceeds 200ms — only acceptable for large elements. (limit set by the payments team)`.
 
-- **A value that loosens the base, or sits outside its range, is ignored.** The hook uses the base limit for that rule and says nothing in the nudge. `node hook-admin.mjs status` lists every team override and marks each as applied, ignored, or not checked. Run the `vois-teams` validator in CI to reject the file instead of having the hook skip it.
+- **A value that loosens the base, or sits outside its range, is ignored.** The hook uses the base limit for that rule and says nothing in the nudge. `node hook-admin.mjs status` lists every team override and marks each as applied, ignored, or not checked, lists `add` rules, and names any file it skipped and why. Run the `vois-teams` validator in CI to reject the file instead of having the hook skip it.
 - **Where several teams cover one file, the strictest value wins.** The validator already rejects overlapping teams that disagree, so this only matters for a project that skips it.
 - **Other tunable limits have nothing to check here.** Contrast ratios, text width, the component thresholds and the rest of `vois-teams/data/ranges.json` can be set by a team, but the hook has no detector for them. `DS-ANIMATION-005` is listed in `ranges.json`, but the hook only flags a start scale of exactly 0, so there is no limit to tighten.
-- **Added team rules are text.** The hook does not read the `add` ops.
+- **Added team rules are text.** The hook does not check the `add` ops. `status` lists them so they are not forgotten.
 - **The Cursor `beforeEdit` hook does not read the files.** It only blocks on `DS-TAILWIND-004` and `DS-ANIMATION-005`, and neither has a team limit.
-- **A bad file never stops the hook.** An unreadable file, invalid JSON or the wrong `schema` is skipped, and the other teams still apply.
+- **A bad file never stops the hook.** An unreadable file, invalid JSON, the wrong `schema` or a malformed `scope` is skipped, and the other teams still apply.
 
 The standalone detector takes `--root <dir>` to do the same: `node detect.mjs --root . src/Pay.tsx`. Without it, only the base limits apply.
 

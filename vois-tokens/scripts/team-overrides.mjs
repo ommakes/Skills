@@ -44,27 +44,47 @@ function stricterThan(spec, candidate, current) {
   return candidate.length < current.length || (candidate.length === current.length && !sameSet(candidate, current) && Math.min(...candidate) > Math.min(...current));
 }
 
-// A path glob: ** crosses folders, * and ? stay inside one.
+// A path glob, read the same way vois-teams/scripts/lib.mjs reads it: ** crosses folders, * and ?
+// stay inside one, {a,b} and [abc] work, a leading ./ or / is ignored, \ counts as /, and a glob
+// that names a folder also covers everything inside it. Case matters here.
+const normalizeGlob = (g) => g.replace(/\\/g, "/").replace(/^(?:\.?\/)+/, "").replace(/\/+$/, "");
+
 function globToRegExp(glob) {
   let out = "";
+  let inBraces = false;
   for (let i = 0; i < glob.length; i++) {
     const c = glob[i];
     if (c === "*" && glob[i + 1] === "*") {
       if (glob[i + 2] === "/") { out += "(?:.*/)?"; i += 2; } else { out += ".*"; i += 1; }
     } else if (c === "*") out += "[^/]*";
     else if (c === "?") out += "[^/]";
-    else out += c.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+    else if (c === "{" && !inBraces && glob.indexOf("}", i) !== -1) { out += "(?:"; inBraces = true; }
+    else if (c === "}" && inBraces) { out += ")"; inBraces = false; }
+    else if (c === "," && inBraces) out += "|";
+    else if (c === "[" && glob.indexOf("]", i + 2) !== -1) {
+      const end = glob.indexOf("]", i + 2);
+      const body = glob.slice(i + 1, end).replace(/^!/, "^").replace(/[\\\]]/g, "\\$&");
+      out += `[${body}]`;
+      i = end;
+    } else out += c.replace(/[.+^${}()|[\]\\]/g, "\\$&");
   }
-  return new RegExp(`^${out}$`);
+  return new RegExp(`^${out}(?:/.*)?$`);
+}
+
+/** A scope is well formed when it is absent (whole repo) or { paths: [one or more strings] }. */
+export function validScope(scope) {
+  if (scope === undefined) return true;
+  return !!scope && typeof scope === "object" && !Array.isArray(scope) && Array.isArray(scope.paths) && scope.paths.length > 0 && scope.paths.every((p) => typeof p === "string" && p !== "");
 }
 
 export function matchesScope(scopePaths, relPath) {
-  if (!Array.isArray(scopePaths) || scopePaths.length === 0) return true; // no scope: the whole repo
-  return scopePaths.some((g) => typeof g === "string" && globToRegExp(g.replace(/^\.\//, "")).test(relPath));
+  if (scopePaths === undefined) return true; // no scope: the whole repo
+  if (!Array.isArray(scopePaths) || scopePaths.length === 0) return false; // malformed: match nothing
+  return scopePaths.some((g) => typeof g === "string" && g !== "" && globToRegExp(normalizeGlob(g)).test(relPath));
 }
 
 /** Every well-formed team override file under <root>/.vois/teams. Never throws. */
-export function loadTeams(root) {
+export function loadTeams(root, onSkip = () => {}) {
   const dir = join(root, ".vois", "teams");
   if (!existsSync(dir)) return [];
   const teams = [];
@@ -73,8 +93,9 @@ export function loadTeams(root) {
   for (const name of names) {
     try {
       const data = JSON.parse(readFileSync(join(dir, name), "utf8"));
-      if (data && data.schema === OVERRIDE_SCHEMA && typeof data.team === "string" && Array.isArray(data.overrides)) teams.push(data);
-    } catch { /* unreadable or invalid JSON: skip the file */ }
+      if (data && data.schema === OVERRIDE_SCHEMA && typeof data.team === "string" && Array.isArray(data.overrides) && validScope(data.scope)) teams.push(data);
+      else onSkip(name, data && data.schema === OVERRIDE_SCHEMA && !validScope(data.scope) ? "scope must be { paths: [one or more globs] }" : "not a vois-team-override/1 file");
+    } catch { onSkip(name, "unreadable or invalid JSON"); }
   }
   return teams;
 }
@@ -86,7 +107,7 @@ export function loadTeams(root) {
  */
 export function paramsFor(teams, root, filePath) {
   const rel = filePath ? relative(root, isAbsolute(filePath) ? filePath : join(root, filePath)).split("\\").join("/") : "";
-  const inside = filePath && rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
+  const inside = filePath && rel !== "" && rel !== ".." && !rel.startsWith("../") && !isAbsolute(rel);
   const chosen = new Map(); // "rule\0param" -> { value, team }
   if (inside) {
     for (const team of teams) {
@@ -129,9 +150,10 @@ export function limitNote(params, rule, param) {
 export function summarizeTeams(teams) {
   const lines = [];
   for (const team of teams) {
-    const scope = team.scope?.paths?.length ? team.scope.paths.join(", ") : "whole repo";
+    const scope = team.scope?.paths ? team.scope.paths.join(", ") : "whole repo";
     lines.push(`${team.team} (${scope})`);
     for (const o of team.overrides) {
+      if (o && o.op === "add") { lines.push(`  added rule, not checked by the hook: ${o.id ?? "(no id)"}`); continue; }
       if (!o || (o.op !== "restrict" && o.op !== "refine")) continue;
       const spec = TUNABLES[o.rule]?.[o.param];
       const label = `${o.rule} ${o.param} = ${JSON.stringify(o.value)}`;

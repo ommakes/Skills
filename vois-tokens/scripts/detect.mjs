@@ -6,6 +6,7 @@
 // Without it the base limits apply.
 
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { rulesForFile } from "./registry.mjs";
 import { BASE_PARAMS, loadTeams, paramsFor } from "./team-overrides.mjs";
 
@@ -49,7 +50,7 @@ function main(argv) {
     } catch {
       continue; // file unreadable/deleted — nothing to detect
     }
-    allFindings.push(...detectFile(filePath, content, { params: root ? paramsFor(teams, root, filePath) : BASE_PARAMS }));
+    allFindings.push(...detectFile(filePath, content, { params: root ? paramsFor(teams, resolve(root), resolve(filePath)) : BASE_PARAMS }));
   }
   console.log(JSON.stringify(allFindings, null, 2));
 }

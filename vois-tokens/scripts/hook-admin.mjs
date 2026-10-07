@@ -41,7 +41,8 @@ function cmdStatus() {
   console.log(`Ignored files: ${config.ignoredFiles.join(", ") || "(none)"}`);
   const ignoredValueRules = Object.keys(config.ignoredValues);
   console.log(`Ignored values: ${ignoredValueRules.length ? ignoredValueRules.join(", ") : "(none)"}`);
-  const teamLines = summarizeTeams(loadTeams(ROOT));
+  const skipped = [];
+  const teamLines = [...summarizeTeams(loadTeams(ROOT, (file, why) => skipped.push(`skipped ${file}: ${why}`))), ...skipped];
   console.log(`Team overrides: ${teamLines.length ? "" : "(none)"}`);
   for (const l of teamLines) console.log(`  ${l}`);
 }
