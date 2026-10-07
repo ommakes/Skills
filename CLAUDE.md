@@ -12,6 +12,7 @@ python3 scripts/check-routing.py
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
 node vois-teams/scripts/validate.test.mjs
+node vois-teams/scripts/validate.mjs all
 node vois-eval/check-scenarios.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
