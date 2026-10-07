@@ -749,7 +749,7 @@
       "tree_path": [1],
       "user_prompt": "The Notification settings page is opened straight from the account menu on the home screen. Give the user a way back.",
       "condition": "User is 2 levels deep, counting Home (Home > Settings), came from a specific list or context",
-      "expected_outcome": "Back link (single arrow + parent page name — simpler than a breadcrumb)",
+      "expected_outcome": "Back link (single arrow + parent page name — simpler than a breadcrumb). When the parent is Home, the label is just \"Back\"",
       "forbidden_outcomes": [
         "A breadcrumb (Home > Notification settings) for two levels",
         "Relying on the browser back button"

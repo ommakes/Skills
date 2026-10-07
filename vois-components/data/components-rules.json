@@ -260,7 +260,7 @@
       "framing": "The user has navigated into a nested view and needs to know where they are and how to get back.",
       "decision_tree": [
         { "condition": "User is 3 or more levels deep, counting Home as the first level (Home > Invoices > Invoice)", "recommendation": "Breadcrumb (shows full path, every item is a link)" },
-        { "condition": "User is 2 levels deep, counting Home (Home > Settings), came from a specific list or context", "recommendation": "Back link (single arrow + parent page name — simpler than a breadcrumb)" },
+        { "condition": "User is 2 levels deep, counting Home (Home > Settings), came from a specific list or context", "recommendation": "Back link (single arrow + parent page name — simpler than a breadcrumb). When the parent is Home, the label is just \"Back\"" },
         { "condition": "User is on a top-level page with sibling pages", "recommendation": "Navigation (sidebar or top nav — breadcrumb isn't needed at the top level)" }
       ],
       "rationale": [
