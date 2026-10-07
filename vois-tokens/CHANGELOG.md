@@ -4,6 +4,29 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.20.0] - 2026-10-07
+
+### Added
+
+- **The hook reads team overrides.** `hook.mjs` and `detect.mjs --root` read `<project>/.vois/teams/*.json` and check a team's files against the team's tighter limits: `DS-ANIMATION-001` and `DS-ANIMATION-002` (animation ceilings), `DS-ANIMATION-008` (press scale) and `DS-SPACING-001` (spacing divisors). Files are matched by the override file's `scope.paths`. A finding from a team limit says which team set it.
+- A value that loosens the base, sits outside its range, or comes from a malformed file is ignored, so the hook never loosens. `hook-admin.mjs status` lists each team override as applied, ignored, or not checked by the hook.
+- New `scripts/team-overrides.mjs`. `detect.test.mjs` covers scope matching, ignored values, several teams, the `vois-teams` payments example end to end, and a check that the hook's limits match `vois-teams/data/ranges.json`.
+- `hooks.md` has a Team overrides section.
+- A scope that is not `{ paths: [strings] }` skips the team file instead of widening it to the repo. Scope globs follow the validator: `{a,b}`, `[abc]`, a leading `./` or `/`, `\`, and a folder name covering its contents. `detect.mjs --root` resolves a relative file path from the current folder.
+
+### Fixed
+
+- **The `components/ui/` skip missed project-relative paths.** The lookalike checks skip shadcn primitives, but the check needed a separator in front of `components/`, so `components/ui/button.tsx` was not skipped when the path had no `src/` or other folder before it. Those files are where raw `<button>` and `animate-spin` belong. The check now also matches at the start of the path.
+
+- **Lookalike detectors read JSX tags properly.** A new `scripts/jsx-tags.mjs` skips braces and quotes, so `{count >= 3}` or `{a > b ? x : y}` no longer ends a tag early. `LOOKALIKE-009` ignores functions the file declares, methods, comments and prose in JSX text. `LOOKALIKE-010` also flags amber, green and the other palette colors, not only red. `LOOKALIKE-011` ignores `data-title`. `LOOKALIKE-007` skips only exact busy-flag names and reads `3_000` and `3 * 1000`. Component imports count from any path.
+- **Animation checks.** `duration-[0.6s]` and every seconds spelling are compared against the ceiling, a message no longer credits a team for the base 500ms ceiling, and `active:scale-[0.9]` is checked against the press floor.
+
+### Changed
+
+- **Version bump:** `1.19.0` → `1.20.0`
+
+---
+
 ## [1.19.0] - 2026-10-06
 
 ### Added

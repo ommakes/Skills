@@ -2,11 +2,14 @@
 // No new dependency — uses Node's built-in test runner.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
 import { RULES } from "./registry.mjs";
+import { TUNABLES, loadTeams, paramsFor, matchesScope, summarizeTeams } from "./team-overrides.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, "__fixtures__");
@@ -112,6 +115,11 @@ test("LOOKALIKE-* rules skip files under components/ui", () => {
   const src = '<button className="focus-visible:ring-2">x</button><div onClick={go}>y</div><Loader2 className="animate-spin" />';
   assert.equal(detectFile("src/components/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length, 0);
   assert.ok(detectFile("src/screens/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
+  // A path relative to the project root has no separator in front of components/.
+  for (const p of ["components/ui/thing.tsx", "components\\ui\\thing.tsx"]) {
+    assert.equal(detectFile(p, src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length, 0, p);
+  }
+  assert.ok(detectFile("mycomponents/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
 });
 
 test("LOOKALIKE-005 handles arrow functions inside attributes and skips role= and stopPropagation", () => {
@@ -133,4 +141,281 @@ test("LOOKALIKE-009 matches the native call but not a method or a longer name", 
   for (const src of ["toast.alert('x')", "onConfirm()", "confirmAction()", "const prompted = 1"]) {
     assert.equal(detectFile("a.tsx", src).some((f) => f.ruleId === "LOOKALIKE-009"), false, src);
   }
+});
+
+// ---------------------------------------------------------------------------
+// Team overrides: the hook reads <root>/.vois/teams/*.json and tightens limits.
+// ---------------------------------------------------------------------------
+
+function projectWith(teamFiles) {
+  const root = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  mkdirSync(join(root, ".vois", "teams"), { recursive: true });
+  for (const [name, body] of Object.entries(teamFiles)) {
+    writeFileSync(join(root, ".vois", "teams", `${name}.json`), typeof body === "string" ? body : JSON.stringify(body));
+  }
+  return root;
+}
+
+const team = (name, overrides, scope) => ({ schema: "vois-team-override/1", team: name, ...(scope ? { scope: { paths: scope } } : {}), overrides });
+const restrictOverride = (n, rule, param, value) => ({ id: `x-00${n}`, op: "restrict", rule, param, value, reason: "Because this team needs it." });
+
+/** Findings for `source` written at `rel` inside `root`, with the team files in that project applied. */
+function findingsIn(root, rel, source) {
+  const filePath = join(root, rel);
+  return detectFile(filePath, source, { params: paramsFor(loadTeams(root), root, filePath) });
+}
+const has = (found, ruleId) => found.filter((f) => f.ruleId === ruleId);
+
+test("without team files the base limits apply", () => {
+  const root = projectWith({});
+  assert.deepEqual(has(findingsIn(root, "src/a.tsx", '<div className="duration-250" />'), "DS-ANIMATION-001"), []);
+  assert.equal(has(findingsIn(root, "src/a.tsx", '<div className="duration-350" />'), "DS-ANIMATION-001").length, 1);
+});
+
+test("a team limit tightens the animation check, only for files in its scope", () => {
+  const root = projectWith({ payments: team("payments", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)], ["apps/payments/**"]) });
+  const inScope = has(findingsIn(root, "apps/payments/Checkout.tsx", '<div className="duration-250" />'), "DS-ANIMATION-001");
+  assert.equal(inScope.length, 1);
+  assert.match(inScope[0].message, /exceeds 200ms/);
+  assert.match(inScope[0].message, /limit set by the payments team/);
+  assert.deepEqual(has(findingsIn(root, "apps/growth/Hero.tsx", '<div className="duration-250" />'), "DS-ANIMATION-001"), []);
+});
+
+test("a team with no scope covers every file in the project", () => {
+  const root = projectWith({ solo: team("solo", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)]) });
+  assert.equal(has(findingsIn(root, "anywhere/deep/File.tsx", '<div className="duration-250" />'), "DS-ANIMATION-001").length, 1);
+});
+
+test("the large-element ceiling follows its own limit and never drops below the standard one", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-002", "max_duration_ms", 400)]) });
+  const over = has(findingsIn(root, "a.tsx", '<div className="duration-450" />'), "DS-ANIMATION-001");
+  assert.match(over[0].message, /exceeds the 400ms ceiling/);
+  const low = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-002", "max_duration_ms", 200)]) });
+  assert.match(has(findingsIn(low, "a.tsx", '<div className="duration-350" />'), "DS-ANIMATION-001")[0].message, /exceeds the 300ms ceiling/);
+});
+
+test("a team press-scale floor and spacing divisor are applied", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-008", "min_press_scale", 0.97), restrictOverride(2, "DS-SPACING-001", "spacing_divisors", [8])]) });
+  assert.match(has(findingsIn(root, "a.tsx", '<button className="active:scale-96" />'), "DS-ANIMATION-008")[0].message, /below the 0.97 floor/);
+  assert.deepEqual(has(findingsIn(projectWith({}), "a.tsx", '<button className="active:scale-96" />'), "DS-ANIMATION-008"), []);
+  assert.match(has(findingsIn(root, "a.tsx", '<div className="p-[12px]" />'), "DS-SPACING-001")[0].message, /not divisible by 8/);
+  assert.deepEqual(has(findingsIn(root, "a.tsx", '<div className="p-[16px]" />'), "DS-SPACING-001"), []);
+  assert.deepEqual(has(findingsIn(projectWith({}), "a.tsx", '<div className="p-[12px]" />'), "DS-SPACING-001"), []);
+});
+
+test("an override that loosens the base, leaves its range, or is malformed is ignored", () => {
+  const root = projectWith({
+    loose: team("loose", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 400)]),
+    tiny: team("tiny", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 50)]),
+    relax: team("relax", [{ id: "relax-001", op: "relax", rule: "DS-ANIMATION-001", param: "max_duration_ms", value: 900, reason: "Because." }]),
+    wrongSchema: { ...team("wrongSchema", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 100)]), schema: "something-else" },
+    broken: "{ not json",
+  });
+  const params = paramsFor(loadTeams(root), root, join(root, "a.tsx"));
+  assert.equal(params.get("DS-ANIMATION-001", "max_duration_ms"), 300);
+  assert.equal(params.source("DS-ANIMATION-001", "max_duration_ms"), null);
+});
+
+test("a bad team file does not stop a good one from applying", () => {
+  const root = projectWith({ broken: "{ nope", good: team("good", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)]) });
+  assert.equal(paramsFor(loadTeams(root), root, join(root, "a.tsx")).get("DS-ANIMATION-001", "max_duration_ms"), 200);
+});
+
+test("where teams overlap the strictest value wins, and separate scopes keep their own", () => {
+  const root = projectWith({
+    a: team("a", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 250)], ["apps/**"]),
+    b: team("b", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 150)], ["apps/payments/**"]),
+  });
+  const get = (rel) => paramsFor(loadTeams(root), root, join(root, rel)).get("DS-ANIMATION-001", "max_duration_ms");
+  assert.equal(get("apps/payments/x.tsx"), 150);
+  assert.equal(get("apps/growth/x.tsx"), 250);
+  assert.equal(get("lib/x.tsx"), 300);
+});
+
+test("a file outside the project root, or with no path, gets the base limits", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)]) });
+  assert.equal(paramsFor(loadTeams(root), root, "/somewhere/else/a.tsx").get("DS-ANIMATION-001", "max_duration_ms"), 300);
+  assert.equal(paramsFor(loadTeams(root), root, undefined).get("DS-ANIMATION-001", "max_duration_ms"), 300);
+});
+
+test("path globs: ** crosses folders, * and ? do not, and a leading ./ is ignored", () => {
+  assert.ok(matchesScope(["apps/payments/**"], "apps/payments/a/b.tsx"));
+  assert.ok(!matchesScope(["apps/payments/**"], "apps/paymentsx/a.tsx"));
+  assert.ok(matchesScope(["**/*.tsx"], "a/b/c.tsx"));
+  assert.ok(matchesScope(["**/*.tsx"], "c.tsx"));
+  assert.ok(!matchesScope(["*.tsx"], "a/c.tsx"));
+  assert.ok(matchesScope(["src/?.tsx"], "src/a.tsx"));
+  assert.ok(!matchesScope(["src/?.tsx"], "src/ab.tsx"));
+  assert.ok(matchesScope(["./apps/**"], "apps/x.tsx"));
+  assert.ok(matchesScope(undefined, "anything.tsx"));
+  assert.ok(!matchesScope([], "anything.tsx"));
+  assert.ok(!matchesScope(["a.b"], "aXb"));
+});
+
+test("the hook's limits match the entries in vois-teams/data/ranges.json", { skip: !existsSync(join(HERE, "..", "..", "vois-teams", "data", "ranges.json")) }, () => {
+  const ranges = JSON.parse(readFileSync(join(HERE, "..", "..", "vois-teams", "data", "ranges.json"), "utf8")).ranges;
+  for (const [rule, params] of Object.entries(TUNABLES)) {
+    for (const [param, spec] of Object.entries(params)) {
+      const entry = ranges.find((r) => r.rule === rule && r.param === param);
+      assert.ok(entry, `${rule} ${param} is not in ranges.json`);
+      for (const key of Object.keys(spec)) assert.deepEqual(entry[key], spec[key], `${rule} ${param} ${key}`);
+    }
+  }
+});
+
+test("the payments example from vois-teams drives the hook end to end", { skip: !existsSync(join(HERE, "..", "..", "vois-teams", "examples", "payments.json")) }, () => {
+  const root = projectWith({});
+  copyFileSync(join(HERE, "..", "..", "vois-teams", "examples", "payments.json"), join(root, ".vois", "teams", "payments.json"));
+  mkdirSync(join(root, "apps", "payments"), { recursive: true });
+  const file = join(root, "apps", "payments", "Pay.tsx");
+  writeFileSync(file, '<div className="duration-250 p-[12px]" />\n');
+  const payload = JSON.stringify({ tool_name: "Write", cwd: root, tool_input: { file_path: file } });
+  const run = spawnSync(process.execPath, [join(HERE, "hook.mjs")], { input: payload, encoding: "utf8" });
+  assert.equal(run.status, 0);
+  assert.match(run.stdout, /DS-ANIMATION-001/);
+  assert.match(run.stdout, /limit set by the payments team/);
+  assert.match(run.stdout, /DS-SPACING-001/);
+  const cli = spawnSync(process.execPath, [join(HERE, "detect.mjs"), "--root", root, file], { encoding: "utf8" });
+  assert.ok(JSON.parse(cli.stdout).some((f) => f.ruleId === "DS-ANIMATION-001"));
+  const base = spawnSync(process.execPath, [join(HERE, "detect.mjs"), file], { encoding: "utf8" });
+  assert.equal(JSON.parse(base.stdout).some((f) => f.ruleId === "DS-ANIMATION-001"), false);
+});
+
+test("status lines say what is applied, ignored, or not checked", () => {
+  const lines = summarizeTeams([team("t", [
+    restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200),
+    restrictOverride(2, "DS-ANIMATION-001", "max_duration_ms", 400),
+    restrictOverride(3, "DS-TYPOGRAPHY-001", "max_text_styles", 2),
+  ], ["apps/**"])]).join("\n");
+  assert.match(lines, /t \(apps\/\*\*\)/);
+  assert.match(lines, /applied: DS-ANIMATION-001 max_duration_ms = 200/);
+  assert.match(lines, /ignored.*DS-ANIMATION-001 max_duration_ms = 400/);
+  assert.match(lines, /not checked by the hook: DS-TYPOGRAPHY-001 max_text_styles = 2/);
+});
+
+const dur = (src, root, rel = "a.tsx") => has(findingsIn(root, rel, src), "DS-ANIMATION-001");
+
+test("a malformed scope never widens a team to the whole repo", () => {
+  for (const scope of ["apps/payments/**", [], {}, null, ["apps/**", 5], { paths: "apps/**" }, { paths: [] }]) {
+    const root = projectWith({ t: { ...team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)]), scope } });
+    assert.deepEqual(loadTeams(root), [], JSON.stringify(scope));
+    assert.equal(dur('<div className="duration-250" />', root, "apps/web/Home.tsx").length, 0, JSON.stringify(scope));
+  }
+  const root = projectWith({ t: { ...team("t", []), scope: "x" } });
+  assert.doesNotThrow(() => summarizeTeams(loadTeams(root)));
+  const skipped = [];
+  loadTeams(root, (f, why) => skipped.push([f, why]));
+  assert.equal(skipped.length, 1);
+});
+
+test("the hook reads scope globs the way the validator does", () => {
+  const ok = (glob, rel) => matchesScope([glob], rel);
+  assert.ok(ok("apps/{payments,billing}/**", "apps/billing/a.tsx"));
+  assert.ok(!ok("apps/{payments,billing}/**", "apps/growth/a.tsx"));
+  assert.ok(ok("apps/[pb]ayments/**", "apps/payments/a.tsx"));
+  assert.ok(ok("apps/payments", "apps/payments/a/b.tsx"), "a folder covers its contents");
+  assert.ok(ok("apps/payments/", "apps/payments/a.tsx"));
+  assert.ok(ok("/apps/payments/**", "apps/payments/a.tsx"));
+  assert.ok(ok("apps\\payments\\**", "apps/payments/a.tsx"));
+  assert.ok(!ok("apps/payments", "apps/paymentsx/a.tsx"));
+  assert.ok(!ok("apps/@(payments|growth)/**", "apps/payments/a.tsx"), "extglob matches nothing");
+});
+
+test("a folder that starts with two dots is inside the project", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)], ["**"]) });
+  assert.equal(paramsFor(loadTeams(root), root, join(root, "..cache", "a.tsx")).get("DS-ANIMATION-001", "max_duration_ms"), 200);
+  assert.equal(paramsFor(loadTeams(root), root, join(root, "..", "a.tsx")).get("DS-ANIMATION-001", "max_duration_ms"), 300);
+});
+
+test("detect.mjs --root resolves a relative file path from the current folder", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)], ["apps/payments/**"]) });
+  mkdirSync(join(root, "apps", "payments"), { recursive: true });
+  writeFileSync(join(root, "apps", "payments", "Pay.tsx"), '<div className="duration-250" />\n');
+  const run = (cwd, rootArg, file) => JSON.parse(spawnSync(process.execPath, [join(HERE, "detect.mjs"), "--root", rootArg, file], { cwd, encoding: "utf8" }).stdout);
+  const parent = join(root, "..");
+  const name = root.slice(parent.length + 1);
+  assert.equal(run(parent, name, `${name}/apps/payments/Pay.tsx`).length, 1);
+  assert.equal(run(root, ".", "apps/payments/Pay.tsx").length, 1);
+});
+
+test("a > inside an attribute does not hide a raw button or clickable div", () => {
+  const f = (src) => detectFile("a.tsx", src).map((x) => x.ruleId);
+  assert.ok(f('<button disabled={count >= 3} className="focus-visible:ring-2">x</button>').includes("LOOKALIKE-001"));
+  assert.ok(f('<div className={a > b ? "x" : "y"} onClick={go}>x</div>').includes("LOOKALIKE-005"));
+  assert.ok(f('<div onClick={() => go()} className="a">x</div>').includes("LOOKALIKE-005"));
+  assert.ok(!f('<div role="button" onClick={go}>x</div>').includes("LOOKALIKE-005"));
+  const start = Date.now();
+  f("<div ".repeat(4000) + "onClick={x}");
+  assert.ok(Date.now() - start < 2000, "an unterminated tag flood stays fast");
+});
+
+test("LOOKALIKE-011 ignores hyphenated attributes that end in title", () => {
+  const f = (src) => detectFile("a.tsx", src).map((x) => x.ruleId);
+  assert.ok(!f('<div data-title="Revenue">x</div>').includes("LOOKALIKE-011"));
+  assert.ok(!f('<span sub-title="x">x</span>').includes("LOOKALIKE-011"));
+  assert.ok(f('<span title="Revenue">x</span>').includes("LOOKALIKE-011"));
+});
+
+test("LOOKALIKE-009 flags the browser dialogs, not functions the file declares or comments", () => {
+  const f = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "LOOKALIKE-009");
+  assert.equal(f("const confirm = useConfirm(); await confirm({ title: 'Delete?' })"), false);
+  assert.equal(f("function alert(msg) { show(msg) }\nalert('x')"), false);
+  assert.equal(f("const api = {\n  confirm(id) { return id }\n}"), false);
+  assert.equal(f("// never call alert() here"), false);
+  assert.equal(f("const { confirm } = useDialogs()\nconfirm('x')"), false);
+  assert.equal(f("if (!confirm('Delete?')) return"), true);
+  assert.equal(f("const confirm = useConfirm()\nwindow.confirm('x')"), true);
+  assert.equal(f("alert('Saved')"), true);
+  assert.equal(f("<p>Please confirm (this cannot be undone)</p>"), false);
+  assert.equal(f("const ok = confirm('x')"), true);
+  assert.equal(f("if (ready) return confirm('x')"), true);
+  assert.equal(f("else window.confirm('x')"), true);
+});
+
+test("LOOKALIKE-007 skips exact busy flags only, and reads 3_000 and 3 * 1000", () => {
+  const f = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "LOOKALIKE-007");
+  assert.equal(f("setTimeout(() => setUploadSuccess(false), 3000)"), true);
+  assert.equal(f("setTimeout(() => setSubmitSuccess(false), 3000)"), true);
+  assert.equal(f("setTimeout(() => setShown(false), 3_000)"), true);
+  assert.equal(f("setTimeout(() => setShown(false), 3 * 1000)"), true);
+  assert.equal(f("setTimeout(() => setShown(false), 1 * 500)"), false);
+  assert.equal(f("setTimeout(() => setIsLoading(false), 3000)"), false);
+  assert.equal(f("setTimeout(() => setSubmitting(false), 3000)"), false);
+});
+
+test("component imports from any path count, so Spinner and Tooltip are not flagged", () => {
+  const ids = (src) => detectFile("a.tsx", src).map((x) => x.ruleId);
+  assert.ok(!ids('import { Spinner } from "./ui/spinner"\n<Loader className="animate-spin" />').includes("LOOKALIKE-002"));
+  assert.ok(!ids('import { Spinner } from "@workspace/ui/components/spinner"\n<i className="animate-spin" />').includes("LOOKALIKE-002"));
+  assert.ok(ids('<i className="animate-spin" />').includes("LOOKALIKE-002"));
+  assert.ok(!ids('import { Tooltip } from "../../ui/tooltip"\n<span title="x">a</span>').includes("LOOKALIKE-011"));
+});
+
+test("duration messages credit the right limit, and seconds are checked against the ceiling", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)]) });
+  const msgs = (src) => dur(src, root).map((x) => x.message);
+  assert.doesNotMatch(msgs('<div className="duration-600" />')[0], /set by the t team/);
+  assert.match(msgs('<div className="duration-250" />')[0], /set by the t team/);
+  assert.match(msgs(".a { transition-duration: 0.6s }")[0], /exceeds the 500ms ceiling/);
+  assert.match(msgs('<div className="duration-[0.6s]" />')[0], /exceeds the 500ms ceiling/);
+  assert.equal(msgs('<div className="duration-[0.1s]" />').length, 0);
+});
+
+test("DS-ANIMATION-008 catches an arbitrary active scale", () => {
+  const f = (src) => detectFile("a.tsx", src).filter((x) => x.ruleId === "DS-ANIMATION-008");
+  assert.equal(f('<div className="active:scale-[0.9]" />').length, 1);
+  assert.equal(f('<div className="active:scale-[0.97]" />').length, 0);
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-008", "min_press_scale", 0.97)]) });
+  assert.equal(has(findingsIn(root, "a.tsx", '<div className="active:scale-[0.96]" />'), "DS-ANIMATION-008").length, 1);
+});
+
+test("status lists added rules and skipped files", () => {
+  const lines = summarizeTeams([team("t", [{ id: "t-001", op: "add", reason: "x", text: "y" }])]).join("\n");
+  assert.match(lines, /added rule, not checked by the hook: t-001/);
+});
+
+test("LOOKALIKE-010 flags a role=alert box in any status palette color", () => {
+  const f = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "LOOKALIKE-010");
+  assert.equal(f('<div role="alert" className="border border-amber-300 bg-amber-50">x</div>'), true);
+  assert.equal(f('<div role="alert" className="p-4">x</div>'), false);
 });

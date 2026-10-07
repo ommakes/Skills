@@ -23,8 +23,8 @@ const warnings = [];
 let checked = 0;
 
 const base = () => errors.push(...validateRanges(ranges, baseRules).map((m) => `ranges.json: ${m}`));
-const files = (list) => {
-  const r = validatePaths(list, { baseRules, ranges });
+const files = (list, options) => {
+  const r = validatePaths(list, { baseRules, ranges }, options);
   errors.push(...r.errors);
   warnings.push(...r.warnings);
   checked += r.checked;
@@ -35,7 +35,7 @@ else if (command === "check" && paths.length) files(paths);
 else if (command === "all") {
   base();
   const dirs = ["examples", "proposals"].map((d) => join(here, "..", d)).filter(existsSync);
-  files(dirs);
+  files(dirs, { optional: [join(here, "..", "proposals")] }); // proposals/ is empty until someone files one
 } else {
   console.error("usage: node validate.mjs base | check <path...> | all   [--skills-dir <dir>]");
   process.exit(2);
