@@ -515,7 +515,7 @@
       "source_job": "JOB-NAVIGATION-POSITION",
       "tree_path": [0],
       "user_prompt": "Workspace settings leads to Members, which leads to an Invite history screen. On that last screen, help the user see where they are and jump to any parent.",
-      "condition": "User is 2+ levels deep in a hierarchy (Settings > Workspace > Members)",
+      "condition": "User is 3 or more levels deep, counting Home as the first level (Home > Invoices > Invoice)",
       "expected_outcome": "Breadcrumb (shows full path, every item is a link)",
       "forbidden_outcomes": [
         "A single back link (can't reach the middle level)",
@@ -527,16 +527,17 @@
     {
       "id": "EVAL-038",
       "source_job": "JOB-NAVIGATION-POSITION",
-      "tree_path": [1],
+      "tree_path": [0],
       "user_prompt": "On an invoice detail page, reached from the Invoices list, give the user a way back to the list.",
-      "condition": "User is 1 level deep, came from a specific list or context",
-      "expected_outcome": "Back link (single arrow + parent page name — simpler than a breadcrumb)",
+      "condition": "User is 3 or more levels deep, counting Home as the first level (Home > Invoices > Invoice)",
+      "expected_outcome": "Breadcrumb (shows full path, every item is a link)",
       "forbidden_outcomes": [
-        "A full path trail (Home > Invoices > Invoice) for one level of depth",
+        "A back link on its own (a record page is 3 levels with Home, and the user should see and reach every level)",
         "Relying on the browser back button"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed once, then chose a breadcrumb on a re-run, citing vois-patterns PATH-E. Contested, see the run log in README.md."
+      "revision_note": "Run 2 (2026-10-06) split: one run chose a back link, a re-run chose a breadcrumb citing vois-patterns PATH-E. Decided 2026-10-07: a record page opened from its list gets a Breadcrumb, and Home counts as a level (vois-components 1.10.2). Expected outcome changed from Back link to Breadcrumb. EVAL-054 now covers the back link case.",
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Re-run blind 2026-10-07 after the decision: passed."
     },
     {
       "id": "EVAL-039",
@@ -741,6 +742,20 @@
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
       "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-054",
+      "source_job": "JOB-NAVIGATION-POSITION",
+      "tree_path": [1],
+      "user_prompt": "The Notification settings page is opened straight from the account menu on the home screen. Give the user a way back.",
+      "condition": "User is 2 levels deep, counting Home (Home > Settings), came from a specific list or context",
+      "expected_outcome": "Back link (single arrow + parent page name — simpler than a breadcrumb)",
+      "forbidden_outcomes": [
+        "A breadcrumb (Home > Notification settings) for two levels",
+        "Relying on the browser back button"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-07 so the back link branch has a scenario after EVAL-038 moved to the breadcrumb. Run blind 2026-10-07 after the decision: passed."
     }
   ]
 }

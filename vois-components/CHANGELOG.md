@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **`JOB-SWITCH-VIEWS` and `PATH-A` disagreed.** The job said Tabs for a settings page (Profile, Billing, Members), while `PATH-A-DEPTH-DEEP` in `vois-patterns` says 4 or more sections use a sidebar with sub-pages. A blind build of a four-section settings screen followed the pattern and missed the job's answer (EVAL-034). The Tabs branch now says a settings page with 4 or more sections uses sidebar navigation instead.
 
+- **Breadcrumb or back link, decided.** `PATH-E` puts a breadcrumb above the title of a record page, while `JOB-NAVIGATION-POSITION` gave a back link for one level deep, so a detail page reached from its list could go either way (EVAL-038). The job now counts Home as the first level: 3 or more levels gets a Breadcrumb, and 2 levels (Home > Page) gets a back link. A record page opened from its list is 3 levels and gets a Breadcrumb. The tree, rationale and Quick Reference all say this now.
+
 ### Changed
 
 - **Version bump:** `1.10.1` → `1.10.2`

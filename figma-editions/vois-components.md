@@ -58,8 +58,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Right-click enhancement | ContextMenu | DropdownMenu |
 | 2–5 sequential required steps, each fits a page container | Stepper (spec below) | Progress, Tabs, Wizard |
 | 6+ steps, or a step that needs its own full page | Wizard | Stepper |
-| 2+ levels deep in hierarchy | Breadcrumb | Back link |
-| 1 level deep | Back link | Breadcrumb |
+| 3+ levels deep, counting Home | Breadcrumb | Back link |
+| 2 levels deep, counting Home | Back link | Breadcrumb |
 | Simple collection, no sorting | List | Table |
 | Comparable attributes, < 100 rows | Table | DataTable |
 | 100+ rows, sortable, bulk actions | DataTable | Table |
@@ -161,11 +161,11 @@ Why not Segmented Control for major navigation? It communicates narrowing a view
 
 **Job 17 — Indicate position in a hierarchy and enable backtracking** `JOB-NAVIGATION-POSITION`
 *The user has navigated into a nested view and needs to know where they are.*
-- 2+ levels deep (Settings > Workspace > Members) → Breadcrumb, full path, every item a link
-- 1 level deep, came from a specific list/context → Back link (arrow + parent page name)
+- 3+ levels deep, counting Home (Home > Invoices > Invoice) → Breadcrumb, full path, every item a link
+- 2 levels deep, counting Home (Home > Settings), came from a specific list/context → Back link (arrow + parent page name)
 - Top-level page with sibling pages → Navigation (sidebar/top nav) — no breadcrumb needed
 
-Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
+Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unnecessary noise — use it with 3 or more levels, counting Home. A record page opened from its list is 3 levels, so it gets a Breadcrumb. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
 
 ### Selection & Input
 
