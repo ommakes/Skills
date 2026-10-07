@@ -230,7 +230,7 @@
       "stricter": "lower",
       "min": 2,
       "max": 5,
-      "match": "2 to 5",
+      "match": "2 to 5 steps, and each step's content fits in a page container",
       "note": "Largest step count that still uses the Stepper. Above it, a Wizard."
     },
     {
