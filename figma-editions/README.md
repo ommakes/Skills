@@ -8,16 +8,16 @@ Flattened, single-file `.md` builds of select skills for upload to Figma's custo
 
 ## Status
 
-Rebuilt 2026-10-06 from the sources on `main`. Each edition's frontmatter `version` is the source version it was built from.
+Rebuilt 2026-10-06 from the sources on `main`, and `vois-components` and `vois-tokens` were bumped again on 2026-10-07. Each edition's frontmatter `version` is the source version it was built from.
 
 | Edition | Built from | Before this rebuild |
 |---|---|---|
 | `gtm-positioning.md` | 1.0.0 | In sync, apart from one added sentence about page-fitting copy |
 | `design-ask.md` | 1.0.0 | In sync |
 | `metrics-tagging.md` | 1.1.0 | 1.0.0: missed the Properties column, task-level events, and the taxonomy-bloat rules |
-| `righter.md` | 1.9.0 | 1.4.0 |
-| `vois-components.md` | 1.10.2 | 1.5.0 |
-| `vois-patterns.md` | 1.14.1 | 1.9.0 |
+| `righter.md` | 1.9.0 (behind: source is 1.9.1) | 1.4.0 |
+| `vois-components.md` | 1.10.3 | 1.5.0 |
+| `vois-patterns.md` | 1.14.1 (behind: source is 1.14.2) | 1.9.0 |
 | `vois-tokens.md` | 1.20.1 | 1.13.0 |
 
 There is still no build script, and the four Vois and Righter editions are condensed by hand, so they fall behind whenever a source changes. A rule worth keeping: rebuild an edition in the same pass as a source version bump, or note here that it's behind.
@@ -55,9 +55,9 @@ Frontmatter `description` fields are written to trigger correctly for an agent. 
 | `gtm-positioning.md` | `gtm-positioning/SKILL.md` | 222 (source) | None. One sentence that named the reference files of `righter` and `vois-patterns` now names the skills only |
 | `design-ask.md` | `design-ask/SKILL.md` | 155 (source) | None (`README.md` alongside it is human-facing only, not uploaded) |
 | `metrics-tagging.md` | `metrics-tagging/SKILL.md` | 272 (source, v1.1.0) | None. The source points at a project-specific `event-registry.md` ledger that lives in the user's own workspace, not in this skill (`README` alongside it is human-facing only, not uploaded) |
-| `righter.md` | `righter/SKILL.md` | 484 (source, v1.9.0) | `data/components.json` (8 entries, inlined as condensed rules), `data/weakeners.json` (11 categories, inlined as a table), `data/rhetorical-devices.json` (9 devices, inlined as a table), `data/marketing-limits.json` and `references/marketing-copy.md` (slot limits, puffery list and the `mkt-*` rules, inlined as a Marketing Copy section), `references/accessibility.md` (kept as the `accessible-copy` principle only), `data/phonaesthetics.json` (inline condensed fallback kept), `scripts/ari.mjs` and `scripts/check-slots.mjs` (cut: the ARI formula and slot limits are inline), `references/email.md` + `data/email-benchmarks.json` (cut: specialized sub-case, noted with a link back), `references/tone.md`, `references/voice-chart.md`, `references/figma.md` (cut: not needed in Figma), `evals/cases.json` (cut: maintainer-only regression corpus). Em dashes removed from the prose to match `no-em-dashes` |
-| `vois-components.md` | `vois-components/SKILL.md` | 165 (source, v1.10.2) | `data/components-rules.json` (the sole source for the 21-job decision tree, condensed to markdown by category), `references/stepper.md` (condensed into a Stepper Spec section), and the 11-row `lookalikes` table (inlined as two tables). `vois-dataviz` is referenced, not inlined |
-| `vois-patterns.md` | `vois-patterns/SKILL.md` | 181 (source, v1.14.1) | 14 `references/*.md` files and `data/patterns-rules.json`, condensed. Since v1.9.0 this adds Settings interactions, Table interactions, Field groups, Dialog width, PATH G (marketing pages), and the PII rules. Mobbin links and `Basis` lines are dropped; rule IDs are kept. The routing to Righter is a graceful fallback with plain UI-copy conventions for when Righter isn't installed |
+| `righter.md` | `righter/SKILL.md` | 484 (source, v1.9.0; the source is now 485 lines at v1.9.1) | `data/components.json` (8 entries, inlined as condensed rules), `data/weakeners.json` (11 categories, inlined as a table), `data/rhetorical-devices.json` (9 devices, inlined as a table), `data/marketing-limits.json` and `references/marketing-copy.md` (slot limits, puffery list and the `mkt-*` rules, inlined as a Marketing Copy section), `references/accessibility.md` (kept as the `accessible-copy` principle only), `data/phonaesthetics.json` (inline condensed fallback kept), `scripts/ari.mjs` and `scripts/check-slots.mjs` (cut: the ARI formula and slot limits are inline), `references/email.md` + `data/email-benchmarks.json` (cut: specialized sub-case, noted with a link back), `references/tone.md`, `references/voice-chart.md`, `references/figma.md` (cut: not needed in Figma), `evals/cases.json` (cut: maintainer-only regression corpus). Em dashes removed from the prose to match `no-em-dashes` |
+| `vois-components.md` | `vois-components/SKILL.md` | 165 (source, v1.10.3) | `data/components-rules.json` (the sole source for the 21-job decision tree, condensed to markdown by category), `references/stepper.md` (condensed into a Stepper Spec section), and the 11-row `lookalikes` table (inlined as two tables). `vois-dataviz` is referenced, not inlined |
+| `vois-patterns.md` | `vois-patterns/SKILL.md` | 181 (source, v1.14.1; the source is now v1.14.2) | 14 `references/*.md` files and `data/patterns-rules.json`, condensed. Since v1.9.0 this adds Settings interactions, Table interactions, Field groups, Dialog width, PATH G (marketing pages), and the PII rules. Mobbin links and `Basis` lines are dropped; rule IDs are kept. The routing to Righter is a graceful fallback with plain UI-copy conventions for when Righter isn't installed |
 | `vois-tokens.md` | `vois-tokens/SKILL.md` | 333 (source, v1.20.1) | 15 rule-bearing `references/*.md` files and `data/tokens.json`, condensed. Since v1.13.0 this adds the Data Tables and Marketing Type & Spacing sections, the width and `field-sizing` rules and tokens, and the status color roles. `references/hooks.md` and the `scripts/` folder (a live per-edit hook for Claude Code, Cursor, and Codex) are cut: no Figma equivalent. `data/vois-rules.json` is dropped as a file; its rules are restated in the sections. The "Reviewing Existing UI" section is cut |
 
 `gtm-positioning`, `design-ask`, and `metrics-tagging` are self-contained with no `scripts/`, `references/`, `data/`, or environment-specific MCP tool calls, so each is a direct port of its `SKILL.md` plus one link line. The other four need real rework. See the Dependencies column above for what was cut, inlined, or rewritten in each.
