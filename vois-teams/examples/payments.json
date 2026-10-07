@@ -1,0 +1,42 @@
+{
+  "schema": "vois-team-override/1",
+  "team": "payments",
+  "description": "Example only. A payments team that tightens a few limits for checkout and adds one rule of its own.",
+  "scope": { "paths": ["apps/payments/**"] },
+  "overrides": [
+    {
+      "id": "payments-001",
+      "op": "restrict",
+      "rule": "DS-ANIMATION-001",
+      "param": "max_duration_ms",
+      "value": 200,
+      "reason": "Checkout steps should feel instant on slow devices."
+    },
+    {
+      "id": "payments-002",
+      "op": "restrict",
+      "rule": "JOB-EXPOSE-ACTIONS",
+      "param": "max_visible_actions",
+      "value": 2,
+      "reason": "Money actions go in a menu, so a stray click on a row costs less."
+    },
+    {
+      "id": "payments-003",
+      "op": "restrict",
+      "rule": "DS-SPACING-001",
+      "param": "spacing_divisors",
+      "value": [8],
+      "reason": "The payments screens use an 8px grid everywhere and we want drift to show up."
+    },
+    {
+      "id": "payments-004",
+      "op": "add",
+      "rule": "TEAM-PAYMENTS-001",
+      "extends": "DS-TYPOGRAPHY-001",
+      "severity": "required",
+      "enforcement": "advisory",
+      "text": "Money amounts use tabular numerals and always show the currency.",
+      "reason": "Columns of amounts must line up, and an amount with no currency is ambiguous."
+    }
+  ]
+}

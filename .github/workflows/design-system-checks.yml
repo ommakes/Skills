@@ -10,6 +10,7 @@ on:
       - "vois-eval/**"
       - "vois-dataviz/**"
       - "scripts/**"
+      - "vois-teams/**"
       - "skills.json"
       - "**/SKILL.md"
       - "**/references/**"
@@ -22,6 +23,7 @@ on:
       - "vois-eval/**"
       - "vois-dataviz/**"
       - "scripts/**"
+      - "vois-teams/**"
       - "skills.json"
       - "**/SKILL.md"
       - "**/references/**"
@@ -51,6 +53,11 @@ jobs:
 
       - name: Data viz generated references are up to date
         run: node vois-dataviz/scripts/build-reference.mjs --check
+
+      - name: Team overrides, ranges and proposals (vois-teams)
+        run: |
+          node vois-teams/scripts/validate.test.mjs
+          node vois-teams/scripts/validate.mjs all
 
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs
