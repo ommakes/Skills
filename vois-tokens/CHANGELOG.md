@@ -4,6 +4,21 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.20.0] - 2026-10-07
+
+### Added
+
+- **The hook reads team overrides.** `hook.mjs` and `detect.mjs --root` read `<project>/.vois/teams/*.json` and check a team's files against the team's tighter limits: `DS-ANIMATION-001` and `DS-ANIMATION-002` (animation ceilings), `DS-ANIMATION-008` (press scale) and `DS-SPACING-001` (spacing divisors). Files are matched by the override file's `scope.paths`. A finding from a team limit says which team set it.
+- A value that loosens the base, sits outside its range, or comes from a malformed file is ignored, so the hook never loosens. `hook-admin.mjs status` lists each team override as applied, ignored, or not checked by the hook.
+- New `scripts/team-overrides.mjs`. `detect.test.mjs` covers scope matching, ignored values, several teams, the `vois-teams` payments example end to end, and a check that the hook's limits match `vois-teams/data/ranges.json`.
+- `hooks.md` has a Team overrides section.
+
+### Changed
+
+- **Version bump:** `1.19.0` → `1.20.0`
+
+---
+
 ## [1.19.0] - 2026-10-06
 
 ### Added

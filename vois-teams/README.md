@@ -140,7 +140,7 @@ Run `all` and the tests in CI for this repo. A team repo runs `check` on `.vois/
 
 ## What this does not do yet
 
-- **Nothing applies the overrides.** The hook in `vois-tokens` still checks against the base values. A team that restricts `DS-ANIMATION-001` to 200ms is not flagged at 250ms. Reading `.vois/teams` in the hook is the next step.
+- **Only four limits are checked.** The `vois-tokens` hook reads `.vois/teams` and applies a team's value for `DS-ANIMATION-001` and `DS-ANIMATION-002` (animation ceilings), `DS-ANIMATION-008` (press scale) and `DS-SPACING-001` (spacing divisors). The other limits in `ranges.json` can be set, but the hook has no detector for them. Contrast, text width and the component thresholds are still judged by reading. `vois-tokens/references/hooks.md` has the details.
 - **No server side.** Overrides live in each team's repo. Nothing stops a hand edit past the validator, so run it in CI.
 - **Added rules are text.** An `add` rule is read by people and agents. Only the base rules the hook knows get a mechanical check.
 

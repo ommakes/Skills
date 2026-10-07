@@ -7,6 +7,7 @@
 import { readFileSync } from "node:fs";
 import { detectFile } from "./detect.mjs";
 import { buildNudge } from "./hook-lib.mjs";
+import { loadTeams, paramsFor } from "./team-overrides.mjs";
 
 function readStdin() {
   try {
@@ -37,6 +38,7 @@ function main() {
   const root = payload?.cwd || process.cwd();
   const files = extractFilePaths(payload);
 
+  const teams = loadTeams(root);
   const messages = [];
   for (const filePath of files) {
     let content;
@@ -45,7 +47,7 @@ function main() {
     } catch {
       continue;
     }
-    const findings = detectFile(filePath, content);
+    const findings = detectFile(filePath, content, { params: paramsFor(teams, root, filePath) });
     const nudge = buildNudge({ root, filePath, findings });
     if (nudge) messages.push(nudge);
   }

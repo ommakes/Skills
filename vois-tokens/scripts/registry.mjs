@@ -14,6 +14,8 @@
 // rules marked "blockable" here (DS-TAILWIND-004, DS-ANIMATION-005) — the
 // two vocabularies agree on those, they just answer different questions.
 
+import { BASE_PARAMS, limitNote } from "./team-overrides.mjs";
+
 const CSS_EXT = [".css", ".scss"];
 const CODE_EXT = [".tsx", ".jsx", ".ts", ".js"];
 const ALL_EXT = [...CSS_EXT, ...CODE_EXT];
@@ -132,24 +134,27 @@ export const RULES = [
     severity: "quality",
     extensions: CODE_EXT,
     fixHint: "Round to the nearest value on the 4/8 spacing scale, or flag as a missing token.",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
+      // A team may require 8 only. The base accepts anything divisible by 4 (which includes every multiple of 8).
+      const divisor = Math.min(...params.get("DS-SPACING-001", "spacing_divisors"));
+      const note = limitNote(params, "DS-SPACING-001", "spacing_divisors");
       const pattern = /\b(?:p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|space-x|space-y)-\[(\d+(?:\.\d+)?)px\]/g;
       const findings = [];
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const px = parseFloat(match[1]);
-        if (px % 4 !== 0) {
+        if (px % divisor !== 0) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[0]}" is not divisible by 4.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[0]}" is not divisible by ${divisor}.${note}` });
         }
       }
       // StyleX: bare numeric (or quoted "Npx") spacing property values in a stylex.create() object.
       const stylexPattern = /\b(padding|margin|gap|rowGap|columnGap|paddingTop|paddingRight|paddingBottom|paddingLeft|paddingInline|paddingBlock|paddingInlineStart|paddingInlineEnd|marginTop|marginRight|marginBottom|marginLeft|marginInline|marginBlock|marginInlineStart|marginInlineEnd)\s*:\s*["']?(\d+(?:\.\d+)?)(?:px)?["']?\s*[,}]/g;
       while ((match = stylexPattern.exec(content)) !== null) {
         const val = parseFloat(match[2]);
-        if (val % 4 !== 0) {
+        if (val % divisor !== 0) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[1]}: ${match[2]}" is not divisible by 4.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[1]}: ${match[2]}" is not divisible by ${divisor}.${note}` });
         }
       }
       return findings;
@@ -183,46 +188,51 @@ export const RULES = [
     severity: "quality",
     extensions: ALL_EXT,
     fixHint: "Keep UI animations under 300ms (large elements up to 500ms).",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
       const findings = [];
+      const standard = params.get("DS-ANIMATION-001", "max_duration_ms");
+      // The large-element ceiling can never sit below the standard one.
+      const ceiling = Math.max(params.get("DS-ANIMATION-002", "max_duration_ms"), standard);
+      const standardNote = limitNote(params, "DS-ANIMATION-001", "max_duration_ms");
+      const ceilingNote = limitNote(params, "DS-ANIMATION-002", "max_duration_ms");
       const msPattern = /\bduration-\[(\d+)ms\]|\bduration-(\d{3,4})\b|transition-duration:\s*(\d+)ms/g;
       let match;
       while ((match = msPattern.exec(content)) !== null) {
         const ms = Number(match[1] ?? match[2] ?? match[3]);
-        if (ms > 500) {
+        if (ms > ceiling) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the 500ms ceiling (300ms for most UI).` });
-        } else if (ms > 300) {
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the ${ceiling}ms ceiling (${standard}ms for most UI).${ceilingNote || standardNote}` });
+        } else if (ms > standard) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds ${standard}ms — only acceptable for large elements.${standardNote}` });
         }
       }
       const sPattern = /transition-duration:\s*(\d+(?:\.\d+)?)s\b/g;
       while ((match = sPattern.exec(content)) !== null) {
         const ms = Number(match[1]) * 1000;
-        if (ms > 300) {
+        if (ms > standard) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds ${standard}ms — only acceptable for large elements.${standardNote}` });
         }
       }
       // StyleX: camelCase transitionDuration as a quoted "Nms"/"Ns" string.
       const stylexMsPattern = /transitionDuration:\s*["'](\d+)ms["']/g;
       while ((match = stylexMsPattern.exec(content)) !== null) {
         const ms = Number(match[1]);
-        if (ms > 500) {
+        if (ms > ceiling) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the 500ms ceiling (300ms for most UI).` });
-        } else if (ms > 300) {
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds the ${ceiling}ms ceiling (${standard}ms for most UI).${ceilingNote || standardNote}` });
+        } else if (ms > standard) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds ${standard}ms — only acceptable for large elements.${standardNote}` });
         }
       }
       const stylexSPattern = /transitionDuration:\s*["'](\d+(?:\.\d+)?)s["']/g;
       while ((match = stylexSPattern.exec(content)) !== null) {
         const ms = Number(match[1]) * 1000;
-        if (ms > 300) {
+        if (ms > standard) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds 300ms — only acceptable for large elements.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `Duration ${ms}ms exceeds ${standard}ms — only acceptable for large elements.${standardNote}` });
         }
       }
       return findings;
@@ -259,32 +269,34 @@ export const RULES = [
     severity: "quality",
     extensions: CODE_EXT,
     fixHint: "Keep press/active scale at 0.96 or above; never below 0.95.",
-    check({ content, lines }) {
+    check({ content, lines, params = BASE_PARAMS }) {
       const findings = [];
+      const floor = params.get("DS-ANIMATION-008", "min_press_scale");
+      const note = limitNote(params, "DS-ANIMATION-008", "min_press_scale");
       let match;
       const twPattern = /active:scale-(\d{1,3})\b/g;
       while ((match = twPattern.exec(content)) !== null) {
         const scale = Number(match[1]) / 100;
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `active:scale-${match[1]} (${scale}) is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `active:scale-${match[1]} (${scale}) is below the ${floor} floor.${note}` });
         }
       }
       const motionPattern = /whileTap\s*=\s*\{\{[^}]*scale:\s*([\d.]+)/g;
       while ((match = motionPattern.exec(content)) !== null) {
         const scale = Number(match[1]);
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `whileTap scale ${scale} is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `whileTap scale ${scale} is below the ${floor} floor.${note}` });
         }
       }
       // StyleX: a ":active" pseudo-key with a scale value in the same stylex.create() object.
       const stylexPattern = /["']:active["']\s*:\s*\{[^}]*?\bscale:\s*([\d.]+)/g;
       while ((match = stylexPattern.exec(content)) !== null) {
         const scale = Number(match[1]);
-        if (scale < 0.95) {
+        if (scale < floor) {
           const line = lineAt(content, match.index);
-          findings.push({ line, snippet: snippetAt(lines, line), message: `:active scale ${scale} is below the 0.95 floor.` });
+          findings.push({ line, snippet: snippetAt(lines, line), message: `:active scale ${scale} is below the ${floor} floor.${note}` });
         }
       }
       return findings;

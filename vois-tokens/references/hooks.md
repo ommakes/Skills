@@ -97,6 +97,28 @@ node /path/to/Skills/vois-tokens/scripts/hook-admin.mjs reset
 - `--local` writes to `.vois/config.local.json` (gitignored — your personal overrides, e.g. a rule you're temporarily disabling while migrating a legacy area).
 - `reset` clears the session cache (dedup state, edit counts, block counts) without touching your ignore lists.
 
+## Team overrides
+
+The hook reads team override files from `<project>/.vois/teams/*.json` and checks a team's files against the team's tighter limits. The file format, the three ops (`add`, `restrict`, `refine`) and the validator are in `vois-teams/README.md`. Files are matched by the override file's `scope.paths`, taken relative to the project root (the `cwd` the harness sends). A team with no scope covers every file.
+
+| Rule | Limit a team can tighten | Base | Team value must be |
+|---|---|---|---|
+| `DS-ANIMATION-001` | `max_duration_ms`, the standard animation ceiling | 300 | 100 to 300 |
+| `DS-ANIMATION-001` | `max_duration_ms` on `DS-ANIMATION-002`, the large-element ceiling | 500 | 200 to 500, and never below the standard one |
+| `DS-ANIMATION-008` | `min_press_scale` | 0.95 | 0.95 to 1 |
+| `DS-SPACING-001` | `spacing_divisors` | 4 and 8 | `[8]`, which makes the check flag anything not divisible by 8 |
+
+A finding that comes from a team limit says so: `Duration 250ms exceeds 200ms (limit set by the payments team)`.
+
+- **A value that loosens the base, or sits outside its range, is ignored.** The hook uses the base limit for that rule and says nothing in the nudge. `node hook-admin.mjs status` lists every team override and marks each as applied, ignored, or not checked. Run the `vois-teams` validator in CI to reject the file instead of having the hook skip it.
+- **Where several teams cover one file, the strictest value wins.** The validator already rejects overlapping teams that disagree, so this only matters for a project that skips it.
+- **Other tunable limits have nothing to check here.** Contrast ratios, text width, the component thresholds and the rest of `vois-teams/data/ranges.json` can be set by a team, but the hook has no detector for them. `DS-ANIMATION-005` is listed in `ranges.json`, but the hook only flags a start scale of exactly 0, so there is no limit to tighten.
+- **Added team rules are text.** The hook does not read the `add` ops.
+- **The Cursor `beforeEdit` hook does not read the files.** It only blocks on `DS-TAILWIND-004` and `DS-ANIMATION-005`, and neither has a team limit.
+- **A bad file never stops the hook.** An unreadable file, invalid JSON or the wrong `schema` is skipped, and the other teams still apply.
+
+The standalone detector takes `--root <dir>` to do the same: `node detect.mjs --root . src/Pay.tsx`. Without it, only the base limits apply.
+
 ## Running the detector standalone
 
 Useful in CI, as a manual validate step in your own build loop, or to spot-check a file by hand:
