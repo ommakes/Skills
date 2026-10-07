@@ -43,6 +43,9 @@ jobs:
       - name: Lookalike scanner fixtures (vois-eval)
         run: node vois-eval/lookalike-pass/scan.test.mjs
 
+      - name: Eval scenarios match the decision trees (vois-eval)
+        run: node vois-eval/check-scenarios.mjs
+
       - name: Data viz scripts and data integrity (vois-dataviz)
         run: node vois-dataviz/scripts/dataviz.test.mjs
 

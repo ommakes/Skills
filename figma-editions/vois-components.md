@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.10.0
+version: 1.10.2
 ---
 
 # Vois Component Selection Skill
@@ -58,8 +58,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Right-click enhancement | ContextMenu | DropdownMenu |
 | 2–5 sequential required steps, each fits a page container | Stepper (spec below) | Progress, Tabs, Wizard |
 | 6+ steps, or a step that needs its own full page | Wizard | Stepper |
-| 2+ levels deep in hierarchy | Breadcrumb | Back link |
-| 1 level deep | Back link | Breadcrumb |
+| 3+ levels deep, counting Home | Breadcrumb | Back link |
+| 2 levels deep, counting Home | Back link | Breadcrumb |
 | Simple collection, no sorting | List | Table |
 | Comparable attributes, < 100 rows | Table | DataTable |
 | 100+ rows, sortable, bulk actions | DataTable | Table |
@@ -152,7 +152,7 @@ Why not Drawer for persistent navigation? Drawer is temporary; navigation the us
 
 **Job 5 — Switch between views or filter to a subset** `JOB-SWITCH-VIEWS`
 *Navigate between distinct views, or filter content into categories.*
-- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs
+- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs. A settings page with 4 or more sections uses sidebar navigation instead
 - Filtering to a category, 2–4 mutually exclusive options → Segmented Control (or pill-styled Tabs)
 - Filtering, 5+ options or options that change dynamically → Select or Combobox (see Job 6)
 - Applying non-exclusive labels/types (tagging, multi-select filter) → Checkbox group or Badge filters, not Tabs
@@ -161,11 +161,11 @@ Why not Segmented Control for major navigation? It communicates narrowing a view
 
 **Job 17 — Indicate position in a hierarchy and enable backtracking** `JOB-NAVIGATION-POSITION`
 *The user has navigated into a nested view and needs to know where they are.*
-- 2+ levels deep (Settings > Workspace > Members) → Breadcrumb, full path, every item a link
-- 1 level deep, came from a specific list/context → Back link (arrow + parent page name)
+- 3+ levels deep, counting Home (Home > Invoices > Invoice) → Breadcrumb, full path, every item a link
+- 2 levels deep, counting Home (Home > Settings), came from a specific list/context → Back link (arrow + parent page name; just "Back" when the parent is Home)
 - Top-level page with sibling pages → Navigation (sidebar/top nav) — no breadcrumb needed
 
-Why not Breadcrumb for 1 level deep? "Home > Current Page" is almost always unnecessary noise — use only with 3+ meaningful levels. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
+Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unnecessary noise — use it with 3 or more levels, counting Home. A record page opened from its list is 3 levels, so it gets a Breadcrumb. Why not browser back? The destination changes depending on navigation history — an explicit back link always goes to the correct parent.
 
 ### Selection & Input
 

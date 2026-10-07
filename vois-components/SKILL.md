@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.10.1
+version: 1.10.2
 ---
 
 # Vois Component Selection Skill
@@ -79,8 +79,8 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Right-click enhancement | ContextMenu | DropdownMenu |
 | 2–5 sequential required steps, each fits a page container | Stepper (`references/stepper.md`) | Progress, Tabs, Wizard |
 | 6+ steps, or a step that needs its own full page | Wizard | Stepper |
-| 2+ levels deep in hierarchy | Breadcrumb | Back link |
-| 1 level deep | Back link | Breadcrumb |
+| 3+ levels deep, counting Home | Breadcrumb | Back link |
+| 2 levels deep, counting Home | Back link | Breadcrumb |
 | Simple collection, no sorting | List | Table |
 | Comparable attributes, < 100 rows | Table | DataTable |
 | One headline number | Stat tile in a Card (see vois-dataviz) | A one-bar chart |

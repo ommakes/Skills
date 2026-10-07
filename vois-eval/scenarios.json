@@ -16,6 +16,7 @@
     {
       "id": "EVAL-001",
       "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "tree_path": [0],
       "user_prompt": "Add a way to archive a project from the projects list. Archiving just hides it from the active list; the user can restore it later from an Archived filter.",
       "condition": "Action affects only current user, and undo is available (e.g. archive, move)",
       "expected_outcome": "Toast with undo action",
@@ -28,6 +29,7 @@
     {
       "id": "EVAL-002",
       "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "tree_path": [1],
       "user_prompt": "Add a 'Delete account' button to account settings. This permanently deletes the account and all its data.",
       "condition": "Action is not reversible, affects only current user (delete, disconnect)",
       "expected_outcome": "AlertDialog",
@@ -40,6 +42,7 @@
     {
       "id": "EVAL-003",
       "source_job": "JOB-CONFIRM-DESTRUCTIVE",
+      "tree_path": [2],
       "user_prompt": "Let a workspace admin revoke another member's access to the workspace.",
       "condition": "Action affects other users (revoke access, cancel shared resource)",
       "expected_outcome": "AlertDialog + post-action notification to affected users",
@@ -52,6 +55,7 @@
     {
       "id": "EVAL-004",
       "source_job": "JOB-TRANSIENT-FEEDBACK",
+      "tree_path": [0],
       "user_prompt": "Show confirmation after a user copies an invite link to their clipboard.",
       "condition": "Pure acknowledgment, no action required (saved, copied, sent)",
       "expected_outcome": "Toast",
@@ -63,6 +67,7 @@
     {
       "id": "EVAL-005",
       "source_job": "JOB-TRANSIENT-FEEDBACK",
+      "tree_path": [2],
       "user_prompt": "Show a validation error under the email field on a signup form when the address is malformed.",
       "condition": "Error tied to a specific input, field, or section",
       "expected_outcome": "Alert inline, positioned adjacent to the source field",
@@ -75,8 +80,9 @@
     {
       "id": "EVAL-006",
       "source_job": "JOB-OVERLAY-INTERACTION",
+      "tree_path": [2, 0],
       "user_prompt": "Let a user edit a row's assignee, due date, and priority inline from a data table, without losing their place in the table.",
-      "condition": "Task touches more than one field (a handful or more), needs more screen space, or otherwise relates to an item in a list; user will likely want to see the page behind it while working",
+      "condition": "User will likely want to see the page behind it while working",
       "expected_outcome": "Sheet (right-anchored, partial overlap)",
       "forbidden_outcomes": [
         "Dialog (centered, feels disconnected from the row that triggered it)",
@@ -90,8 +96,9 @@
     {
       "id": "EVAL-007",
       "source_job": "JOB-OVERLAY-INTERACTION",
+      "tree_path": [1, 1],
       "user_prompt": "Add a confirmation step before a user deletes a single project from the projects list.",
-      "condition": "Short, self-contained task; destructive or consequential",
+      "condition": "Destructive or consequential",
       "expected_outcome": "AlertDialog (see JOB-CONFIRM-DESTRUCTIVE)",
       "forbidden_outcomes": [
         "Plain Dialog",
@@ -102,6 +109,7 @@
     {
       "id": "EVAL-008",
       "source_job": "JOB-LOADING-STATE",
+      "tree_path": [0],
       "user_prompt": "Show feedback while a projects list is fetching from the API on the page's initial load.",
       "condition": "Fetching content that will fill a known layout (page load, list load, card content)",
       "expected_outcome": "Skeleton matching the shape of the incoming list",
@@ -114,6 +122,7 @@
     {
       "id": "EVAL-009",
       "source_job": "JOB-LOADING-STATE",
+      "tree_path": [1],
       "user_prompt": "Show feedback on a 'Save' button while the save request is in flight.",
       "condition": "Short action in progress, result will appear in place (button submitting, search running)",
       "expected_outcome": "Spinner inside or replacing the button's label, trigger disabled while loading",
@@ -126,6 +135,7 @@
     {
       "id": "EVAL-010",
       "source_job": "JOB-EMPTY-CONTENT",
+      "tree_path": [1],
       "user_prompt": "A projects table returns zero rows because the user's search query didn't match anything.",
       "condition": "Filters or search removed all results (filtered empty, not true zero)",
       "expected_outcome": "Inline message + \"clear filters\" action, not a full EmptyState component",
@@ -138,6 +148,7 @@
     {
       "id": "EVAL-011",
       "source_job": "JOB-OVERLAY-INTERACTION",
+      "tree_path": [0],
       "user_prompt": "Let a user change a single row's status inline from a data table, without leaving the table view.",
       "condition": "Editing or acting on exactly one field or value, anchored to the specific row/item that triggered it (not a multi-field task)",
       "expected_outcome": "Popover (anchored to the trigger element, no Dialog/Sheet/Drawer chrome)",
@@ -152,8 +163,9 @@
     {
       "id": "EVAL-012",
       "source_job": "JOB-MULTISTEP-GUIDE",
+      "tree_path": [0, 0],
       "user_prompt": "Build a five-step account setup for a new workspace: profile, team, billing, integrations, review. Each step is a short form, and the user has to finish them in order.",
-      "condition": "2 to 5 steps, and each step's content fits in a page container",
+      "condition": "2 to 5 steps, and each step's content fits in a page container (a form, a short list)",
       "expected_outcome": "Stepper (inline step indicator), built to vois-components/references/stepper.md",
       "forbidden_outcomes": [
         "Wizard (five short forms don't need full-screen layouts, and the old tree matched exactly 5 steps to both)",
@@ -161,20 +173,589 @@
         "Progress alone (it shows how far along, but gives no step labels or order)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 with the 5 and 6 boundary fix in vois-components 1.9.0. Not run yet."
+      "added_note": "Added 2026-10-06 with the 5 and 6 boundary fix in vois-components 1.9.0. Run blind 2026-10-06: passed."
     },
     {
       "id": "EVAL-013",
       "source_job": "JOB-MULTISTEP-GUIDE",
+      "tree_path": [0, 1],
       "user_prompt": "Build a seven-step insurance claim intake. Each step is a full screen with its own layout: photo capture, a map, a long questionnaire, and so on. Users must go in order.",
-      "condition": "6 or more steps, or a step that needs its own full-screen layout",
+      "condition": "6 or more steps, or any number of steps where a step needs its own full-screen layout",
       "expected_outcome": "Wizard (full-page steps with own layout)",
       "forbidden_outcomes": [
         "Stepper (seven markers don't fit in one row at form width, and the steps need full screens)",
         "Tabs (tabs gate nothing and hide the order)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Other side of the 5 and 6 boundary from EVAL-012. Added 2026-10-06. Not run yet."
+      "added_note": "Other side of the 5 and 6 boundary from EVAL-012. Added 2026-10-06. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-014",
+      "source_job": "JOB-CONTEXTUAL-INFO",
+      "tree_path": [0],
+      "user_prompt": "The analytics toolbar has an icon-only button that exports the current view. Add the short explanation of what it does for people who aren't sure.",
+      "condition": "Short label for an icon, control, or abbreviated text (25 words or under)",
+      "expected_outcome": "Tooltip (appears on hover/focus, disappears when cursor moves)",
+      "forbidden_outcomes": [
+        "Popover (needs a click to open and close, which is more friction than a label needs)",
+        "A native title attribute (not styled, not reliably keyboard-reachable; see the lookalike table)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-015",
+      "source_job": "JOB-CONTEXTUAL-INFO",
+      "tree_path": [1, 0],
+      "user_prompt": "Next to the 'Data retention' setting, add a help icon. When someone taps it, a small panel opens with a short paragraph and a link to the full policy. They should be able to read it at their own pace and click the link.",
+      "condition": "Triggered by click (user controls when to see it)",
+      "expected_outcome": "Popover",
+      "forbidden_outcomes": [
+        "Tooltip (a link inside a tooltip is not reliably reachable by keyboard)",
+        "HoverCard (a passive hover preview, not something the user opens on purpose)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-016",
+      "source_job": "JOB-CONTEXTUAL-INFO",
+      "tree_path": [2],
+      "user_prompt": "In the comments thread, when someone hovers a teammate's @mention, show a quick preview of who they are: photo, name, role and a link to their profile.",
+      "condition": "Contextual preview of a linked entity (user profile, link preview)",
+      "expected_outcome": "HoverCard",
+      "forbidden_outcomes": [
+        "Tooltip (too much content for a short label)",
+        "Popover (the preview is passive, not opened by a click)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-017",
+      "source_job": "JOB-TRIGGER-ACTION",
+      "tree_path": [1, 0],
+      "user_prompt": "Add a refresh control to the table toolbar. Space is tight, so it should be just an icon.",
+      "condition": "Single action",
+      "expected_outcome": "Button with icon and aria-label",
+      "forbidden_outcomes": [
+        "A bare icon or a div or span with onClick (no keyboard focus, no hit area, no accessible name)",
+        "An icon Button with no aria-label"
+      ],
+      "score_categories_checked": ["component_selection", "accessibility_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-018",
+      "source_job": "JOB-TRIGGER-ACTION",
+      "tree_path": [2],
+      "user_prompt": "On the search results page, show the filters the user has picked (Status: Open, Owner: Dana) as small items above the results. Each one can be taken off on its own.",
+      "condition": "Action is a removable selection or filter (user created it, they can remove it)",
+      "expected_outcome": "Badge with dismiss (Chip pattern) — not a Button",
+      "forbidden_outcomes": [
+        "Button for each filter (a Button says 'click to do something', not 'this is an attribute you can remove')"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-019",
+      "source_job": "JOB-TRIGGER-ACTION",
+      "tree_path": [1, 1],
+      "user_prompt": "Add bold and italic controls to the comment editor toolbar. They are icon-only, and each stays switched on until it's pressed again.",
+      "condition": "Grouped with other icon actions",
+      "expected_outcome": "Toggle (for on/off) or Button (for one-shot)",
+      "forbidden_outcomes": [
+        "Button as a one-shot action (the state has to show)",
+        "Checkbox or Switch (wrong control for a toolbar)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-020",
+      "source_job": "JOB-EXPOSE-ACTIONS",
+      "tree_path": [0, 1],
+      "user_prompt": "In the file manager, let power users right-click a file to rename, move or delete it. Those actions are already reachable from a visible control on each row.",
+      "condition": "Triggered by right-click",
+      "expected_outcome": "ContextMenu",
+      "forbidden_outcomes": [
+        "A right-click menu as the only way to reach the actions (undiscoverable)",
+        "A hand-positioned div menu (use the component)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-021",
+      "source_job": "JOB-EXPOSE-ACTIONS",
+      "tree_path": [2],
+      "user_prompt": "Add a quick launcher that power users open with a keyboard shortcut. They type to find any page, project or action in the app and jump straight to it.",
+      "condition": "Actions are searched or navigated by keyboard (power users, complex apps)",
+      "expected_outcome": "Command (palette-style — see Job 6)",
+      "forbidden_outcomes": [
+        "DropdownMenu (anchored to a button, not searchable across the app)",
+        "Select or Combobox (picks a value, doesn't run actions or navigate)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-022",
+      "source_job": "JOB-EXPOSE-ACTIONS",
+      "tree_path": [0, 0],
+      "user_prompt": "Each row in the invoices table needs these actions: view, edit, duplicate, send reminder, archive and delete.",
+      "condition": "Triggered by a button click",
+      "expected_outcome": "DropdownMenu",
+      "forbidden_outcomes": [
+        "A flat row of visible buttons for every action (two visible is the target and three is the ceiling)",
+        "Command (a global tool, not row-level)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-023",
+      "source_job": "JOB-LABEL-CONTENT",
+      "tree_path": [0],
+      "user_prompt": "In the orders table, show each order's state (pending, shipped, delivered or cancelled) so people can scan down the column.",
+      "condition": "Status or category label, not interactive (read-only, decorative)",
+      "expected_outcome": "Badge (inline, non-interactive)",
+      "forbidden_outcomes": [
+        "Plain text (no visual weight to scan at a distance)",
+        "Button (nothing to click)",
+        "A hand-styled span (use the component)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-024",
+      "source_job": "JOB-LABEL-CONTENT",
+      "tree_path": [1],
+      "user_prompt": "In the CRM, let people add their own tags to a contact (like 'Investor' or 'Churn risk') and take a tag off again from the contact card.",
+      "condition": "User-created label that can be applied and removed (tags in a CRM, labels on an issue)",
+      "expected_outcome": "Badge with dismiss button (Chip/Tag pattern)",
+      "forbidden_outcomes": [
+        "Button for each tag",
+        "Plain text with a separate remove link"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-025",
+      "source_job": "JOB-REPRESENT-USER",
+      "tree_path": [1],
+      "user_prompt": "On each project card, show everyone on the team and make it obvious how many people there are, even when there are a lot of them.",
+      "condition": "Multiple users, count matters (showing all members of a team)",
+      "expected_outcome": "AvatarGroup (stacks avatars with overflow count: \"+4\")",
+      "forbidden_outcomes": [
+        "A row of full-size avatars that wraps (no overflow count)",
+        "Only the text '12 members' (drops the faces)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-026",
+      "source_job": "JOB-REPRESENT-USER",
+      "tree_path": [2],
+      "user_prompt": "In the shared document header, show which collaborators are online right now.",
+      "condition": "Real-time presence (online/offline/away, active in document)",
+      "expected_outcome": "Avatar + Presence indicator (colored dot, workspace-specific — check manifest)",
+      "forbidden_outcomes": [
+        "A stack of avatars with no presence indicator",
+        "A Badge that says 'Online' (loses who is online)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-027",
+      "source_job": "JOB-REPRESENT-USER",
+      "tree_path": [0, 1],
+      "user_prompt": "Show the assignee on each task row. The user records have a name but no profile photo.",
+      "condition": "No photo available",
+      "expected_outcome": "Avatar (initials fallback)",
+      "forbidden_outcomes": [
+        "A hand-built circle with letters (use Avatar)",
+        "A generic person icon for everyone (loses who it is)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-028",
+      "source_job": "JOB-DISPLAY-DATA",
+      "tree_path": [0],
+      "user_prompt": "Build a notifications page: a feed of short items (who did what, and when), newest first. No sorting or filtering.",
+      "condition": "Items are simple, no sorting, filtering, or bulk actions needed (notifications, activity feed)",
+      "expected_outcome": "List (semantic ul/li with consistent item layout)",
+      "forbidden_outcomes": [
+        "Table (columns imply the items are comparable)",
+        "DataTable (pagination, column and bulk-action machinery nobody asked for)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-029",
+      "source_job": "JOB-DISPLAY-DATA",
+      "tree_path": [1, 1],
+      "user_prompt": "Build the customers admin screen: about 12,000 customers, sortable columns, a column chooser, and the ability to select many and bulk-assign an owner.",
+      "condition": "100+ rows, sortable columns, bulk actions, column management",
+      "expected_outcome": "DataTable (check workspace manifest — typically TanStack Table based)",
+      "forbidden_outcomes": [
+        "Plain Table (no column management or bulk actions)",
+        "Infinite scroll (users lose their place and the count)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-030",
+      "source_job": "JOB-DISPLAY-DATA",
+      "tree_path": [2],
+      "user_prompt": "Show a company's projects as a browsable gallery: a thumbnail, a name and a short description for each.",
+      "condition": "Items are cards in a grid (products, projects, media)",
+      "expected_outcome": "Grid of Cards (not a Table — tables communicate that attributes are comparable; cards communicate that items are browsable)",
+      "forbidden_outcomes": [
+        "Table (tables say the items are comparable; cards say they are browsable)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-031",
+      "source_job": "JOB-DISPLAY-DATA",
+      "tree_path": [1, 0],
+      "user_prompt": "The settings page lists the workspace's 20 API keys with name, created date and last used. Nobody needs to sort, filter or select several.",
+      "condition": "Under 100 rows, no column freezing, no virtualization",
+      "expected_outcome": "Table",
+      "forbidden_outcomes": [
+        "DataTable (complexity for 20 rows with no sorting or bulk actions)",
+        "Grid of Cards (the columns are meant to be compared)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-032",
+      "source_job": "JOB-DATA-ENTRY",
+      "tree_path": [1],
+      "user_prompt": "Build the checkout page: contact details, a billing address and a separate shipping address, all submitted with one button.",
+      "condition": "Complex form with grouped sections (billing address, shipping address separately)",
+      "expected_outcome": "Form with multiple FormSection/Fieldset groups inside it",
+      "forbidden_outcomes": [
+        "Nested form elements (HTML doesn't allow them)",
+        "Three separate forms with three submit buttons"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-033",
+      "source_job": "JOB-DATA-ENTRY",
+      "tree_path": [2],
+      "user_prompt": "On the profile page, let people rename their display name in place: click it, type, press enter. Nothing else on the page is part of this edit.",
+      "condition": "Single field used outside a full form (inline edit, quick update)",
+      "expected_outcome": "Standalone Field with its own validation state (no Form wrapper required)",
+      "forbidden_outcomes": [
+        "A full Form or FormProvider around one field (more setup than the job needs)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-034",
+      "source_job": "JOB-SWITCH-VIEWS",
+      "tree_path": [0],
+      "user_prompt": "The account settings screen has three areas: Profile, Billing and Members. People move between them.",
+      "condition": "Switching between distinct pages or major content areas (Settings: Profile, Billing, Members)",
+      "expected_outcome": "Tabs (persistent selection, full content swap)",
+      "forbidden_outcomes": [
+        "Segmented Control (it narrows a view, it doesn't go somewhere new)",
+        "Select (hides the areas)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "revision_note": "Run 2 (2026-10-06) used four areas and missed: the agent followed vois-patterns PATH-A-DEPTH-DEEP (4 or more sections use a sidebar), which the job did not mention. Reworded to three areas, which PATH-A-DEPTH-SHALLOW and this job agree on, and the job now points to the sidebar rule for 4 or more.",
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: missed with four sections, then passed after the vois-components 1.10.2 fix and a reword to three. See revision_note."
+    },
+    {
+      "id": "EVAL-035",
+      "source_job": "JOB-SWITCH-VIEWS",
+      "tree_path": [1, 0],
+      "user_prompt": "On the tasks list, let people show All tasks, only Active ones, or only Done ones.",
+      "condition": "2–4 options, mutually exclusive",
+      "expected_outcome": "Segmented Control (or Tabs styled as pills)",
+      "forbidden_outcomes": [
+        "Select (hides three options that fit on screen)",
+        "Checkbox group (the options are mutually exclusive)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-036",
+      "source_job": "JOB-SWITCH-VIEWS",
+      "tree_path": [2],
+      "user_prompt": "In the product catalog sidebar, let shoppers narrow by tags such as Organic, Vegan and Gluten-free. They can have several on at once.",
+      "condition": "Applying non-exclusive labels or types to items (tagging, multi-select filter)",
+      "expected_outcome": "Checkbox group or Badge filters (not Tabs — Tabs are always mutually exclusive)",
+      "forbidden_outcomes": [
+        "Tabs (always mutually exclusive)",
+        "Segmented Control (also mutually exclusive)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-037",
+      "source_job": "JOB-NAVIGATION-POSITION",
+      "tree_path": [0],
+      "user_prompt": "Workspace settings leads to Members, which leads to an Invite history screen. On that last screen, help the user see where they are and jump to any parent.",
+      "condition": "User is 3 or more levels deep, counting Home as the first level (Home > Invoices > Invoice)",
+      "expected_outcome": "Breadcrumb (shows full path, every item is a link)",
+      "forbidden_outcomes": [
+        "A single back link (can't reach the middle level)",
+        "Relying on the browser back button"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-038",
+      "source_job": "JOB-NAVIGATION-POSITION",
+      "tree_path": [0],
+      "user_prompt": "On an invoice detail page, reached from the Invoices list, give the user a way back to the list.",
+      "condition": "User is 3 or more levels deep, counting Home as the first level (Home > Invoices > Invoice)",
+      "expected_outcome": "Breadcrumb (shows full path, every item is a link)",
+      "forbidden_outcomes": [
+        "A back link on its own (a record page is 3 levels with Home, and the user should see and reach every level)",
+        "Relying on the browser back button"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "revision_note": "Run 2 (2026-10-06) split: one run chose a back link, a re-run chose a breadcrumb citing vois-patterns PATH-E. Decided 2026-10-07: a record page opened from its list gets a Breadcrumb, and Home counts as a level (vois-components 1.10.2). Expected outcome changed from Back link to Breadcrumb. EVAL-054 now covers the back link case.",
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Re-run blind 2026-10-07 after the decision: passed."
+    },
+    {
+      "id": "EVAL-039",
+      "source_job": "JOB-CONTAIN-CONTENT",
+      "tree_path": [1],
+      "user_prompt": "On the account page, group the settings into Notifications, Language and Appearance, with a heading for each. They are parts of one page, not separate items.",
+      "condition": "Content is a named section of a larger page (not a standalone item)",
+      "expected_outcome": "Use semantic HTML section + heading, not a Card",
+      "forbidden_outcomes": [
+        "A Card around every group (flattens the hierarchy)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-040",
+      "source_job": "JOB-CONTAIN-CONTENT",
+      "tree_path": [0, 1],
+      "user_prompt": "Show a user's saved reports as tiles. Clicking anywhere on a tile opens the report.",
+      "condition": "The card itself is the primary action target",
+      "expected_outcome": "Make the whole card clickable",
+      "forbidden_outcomes": [
+        "A tile with only a small 'Open' link as its target",
+        "A div with onClick (a link or Button is the real target)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-041",
+      "source_job": "JOB-SECONDARY-CONTENT",
+      "tree_path": [0],
+      "user_prompt": "The app has five areas people return to all day: Dashboard, Projects, Reports, Team and Settings. Add navigation for them on desktop.",
+      "condition": "Persistent navigation (app-level, always visible on desktop)",
+      "expected_outcome": "Sidebar (navigation variant — always rendered, collapsible)",
+      "forbidden_outcomes": [
+        "Drawer (temporary, so it would have to be reopened every time)",
+        "Sheet (contextual, not structural)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-042",
+      "source_job": "JOB-SECONDARY-CONTENT",
+      "tree_path": [1, 1],
+      "user_prompt": "In the design editor, whenever a layer is selected, show its properties (size, color, position) in a pane that stays on screen next to the canvas.",
+      "condition": "Always visible when an item is selected",
+      "expected_outcome": "Panel (persistent secondary pane)",
+      "forbidden_outcomes": [
+        "Sheet (an overlay that covers the canvas)",
+        "Sidebar (structural, and its width would change with the selection)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-043",
+      "source_job": "JOB-SECONDARY-CONTENT",
+      "tree_path": [2],
+      "user_prompt": "On mobile, the product list has many filters. Let people open the filters, set them, and get back to the list when they're done.",
+      "condition": "Temporary overlay for a task (mobile nav, filters on mobile, multi-step task)",
+      "expected_outcome": "Drawer (full-height slide-in, closes when done)",
+      "forbidden_outcomes": [
+        "Sidebar (structural, not a temporary task surface)",
+        "A centered Dialog (a full-height task, not a short one)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-044",
+      "source_job": "JOB-CHOOSE-FROM-LIST",
+      "tree_path": [0],
+      "user_prompt": "On the new-hire form, add an Office field: Berlin, London, Lisbon, Madrid, Paris or Warsaw. Pick one.",
+      "condition": "Short list (under 8 items), no search needed, single select",
+      "expected_outcome": "Select (dropdown, keyboard navigable)",
+      "forbidden_outcomes": [
+        "Combobox (a search box on six visible options)",
+        "Command (a power-user tool for a plain form field)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-045",
+      "source_job": "JOB-CHOOSE-FROM-LIST",
+      "tree_path": [1],
+      "user_prompt": "On the address form, add a Country field. People should be able to find theirs by typing.",
+      "condition": "Long list (8+ items) OR user might not know the exact option name",
+      "expected_outcome": "Combobox (Select + search input, filters as user types)",
+      "forbidden_outcomes": [
+        "Select (about 200 options with no search)",
+        "Command (a power-user tool for a plain form field)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-046",
+      "source_job": "JOB-CHOOSE-FROM-LIST",
+      "tree_path": [3],
+      "user_prompt": "In the invite form, ask whether the person joins as 'Member' or 'Admin'.",
+      "condition": "Only 2 options",
+      "expected_outcome": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices",
+      "forbidden_outcomes": [
+        "Select (don't use a dropdown for a two-way choice)",
+        "Checkbox (implies more than one can be chosen)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-047",
+      "source_job": "JOB-ACCEPT-TEXT",
+      "tree_path": [1],
+      "user_prompt": "After login, ask the user for the 6-digit code we just texted them.",
+      "condition": "Fixed-length one-time code (email or SMS verification code, authenticator code)",
+      "expected_outcome": "InputOTP (check workspace manifest; shadcn InputOTP). One cell per character, behaves as a single field.",
+      "forbidden_outcomes": [
+        "A plain Input (hides the expected length and invites typos in the middle)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-048",
+      "source_job": "JOB-ACCEPT-TEXT",
+      "tree_path": [3],
+      "user_prompt": "Let users write product descriptions where bold text, bullet lists and links matter to how it reads on the storefront.",
+      "condition": "Formatted text (bold, lists, links — where formatting matters to the user)",
+      "expected_outcome": "RichTextEditor (workspace-specific — check manifest; typically Tiptap or similar)",
+      "forbidden_outcomes": [
+        "Textarea (can't carry the formatting)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-049",
+      "source_job": "JOB-ACCEPT-TEXT",
+      "tree_path": [2, 0],
+      "user_prompt": "Add a short Notes field to each order. It's usually a line or two.",
+      "condition": "1–3 lines expected",
+      "expected_outcome": "Textarea sized with the line-count tokens (see DS-LAYOUT-FIELD-003). Keep a rows attribute as the fallback for browsers without field-sizing support.",
+      "forbidden_outcomes": [
+        "A single-line Input (truncates a second line)",
+        "RichTextEditor (heavy, and formatting doesn't matter here)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-050",
+      "source_job": "JOB-BINARY-PREFERENCE",
+      "tree_path": [0],
+      "user_prompt": "In notification settings, add an on/off control for the weekly digest email. It takes effect as soon as it's flipped, and there is no Save button.",
+      "condition": "Setting takes effect immediately (no save button required)",
+      "expected_outcome": "Switch (or Toggle — same semantic, check your manifest)",
+      "forbidden_outcomes": [
+        "Checkbox (implies a save step)",
+        "A Button labeled 'Enable' (a command, not a state)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-051",
+      "source_job": "JOB-BINARY-PREFERENCE",
+      "tree_path": [1, 1],
+      "user_prompt": "On the signup form, add the 'I agree to the Terms of Service' control. It's submitted with the Create account button.",
+      "condition": "Single standalone agree/consent",
+      "expected_outcome": "Checkbox (not Switch — Switch implies immediate effect)",
+      "forbidden_outcomes": [
+        "Switch (implies the change takes effect the moment it's flipped)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-052",
+      "source_job": "JOB-VISUALIZE-DATA",
+      "tree_path": [0],
+      "user_prompt": "On the billing overview, show this month's revenue and how it compares with last month.",
+      "condition": "One current value, with or without a change",
+      "expected_outcome": "Card containing a stat tile: value, delta against a named period, optional sparkline. Not a chart.",
+      "forbidden_outcomes": [
+        "A one-bar chart or a two-slice pie (the number is the chart)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-053",
+      "source_job": "JOB-VISUALIZE-DATA",
+      "tree_path": [1],
+      "user_prompt": "Show how signups changed over the last 12 months so the team can see whether the trend is up or down.",
+      "condition": "Shape over time, comparison, parts of a whole, relationship, distribution, or flow",
+      "expected_outcome": "Hand off to vois-dataviz: walk its decision tree to pick the form, then build with the workspace chart primitives (typically shadcn Chart over Recharts: ChartContainer, ChartTooltip, ChartLegend; check the workspace manifest for the exact names)",
+      "forbidden_outcomes": [
+        "A Table with no chart (gives exact values but hides the shape)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+    },
+    {
+      "id": "EVAL-054",
+      "source_job": "JOB-NAVIGATION-POSITION",
+      "tree_path": [1],
+      "user_prompt": "The Notification settings page is opened straight from the account menu on the home screen. Give the user a way back.",
+      "condition": "User is 2 levels deep, counting Home (Home > Settings), came from a specific list or context",
+      "expected_outcome": "Back link (single arrow + parent page name — simpler than a breadcrumb). When the parent is Home, the label is just \"Back\"",
+      "forbidden_outcomes": [
+        "A breadcrumb (Home > Notification settings) for two levels",
+        "Relying on the browser back button"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-07 so the back link branch has a scenario after EVAL-038 moved to the breadcrumb. Run blind 2026-10-07 after the decision: passed."
     }
   ]
 }
