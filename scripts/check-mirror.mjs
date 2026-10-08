@@ -126,6 +126,18 @@ for (const f of RULE_FILES) {
 }
 
 // Review checklist: compare the top level, minus the allowed keys.
+// WORDING_SWAPS: the private sentence is required (the premium MCP call); the public one is
+// conditional so the skill still works without the MCP. The private text has the public
+// sentence substituted in before comparing. Each swap must match exactly once, or it fails.
+const WORDING_SWAPS = {
+  "vois-dataviz/data/review-checklist.json": [
+    [
+      "what to fix first. Call vois_record_rule_usage for the rule ids that drove changes.",
+      "what to fix first. If the vois_record_rule_usage tool is available, call it for the rule ids that drove changes.",
+    ],
+  ],
+};
+
 {
   const f = "vois-dataviz/data/review-checklist.json";
   const pubPath = join(here, f);
@@ -134,8 +146,14 @@ for (const f of RULE_FILES) {
     problems.push(`${f}: missing in ${existsSync(pubPath) ? "private" : "public"}`);
   } else {
     const allowKeys = ALLOWED[f]["$top"];
+    let privText = readFileSync(privPath, "utf8");
+    for (const [privSentence, pubSentence] of WORDING_SWAPS[f]) {
+      const hits = privText.split(privSentence).length - 1;
+      if (hits !== 1) problems.push(`${f}: wording swap matched ${hits} times, expected 1`);
+      privText = privText.replace(privSentence, pubSentence);
+    }
     const pub = withoutFields(JSON.parse(readFileSync(pubPath, "utf8")), allowKeys);
-    const priv = withoutFields(JSON.parse(readFileSync(privPath, "utf8")), allowKeys);
+    const priv = withoutFields(JSON.parse(privText), allowKeys);
     if (JSON.stringify(canonical(pub)) !== JSON.stringify(canonical(priv))) {
       problems.push(`${f}: differs outside the allowed keys`);
     }

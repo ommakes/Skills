@@ -73,7 +73,7 @@
     {
       "step": 8,
       "name": "Report",
-      "action": "Emit findings in the output schema, ordered by triage_order, then a one-paragraph summary: what's strongest, what to fix first. Call vois_record_rule_usage for the rule ids that drove changes.",
+      "action": "Emit findings in the output schema, ordered by triage_order, then a one-paragraph summary: what's strongest, what to fix first. If the vois_record_rule_usage tool is available, call it for the rule ids that drove changes.",
       "output": "report"
     }
   ],
