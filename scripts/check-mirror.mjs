@@ -130,7 +130,9 @@ for (const f of RULE_FILES) {
   const f = "vois-dataviz/data/review-checklist.json";
   const pubPath = join(here, f);
   const privPath = join(privateRoot, f);
-  if (existsSync(pubPath) && existsSync(privPath)) {
+  if (!existsSync(pubPath) || !existsSync(privPath)) {
+    problems.push(`${f}: missing in ${existsSync(pubPath) ? "private" : "public"}`);
+  } else {
     const allowKeys = ALLOWED[f]["$top"];
     const pub = withoutFields(JSON.parse(readFileSync(pubPath, "utf8")), allowKeys);
     const priv = withoutFields(JSON.parse(readFileSync(privPath, "utf8")), allowKeys);
@@ -143,15 +145,16 @@ for (const f of RULE_FILES) {
 // ---- 2. Standalone: no required MCP calls in public skills ---------------------------
 
 const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens"];
-const CALL = /\b(call|calls|always call|must call)\b[^.\n]*`vois_[a-z_]+`/i;
+const CALL = /\b(call|calls|always call|must call)\b[^.\n]*\b`?vois_[a-z_]+`?/i;
 const CONDITIONAL = /\b(if|when|unless|optional|available|only)\b/i;
 
-function markdownFiles(dir) {
+// Markdown and JSON: the JSON data files carry instructions to the agent too.
+function textFiles(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) out.push(...markdownFiles(p));
-    else if (name.endsWith(".md")) out.push(p);
+    if (statSync(p).isDirectory()) out.push(...textFiles(p));
+    else if (name.endsWith(".md") || name.endsWith(".json")) out.push(p);
   }
   return out;
 }
@@ -159,7 +162,7 @@ function markdownFiles(dir) {
 for (const skill of STANDALONE_SKILLS) {
   const dir = join(here, skill);
   if (!existsSync(dir)) continue;
-  for (const file of markdownFiles(dir)) {
+  for (const file of textFiles(dir)) {
     if (file.endsWith("CHANGELOG.md")) continue;
     const lines = readFileSync(file, "utf8").split("\n");
     lines.forEach((line, i) => {
