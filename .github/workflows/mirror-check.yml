@@ -1,0 +1,42 @@
+name: Mirror check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/check-mirror.mjs"
+      - "vois-tokens/**"
+      - "vois-patterns/**"
+      - "vois-components/**"
+      - "vois-dataviz/**"
+      - "righter/**"
+      - "CLAUDE.md"
+  pull_request:
+    paths:
+      - "scripts/check-mirror.mjs"
+      - "vois-tokens/**"
+      - "vois-patterns/**"
+      - "vois-components/**"
+      - "vois-dataviz/**"
+      - "righter/**"
+      - "CLAUDE.md"
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the private canonical repo (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: ommakes/vois-skills
+          token: ${{ secrets.VOIS_SKILLS_READ_TOKEN }}
+          path: private
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Mirror and standalone checks
+        run: node scripts/check-mirror.mjs --private private
