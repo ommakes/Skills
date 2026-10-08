@@ -20,6 +20,11 @@ Most of these are judgment-only — a regex can't tell a purposeful centered her
 from a lazy one. `scripts/detect.mjs` mechanically flags only `DS-SLOP-002`
 (the AI gradient), advisory-only. Everything else you grade by reading the code.
 
+**Known detector gap:** the same gradient spelled with arbitrary hex values
+(`from-[#7c3aed] to-[#3b82f6]`) bypasses the named-hue regex. See
+`references/hooks.md` and `scripts/__fixtures__/adversarial.{tsx,css}`. Grade
+this case by reading the code, same as the rest of `DS-SLOP-*`.
+
 ---
 
 ## The rules
