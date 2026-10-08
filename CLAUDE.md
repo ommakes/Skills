@@ -16,6 +16,7 @@ node vois-teams/scripts/validate.mjs all
 node vois-eval/check-scenarios.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
+node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
 
 Then read your own diff as if someone else wrote it, looking for the classes below. For anything that touches a validator, detector or regex, get a second set of eyes (a `/code-review` run or a fresh subagent that has not seen your reasoning) before pushing. Every Bugbot round so far found things the author could have found by reading the diff once more.
@@ -37,7 +38,10 @@ Mutation tests ("what if I remove this guard") run in a copy or a `git worktree`
 
 ## Conventions
 
-- The public repo is canonical. `vois-skills` (private) is a point-in-time port with its own version numbers; port after the public change merges.
+- For the Vois design system skills (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-dataviz`, `righter`), `ommakes/vois-skills` (private) is canonical. Change the rules, the detector and the premium wording there first. This repo is the standalone mirror: it must work without the Vois MCP.
+- Port to this repo after the private change merges. `scripts/check-mirror.mjs` checks the mirror. It fails when the shared detector code differs, when a rule ID or its content differs outside the named exceptions in `ALLOWED`, or when a public skill presents an MCP call as required. Run it with `--private <path to a checkout of ommakes/vois-skills>`. CI does this with a read-only token.
+- Public must never gain a required MCP call. If a change needs the MCP, the premium wording goes in the private repo only.
+- Other skills in this repo (`design-ask`, `design-rationale`, `conversion-patterns`, `metrics-tagging`, and the rest) keep the public repo as their source.
 - Branch from `main`, open a draft PR against `main`, and do not stack PR bases. Do not merge your own PRs.
 - Bump the skill version and write a CHANGELOG entry for any change to a skill's behavior, and update `skills.json`, the README version line and the Figma edition frontmatter together.
 - Tunable limits live in `vois-teams/data/ranges.json`; the hook's `TUNABLES` in `vois-tokens/scripts/team-overrides.mjs` must match it (a test checks).

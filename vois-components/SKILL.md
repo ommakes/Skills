@@ -162,4 +162,4 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 
 **Read `vois-tokens` after.** Once components are selected, `vois-tokens` handles tokens, spacing, animation, and accessibility implementation.
 
-**Righter for all copy.** Component labels, empty state messages, button text, error copy — all of it goes through `righter` (which calls `vois_get_microcopy` first). This skill says nothing about words.
+**Righter for all copy.** Component labels, empty state messages, button text, error copy — all of it goes through `righter` (which calls `vois_get_microcopy` first when that tool is available). This skill says nothing about words.
