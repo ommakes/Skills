@@ -74,6 +74,66 @@ Use when a value updates from user input or live data: a cart total, a usage met
 
 **Reduced motion:** instant swap. The live region still announces the final value.
 
-## Next
+## 4. Icon morph
 
-The P1 morphs (icon morph, directional transition, grow-from-trigger, reorder) are not specced yet. Do not improvise them from this file. Use the decision rules in `vois-patterns/references/motion.md` and ask for a spec.
+Use when one icon's job changes in place: menu to close, play to pause, chevron down to chevron up.
+
+**Behavior**
+
+- Only declared pairs get the morph. Each pair is named in the component's `morphs` list, for example `menu` to `close`. Anything else crossfades.
+- A declared pair rotates one shared icon container from 90 degrees to rest, so the two states read as one icon turning. This is a rotation of one element, not a path morph. Do not claim path interpolation.
+- A crossfade swaps the two icons in place with opacity only.
+- Do not morph between unrelated shapes. A crossfade is the honest choice.
+
+**Tokens:** duration `--motion-duration-fast`, easing `--motion-ease-standard`.
+
+**Reduced motion:** instant swap.
+
+## 5. Directional transition
+
+Use when the user moves between peers: tabs, segments, steppers.
+
+**Behavior**
+
+- Direction comes from the index change. A move to a later peer enters from the right. A move to an earlier peer enters from the left.
+- The slide distance is `--motion-distance-short`, a small fraction of the container, never the full width.
+- A move made with a keyboard does not slide. It swaps instantly. `DS-ANIMATION-003` forbids animating keyboard-triggered changes, and repeated arrow-key moves feel slow when animated.
+- Pointer moves slide. The caller must say which input caused the change.
+
+**Tokens:** duration `--motion-duration-base`, easing `--motion-ease-standard`, distance `--motion-distance-short`.
+
+**Reduced motion:** crossfade, opacity only, no slide.
+
+## 6. Grow-from-trigger
+
+Use for a short, transient panel tied to what the user just did: a confirmation, a small form, a menu.
+
+**Behavior**
+
+- The panel's transform origin is the trigger's position relative to the panel, so it appears to grow out of the control that opened it.
+- Start the panel at a scale of 0.9 or more. Never start from scale 0 (`DS-ANIMATION-005`). Animate to scale 1 with opacity.
+- Stacked panels must differ visibly in height so progress reads. This is a content rule for the caller, not a motion rule.
+- The panel needs a clear way out: a close control, and Escape to close. The caller owns this, but the spec requires it.
+- Long content, content with its own URL, or a stay of more than a moment belongs on a full screen, not a grown panel.
+
+**Tokens:** duration `--motion-duration-base`, easing `--motion-ease-standard`.
+
+**Reduced motion:** fade in place. The transform origin does not apply.
+
+## 7. Reorder motion
+
+Use when the user sorts, groups, or drags a list and needs to see where items went.
+
+**Behavior**
+
+- Items travel to their new positions with transform. No item teleports.
+- No stagger in this version. A stagger adds delay to every item, and the cap would be zero anyway until a use case needs one.
+- Layout changes that are not caused by the user (live data arriving) do not animate, unless the list is the one the user is looking at and the change is small.
+
+**Tokens:** duration `--motion-duration-base`, easing `--motion-ease-standard`.
+
+**Reduced motion:** instant reposition.
+
+## Still not specced
+
+Nothing else in the motion decision test lacks a spec. New morph types need a spec before code.
