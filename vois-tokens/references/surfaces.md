@@ -94,7 +94,7 @@ For cards, containers, and bordered buttons that exist to show **depth or elevat
 .card {
   box-shadow: var(--shadow-border);
   transition-property: box-shadow;
-  transition-duration: 150ms;
+  transition-duration: var(--motion-duration-fast);
   transition-timing-function: ease-out;
 }
 .card:hover { box-shadow: var(--shadow-border-hover); }
@@ -140,10 +140,10 @@ Combine `opacity`, `blur`, and `translateY` for the enter effect — not just op
 <motion.div
   initial="hidden"
   animate="visible"
-  variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+  variants={{ visible: { transition: { staggerChildren: motionDuration.instant } } }}
 >
   <motion.h1 variants={{
-    hidden: { opacity: 0, y: 12, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: motionDistance.short, filter: "blur(4px)" },
     visible: { opacity: 1, y: 0, filter: "blur(0px)" },
   }}>
     Welcome
@@ -160,14 +160,14 @@ Use `initial={false}` on `AnimatePresence` to skip enter animations on first pag
 
 Exits should be softer than enters — the user's attention is already moving to the next thing. `[DS-SURFACE-013]`
 
-- Use a small fixed `translateY` (e.g. `-12px`), not the full container height.
-- Exit duration should be shorter than enter duration (roughly 150ms vs 300ms).
+- Use a small fixed `translateY` (`-motionDistance.short`), not the full container height.
+- Exit duration should be shorter than enter duration (the fast token against the base token).
 - Keep a little directional movement so it doesn't just vanish — `display: none` with no animation feels broken.
 - Only use a full slide-out (`x: "-100%"`) when spatial context actually matters, like a card returning to a list.
 
 ```tsx
 <motion.div
-  exit={{ opacity: 0, y: -12, filter: "blur(4px)", transition: { duration: 0.15, ease: "easeIn" } }}
+  exit={{ opacity: 0, y: -motionDistance.short, filter: "blur(4px)", transition: { duration: motionDuration.fast, ease: "easeIn" } }}
 >
   {content}
 </motion.div>
@@ -182,7 +182,7 @@ When an icon swaps state (play→pause, like→liked, hover-revealed actions), a
 - `scale`: `0.25` → `1` (never `0.5` or `0.6`)
 - `opacity`: `0` → `1`
 - `filter`: `blur(4px)` → `blur(0px)`
-- Motion transition: `{ type: "spring", duration: 0.3, bounce: 0 }` — bounce is always `0`
+- Motion transition: `motionSpring.standard` from `motion-tokens.ts` (`bounce` is always `0`, the duration is the base token). No spring number of your own `[DS-MOTION-006]`
 
 ```tsx
 // Motion — check package.json for motion/framer-motion first
@@ -192,14 +192,16 @@ When an icon swaps state (play→pause, like→liked, hover-revealed actions), a
     initial={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
     animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
     exit={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
-    transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+    transition={motionSpring.standard}
   >
     <Icon />
   </motion.span>
 </AnimatePresence>
 ```
 
-If the project has no Motion dependency, don't add one just for this. Keep both icons in the DOM (one absolutely positioned over the other) and cross-fade with CSS using `cubic-bezier(0.2, 0, 0, 1)` as the spring approximation — this still gets enter and exit since neither icon ever unmounts.
+This is the crossfade for an icon swap that has no declared pair. A declared pair, such as `menu` to `close` or `close` to `back`, rotates one shared icon instead. That spec is in `vois-components/references/motion-morphs.md`, section 4. Decide with the pair list there first, and use this rule for everything else.
+
+If the project has no Motion dependency, don't add one just for this. Keep both icons in the DOM (one absolutely positioned over the other) and cross-fade with CSS using `var(--motion-ease-standard)` over `var(--motion-duration-base)` as the spring approximation — this still gets enter and exit since neither icon ever unmounts.
 
 | Animate | Don't animate |
 |---|---|

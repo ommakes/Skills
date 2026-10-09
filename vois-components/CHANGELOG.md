@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.15.0] - 2026-10-09
+
+### Fixed
+
+- **The label morph broke the duration cap.** `motion-morphs.md` ran the old text out for one token and then the new text in for another. At `--motion-duration-base` that is 500ms, over `DS-ANIMATION-001`. Old and new now overlap inside one token (`DS-MOTION-003`).
+
+### Added
+
+- **`references/motion-tray.md`**: a tray (one container, steps swap inside it, bottom edge pinned) and its lifecycle (open, expand to a full screen, button relocation, dismiss). Resize approaches are ranked from a benchmark kept next to the PRD, with the limits stated.
+- **`references/motion-context.md`**: shared element context (dim and blur around a traveller, container expansion, shrink into depth, indicator hand-off), chart range change, collapse to indicator, and small state changes (disabled to enabled, progress segments, placeholder to value, toast).
+- **Label and text morph v2** in `motion-morphs.md`: shared letters can sit anywhere in the word (Craft to Creative), stay letters travel to their new places, an icon can enter or leave with the label, counters use the digit keys, titles and one-line sentences qualify, and a noise rule sends scattered matches to a crossfade.
+- **Typed input and scrub** in the number section: digits keyed by typing order, separators as elements, fit to width, and a scrub that rolls with the finger.
+- **Regroup and multi-select drag** in the reorder section. Stagger stays banned.
+- **Helpers in `motion-logic.md`**: `alignLabels`, `keyedTypedChars`, `enterLeaveKeys`, `fitScale`, `resampleSeries`, `morphSeries`, `trayPlan`. Each has a "Check your port" line.
+- **`scripts/motion-logic.test.mjs`** runs every code block in `motion-logic.md` and checks every "Check your port" line, the existing ones included. Each new guard was broken on purpose in a scratch copy and the suite failed. It needs Node 22.13 or newer.
+- **`JOB-OVERLAY-INTERACTION`** has a tray branch, added last so existing `tree_path` indexes do not move.
+
+### Changed
+
+- The motion specs are split across three files so each loads only when its pattern is chosen. Cross-references to the moved specs name the file and heading, not a section number. Section numbers still exist inside `motion-morphs.md` and `motion-logic.md`.
+- Icon morph names `close` to `back` as a declared pair and points to `DS-SURFACE-014` for the crossfade.
+- Directional transition speed follows frequency: fast or instant for tab bars, base for steppers.
+- **Version bump:** `1.14.0` → `1.15.0`
+
+---
+
 ## [1.14.0] - 2026-10-09
 
 ### Added

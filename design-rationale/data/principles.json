@@ -10,6 +10,14 @@
       "does_not_apply_when": "When the polish creates false affordances or when aesthetics obscures function. A beautiful button that doesn't look tappable fails clarity even if it looks great."
     },
     {
+      "id": "change-blindness",
+      "name": "Change Blindness",
+      "statement": "People often fail to notice a change in what they see when the change happens during an interruption, such as a cut, a blink, or an instant swap of the whole view.",
+      "mechanism": "Attention holds only a few things from one moment to the next. Without a continuous transition, the visual system has nothing to track, so it compares the new view against a thin memory of the old one and misses what moved or changed. A visible link between the two states (an element that travels, a label that keeps its shared letters) lets the eye follow the change instead of reconstructing it.",
+      "applies_when": "A state change the user has to understand: a button that becomes a confirm step, an item that moves between screens, a list that regroups, a number that changes, anything on a payment, delete or send path where seeing what happened is part of trust. Also useful to separate motion that has a job from decoration: remove the motion and ask whether the user still knows what changed.",
+      "does_not_apply_when": "Changes the user does not need to notice, and high-frequency actions where the transition would slow the tenth use. Fast and static is allowed. Motion that adds delay to a confirmation works against the principle, because the change is then noticed late."
+    },
+    {
       "id": "choice-overload-paradox-of-choice",
       "name": "Choice Overload (Paradox of Choice)",
       "statement": "Too many options overwhelms users, leading to decision avoidance, lower satisfaction with the choice made, and sometimes no choice at all.",

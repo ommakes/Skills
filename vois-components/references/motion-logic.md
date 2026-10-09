@@ -1,6 +1,6 @@
 # Motion Logic
 
-The specs in `motion-morphs.md` are enough to build from. This file holds the small pieces that are easy to get subtly wrong, as plain TypeScript with no dependencies. Copy it into your project and adapt it. No timing value appears in this code. Values come from the motion tokens in `vois-tokens/references/animation.md`.
+The specs in `motion-morphs.md` are enough to build from. This file holds the small pieces that are easy to get subtly wrong, as plain TypeScript with no dependencies. `scripts/motion-logic.test.mjs` runs every code block here and checks each "Check your port" line. Copy it into your project and adapt it. No timing value appears in this code. Values come from the motion tokens in `vois-tokens/references/animation.md`.
 
 ## 1. Reading tokens
 
@@ -77,6 +77,8 @@ export function splitLabel(from: string, to: string) {
 ```
 
 Check your port: `Save`→`Saved` gives prefix `Save`, from ``, to `d`. `Review order`→`Submit order` gives from `Review`, to `Submit`, suffix ` order`. `Continue`→`Pay $42` gives `morphs: false`. `aa`→`aaa` gives prefix `aa`, to `a`, suffix `` (no overlap).
+
+`splitLabel` is the cheap prefix and suffix check. Use `alignLabels` (section 6) to decide a morph.
 
 ## 3. Digit keys (number ticker)
 
@@ -168,3 +170,138 @@ export function transformOriginFor(anchor: Rect, panel: Rect): string {
 ```
 
 Check your port: `menu`↔`close` declared gives `rotate` both ways, an undeclared pair gives `crossfade`, reduced gives `none`. Direction `0→1` by pointer is `1`, `2→1` is `-1`, any keyboard move is `0`. An anchor at left 100, top 200, 40x20, over a panel at left 50, top 150, 300x120 gives `70px 60px`.
+
+## 6. Label alignment (label morph)
+
+Longest common subsequence of graphemes: each stays, leaves or enters. Over 48 graphemes it crossfades, because the table is quadratic and a long label should not morph anyway.
+
+```ts
+export type LabelOp = { char: string; kind: "stay" | "leave" | "enter"; from: number | null; to: number | null };
+export const MAX_LABEL_GRAPHEMES = 48;
+
+export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs: boolean } {
+  const a = graphemes(from), b = graphemes(to);
+  if (!a.length || !b.length || a.length > MAX_LABEL_GRAPHEMES || b.length > MAX_LABEL_GRAPHEMES) {
+    return { ops: [], morphs: false };
+  }
+  const dp = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--)
+    for (let j = b.length - 1; j >= 0; j--)
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const ops: LabelOp[] = [];
+  let i = 0, j = 0;
+  while (i < a.length || j < b.length) {
+    if (i < a.length && j < b.length && a[i] === b[j]) { ops.push({ char: a[i], kind: "stay", from: i, to: j }); i++; j++; }
+    else if (j >= b.length || (i < a.length && dp[i + 1][j] >= dp[i][j + 1])) { ops.push({ char: a[i], kind: "leave", from: i, to: null }); i++; }
+    else { ops.push({ char: b[j], kind: "enter", from: null, to: j }); j++; }
+  }
+  const stays = ops.filter((o) => o.kind === "stay");
+  // Two stays that are neighbours in both texts. Without one the match is scattered and reads as noise.
+  const hasRun = stays.some((o, k) => k > 0 && o.from === stays[k - 1].from! + 1 && o.to === stays[k - 1].to! + 1);
+  return { ops, morphs: hasRun && stays.length * 2 >= Math.min(a.length, b.length) };
+}
+```
+
+Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. An empty string or a label over 48 graphemes crossfades. `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
+
+## 7. Typed input keys
+
+Key the integer digits of a typed number by the order they were typed, from the left, so appending a digit adds one key. The ticker's place-from-the-decimal keys would roll every digit on every keypress. Separators are keyed by group from the right, so one keeps its identity as digits arrive. The currency symbol is the caller's static prefix.
+
+```ts
+export function keyedTypedChars(raw: string, locale?: string): NumberChar[] | null {
+  const m = /^(\d*)(\.(\d*))?$/.exec(raw);
+  if (!m) return null; // not a number being typed: show the raw text and animate nothing
+  const intDigits = m[1].replace(/^0+(?=\d)/, "") || "0";
+  const parts = new Intl.NumberFormat(locale, { useGrouping: true }).formatToParts(BigInt(intDigits));
+  const groups = parts.filter((p) => p.type === "group").length;
+  const out: NumberChar[] = [];
+  let digit = 0, group = 0;
+  for (const p of parts) {
+    if (p.type === "integer") for (const char of p.value) out.push({ key: `d:${digit++}`, char, digit: true });
+    else if (p.type === "group") out.push({ key: `g:${groups - group++}`, char: p.value, digit: false });
+  }
+  if (m[2] !== undefined) {
+    const point = new Intl.NumberFormat(locale).formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? ".";
+    out.push({ key: "decimal", char: point, digit: false });
+    [...m[3]].forEach((char, i) => out.push({ key: `f:${i}`, char, digit: true }));
+  }
+  return out;
+}
+
+export function enterLeaveKeys(prev: NumberChar[] | null, next: NumberChar[] | null) {
+  if (!prev || !next) return { entering: [], leaving: [], replaced: [] }; // unknown input animates nothing
+  const before = new Map(prev.map((c) => [c.key, c.char])), after = new Map(next.map((c) => [c.key, c.char]));
+  return {
+    entering: next.filter((c) => !before.has(c.key)).map((c) => c.key),
+    leaving: prev.filter((c) => !after.has(c.key)).map((c) => c.key),
+    replaced: next.filter((c) => before.has(c.key) && before.get(c.key) !== c.char).map((c) => c.key),
+  };
+}
+```
+
+Check your port: in `en-US`, `1000`→`10000` enters only `d:4` and keeps `g:1`. `100`→`1000` enters `d:3` and `g:1`. Deleting reverses both. A digit that changes at the same key swaps: `0`→`5` replaces `d:0`, and deleting the `2` from `1234` replaces `d:1` and `d:2` and removes `d:3` and `g:1` (`134` has no separator). `de-DE` swaps `.` and `,`. `en-IN` `1234567` is `12,34,567`, two separators. `1a` returns `null`, and a `null` side in `enterLeaveKeys` animates nothing. A 200-digit string works through `BigInt`.
+
+## 8. Fit to width
+
+Bad input means no scaling.
+
+```ts
+export function fitScale(contentWidth: number, containerWidth: number, min = 0.5): number {
+  if (![contentWidth, containerWidth].every((n) => Number.isFinite(n) && n > 0)) return 1;
+  const floor = Number.isFinite(min) && min > 0 && min <= 1 ? min : 0.5;
+  return Math.min(1, Math.max(floor, containerWidth / contentWidth));
+}
+```
+
+Check your port: content 200 in a container of 100 gives `0.5`, content 50 in 100 gives `1`, and a floor of `0.8` holds at `0.8`. Zero, `NaN` or negative widths give `1`. A floor of `0` or `2` falls back to `0.5`.
+
+## 9. Series morph (chart range change)
+
+Resample both series to the same number of points and blend between real points. A linear blend never goes outside its two points, so the morph never overshoots the data. It returns `null` when it cannot morph, and the caller crossfades.
+
+```ts
+export function resampleSeries(ys: number[], n: number): number[] {
+  if (!Array.isArray(ys) || ys.length < 2 || !ys.every(Number.isFinite) || !Number.isInteger(n) || n < 2) return [];
+  return Array.from({ length: n }, (_, k) => {
+    const x = (k * (ys.length - 1)) / (n - 1);
+    const lo = Math.floor(x), hi = Math.min(lo + 1, ys.length - 1);
+    return ys[lo] + (ys[hi] - ys[lo]) * (x - lo);
+  });
+}
+
+export function morphSeries(from: number[], to: number[], t: number): number[] | null {
+  if (!Array.isArray(from) || !Array.isArray(to) || !Number.isFinite(t)) return null;
+  const n = Math.max(from.length, to.length);
+  const a = resampleSeries(from, n), b = resampleSeries(to, n);
+  if (!a.length || !b.length) return null;
+  const k = Math.min(1, Math.max(0, t));
+  return a.map((y, i) => y + (b[i] - y) * k);
+}
+```
+
+Check your port: `resampleSeries([0, 10], 3)` is `[0, 5, 10]`. At `t = 0` the morph equals the old series resampled, and at `t = 1` it equals the new one. Every value at every `t` stays between the lowest and highest value of the two series. One point, an empty series, or `NaN` returns `null`. `t` is clamped to 0 to 1.
+
+## 10. Tray plan
+
+Chooses how a tray changes height (the order is in `motion-tray.md`). Equal heights return `none`. Anything it cannot trust becomes an instant resize.
+
+```ts
+export type TrayPlan =
+  | { approach: "none" }
+  | { approach: "instant"; to: number }
+  | { approach: "clip"; hold: number; clipFrom: number; clipTo: number }
+  | { approach: "transform"; ratio: number };
+
+export function trayPlan(fromHeight: number, toHeight: number, opts: { reduced: boolean; motionLayout?: boolean }): TrayPlan {
+  if (![fromHeight, toHeight].every((h) => Number.isFinite(h) && h > 0)) return { approach: "instant", to: toHeight };
+  if (fromHeight === toHeight) return { approach: "none" };
+  if (opts.reduced) return { approach: "instant", to: toHeight };
+  if (opts.motionLayout) return { approach: "transform", ratio: fromHeight / toHeight }; // scaleY(ratio) to 1, content counter-scaled
+  const hold = Math.max(fromHeight, toHeight);
+  return { approach: "clip", hold, clipFrom: hold - fromHeight, clipTo: hold - toHeight }; // inset top, in px
+}
+```
+
+Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion, a zero height or `NaN` gives `instant`.
+

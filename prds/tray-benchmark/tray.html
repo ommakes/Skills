@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tray resize benchmark</title>
+<style>
+  :root {
+    --motion-duration-base: 250ms;
+    --motion-ease-standard: cubic-bezier(.165, .84, .44, 1);
+  }
+  body { margin: 0; font: 15px/1.3 system-ui, sans-serif; background: #eee; }
+  #page { padding: 12px; }
+  #page div { padding: 6px 8px; margin: 2px 0; background: #fff; border-radius: 6px; }
+  #tray {
+    position: fixed; left: 8px; right: 8px; bottom: 8px;
+    background: #fff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end; /* pin content to the bottom edge */
+  }
+  .cell { display: grid; flex: none; }
+  .step { grid-area: 1 / 1; align-self: end; padding: 14px 14px 16px; background: #fff; }
+  .step h2 { margin: 0 0 8px; font-size: 17px; }
+  .row { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid #eee; }
+  .dot { width: 26px; height: 26px; border-radius: 50%; background: #5b8; flex: none; }
+  .row b { display: block; }
+  .row small { color: #777; }
+  .btn { margin-top: 10px; padding: 12px; text-align: center; background: #0a84ff; color: #fff; border-radius: 12px; }
+</style>
+</head>
+<body>
+<div id="page"></div>
+<div id="tray"><div class="cell" id="cell"></div></div>
+<script>
+const ROWS = (new URLSearchParams(location.search).get("rows") || "3,8,5").split(",").map(Number); // step heights differ, as the spec requires
+const page = document.getElementById("page");
+for (let i = 0; i < 200; i++) { const d = document.createElement("div"); d.textContent = "Background row " + i; page.appendChild(d); }
+
+const cell = document.getElementById("cell");
+const tray = document.getElementById("tray");
+const steps = ROWS.map((n, i) => {
+  const s = document.createElement("section");
+  s.className = "step"; s.dataset.i = i;
+  let html = `<h2>Step ${i + 1}</h2>`;
+  for (let r = 0; r < n; r++) html += `<div class="row"><span class="dot"></span><div><b>Row ${r + 1}</b><small>Supporting text for row ${r + 1}</small></div></div>`;
+  html += `<div class="btn">Continue</div>`;
+  s.innerHTML = html;
+  return s;
+});
+cell.appendChild(steps[0]);
+let current = 0;
+
+const DUR = window.DUR || 250, EASE = "cubic-bezier(.165,.84,.44,1)";
+const wait = (anims) => Promise.all(anims.map((a) => a.finished));
+
+// All four approaches crossfade the content the same way. Only the container resize differs.
+async function swap(to, approach) {
+  const from = current, a = steps[from], b = steps[to];
+  const h0 = tray.offsetHeight;
+  cell.appendChild(b);                       // both steps in one grid cell, bottom aligned
+  b.style.opacity = "0";
+  const h1 = b.offsetHeight;                 // incoming step's natural height
+  const H = Math.max(h0, h1);
+  const fade = [
+    a.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR, easing: EASE, fill: "forwards" }),
+    b.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DUR, easing: EASE, fill: "forwards" }),
+  ];
+  let extra = [];
+
+  if (approach === "A-transform") {
+    // Container laid out once at its final height. A scaleY from the old ratio animates it,
+    // and the content is counter-scaled so text does not stretch.
+    a.style.position = "absolute"; a.style.left = "0"; a.style.right = "0"; a.style.bottom = "0";
+    cell.style.position = "relative";    // the outgoing step leaves layout, so the box is the new height
+    tray.style.height = "auto";
+    const r = h0 / h1;
+    tray.style.transformOrigin = "bottom";
+    cell.style.transformOrigin = "bottom";
+    extra = [
+      tray.animate([{ transform: `scaleY(${r})` }, { transform: "scaleY(1)" }], { duration: DUR, easing: EASE }),
+      cell.animate([{ transform: `scaleY(${1 / r})` }, { transform: "scaleY(1)" }], { duration: DUR, easing: EASE }),
+    ];
+  } else if (approach === "B-clip") {
+    // Container holds the larger height while a clip-path reveals or hides the top edge.
+    tray.style.height = H + "px";
+    extra = [tray.animate(
+      [{ clipPath: `inset(${H - h0}px 0 0 0 round 20px)` }, { clipPath: `inset(${H - h1}px 0 0 0 round 20px)` }],
+      { duration: DUR, easing: EASE, fill: "forwards" })];
+  } else if (approach === "C-height") {
+    // Animate the height itself. Layout runs on every frame.
+    tray.style.height = h0 + "px";
+    extra = [tray.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: DUR, easing: EASE, fill: "forwards" })];
+  } else if (approach === "D-instant") {
+    tray.style.height = "auto";              // resize at once, crossfade only
+  }
+
+  await wait(fade.concat(extra));
+  fade.concat(extra).forEach((x) => { try { x.commitStyles?.(); x.cancel(); } catch (e) {} });
+  a.remove(); b.style.opacity = ""; a.style.opacity = ""; a.style.position = ""; a.style.left = a.style.right = a.style.bottom = ""; cell.style.position = "";
+  tray.style.height = "auto"; tray.style.clipPath = ""; tray.style.transform = ""; cell.style.transform = "";
+  current = to;
+}
+
+// Records frame deltas from just before the swap until 120 ms after it ends.
+window.measure = async function (approach, to) {
+  const deltas = [];
+  let last = performance.now(), run = true;
+  const tick = (t) => { deltas.push(t - last); last = t; if (run) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  await new Promise((r) => setTimeout(r, 60));
+  const t0 = performance.now();
+  await swap(to, approach);
+  const t1 = performance.now();
+  await new Promise((r) => setTimeout(r, 120));
+  run = false;
+  return { deltas, span: t1 - t0 };
+};
+window.currentStep = () => current;
+</script>
+</body>
+</html>

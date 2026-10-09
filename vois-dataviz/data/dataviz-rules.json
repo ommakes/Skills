@@ -655,9 +655,9 @@
     },
     {
       "id": "DV-A11Y-008", "category": "DV-A11Y", "severity": "required", "enforcement": "auto",
-      "rule": "Chart entry animation is at most 300ms (DS-ANIMATION-001), off under prefers-reduced-motion (DS-ANIMATION-004), and never replays on refresh.",
-      "do": "isAnimationActive only on first mount, 300ms or less.",
-      "dont": "animationDuration 1500 on every data update.",
+      "rule": "Chart animation is at most 300ms (DS-ANIMATION-001) and off under prefers-reduced-motion (DS-ANIMATION-004). It runs on first mount and when the user changes the range, filter or series. It never replays on a refetch, a poll or a live update.",
+      "do": "isAnimationActive on first mount and on a range the user chose, 300ms or less.",
+      "dont": "animationDuration 1500 on every data update, or any animation on a background refetch.",
       "check": "No animationDuration above 300.",
       "detector": "slow-chart-animation",
       "sources": ["vois", "wcag"], "evidence": []
@@ -1035,8 +1035,8 @@
     },
     {
       "id": "DV-IMPL-005", "category": "DV-IMPL", "severity": "recommended", "enforcement": "auto",
-      "rule": "Animate on first mount only, 300ms or less, off under reduced motion, never on refresh.",
-      "do": "isAnimationActive={false} on updates.",
+      "rule": "Animate on first mount and when the user changes the range, filter or series, 300ms or less, off under reduced motion, never on refresh.",
+      "do": "isAnimationActive={false} on refetch and live updates. A range the user picked may animate.",
       "dont": "Animate every refetch.",
       "check": "animationDuration at most 300.",
       "detector": "slow-chart-animation",

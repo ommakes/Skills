@@ -281,6 +281,56 @@
       "applies_when": "a slow duration token is applied to an element that is not a large surface"
     },
     {
+      "id": "DS-MOTION-003",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "A morph runs inside one duration token. Old content leaves while new content arrives, so the whole morph takes one token, never two added together. Out-then-in in sequence doubles the time and breaks `DS-ANIMATION-001`.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "applies_when": "a label, text or icon morph that animates the old value out and the new value in"
+    },
+    {
+      "id": "DS-MOTION-004",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "A tray (a persistent bottom container that shows one step at a time) is one element. Steps swap inside it and its height follows the new step. It never unmounts between steps.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "applies_when": "a multi-step bottom sheet or drawer where each step has its own content"
+    },
+    {
+      "id": "DS-MOTION-005",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "When a shared element travels between views, the content it leaves behind may dim and blur. The blur never exceeds the value in `DS-SURFACE-014`, and the travelling element is never blurred.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "applies_when": "a shared element transfer between two full views or from a list item into its detail"
+    },
+    {
+      "id": "DS-MOTION-006",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Springs are allowed when `bounce` is `0` and the duration comes from a motion token (`motionSpring` in `motion-tokens.ts`). A transition that is retargeted mid-flight continues from its current position and velocity, not from the start.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "applies_when": "a spring transition, or an animation the user can interrupt"
+    },
+    {
+      "id": "DS-MOTION-007",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Delight never gates the task and never carries meaning alone. A loop pauses under `prefers-reduced-motion` and while the page is hidden, nothing flashes more than three times a second, and a one-off occasion effect plays once and can be skipped.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "applies_when": "a decorative or expressive animation, an ambient loop, or an easter egg"
+    },
+    {
       "id": "DS-COLOR-001",
       "category": "DS-COLOR",
       "category_label": "Color",

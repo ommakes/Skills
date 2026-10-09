@@ -1,0 +1,30 @@
+# Tray resize benchmark results
+# Chromium (headless, desktop). Ran 2026-10-09. Re-run: node prds/tray-benchmark/bench.mjs <runs> <rows> <throttles>
+
+## Light content, like a real tray (rows 3,8,5)
+runs per cell: 20, step heights differ (rows: 3,8,5), 250 ms, 390x844 @2x
+throttle  approach      layouts/swap  layout ms/swap  worst frame ms  missed frames/swap
+1x        A-transform   5             0.86            16.8            0
+1x        B-clip        4             0.79            16.8            0
+1x        C-height      19            1.35            16.8            0.05
+1x        D-instant     3             0.82            16.8            0
+4x        A-transform   5             3.64            16.8            0
+4x        B-clip        4             4.54            16.8            0.1
+4x        C-height      19            7.66            16.8            0
+4x        D-instant     3             3.46            16.8            0
+6x        A-transform   5             5.86            16.8            0
+6x        B-clip        4             6.47            16.8            0
+6x        C-height      19            9.28            16.8            0
+6x        D-instant     3             5.41            16.8            0.1
+
+## Heavy content, a stress case (rows 60,140,90)
+runs per cell: 12, step heights differ (rows: 60,140,90), 250 ms, 390x844 @2x
+throttle  approach      layouts/swap  layout ms/swap  worst frame ms  missed frames/swap
+6x        A-transform   5             19.7            33.3            0.67
+6x        B-clip        4             19.45           16.8            0.42
+6x        C-height      19            22.58           16.8            0.17
+6x        D-instant     3             19.06           16.8            0.33
+12x       A-transform   5             41.39           83.3            1.83
+12x       B-clip        4             43.35           66.7            1.58
+12x       C-height      19            57.34           66.6            1.58
+12x       D-instant     3             41.78           66.6            1.33

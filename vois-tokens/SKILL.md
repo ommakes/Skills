@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.22.1
+version: 1.23.0
 ---
 
 # Vois Tokens Skill
@@ -82,7 +82,7 @@ building fresh, not just the bare rule text:**
 | `references/data-tables.md` | Table scroll owner, sticky header and first column, scrollbar styling, one-axis wheel lock, responsive table layout, scroll-region accessibility | `[DS-TABLE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
-| `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
+| `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]` `[DS-MOTION-003]` `[DS-MOTION-004]` `[DS-MOTION-005]` `[DS-MOTION-006]` `[DS-MOTION-007]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
 | `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 96px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
@@ -142,6 +142,11 @@ Run this regardless of which reference files you read — it's the universal gat
 **Animation**
 - [ ] UI animations under 300ms (large elements under 500ms) `[DS-ANIMATION-001]` `[DS-ANIMATION-002]`
 - [ ] Timing and easing from motion tokens, no literal durations or curves `[DS-MOTION-001]`
+- [ ] A morph runs inside one duration token: old out and new in overlap, never in sequence `[DS-MOTION-003]`
+- [ ] A multi-step tray is one container that stays mounted between steps `[DS-MOTION-004]`
+- [ ] Content left behind by a travelling element blurs at most the `[DS-SURFACE-014]` value, and the traveller is never blurred `[DS-MOTION-005]`
+- [ ] Springs use `motionSpring` with `bounce: 0`, and a retargeted transition continues from its current velocity `[DS-MOTION-006]`
+- [ ] Delight never gates the task, loops pause under reduced motion, one-off effects play once `[DS-MOTION-007]`
 - [ ] No keyboard-triggered animations `[DS-ANIMATION-003]`
 - [ ] `transform-origin` set to trigger point, not center `[DS-ANIMATION-006]`
 - [ ] No animations from `scale(0)` `[DS-ANIMATION-005]`

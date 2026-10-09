@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"   # motion-logic.test.mjs needs module.stripTypeScriptTypes (22.13+)
 
       - name: Detector regression suite (vois-tokens)
         run: node vois-tokens/scripts/detect.test.mjs
@@ -47,6 +47,9 @@ jobs:
 
       - name: Eval scenarios match the decision trees (vois-eval)
         run: node vois-eval/check-scenarios.mjs
+
+      - name: Motion logic helpers (vois-components)
+        run: node vois-components/scripts/motion-logic.test.mjs
 
       - name: Data viz scripts and data integrity (vois-dataviz)
         run: node vois-dataviz/scripts/dataviz.test.mjs
