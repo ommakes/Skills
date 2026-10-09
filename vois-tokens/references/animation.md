@@ -34,6 +34,18 @@ Starting points, to tune side by side in your own product. Token files are the o
 }
 ```
 
+The TypeScript side of the same tokens, for Motion. Keep the values identical to the CSS file. This is a token file, so the literal numbers may live here (`[DS-MOTION-001]`).
+
+```ts
+// motion-tokens.ts (seconds, to match Motion's API)
+export const motionDuration = { instant: 0.1, fast: 0.15, base: 0.25, slow: 0.4 } as const;
+export const motionEase = { standard: [0.165, 0.84, 0.44, 1], emphasized: [0.23, 1, 0.32, 1] } as const;
+export const motionDistance = { short: 12 } as const; // px, same as --motion-distance-short
+export const motionSpring = {
+  standard: { type: "spring", bounce: 0, duration: motionDuration.base },
+} as const;
+```
+
 `--motion-distance-short` is how far a morph travels. Use one value across the project so travel feels the same everywhere. Start at 12px; 8px to 16px suits most UIs. It stays small next to the element that moves, never the full width. If the token is missing, the element does not travel.
 
 ### Tailwind v4 notes
@@ -45,6 +57,35 @@ Starting points, to tune side by side in your own product. Token files are the o
 ## Slow Duration `[DS-MOTION-002]`
 
 The slow duration token is for large elements only: drawers, sheets, and modals entering. It can run up to 500ms `[DS-ANIMATION-002]`. Every other UI animation stays under 300ms `[DS-ANIMATION-001]`, whichever token it uses. No detector checks this; it is a judgment call.
+
+## Morph Timing `[DS-MOTION-003]`
+
+A morph runs inside one duration token. The old content leaves while the new content arrives, and the parts that stay move to their new places during the same token. Never run "out" for one token and then "in" for another. Two tokens in sequence double the time: `--motion-duration-base` out plus base in is 500ms, which breaks `[DS-ANIMATION-001]`. Frame measurements of a shipped iOS wallet put a button label morph at roughly 100 to 170ms in total.
+
+## Tray Container `[DS-MOTION-004]`
+
+A tray is a persistent bottom container that shows one step at a time. It is one element. Steps swap inside it and its height follows the new step. It never unmounts between steps, or the user sees a new sheet each time instead of one sheet that changed. The spec is `vois-components/references/motion-tray.md`.
+
+## Context Treatment `[DS-MOTION-005]`
+
+When a shared element travels between views, the content it leaves behind may dim and blur so the eye follows the traveller. The blur never exceeds the value in `[DS-SURFACE-014]`, and the travelling element is never blurred. Under reduced motion there is no blur and no dim ramp. The spec is `vois-components/references/motion-context.md` (Shared element context).
+
+## Springs and Interruption `[DS-MOTION-006]`
+
+Springs are allowed on the web when `bounce` is `0` and the duration comes from a motion token. Use `motionSpring.standard` from `motion-tokens.ts`. The CSS side keeps `--motion-ease-standard`, because CSS has no spring. No component holds a spring number of its own (`[DS-MOTION-001]`).
+
+A transition that is retargeted while it runs, such as a tray that is dismissed halfway through opening, continues from its current position and velocity. It does not jump back to the start. This is what makes motion feel continuous when the user acts during it.
+
+## Delight `[DS-MOTION-007]`
+
+Delight is motion that goes beyond orientation or feedback: an easter egg, a particle burst, a looping shimmer. It follows the tiers in `vois-patterns/references/motion.md`. For any tier:
+
+- It never gates the task. The user can act and navigate while it plays.
+- It never carries meaning alone. A still frame says the same thing.
+- A loop pauses under `prefers-reduced-motion` and while the page is hidden. A one-off effect is absent under reduced motion, not replaced.
+- Nothing flashes more than three times a second.
+- An occasion-level effect (confetti, a long sequence) plays once and can be skipped.
+- Text inside an easter egg goes through `righter`, and humor never appears in an error.
 
 ## Reduced Motion
 
@@ -182,7 +223,7 @@ import { motion } from "motion/react"
 </motion.div>
 ```
 
-`motionDuration` and `motionEase` come from `motion-tokens.ts`. No bounce by default. Spring animations are native iOS patterns, not standard web UI.
+`motionDuration`, `motionEase` and `motionSpring` come from `motion-tokens.ts`. No bounce, ever (`bounce` is `0`). Prefer the cubic-bezier tokens. Reach for `motionSpring.standard` when the motion can be interrupted or follows a gesture, because a spring keeps its velocity when it is retargeted `[DS-MOTION-006]`.
 
 ## GPU Compositing Hints `[DS-ANIMATION-009]`
 

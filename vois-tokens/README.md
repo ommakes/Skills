@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.22.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.23.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
@@ -79,6 +79,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.23.0**: `DS-MOTION-003` to `007` (one duration token per morph, the tray container, context blur, springs at `bounce: 0` with interruption, delight). The spring contradiction between `animation.md` and `surfaces.md` is resolved and `surfaces.md` reads tokens only.
 - **1.17.0**: `references/marketing-type-and-spacing.md` and `DS-MKT-*` rules for marketing surfaces. `DS-SLOP-009` is now a blanket ban on em dashes in shipped copy.
 - **1.10.0** — Two new `references/anti-slop.md` rules: `DS-SLOP-010` (card-ifying every static section; drop shadows reserved for interactive elements) and `DS-SLOP-011` (left-border + corner-radius combo on active nav/sidebar items; prefer a subtle color shift).
 - **1.9.1** — Removed a dangling cross-reference in `references/iconography.md` (`DS-ICON-002` cited a nonexistent `DS-CSS-008`).

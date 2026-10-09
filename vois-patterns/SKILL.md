@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.16.0
+version: 1.17.0
 ---
 
 # Vois Patterns Skill
@@ -116,7 +116,7 @@ existing paths.
 | `references/marketing-pages.md` | Landing pages and homepages: one idea per section, three blocks max, detail behind a link, image tiles, no dividers, one primary button. Taste rules for marketing surfaces only | `[PATH-G]` `[PATH-G-*]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, personal data (mask, reveal, keep out of URLs), parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |
-| `references/motion.md` | A state change should move: status button, label morph, shared element, number ticker, directional, grow-from-trigger, reorder. Decision test, morph types, worked examples, frequency, accessibility, anti-patterns. Timing values are in `vois-tokens/references/animation.md` | — (cross-cutting; rules in `vois-tokens` `[DS-MOTION-*]` and `[DS-ANIMATION-*]`) |
+| `references/motion.md` | A state change should move: status button, collapse to indicator, label morph, shared element, icon morph, number ticker, typed input, directional, tray, grow-from-trigger, reorder and regroup, chart range change, small state changes. Decision test, morph types, worked examples, frequency and delight tiers, accessibility, anti-patterns, remove-the-motion review. Timing values are in `vois-tokens/references/animation.md` | — (cross-cutting; rules in `vois-tokens` `[DS-MOTION-*]` and `[DS-ANIMATION-*]`) |
 | `references/content-density.md` | Deciding how much breathing room a screen should have — admin grid vs. everyday form vs. onboarding/confirmation moment | `[PATH-DENSITY-*]` (cross-cutting) |
 | `references/microcopy-routing.md` | Full list of what counts as UI copy and must route to righter | — (cross-cutting) |
 

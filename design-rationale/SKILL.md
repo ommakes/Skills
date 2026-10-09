@@ -1,6 +1,6 @@
 ---
 name: design-rationale
-version: 1.1.0
+version: 1.2.0
 description: >
   Help designers articulate the cognitive science, behavioral psychology, and
   platform standards behind their design decisions. Use this skill when a designer

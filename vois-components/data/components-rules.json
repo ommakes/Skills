@@ -289,7 +289,8 @@
           { "condition": "Record has tabs, a timeline, related records, or a long form", "recommendation": "Full page, reached from an Open action in the Sheet" },
           { "condition": "Only a confirmation, not a record", "recommendation": "AlertDialog or Dialog" }
         ] },
-        { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (action sheet pattern on mobile)" }
+        { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (action sheet pattern on mobile)" },
+        { "condition": "A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it", "recommendation": "Drawer used as a tray: one container that stays mounted while the steps swap inside it (see vois-components/references/motion-tray.md)" }
       ],
       "rationale": [
         { "question": "Why not Dialog for longer tasks?", "answer": "Dialogs are centered and feel disconnected from the data they relate to. A Sheet keeps spatial proximity to the list or item that triggered it." },

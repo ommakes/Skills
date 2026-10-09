@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.1.0] - 2026-10-09
+
+### Changed
+
+- **`DV-A11Y-008` and `DV-IMPL-005` split two cases.** Chart animation still runs on first mount and never replays on a refetch, a poll or a live update. It may now also run when the user changes the range, filter or series, because they asked for the change. The 300ms ceiling and reduced-motion rule are unchanged.
+- The Motion example in `references/implementation.md` shows how to turn animation on for a user-chosen range and back off, and points to the chart range change spec in `vois-components`.
+- The `slow-chart-animation` detector message says what the reworded rules say. It still checks `animationDuration` above 300.
+
+### Notes
+
+- **Version bump:** `1.0.4` → `1.1.0`
+
+---
+
 ## [1.0.4] - 2026-10-08
 
 ### Changed

@@ -15,9 +15,12 @@ node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all
 node vois-eval/check-scenarios.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
+node vois-components/scripts/motion-logic.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
 node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
+
+`motion-logic.test.mjs` needs Node 22.13 or newer.
 
 Then read your own diff as if someone else wrote it, looking for the classes below. For anything that touches a validator, detector or regex, get a second set of eyes (a `/code-review` run or a fresh subagent that has not seen your reasoning) before pushing. Every Bugbot round so far found things the author could have found by reading the diff once more.
 

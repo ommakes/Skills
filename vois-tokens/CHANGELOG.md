@@ -4,6 +4,27 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.23.0] - 2026-10-09
+
+### Added
+
+- **Five motion rules** in `references/animation.md` and `data/vois-rules.json`: `DS-MOTION-003` (a morph runs inside one duration token, never out then in), `DS-MOTION-004` (a tray is one container that stays mounted between steps), `DS-MOTION-005` (content a travelling element leaves behind blurs at most the `DS-SURFACE-014` value, and the traveller never blurs), `DS-MOTION-006` (springs at `bounce: 0` with a token, and a retargeted transition continues from its current velocity), `DS-MOTION-007` (delight never gates the task, loops pause under reduced motion, one-off effects play once).
+- **A `motion-tokens.ts` starter** with `motionDuration`, `motionEase` and `motionSpring`, so the TypeScript side of the tokens has a named home.
+- **Five checklist lines** in `SKILL.md`, one per new rule.
+
+### Changed
+
+- **The spring contradiction is resolved.** `animation.md` said springs are native iOS patterns, not web UI, while `surfaces.md` required a spring for icon swaps. Springs are now allowed on the web at `bounce: 0` with a token duration, and the iOS line is gone.
+- **`surfaces.md` no longer holds literal motion values.** The icon transition uses `motionSpring.standard` (its duration is now the base token, 250ms, where it was a literal 0.3s). The card hover, enter and exit snippets and the no-library fallback read tokens too: the 100ms stagger is `motionDuration.instant` and the 12px travel is a new `motionDistance.short` in the TypeScript token starter. They broke `DS-MOTION-001`. Prose that describes a stagger (about 80ms per word) is guidance, not code, and is unchanged.
+- `DS-SURFACE-014` points to the icon morph spec for declared pairs (`menu` to `close`, `close` to `back`) and keeps the crossfade for everything else.
+
+### Notes
+
+- No detector change. The new rules are advisory.
+- **Version bump:** `1.22.1` → `1.23.0`
+
+---
+
 ## [1.22.1] - 2026-10-09
 
 ### Added

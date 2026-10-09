@@ -6,6 +6,25 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.17.0] - 2026-10-09
+
+### Added
+
+- **Motion decision test grows to twelve steps** in `references/motion.md`: collapse to indicator, typed input, tray, chart range change and small state changes join the existing patterns. The tray goes before grow-from-trigger.
+- **Delight tiers** (T1 detail, T2 moment, T3 occasion) under "Frequency and emphasis", with the rules every tier follows (`DS-MOTION-007`). The router's MOTION dial caps them.
+- **Eight worked examples**: shared letters inside a word (Craft to Creative), a label morph with an icon, collapse to indicator, typed input, shared element with context, a tray, regroup and a chart range change.
+- **Five anti-patterns**: out then in, a tray that remounts, blur on the traveller, replaying a chart on refetch, delight that gates the task.
+- **A "Remove the motion" review**: take the motion out of a flow and see what is lost. If nothing, cut it. If something, name the job.
+- Accessibility: an interruption continues from where the motion was, and a tray moves focus after the swap, not during it.
+
+### Changed
+
+- The morph types table has 13 rows. Typed input and the label morph rows are rewritten. The directional row says tab bars move faster than steppers.
+- `SKILL.md` lists every motion pattern. Its list named seven and left out the icon morph.
+- **Version bump:** `1.16.0` → `1.17.0`
+
+---
+
 ## [1.16.0] - 2026-10-09
 
 ### Added

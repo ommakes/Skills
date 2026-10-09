@@ -842,10 +842,10 @@ Hit targets are bigger than the marks: at least var(--hit-area-min) (DS-A11Y-001
 
 ##### `[DV-A11Y-008]` required, auto, detector `slow-chart-animation`
 
-Chart entry animation is at most 300ms (DS-ANIMATION-001), off under prefers-reduced-motion (DS-ANIMATION-004), and never replays on refresh.
+Chart animation is at most 300ms (DS-ANIMATION-001) and off under prefers-reduced-motion (DS-ANIMATION-004). It runs on first mount and when the user changes the range, filter or series. It never replays on a refetch, a poll or a live update.
 
-- **Do:** isAnimationActive only on first mount, 300ms or less.
-- **Don't:** animationDuration 1500 on every data update.
+- **Do:** isAnimationActive on first mount and on a range the user chose, 300ms or less.
+- **Don't:** animationDuration 1500 on every data update, or any animation on a background refetch.
 - **Check:** No animationDuration above 300.
 - **Sources:** vois, wcag
 
@@ -1437,9 +1437,9 @@ Chart token roles: chart-1 to chart-8 categorical, a one-hue sequential ramp, a 
 
 ##### `[DV-IMPL-005]` recommended, auto, detector `slow-chart-animation`
 
-Animate on first mount only, 300ms or less, off under reduced motion, never on refresh.
+Animate on first mount and when the user changes the range, filter or series, 300ms or less, off under reduced motion, never on refresh.
 
-- **Do:** isAnimationActive={false} on updates.
+- **Do:** isAnimationActive={false} on refetch and live updates. A range the user picked may animate.
 - **Don't:** Animate every refetch.
 - **Check:** animationDuration at most 300.
 - **Sources:** vois

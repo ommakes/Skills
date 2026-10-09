@@ -199,14 +199,20 @@ No axes, no grid, a numeric value beside it, `aria-hidden` when that value and d
 
 ## Motion
 
-Animate on first mount only, 300ms or less, off under `prefers-reduced-motion`, never on refetch `[DV-A11Y-008]` `[DV-IMPL-005]`:
+Animate on first mount and when the user changes the range, filter or series. Keep it to 300ms or less, off under `prefers-reduced-motion`, and never on a refetch, a poll or a live update `[DV-A11Y-008]` `[DV-IMPL-005]`:
 
 ```tsx
 const reduce = useReducedMotion();
-const [mounted, setMounted] = useState(false);
-useEffect(() => setMounted(true), []);
-<Line isAnimationActive={!reduce && !mounted} animationDuration={300} />
+const [animate, setAnimate] = useState(true); // true on first mount, and again when the user picks a range
+const pickRange = (r: Range) => { setAnimate(true); setRange(r); }; // only the user's choice turns it on
+<Line
+  isAnimationActive={!reduce && animate}
+  animationDuration={motionDuration.fast * 1000} // Recharts takes milliseconds; the token is in seconds
+  onAnimationEnd={() => setAnimate(false)}
+/>
 ```
+
+The flag clears when the animation ends, not on a timer, so a slow response still gets its morph. A refetch changes the data but never calls `pickRange`, so after the first animation `animate` is off and nothing moves. If a picked range can come back with the same data, no animation runs and the flag stays on, so also clear it when the request settles. For a range change, the line morphs and the header figures roll. The behavior, and a helper that interpolates between real points, are in `vois-components/references/motion-context.md` (Chart range change). Check how your chart library handles a different number of points. If the morph looks wrong, crossfade the plot instead.
 
 ## Responsive
 
