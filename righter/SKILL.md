@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.9.1
+version: 1.10.0
 ---
 
 # Righter
@@ -425,6 +425,39 @@ Round to one decimal place. Always include grade and age range.
 | 14+ | Professional | 18+ |
 
 **Target: ARI ≤ 6 (Grade 5, age 10–11) for the default `consumer` tier.** Other tiers are in Audience and Reading Target above.
+
+---
+
+## Label pairs for motion morphs
+
+A label morph animates only the part of a label that changed. That works only
+when the words are right, so righter approves every pair before a component
+builds a morph.
+
+For each pair, check:
+
+1. Both labels pass the principles above on their own.
+2. The pair shares text at the start or end, so the change reads at a glance
+   (`Save` to `Saved`, `Review order` to `Submit order`). A pair with no shared
+   text is a crossfade, and righter says so.
+3. The new label names the step it moves to. `Continue` to `Pay $42` changes
+   the commitment, so the approved pair must say that.
+4. The longer label fits the narrowest width the component supports.
+
+Record the result in a `Motion pairs` block with the review or the copy handoff:
+
+```
+Motion pairs
+- "Save" -> "Saved": approved, morph (shared prefix "Save")
+- "Continue" -> "Pay $42": approved, crossfade (no shared text)
+- "Cancel order" -> "Confirm": rejected, rewrite the new label or use a crossfade
+```
+
+Gate: a component builds a label morph only from a pair marked `approved`. An
+unapproved or unlisted pair gets no morph code. Its label crossfades or swaps
+instantly, and the copy goes back to righter.
+
+---
 
 ---
 

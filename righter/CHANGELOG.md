@@ -4,6 +4,15 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.10.0] - 2026-10-09
+
+### Added
+
+- **Label-pair gate for motion morphs.** Before a label morph, righter approves the old and new label as a pair and records it in a `Motion pairs` block. An unapproved pair gets no morph code; it crossfades or swaps instantly. Checks cover shared text, the step the new label names, and fit at the narrowest width.
+- **Version bump:** `1.9.1` → `1.10.0`
+
+---
+
 ## [1.9.1] - 2026-10-06
 
 ### Fixed
