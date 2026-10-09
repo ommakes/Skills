@@ -23,6 +23,7 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `DS-ANIMATION-005` | Yes — blockable | Animating from `scale(0)`. High-confidence enough to deny in Cursor. |
 | `DS-ANIMATION-008` | Yes | Press/active scale below `0.95`, including a StyleX `":active": { scale: N }` key. |
 | `DS-ANIMATION-009` | Yes | `will-change` on a disallowed property, including StyleX's `willChange: "..."`. |
+| `DS-MOTION-001` | Yes | Literal duration, `cubic-bezier(...)` curve, or numeric easing array in code or CSS instead of a motion token. A file named `motion-tokens.{css,scss,ts,js}` (or `_motion-tokens.scss`) may define literal values, but its usage is still checked. Zero and the 0.01ms reduced-motion value are allowed. |
 | `DS-LAYOUT-001` | Yes | `vh`/`h-screen` instead of `svh`/`dvh`/`lvh`. |
 | `DS-TYPOGRAPHY-009` | Yes | Three-period ellipsis instead of `…`. |
 | `DS-CSS-002` | Yes | `#id` selector used for styling. |

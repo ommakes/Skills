@@ -4,6 +4,30 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.21.0] - 2026-10-08
+
+### Added
+
+- **`DS-MOTION-001`: literal timing and curves.** Flags a literal duration, `cubic-bezier(...)` curve, or numeric easing array in code or CSS, in Tailwind (`duration-[150ms]`, `duration-200`), CSS (`transition: opacity 150ms`, `animation-duration`), Motion (`duration: 0.2`, `ease: [...]`), and StyleX (`transitionDuration: "150ms"`) spellings. Zero is allowed for reduced motion. Token references (`var(--motion-duration-fast)`) pass. A file named `motion-tokens.{css,scss,ts,js}` (or a leading-underscore SCSS partial, `_motion-tokens.scss`) may define literal values, but usage there is still checked, and a file with a `transition={{...}}` JSX prop is not exempt. `tokens.css` and `my-motion-tokens.ts` are checked like any other file. Outside that file, any custom property or SCSS variable holding a time or curve is flagged, under any name, along with inline-style and `setProperty` definitions.
+- **`DS-MOTION-002`: slow duration for large elements.** The slow duration token is for drawers, sheets, and modals entering only. Judgment only, no detector.
+- **Motion Tokens section in `references/animation.md`** with the token names and the token-file rule. The names are listed here; values stay in the project's token source.
+
+### Changed
+
+- **Examples in `references/animation.md` use token references** instead of literal `150ms`, `200ms`, and `duration: 0.2`.
+- **Clean fixture `good.tsx`** uses `duration-[var(--motion-duration-base)]` instead of `duration-200`.
+- **Version bump:** `1.20.2` → `1.21.0`
+
+### Notes
+
+- `DS-MOTION-001` flags a literal duration even when it is under 300ms. A 150ms literal is a token violation, not a speed violation, so it is flagged. Existing `DS-ANIMATION-001` still catches anything over the ceiling.
+- Named easing keywords (`ease-out`, `linear`) are not flagged. The detector checks numbers and `cubic-bezier(...)` only.
+- `0.01ms` is allowed. It is the reduced-motion override in `references/animation.md`, not a motion value. Zero is allowed too.
+- `duration:` and `delay:` keys count only when the word `transition` appears in the text just before them, so `toast({ duration: 3000 })` passes. `transition-colors` is a class name and does not count.
+- Limits: a plain JS object of durations (`motionDuration = { fast: 0.15 }`) outside the token file is not detected, and a basename match exempts `motion-tokens.*` in any directory. Generated files (for example a copy of a framework theme) are flagged; exclude them in your ignore list.
+
+---
+
 ## [1.20.2] - 2026-10-07
 
 ### Fixed

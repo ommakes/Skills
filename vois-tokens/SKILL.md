@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.20.2
+version: 1.21.0
 ---
 
 # Vois Tokens Skill
@@ -141,6 +141,7 @@ Run this regardless of which reference files you read — it's the universal gat
 
 **Animation**
 - [ ] UI animations under 300ms (large elements under 500ms) `[DS-ANIMATION-001]` `[DS-ANIMATION-002]`
+- [ ] Timing and easing from motion tokens, no literal durations or curves `[DS-MOTION-001]`
 - [ ] No keyboard-triggered animations `[DS-ANIMATION-003]`
 - [ ] `transform-origin` set to trigger point, not center `[DS-ANIMATION-006]`
 - [ ] No animations from `scale(0)` `[DS-ANIMATION-005]`

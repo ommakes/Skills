@@ -59,6 +59,7 @@ function BadLookalikes() {
       <span>×</span> {/* LOOKALIKE-008 */}
       <div role="alert" className="border-l-4 border-red-500 p-3">Failed</div> {/* LOOKALIKE-010 */}
       <span title="More info">?</span> {/* LOOKALIKE-011 */}
+      <div className="duration-[150ms] ease-[cubic-bezier(0.2,0,0,1)]" /> {/* DS-MOTION-001 */}
     </div>
   );
 }

@@ -4,6 +4,7 @@
   "categories": {
     "DS-A11Y": "Accessibility",
     "DS-ANIMATION": "Animation",
+    "DS-MOTION": "Motion",
     "DS-COLOR": "Color",
     "DS-COMPONENT": "Components",
     "DS-MODAL": "Components",
@@ -258,6 +259,26 @@
       "severity": "recommended",
       "enforcement": "advisory",
       "applies_when": "only after first-frame stutter is actually observed on a GPU-compositable property — not preemptively"
+    },
+    {
+      "id": "DS-MOTION-001",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "Timing and easing come from motion tokens (`var(--motion-duration-*)`, `var(--motion-ease-*)`, or `motion-tokens.ts` for Motion). Component code holds no literal durations, `cubic-bezier(...)` curves, or numeric easing arrays. Only the token file (`motion-tokens.{css,scss,ts,js}`) may define them.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "applies_when": "any transition, animation, or Motion component in code or CSS"
+    },
+    {
+      "id": "DS-MOTION-002",
+      "category": "DS-MOTION",
+      "category_label": "Motion",
+      "source_file": "vois-tokens/references/animation.md",
+      "rule": "The slow duration token is for large elements only (drawers, sheets, modals entering). It can run up to 500ms. Any other UI animation stays under 300ms, whichever token it uses.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "applies_when": "a slow duration token is applied to an element that is not a large surface"
     },
     {
       "id": "DS-COLOR-001",

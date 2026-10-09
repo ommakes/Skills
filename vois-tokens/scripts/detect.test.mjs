@@ -331,7 +331,8 @@ test("detect.mjs --root resolves a relative file path from the current folder", 
   const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)], ["apps/payments/**"]) });
   mkdirSync(join(root, "apps", "payments"), { recursive: true });
   writeFileSync(join(root, "apps", "payments", "Pay.tsx"), '<div className="duration-250" />\n');
-  const run = (cwd, rootArg, file) => JSON.parse(spawnSync(process.execPath, [join(HERE, "detect.mjs"), "--root", rootArg, file], { cwd, encoding: "utf8" }).stdout);
+  // Only the team-tunable rule: DS-MOTION-001 also flags duration-250 and is not what this test checks.
+  const run = (cwd, rootArg, file) => JSON.parse(spawnSync(process.execPath, [join(HERE, "detect.mjs"), "--root", rootArg, file], { cwd, encoding: "utf8" }).stdout).filter((f) => f.ruleId === "DS-ANIMATION-001");
   const parent = join(root, "..");
   const name = root.slice(parent.length + 1);
   assert.equal(run(parent, name, `${name}/apps/payments/Pay.tsx`).length, 1);
@@ -475,4 +476,194 @@ test("DS-TABLE-001 stays fast on a large file with no braces", () => {
   detectFile("a.tsx", text);
   detectFile("a.css", text);
   assert.ok(Date.now() - start < 2000, `took ${Date.now() - start}ms`);
+});
+
+// DS-MOTION-001: literal timing and curves belong in motion tokens.
+const motionHits = (src, file = "src/components/Card.tsx") => detectFile(file, src).filter((f) => f.ruleId === "DS-MOTION-001");
+
+test("DS-MOTION-001 flags literal timing and curves in each spelling", () => {
+  assert.equal(motionHits('<div className="duration-[150ms]" />').length, 1);
+  assert.equal(motionHits('<div className="duration-200" />').length, 1);
+  assert.equal(motionHits('<div className="motion-reduce:duration-300" />').length, 1);
+  assert.equal(motionHits('<div className="animate-[spin_1s_linear_infinite]" />').length, 1);
+  assert.equal(motionHits('<div className="delay-200" />').length, 1);
+  assert.equal(motionHits('<div className="ease-[cubic-bezier(0.2,0,0,1)]" />').length, 1);
+  assert.equal(motionHits(".a { transition-duration: 150ms; }", "a.css").length, 1);
+  assert.equal(motionHits(".a { transition: opacity 150ms ease; }", "a.css").length, 1);
+  assert.equal(motionHits(".a { animation: spin 1s linear infinite; }", "a.css").length, 1);
+  assert.equal(motionHits('const s = stylex.create({ a: { transitionDuration: "150ms" } });').length, 1);
+  assert.equal(motionHits("<motion.div transition={{ duration: 0.2 }} />").length, 1);
+  assert.equal(motionHits("<motion.div transition={{ duration: 1e-1 }} />").length, 1);
+  assert.equal(motionHits("<motion.div transition={{ delay: 0.3 }} />").length, 1);
+  assert.equal(motionHits("<motion.div transition={{ ease: [0.2, 0, 0, 1] }} />").length, 1);
+  assert.equal(motionHits(".a { transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }", "a.css").length, 1);
+});
+
+test("DS-MOTION-001 checks every time value in a declaration, including multi-line ones", () => {
+  // Second and later values, and values on continuation lines, must be reported.
+  assert.equal(motionHits(".a { transition: opacity 0s, transform 200ms; }", "a.css").length, 1);
+  assert.equal(motionHits(".a {\n  transition:\n    opacity 150ms,\n    transform 200ms;\n}", "a.css").length, 2);
+  assert.equal(motionHits(".a { transition: opacity var(--motion-duration-fast), transform 200ms; }", "a.css").length, 1);
+  assert.equal(motionHits(".a { animation: spin 0s linear, fade 300ms; }", "a.css").length, 1);
+});
+
+test("DS-MOTION-001 passes token references, zero, and the reduced-motion 0.01ms value", () => {
+  assert.equal(motionHits('<div className="duration-[var(--motion-duration-fast)]" />').length, 0);
+  assert.equal(motionHits('<div className="ease-[var(--motion-ease-standard)]" />').length, 0);
+  assert.equal(motionHits('<div className="duration-0" />').length, 0);
+  assert.equal(motionHits(".a { transition-duration: 0.01ms !important; }", "a.css").length, 0);
+  assert.equal(motionHits('<div className="duration-[0.01ms]" />').length, 0);
+  assert.equal(motionHits('const s = stylex.create({ a: { transitionDuration: "0.01ms" } });').length, 0);
+  assert.equal(motionHits("<motion.div transition={{ duration: 0 }} />").length, 0);
+  assert.equal(motionHits("<motion.div transition={{ duration: 0.00001 }} />").length, 0, "0.00001s is 0.01ms");
+  assert.equal(motionHits("<motion.div transition={{ duration: motionDuration.fast }} />").length, 0);
+  assert.equal(motionHits(".a { transition: none; }", "a.css").length, 0);
+  assert.equal(motionHits(".a { transition: opacity var(--motion-duration-fast) ease; }", "a.css").length, 0);
+  // Guard from the other side: a sub-millisecond literal near the sentinel is still a literal.
+  assert.equal(motionHits(".a { transition-duration: 0.5ms; }", "a.css").length, 1);
+});
+
+test("DS-MOTION-001 only reads motion keys in a motion context", () => {
+  // Non-motion objects with a duration key are not motion literals.
+  assert.equal(motionHits("toast({ title: 'Saved', duration: 3000 });").length, 0);
+  assert.equal(motionHits("const meta = { duration: 212 };").length, 0);
+  assert.equal(motionHits("const x = { totalduration: 5 };").length, 0);
+  assert.equal(motionHits("<motion.div transition={{ totalduration: 5 }} />").length, 0);
+});
+
+test("DS-MOTION-001 lookbehinds keep token references and longer names from matching", () => {
+  // 300ms inside a token name and a hyphenated property name are not time values.
+  assert.equal(motionHits(".a { transition: opacity var(--motion-ease-300ms) ease; }", "a.css").length, 0);
+  assert.equal(motionHits(".a { custom-transition: 300ms; }", "a.css").length, 0);
+  assert.equal(motionHits(".a { animation-name: fade-150ms; }", "a.css").length, 0);
+  // 1500ms is one number, reported once with its full value.
+  const hits = motionHits(".a { transition-duration: 1500ms; }", "a.css");
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /1500ms/);
+});
+
+test("DS-MOTION-001 defines literal motion tokens only in the token file", () => {
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; }", "src/theme.css").length, 1);
+  assert.equal(motionHits("$motion-transition: 150ms;", "src/_vars.scss").length, 1);
+  assert.equal(motionHits(":root { --motion-duration-fast: var(--base-fast); }", "src/theme.css").length, 0);
+  // The token file may define values.
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1); }", "src/motion-tokens.css").length, 0);
+  assert.equal(motionHits("export const motionDuration = { fast: 0.15 };\nexport const motionEase = { standard: [0.2, 0, 0, 1] };", "src/motion-tokens.ts").length, 0);
+});
+
+test("DS-MOTION-001 exempts only the token file's definitions, by exact basename", () => {
+  // Usage in the token file is still checked.
+  assert.equal(motionHits(".btn { transition: color 150ms; }", "src/styles/motion-tokens.css").length, 1);
+  // A component with a transition prop is not a token file, even under the token basename.
+  assert.equal(motionHits('<motion.div transition={{ duration: 0.2 }} />', "src/components/motion-tokens.ts").length, 1);
+  assert.equal(motionHits('<motion.div transition={{ duration: 0.2 }} />', "src/components/motion-tokens.tsx").length, 1);
+  // Look-alike names are checked like any other file.
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; }", "src/tokens.css").length, 1);
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; }", "src/my-motion-tokens.css").length, 1);
+  assert.equal(motionHits('<motion.div transition={{ duration: 0.2 }} />', "src/my-motion-tokens.ts").length, 1);
+  // Windows and root-relative paths resolve to the same basename.
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; }", "C:\\proj\\styles\\motion-tokens.css").length, 0);
+  assert.equal(motionHits(":root { --motion-duration-fast: 150ms; }", "./motion-tokens.scss").length, 0);
+});
+
+test("DS-MOTION-001 stays fast on large and adversarial input", () => {
+  const digits = "<motion.div transition={{ duration: " + "1".repeat(40000);
+  const start = Date.now();
+  motionHits(digits, "big.tsx");
+  assert.ok(Date.now() - start < 2000, "a long digit run stays fast");
+  const declarations = "transition: opacity ".repeat(20000);
+  const start2 = Date.now();
+  motionHits(declarations, "big.css");
+  assert.ok(Date.now() - start2 < 2000, "a long brace-free declaration flood stays fast");
+});
+
+test("DS-MOTION-001 does not read cubic-bezier code generation as a literal curve", () => {
+  // The mapper builds a curve from a value at runtime. No numbers are written in the source.
+  assert.equal(motionHits("const css = `cubic-bezier(${rawValue})`;", "src/mapper.ts").length, 0);
+  assert.equal(motionHits('const css = "cubic-bezier(" + rawValue + ")";', "src/mapper.ts").length, 0);
+  assert.equal(motionHits("const css = 'cubic-bezier(0.2, 0, 0, 1)';", "src/mapper.ts").length, 1);
+});
+
+test("DS-MOTION-001 checks long multi-line declarations and every curve on a line", () => {
+  // Eight properties, each with a time and a curve, well past 240 characters.
+  const long = ".btn {\n  transition:\n" + Array.from({ length: 8 }, (_, i) => `    prop${i} 150ms cubic-bezier(0.2, 0, 0, 1)`).join(",\n") + ";\n}";
+  assert.equal(motionHits(long, "a.css").length, 16);
+  // Two literal curves on one line are two findings.
+  assert.equal(motionHits(".a{transition:opacity .2s cubic-bezier(0.2,0,0,1)} .b{transition:transform .2s cubic-bezier(0.3,0,0,1)}", "a.css").length, 4);
+});
+
+test("DS-MOTION-001 reads the spellings that slipped past the first version", () => {
+  assert.equal(motionHits(".a { transition : opacity 150ms; }", "a.css").length, 1, "space before the colon");
+  assert.equal(motionHits(".a { transition-duration: 1e3ms; }", "a.css").length, 1, "exponent");
+  assert.equal(motionHits(".a { transition-duration: 150MS; }", "a.css").length, 1, "uppercase unit");
+  assert.equal(motionHits('<div className="[transition:opacity_150ms]" />').length, 1, "underscores in an arbitrary property");
+  assert.equal(motionHits('<div className="animate-[fade_1s_var(--ease-standard)]" />').length, 1, "var() beside a literal");
+  assert.equal(motionHits('<div className="animate-[var(--motion-animate-fade)]" />').length, 0, "a whole-token reference");
+  assert.equal(motionHits('const s = { animationDuration: "1s" };').length, 1, "animationDuration string");
+  assert.equal(motionHits('const s = { animationDelay: "200ms" };').length, 1, "animationDelay string");
+});
+
+test("DS-MOTION-001 flags time and curve definitions outside the token file under any name", () => {
+  assert.equal(motionHits(":root { --dur-fast: 150ms; }", "src/theme.css").length, 1, "a custom property with any name");
+  assert.equal(motionHits(":root { --motion-duration-fast: calc(150ms * 2); }", "src/theme.css").length, 1, "a calc() literal");
+  assert.equal(motionHits("$fast: 150ms;", "src/_vars.scss").length, 1, "a SCSS variable with any name");
+  assert.equal(motionHits('<div style={{ "--motion-duration-fast": "150ms" }} />').length, 1, "an inline style definition");
+  assert.equal(motionHits('el.style.setProperty("--motion-duration-fast", "150ms");').length, 1, "a runtime definition");
+  // A custom property that is not a time or curve is not a motion definition.
+  assert.equal(motionHits(":root { --gap-4: 16px; }", "src/theme.css").length, 0);
+});
+
+test("DS-MOTION-001 exempts a leading-underscore SCSS partial, and nothing else", () => {
+  assert.equal(motionHits("$motion-fast: 150ms;", "src/styles/_motion-tokens.scss").length, 0);
+  assert.equal(motionHits("$motion-fast: 150ms;", "src/styles/my_motion-tokens.scss").length, 1);
+});
+
+test("DS-MOTION-001 reads a Motion duration only inside a transition", () => {
+  assert.equal(motionHits('toast.success("Saved", { className: "transition-colors", duration: 3000 });').length, 0);
+  assert.equal(motionHits("const cfg = { exitOnClick: false, duration: 3000 };").length, 0);
+  assert.equal(motionHits("<motion.div transition={{ duration: 0.2 }} />").length, 1);
+  assert.equal(motionHits("const v = { transition: { duration: 0.2 } };").length, 1);
+});
+
+test("DS-MOTION-001 stays fast when every line has a finding", () => {
+  const lines = Array.from({ length: 5000 }, () => ".a{\ntransition:opacity 1ms}").join("\n");
+  const start = Date.now();
+  const hits = motionHits(lines, "big.css");
+  assert.equal(hits.length, 5000);
+  assert.ok(Date.now() - start < 2000, "a file with thousands of findings stays fast");
+});
+
+test("DS-MOTION-001 flags a time in a shorthand custom property or SCSS map outside the token file", () => {
+  assert.equal(motionHits(":root { --card-transition: transform 200ms ease; }", "src/theme.css").length, 1);
+  assert.equal(motionHits("$motion: (fast: 150ms, base: 200ms);", "src/_vars.scss").length, 1);
+  // A curve definition is reported once, by the curve scan.
+  assert.equal(motionHits(":root { --ease-standard: cubic-bezier(0.2, 0, 0, 1); }", "src/theme.css").length, 1);
+  assert.equal(motionHits("$ease: cubic-bezier(0.2, 0, 0, 1);", "src/_vars.scss").length, 1);
+  assert.equal(motionHits('const s = { "--ease": "cubic-bezier(0.2, 0, 0, 1)" };').length, 1);
+});
+
+test("DS-MOTION-001 reads a Motion duration in any transition shape", () => {
+  assert.equal(motionHits("const transition = { duration: 0.2 };").length, 1, "a variable named transition");
+  assert.equal(motionHits("<motion.div transition={{ x: { type: 'spring' }, opacity: { duration: 0.2 } }} />").length, 1, "nested per-key duration");
+  assert.equal(motionHits('toast.success("Saved", { className: "transition-colors", duration: 3000 });').length, 0, "a class name is not a context");
+});
+
+test("DS-MOTION-001 reads negative times", () => {
+  assert.equal(motionHits(".a { animation-delay: -0.5s; }", "a.css").length, 1);
+  assert.equal(motionHits('<div className="delay-[-200ms]" />').length, 1);
+  assert.equal(motionHits(".a { animation: spin 1s linear -0.5s infinite; }", "a.css").length, 2);
+  // Guard from the other side: a minus inside a name is not a sign.
+  assert.equal(motionHits(".a { animation-name: fade-150ms; }", "a.css").length, 0);
+});
+
+test("DS-MOTION-001 does not read prose after a comma in a code object as a time", () => {
+  assert.equal(motionHits('toast({ animation: "fade", description: "Saved 2s ago" });').length, 0);
+  // A code-file CSS list still reads each segment.
+  assert.equal(motionHits("const css = `.a { transition: opacity 0s, transform 200ms; }`;").length, 1);
+});
+
+test("DS-MOTION-001 reads exponent notation with a sign and reports the full value", () => {
+  const hits = motionHits(".a { transition-duration: 1e+3ms; }", "a.css");
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /1e\+3ms/);
 });
