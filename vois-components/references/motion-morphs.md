@@ -2,7 +2,7 @@
 
 Specs for the three highest-value morphs. Pick the morph with `vois-patterns/references/motion.md` first. This file says how to build it.
 
-Reference implementations live in the Vois app repo (`src/components/motion/` and `src/lib/motion/`) and are tested there. Copy the behavior, not the file paths. Every timing and easing value comes from a motion token, read at runtime. A missing token means no motion, never an invented number.
+These specs are complete enough to build from. `motion-logic.md` has the small pieces that are easy to get wrong (token reading, label split, digit keys, icon and direction plans, grow origin) as plain TypeScript to copy. Every timing and easing value comes from a motion token, read at runtime. Starter values are in `vois-tokens/references/animation.md`. A missing token means no motion, never an invented number.
 
 All three specs share these rules:
 
@@ -32,7 +32,7 @@ Use when a label changes and keeps some of its text: Save to Saved, Review order
 
 - Out and in durations: `--motion-duration-base`.
 - Easing: `--motion-ease-standard`.
-- Distance (if used): `--motion-distance-short`. Nothing else.
+- Distance (if used): `--motion-distance-short` (value: see `vois-tokens/references/animation.md`). Nothing else.
 
 **Reduced motion:** swap instantly.
 

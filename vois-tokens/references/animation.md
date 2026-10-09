@@ -10,13 +10,31 @@
 
 Timing and easing come from motion tokens. Component code never holds a literal duration, `cubic-bezier(...)` curve, or numeric easing array. `[DS-MOTION-001]`
 
-- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-ease-standard`, `--motion-ease-emphasized`. This file gives names only. Values come from your project's token source, never from this file.
+- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-ease-standard`, `--motion-ease-emphasized`, `--motion-distance-short`. Values live in your project's token file. If the project has none, start from the file below.
 - **CSS:** `transition-duration: var(--motion-duration-fast);`
 - **Tailwind:** `duration-[var(--motion-duration-fast)]`
 - **StyleX:** `transitionDuration: "var(--motion-duration-fast)"`
 - **Motion (JS):** import durations and easings from `motion-tokens.ts`.
 - **The token file is the only place literal values may be defined.** A file named `motion-tokens.css`, `.scss`, `.ts`, or `.js` (or `_motion-tokens.scss`) may define `--motion-*` values and duration or easing objects. Usage in that file, such as a `transition` declaration, is still checked, and a file with a `transition={{...}}` JSX prop is treated as a component. `tokens.css` or `my-motion-tokens.ts` are checked like any other file.
 - **Named keywords are allowed.** `ease-out` and `linear` follow the Easing Rules table below. The detector checks numbers and `cubic-bezier(...)` only.
+
+### Starter token file
+
+Starting points, to tune side by side in your own product. Token files are the one place literal values may be defined, so copy this to `motion-tokens.css`.
+
+```css
+:root {
+  --motion-duration-instant: 100ms; /* micro feedback */
+  --motion-duration-fast: 150ms;    /* icon morph, number ticker, small crossfades */
+  --motion-duration-base: 250ms;    /* label morph, directional, grow-from-trigger */
+  --motion-duration-slow: 400ms;    /* large elements only */
+  --motion-ease-standard: cubic-bezier(.165, .84, .44, 1);  /* ease-out-quart */
+  --motion-ease-emphasized: cubic-bezier(.23, 1, .32, 1);   /* ease-out-quint */
+  --motion-distance-short: 12px;    /* label rise and directional slide */
+}
+```
+
+`--motion-distance-short` is how far a morph travels. Use one value across the project so travel feels the same everywhere. Start at 12px; 8px to 16px suits most UIs. It stays small next to the element that moves, never the full width. If the token is missing, the element does not travel.
 
 ## Slow Duration `[DS-MOTION-002]`
 

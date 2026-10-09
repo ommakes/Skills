@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.13.0] - 2026-10-09
+
+### Added
+
+- **`references/motion-logic.md`**: the pieces of the morph specs that are easy to get wrong, as plain TypeScript with no dependencies. Token reading, label split, digit keys, icon and direction plans, and the grow origin. Each section lists expected outputs to check a port against.
+
+### Changed
+
+- **`references/motion-morphs.md` no longer points at the Vois app repo.** It said the reference implementations live there, which readers of this skill cannot see. The specs now stand alone, with `motion-logic.md` for the logic and `vois-tokens/references/animation.md` for token values.
+- The label morph's distance line points at where the value comes from.
+- **Version bump:** `1.12.0` → `1.13.0`
+
 ## [1.12.0] - 2026-10-09
 
 ### Added
