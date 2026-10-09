@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.22.0] - 2026-10-09
+
+### Added
+
+- **`--motion-distance-short`** is now a named motion token in `references/animation.md`. The morph specs already used it for the label morph's rise and the directional slide, but the token list did not name it and no value was given.
+- **A starter token file** in `references/animation.md` with starting values for every motion token (durations 100, 150, 250 and 400ms; the two easings reuse the existing ease-out-quart and ease-out-quint curves; distance 12px, with 8px to 16px as the range). Before, the file gave names only, so a project with no token source had no values to start from.
+
+### Changed
+
+- The "names only" sentence now says values live in the project's token file, and points to the starter file when there is none. No rule text changed.
+- **Version bump:** `1.21.1` → `1.22.0`
+
+---
+
 ## [1.21.1] - 2026-10-09
 
 ### Changed
