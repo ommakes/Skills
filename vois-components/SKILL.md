@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.13.0
+version: 1.14.0
 ---
 
 # Vois Component Selection Skill
@@ -124,7 +124,7 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 
 `data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 21 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
 
-**Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. Today that is `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks) and `references/motion-morphs.md` (specs for seven morphs: label morph, shared element transfer, number ticker, icon morph, directional transition, grow-from-trigger, reorder motion). Pick the morph with `vois-patterns/references/motion.md` first.
+**Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. Today that is `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks) and `references/motion-morphs.md` (specs for eight morphs: label morph, shared element transfer, number ticker, icon morph, directional transition, grow-from-trigger, reorder motion, status button). Pick the morph with `vois-patterns/references/motion.md` first.
 
 **Source of truth:** `data/components-rules.json` is canonical and, since the prose reference files were removed, the only source for decision-tree content. The Job Index table above is the one place each `JOB-*` ID is tagged in prose, and each JSON entry's `source_file` points here.
 

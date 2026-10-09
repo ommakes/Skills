@@ -36,6 +36,12 @@ Starting points, to tune side by side in your own product. Token files are the o
 
 `--motion-distance-short` is how far a morph travels. Use one value across the project so travel feels the same everywhere. Start at 12px; 8px to 16px suits most UIs. It stays small next to the element that moves, never the full width. If the token is missing, the element does not travel.
 
+### Tailwind v4 notes
+
+- `--ease-*`, `--default-transition-duration` and `--default-transition-timing-function` are theme variables. Set them in `@theme` and a plain `transition`, `ease-out` and `ease-in-out` use your tokens.
+- There is no `--duration-*` theme namespace. A class such as `duration-fast` generates no CSS and raises no error, so the element falls back to the default duration. Write `duration-[var(--motion-duration-fast)]`.
+- Do not trust a class name. After a build, read the element's computed `transition-duration` in a browser.
+
 ## Slow Duration `[DS-MOTION-002]`
 
 The slow duration token is for large elements only: drawers, sheets, and modals entering. It can run up to 500ms `[DS-ANIMATION-002]`. Every other UI animation stays under 300ms `[DS-ANIMATION-001]`, whichever token it uses. No detector checks this; it is a judgment call.

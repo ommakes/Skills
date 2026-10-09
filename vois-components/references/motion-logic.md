@@ -120,7 +120,26 @@ export const withinRateLimit = (times: number[], now: number, max: number) =>
 
 Check your port: `$1,240.00` has keys `currency`, `int:4`..`int:0`, `decimal`, `frac:0`, `frac:1`. Going to `$1,310.00` changes only `int:2` and `int:1`. Going from `999` to `1,000` changes all five integer keys, because the digits line up by place.
 
-## 4. Plans (icon, direction, grow origin)
+## 4. Input source (keyboard or pointer)
+
+`directionFor` needs to know what caused the change. Track the last input once, when the module loads. Installing it on the first read misses the first keypress.
+
+```ts
+export type InputSource = "pointer" | "keyboard";
+
+let lastInput: InputSource = "pointer";
+if (typeof window !== "undefined") {
+  window.addEventListener("keydown", () => { lastInput = "keyboard"; }, { capture: true, passive: true });
+  window.addEventListener("pointerdown", () => { lastInput = "pointer"; }, { capture: true, passive: true });
+}
+
+// Read it at the moment the change starts: directionFor(prev, next, inputSource())
+export const inputSource = (): InputSource => lastInput;
+```
+
+Check your port: before any input it is `pointer`. A click gives `pointer`. Enter in a text field gives `keyboard`, so a form submitted that way does not slide. Space on a focused button gives `keyboard`. A key press followed by a click gives `pointer`.
+
+## 5. Plans (icon, direction, grow origin)
 
 ```ts
 export function planIconChange(from: string, to: string,
