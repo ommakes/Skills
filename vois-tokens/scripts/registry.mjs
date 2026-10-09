@@ -21,6 +21,9 @@ const CSS_EXT = [".css", ".scss"];
 const CODE_EXT = [".tsx", ".jsx", ".ts", ".js"];
 const ALL_EXT = [...CSS_EXT, ...CODE_EXT];
 
+// Basename of the one file allowed to DEFINE literal motion values (see DS-MOTION-001). Only scanned extensions appear here.
+const MOTION_TOKEN_FILE = /^_?motion-tokens\.(css|scss|ts|js)$/i;
+
 const TAILWIND_COLORS = [
   "slate", "gray", "zinc", "neutral", "stone", "red", "orange", "amber",
   "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue",
@@ -459,6 +462,129 @@ export const RULES = [
         }
         lines.forEach((l, i) => {
           if (/\boverflow(?:-x|-y)?-(?:auto|scroll)\b/.test(l) && !/(?:^|[\s"'`:])(?:max-)?(?:h|block)-[^\s"'`]+/.test(l)) push(i + 1, wrapMessage);
+        });
+      }
+      return findings;
+    },
+  },
+
+  {
+    id: "DS-MOTION-001",
+    title: "Literal duration, easing, or curve instead of a motion token",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Use a motion token: var(--motion-duration-*) or var(--motion-ease-*). Motion (JS) reads its numbers from motion-tokens.ts.",
+    check({ content, lines, filePath = "" }) {
+      const findings = [];
+      // Line starts are computed once, so each finding is a binary search rather than a re-split of the file.
+      const starts = [0];
+      for (let i = 0; i < content.length; i++) if (content.charCodeAt(i) === 10) starts.push(i + 1);
+      const lineOf = (index) => {
+        let lo = 0;
+        let hi = starts.length - 1;
+        while (lo < hi) {
+          const mid = (lo + hi + 1) >> 1;
+          if (starts[mid] <= index) lo = mid;
+          else hi = mid - 1;
+        }
+        return lo + 1;
+      };
+      // One finding per position. Two scans can reach the same spot, and this keeps it to one report.
+      const seen = new Set();
+      const report = (index, message) => {
+        if (seen.has(index)) return;
+        seen.add(index);
+        const line = lineOf(index);
+        findings.push({ line, snippet: snippetAt(lines, line), message });
+      };
+      const each = (pattern, fn) => {
+        const re = new RegExp(pattern.source, pattern.flags.includes("g") ? pattern.flags : pattern.flags + "g");
+        let match;
+        while ((match = re.exec(content)) !== null) {
+          fn(match);
+          if (match[0] === "") re.lastIndex++;
+        }
+      };
+      // Zero is "no motion". 0.01ms is the reduced-motion value in references/animation.md. Neither is a literal.
+      const isLiteral = (value, unit = "ms") => Math.abs(Number(value)) * (unit.toLowerCase() === "s" ? 1000 : 1) > 0.01;
+      // A time: optional minus, a number (exponent allowed), then ms or s. The lookbehind keeps names like fade-150ms from matching.
+      const TIME = /(?<![\w.-])(-?(?:\d+(?:\.\d+)?(?:e[+-]?\d+)?|\.\d+))(ms|s)\b/gi;
+      // Time values inside `text`, which starts at `base` in content. Underscores stand in for spaces in Tailwind arbitrary values.
+      const reportTimes = (text, base, label) => {
+        const re = new RegExp(TIME.source, "gi");
+        const spaced = text.replace(/_/g, " ");
+        let t;
+        while ((t = re.exec(spaced)) !== null) {
+          if (isLiteral(t[1], t[2])) report(base + t.index, `${label} ${t[1]}${t[2]}: use a motion token.`);
+        }
+      };
+      const hasLiteralTime = (text) => {
+        const re = new RegExp(TIME.source, "gi");
+        let t;
+        while ((t = re.exec(text.replace(/_/g, " "))) !== null) {
+          if (isLiteral(t[1], t[2])) return true;
+        }
+        return false;
+      };
+      // Curves inside `text`, one report per curve.
+      const reportCurves = (text, base, label) => {
+        const re = /cubic-bezier\(\s*-?[\d.]/g;
+        let c;
+        while ((c = re.exec(text)) !== null) report(base + c.index, `${label}: use a motion easing token.`);
+      };
+      // The token file may DEFINE literal values. Usage is checked in every file. A file with a transition={{...}} JSX prop is a component, so it gets no exemption.
+      const isTokenFile = MOTION_TOKEN_FILE.test(String(filePath).split(/[\\/]/).pop()) && !/\btransition=\{/.test(content);
+      const isStylesheet = /\.(css|scss)$/i.test(String(filePath));
+
+      // Usage (every file).
+      // Tailwind arbitrary values: duration-[150ms], delay-[-200ms], animate-[spin_1s_..], ease-[cubic-bezier(..)].
+      each(/\b(duration|delay|animate|ease)-\[([^\]\n]*)\]/, (m) => {
+        const base = m.index + m[0].indexOf(m[2]);
+        if (m[1] === "ease") reportCurves(m[2], base, "Literal cubic-bezier curve in a Tailwind class");
+        else reportTimes(m[2], base, `Literal ${m[1]} in a Tailwind class`);
+      });
+      // Tailwind numeric classes: duration-200 (ms). Zero passes.
+      each(/(?<![\w-])(duration|delay)-(\d+)(?![\w.-])/, (m) => {
+        if (isLiteral(m[2])) report(m.index, `Literal class ${m[0]}: use duration-[var(--motion-duration-fast)] or a motion token.`);
+      });
+      // CSS transition and animation declarations. Every time and curve in the value is checked.
+      // Stylesheets end a value at ; or a brace. Code files also end it at a comma, unless the next segment is a CSS "prop 150ms",
+      // so animation: "fade", description: "Saved 2s ago" does not read the copy as a time.
+      const declaration = isStylesheet
+        ? /(?<![\w-])(?:transition|animation)(?:-duration|-delay)?\s*:([^;{}]*)/g
+        : /(?<![\w-])(?:transition|animation)(?:-duration|-delay)?\s*:((?:[^;{},]|,(?=\s*[a-zA-Z-]+\s+-?[\d.]))*)/g;
+      each(declaration, (m) => {
+        const base = m.index + m[0].length - m[1].length;
+        reportTimes(m[1], base, "Literal time in a transition or animation");
+        reportCurves(m[1], base, "Literal cubic-bezier curve in a transition or animation");
+      });
+      // StyleX and string forms: transitionDuration: "150ms", animationDelay: "200ms".
+      each(/\b(?:transition|animation)(?:Duration|Delay)\s*:\s*["']([^"'\n]{0,80})["']/, (m) => {
+        reportTimes(m[1], m.index + m[0].indexOf(m[1]), "Literal time in a StyleX or string transition");
+      });
+
+      // Definitions. Allowed only in the token file. Time definitions are flagged here; curve definitions are flagged by the curve scan below.
+      if (!isTokenFile) {
+        each(/cubic-bezier\(\s*-?[\d.]/, (m) => report(m.index, "Literal cubic-bezier curve: use a motion easing token."));
+        each(/(?<![\w$])ease:\s*\[\s*-?(?:\d+(?:\.\d+)?|\.\d+)\s*,/, (m) => report(m.index, "Literal easing array: use a motion easing token."));
+        // Motion seconds inside a transition: transition={{ duration: 0.2 }}, transition: { duration: 0.2 }, const transition = { duration: 0.2 }, or nested per-key durations.
+        // Only that context is checked, so toast({ duration: 3000 }) passes. transition-colors is a class name, not a context.
+        each(/(?<![\w$])(duration|delay):\s*((?:\d+(?:\.\d+)?|\.\d+)(?:e[+-]?\d+)?)(?![\w.])/, (m) => {
+          const before = content.slice(Math.max(0, m.index - 200), m.index);
+          if (!/\btransition\b(?!-)/.test(before)) return;
+          if (isLiteral(m[2], "s")) report(m.index, `Literal ${m[1]} ${m[2]} in a Motion transition: import it from motion-tokens.ts.`);
+        });
+        // Custom properties and SCSS variables whose value holds a literal time, under any name. Shorthands like "transform 200ms ease" count.
+        const definedOutside = "Time defined outside motion-tokens.*: move the definition to the token file.";
+        each(/(?<![\w-])--[\w-]+\s*:\s*([^;{}\n]{0,120})/, (m) => {
+          if (hasLiteralTime(m[1])) report(m.index, definedOutside);
+        });
+        each(/\$[\w-]+\s*:\s*([^;\n]{0,120})/, (m) => {
+          if (hasLiteralTime(m[1])) report(m.index, definedOutside);
+        });
+        // Inline style and runtime definitions: "--motion-duration-fast": "150ms", setProperty("--x", "150ms").
+        each(/["']--[\w-]+["']\s*[:,]\s*["']([^"'\n]{0,120})["']/, (m) => {
+          if (hasLiteralTime(m[1])) report(m.index, definedOutside);
         });
       }
       return findings;

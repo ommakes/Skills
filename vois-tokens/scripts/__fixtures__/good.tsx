@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 
 export function GoodCard() {
   return (
-    <div className="bg-surface text-on-surface p-3 transition-colors duration-200 h-dvh will-change-transform">
+    <div className="bg-surface text-on-surface p-3 transition-colors duration-[var(--motion-duration-base)] h-dvh will-change-transform">
       <div className="text-on-surface">token-based color</div>
       <a href="/x" className="outline-none focus-visible:ring-2">has focus ring</a>
       <img src="/cat.png" alt="A cat" />

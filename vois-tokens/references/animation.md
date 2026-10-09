@@ -6,6 +6,22 @@
 - **Large elements** (drawers, action sheets, modals entering): up to `500ms`. `[DS-ANIMATION-002]`
 - **Never animate keyboard-triggered interactions.** Repeated actions feel slower when animated. Keyboard users feel this. `[DS-ANIMATION-003]`
 
+## Motion Tokens `[DS-MOTION-001]`
+
+Timing and easing come from motion tokens. Component code never holds a literal duration, `cubic-bezier(...)` curve, or numeric easing array. `[DS-MOTION-001]`
+
+- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-ease-standard`, `--motion-ease-emphasized`. This file gives names only. Values come from your project's token source, never from this file.
+- **CSS:** `transition-duration: var(--motion-duration-fast);`
+- **Tailwind:** `duration-[var(--motion-duration-fast)]`
+- **StyleX:** `transitionDuration: "var(--motion-duration-fast)"`
+- **Motion (JS):** import durations and easings from `motion-tokens.ts`.
+- **The token file is the only place literal values may be defined.** A file named `motion-tokens.css`, `.scss`, `.ts`, or `.js` (or `_motion-tokens.scss`) may define `--motion-*` values and duration or easing objects. Usage in that file, such as a `transition` declaration, is still checked, and a file with a `transition={{...}}` JSX prop is treated as a component. `tokens.css` or `my-motion-tokens.ts` are checked like any other file.
+- **Named keywords are allowed.** `ease-out` and `linear` follow the Easing Rules table below. The detector checks numbers and `cubic-bezier(...)` only.
+
+## Slow Duration `[DS-MOTION-002]`
+
+The slow duration token is for large elements only: drawers, sheets, and modals entering. It can run up to 500ms `[DS-ANIMATION-002]`. Every other UI animation stays under 300ms `[DS-ANIMATION-001]`, whichever token it uses. No detector checks this; it is a judgment call.
+
 ## Reduced Motion
 
 Always respect `prefers-reduced-motion`. Users who set this have real reasons — vestibular disorders, epilepsy, motion sensitivity. `[DS-ANIMATION-004]`
@@ -42,7 +58,7 @@ const shouldReduce = useReducedMotion()
 | `linear` | Constant-speed loops only — marquees, spinners, hold-to-delete |
 | `ease` | Subtle ambient animations — toasts, notifications |
 
-Custom easing curves (Benjamin De Cock, used in Linear):
+Custom easing curves (Benjamin De Cock, used in Linear). Define these once in your motion token file, and have components reference them by name:
 
 ```css
 :root {
@@ -63,7 +79,7 @@ Custom easing curves (Benjamin De Cock, used in Linear):
 ```css
 .dropdown {
   transform-origin: top center;
-  animation: expand 200ms var(--ease-out-quint);
+  animation: expand var(--motion-duration-fast) var(--ease-out-quint);
 }
 ```
 
@@ -103,13 +119,13 @@ Use `scale(0.96)` on press. Never go below `0.95` — anything smaller reads as 
 button:active {
   scale: 0.96;
   transition-property: scale;
-  transition-duration: 150ms;
+  transition-duration: var(--motion-duration-fast);
   transition-timing-function: ease-out;
 }
 ```
 
 ```tsx
-<button className="transition-transform duration-150 ease-out active:scale-[0.96]">
+<button className="transition-transform duration-[var(--motion-duration-fast)] ease-out active:scale-[0.96]">
   Click me
 </button>
 ```
@@ -119,7 +135,7 @@ button:active {
 const styles = stylex.create({
   button: {
     transitionProperty: "scale",
-    transitionDuration: "150ms",
+    transitionDuration: "var(--motion-duration-fast)",
     transitionTimingFunction: "ease-out",
     ":active": { scale: 0.96 },
   },
@@ -136,13 +152,13 @@ import { motion } from "motion/react"
 <motion.div
   initial={{ opacity: 0, scale: 0.95 }}
   animate={{ opacity: 1, scale: 1 }}
-  transition={{ duration: 0.2, ease: [0.165, 0.84, 0.44, 1] }}
+  transition={{ duration: motionDuration.base, ease: motionEase.standard }}
 >
   {children}
 </motion.div>
 ```
 
-No bounce by default. Spring animations are native iOS patterns, not standard web UI.
+`motionDuration` and `motionEase` come from `motion-tokens.ts`. No bounce by default. Spring animations are native iOS patterns, not standard web UI.
 
 ## GPU Compositing Hints `[DS-ANIMATION-009]`
 
