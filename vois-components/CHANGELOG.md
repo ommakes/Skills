@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.14.0] - 2026-10-09
+
+### Added
+
+- **Status button spec** (`references/motion-morphs.md`, section 8). A button that shows idle, working and done: the three states crossfade in one grid cell, the fill blends to the success color as the indicator becomes a check, the check scales from 0.9, and the done state holds for 500ms at most. The button is never disabled, the accessible name follows the state, and a polite status line next to the button announces each change.
+- **Input source helper** (`references/motion-logic.md`, section 4). A small tracker for whether the last input was a keyboard or a pointer, for `directionFor`. It installs when the module loads, so the first keypress is counted.
+
+### Changed
+
+- The `motion-logic.md` plans section is now section 5.
+- `SKILL.md` counts eight morphs and names the status button.
+- **Version bump:** `1.13.0` → `1.14.0`
+
+---
+
 ## [1.13.0] - 2026-10-09
 
 ### Added

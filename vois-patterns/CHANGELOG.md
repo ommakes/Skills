@@ -6,6 +6,20 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.16.0] - 2026-10-09
+
+### Added
+
+- **Status button** in `references/motion.md`: a decision-test step, a row in the morph types table, and a worked example (Book now, spinner, check).
+
+### Changed
+
+- The decision test has a new step 2, so the old steps 2 to 8 are now 3 to 9.
+- The slow confirmation anti-pattern names its one exception, the status button's done hold, capped at 500ms.
+- **Version bump:** `1.15.0` → `1.16.0`
+
+---
+
 ## [1.15.0] - 2026-10-09
 
 ### Added

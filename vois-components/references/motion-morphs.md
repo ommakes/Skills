@@ -2,7 +2,7 @@
 
 Specs for the three highest-value morphs. Pick the morph with `vois-patterns/references/motion.md` first. This file says how to build it.
 
-These specs are complete enough to build from. `motion-logic.md` has the small pieces that are easy to get wrong (token reading, label split, digit keys, icon and direction plans, grow origin) as plain TypeScript to copy. Every timing and easing value comes from a motion token, read at runtime. Starter values are in `vois-tokens/references/animation.md`. A missing token means no motion, never an invented number.
+These specs are complete enough to build from. `motion-logic.md` has the small pieces that are easy to get wrong (token reading, label split, digit keys, input source, icon and direction plans, grow origin) as plain TypeScript to copy. Every timing and easing value comes from a motion token, read at runtime. Starter values are in `vois-tokens/references/animation.md`. A missing token means no motion, never an invented number.
 
 All three specs share these rules:
 
@@ -133,6 +133,37 @@ Use when the user sorts, groups, or drags a list and needs to see where items we
 **Tokens:** duration `--motion-duration-base`, easing `--motion-ease-standard`.
 
 **Reduced motion:** instant reposition.
+
+## 8. Status button
+
+Use when a button shows the result of its own action: idle, working, done. A save, a submit, a booking.
+
+**Behavior**
+
+- Three states: the label, a working indicator, a done mark. Each change crossfades in place. A label, a spinner and a check are not related shapes, so none of them morphs into another.
+- Stack the states in one grid cell. The button keeps its size while they fade, and its width does not change.
+- The change from working to done also moves the fill. The button's color blends to the success color over the same duration while the check fades in where the indicator was. This is one motion, not two.
+- The done mark scales from 0.9 to 1 with opacity. Never from 0 (`DS-ANIMATION-005`).
+- Transition the background color on the button itself. If the button library reads its fill from a CSS variable, switch that variable on a wrapper element.
+- The button is never disabled while it works or shows done. A disabled button loses focus. Ignore clicks in those states instead.
+- Hold the done state for 500ms at most before the next screen replaces the button, so the mark can be read. This is the one exception to the slow confirmation anti-pattern in `vois-patterns/references/motion.md`: the action has already succeeded and the mark is the confirmation. Skip the hold for high-frequency actions.
+- A failure returns to the label state at once. Do not play the done mark, and do not use the success color.
+- If the button library hides its content while loading, or sets its own busy and disabled attributes, render the three states yourself and use a status line.
+
+**Accessibility**
+
+- The button's accessible name follows the state: for example `Book now`, `Booking…`, `Booked`. The visual layer is `aria-hidden`.
+- Announce each change once, in a polite live region next to the button, not inside it.
+- Focus stays on the button. The animation never moves focus.
+- Do not rely on color alone. The check carries the meaning.
+
+**Tokens**
+
+- Crossfade, fill blend and the check's scale: `--motion-duration-base`, easing `--motion-ease-standard`.
+- Success color: the project's success color token, never a literal.
+- The hold is not a motion token. Name it as a constant in the component.
+
+**Reduced motion:** the fill and the icon change at once. The done state still holds for the same time, because it carries information.
 
 ## Still not specced
 

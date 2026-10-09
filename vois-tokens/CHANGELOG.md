@@ -4,6 +4,19 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.22.1] - 2026-10-09
+
+### Added
+
+- **Tailwind v4 notes** in `references/animation.md`. `--ease-*` and `--default-transition-*` are theme variables, but there is no `--duration-*` namespace, so a class such as `duration-fast` generates no CSS and raises no error. Use `duration-[var(--motion-duration-fast)]`, and check the computed `transition-duration` after a build.
+
+### Notes
+
+- No rule or token changed.
+- **Version bump:** `1.22.0` → `1.22.1`
+
+---
+
 ## [1.22.0] - 2026-10-09
 
 ### Added

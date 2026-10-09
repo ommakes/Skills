@@ -28,18 +28,20 @@ Timing and easing values come from motion tokens. See `vois-tokens/references/an
 Run these in order. Stop at the first yes.
 
 1. Does the same element appear in the next state? Use a **shared element transfer**.
-2. Does a label change in a way that raises the stakes or changes the step? Use a **label morph**.
-3. Does an icon change to show a new action in place (menu to close, play to pause)? Use an **icon morph**.
-4. Does a number change? Use a **number ticker**.
-5. Does the user move sideways between peers (tabs, segments, steppers)? Use a **directional transition**.
-6. Does a transient panel open from the control that triggered it? Use **grow-from-trigger**.
-7. Does a list reorder or regroup because of the user? Use **reorder motion**.
-8. None of the above: a crossfade at the fast duration, or nothing.
+2. Does a button run an action and show its result (idle, working, done)? Use a **status button**.
+3. Does a label change in a way that raises the stakes or changes the step? Use a **label morph**.
+4. Does an icon change to show a new action in place (menu to close, play to pause)? Use an **icon morph**.
+5. Does a number change? Use a **number ticker**.
+6. Does the user move sideways between peers (tabs, segments, steppers)? Use a **directional transition**.
+7. Does a transient panel open from the control that triggered it? Use **grow-from-trigger**.
+8. Does a list reorder or regroup because of the user? Use **reorder motion**.
+9. None of the above: a crossfade at the fast duration, or nothing.
 
 ## Morph types
 
 | Type | Use when | Do not use when | Reduced motion |
 |---|---|---|---|
+| Status button | A button runs an action and shows idle, working and done | The action has no visible result, or the library owns the loading state and you cannot render the states | Fill and icon change at once. The done state still holds. |
 | Label morph | The new label keeps some letters and changes the step (Save to Saved) | The strings share nothing, it changes more than once a second, or it sits in a dense table | Instant swap |
 | Shared element | A card, amount, or avatar exists in both states | The element is different content with the same shape | Crossfade in place, no travel |
 | Icon morph | The icon's job changes in place | The two icons are unrelated shapes | Instant swap |
@@ -55,6 +57,8 @@ Run these in order. Stop at the first yes.
 **Label morph: "Review order" becomes "Submit order".** The strings share the suffix " order". Keep " order" still and animate "Review" out and "Submit" in. The step changed, so the label should show it.
 
 **Label morph with no overlap: "Continue" becomes "Pay $42".** Nothing is shared, so the label crossfades. Splitting the letters here would look like noise.
+
+**Status button: "Book now", then a spinner, then a check.** The three states crossfade in the same spot and the button keeps its size. When the booking succeeds the fill blends to the success color while the spinner turns into the check. The check holds for half a second at most, then the confirmation screen replaces the form.
 
 **Number ticker: "$1,240.00" becomes "$1,310.00".** Only the digits that changed move. The "$", the comma, the decimal point, and the ".00" stay still. Screen readers hear the final value once, after updates settle.
 
@@ -89,7 +93,7 @@ Polish has to be even. A rarely used screen that is static beside a smooth one l
 - **Duplicate during transition.** The same card fades out in one place while a copy fades in elsewhere. Users see two things.
 - **Motion for its own sake.** No stated user benefit means cut it.
 - **Teleporting persistent elements.** A header or card that jumps to a new position with no travel loses its identity.
-- **Slow confirmation.** A morph that adds delay to a payment, a delete, or a submit. The confirmation must feel immediate.
+- **Slow confirmation.** A morph that adds delay to a payment, a delete, or a submit. The confirmation must feel immediate. The one exception is the status button's done hold, capped at 500ms.
 - **Per-letter animation on every label.** Reserve label morphs for moments that matter. Used everywhere, they become noise.
 - **Bounce on serious actions.** Use no overshoot on destructive or financial confirmations.
 - **Inconsistent timing.** Two similar transitions with different durations. Use the tokens.
