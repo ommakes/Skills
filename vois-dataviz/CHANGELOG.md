@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.0.4] - 2026-10-08
+
+### Changed
+
+- **Step 8 of the review checklist** (`data/review-checklist.json`) now says "If the vois_record_rule_usage tool is available, call it" instead of a bare "Call vois_record_rule_usage". The public skill has to work without the Vois MCP. The private repo keeps the required call; `scripts/check-mirror.mjs` allows that one sentence to differ.
+
+---
+
 ## [1.0.3] - 2026-10-06
 
 ### Fixed

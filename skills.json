@@ -23,7 +23,7 @@
     {
       "name": "vois-dataviz",
       "path": "vois-dataviz",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "author": "Personify Labs",
       "description": "Data visualization and dashboard rules for web apps, usable for both building and reviewing: a chart-selection decision tree, 14 principles with do's and don'ts, 114 checkable rules, a 48-form chart catalog, six dashboard templates, 57 pieces of Mobbin evidence, a chart spec checker, a code detector, and a review protocol. Read after vois-patterns when a screen contains charts or KPI tiles. Standalone: any MCP telemetry call is optional.",
       "tags": ["design", "vois", "data-visualization", "dashboards", "charts", "accessibility"],

@@ -126,14 +126,34 @@ for (const f of RULE_FILES) {
 }
 
 // Review checklist: compare the top level, minus the allowed keys.
+// WORDING_SWAPS: the private sentence is required (the premium MCP call); the public one is
+// conditional so the skill still works without the MCP. The private text has the public
+// sentence substituted in before comparing. Each swap must match exactly once, or it fails.
+const WORDING_SWAPS = {
+  "vois-dataviz/data/review-checklist.json": [
+    [
+      "what to fix first. Call vois_record_rule_usage for the rule ids that drove changes.",
+      "what to fix first. If the vois_record_rule_usage tool is available, call it for the rule ids that drove changes.",
+    ],
+  ],
+};
+
 {
   const f = "vois-dataviz/data/review-checklist.json";
   const pubPath = join(here, f);
   const privPath = join(privateRoot, f);
-  if (existsSync(pubPath) && existsSync(privPath)) {
+  if (!existsSync(pubPath) || !existsSync(privPath)) {
+    problems.push(`${f}: missing in ${existsSync(pubPath) ? "private" : "public"}`);
+  } else {
     const allowKeys = ALLOWED[f]["$top"];
+    let privText = readFileSync(privPath, "utf8");
+    for (const [privSentence, pubSentence] of WORDING_SWAPS[f]) {
+      const hits = privText.split(privSentence).length - 1;
+      if (hits !== 1) problems.push(`${f}: wording swap matched ${hits} times, expected 1`);
+      privText = privText.replace(privSentence, pubSentence);
+    }
     const pub = withoutFields(JSON.parse(readFileSync(pubPath, "utf8")), allowKeys);
-    const priv = withoutFields(JSON.parse(readFileSync(privPath, "utf8")), allowKeys);
+    const priv = withoutFields(JSON.parse(privText), allowKeys);
     if (JSON.stringify(canonical(pub)) !== JSON.stringify(canonical(priv))) {
       problems.push(`${f}: differs outside the allowed keys`);
     }
@@ -143,15 +163,16 @@ for (const f of RULE_FILES) {
 // ---- 2. Standalone: no required MCP calls in public skills ---------------------------
 
 const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens"];
-const CALL = /\b(call|calls|always call|must call)\b[^.\n]*`vois_[a-z_]+`/i;
+const CALL = /\b(call|calls|always call|must call)\b[^.\n]*\b`?vois_[a-z_]+`?/i;
 const CONDITIONAL = /\b(if|when|unless|optional|available|only)\b/i;
 
-function markdownFiles(dir) {
+// Markdown and JSON: the JSON data files carry instructions to the agent too.
+function textFiles(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) out.push(...markdownFiles(p));
-    else if (name.endsWith(".md")) out.push(p);
+    if (statSync(p).isDirectory()) out.push(...textFiles(p));
+    else if (name.endsWith(".md") || name.endsWith(".json")) out.push(p);
   }
   return out;
 }
@@ -159,7 +180,7 @@ function markdownFiles(dir) {
 for (const skill of STANDALONE_SKILLS) {
   const dir = join(here, skill);
   if (!existsSync(dir)) continue;
-  for (const file of markdownFiles(dir)) {
+  for (const file of textFiles(dir)) {
     if (file.endsWith("CHANGELOG.md")) continue;
     const lines = readFileSync(file, "utf8").split("\n");
     lines.forEach((line, i) => {
