@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.12.0] - 2026-10-09
+
+### Added
+
+- **Specs for the four P1 morphs** in `references/motion-morphs.md`: icon morph (declared pairs rotate one shared icon, everything else crossfades), directional transition (slide from the index change, keyboard moves do not slide, reduced motion crossfades), grow-from-trigger (transform origin from the trigger, start at scale 0.9 or more, fade in place under reduced motion), and reorder motion (transform travel, no stagger, instant under reduced motion).
+- The "Still not specced" note now says the seven morphs are the complete set. New morph types need a spec before code.
+
+### Changed
+
+- **Version bump:** `1.11.0` → `1.12.0`
+
+---
+
 ## [1.11.0] - 2026-10-09
 
 ### Added
