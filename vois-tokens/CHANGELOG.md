@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.21.1] - 2026-10-09
+
+### Changed
+
+- **Pointers to the motion guidance.** The `references/animation.md` row in `SKILL.md` now points at `vois-patterns/references/motion.md` (when to morph) and `vois-components/references/motion-morphs.md` (morph specs). No rule or token changed.
+- **Version bump:** `1.21.0` → `1.21.1`
+
+---
+
 ## [1.21.0] - 2026-10-08
 
 ### Added

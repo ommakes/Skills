@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.21.0
+version: 1.21.1
 ---
 
 # Vois Tokens Skill
@@ -82,7 +82,7 @@ building fresh, not just the bare rule text:**
 | `references/data-tables.md` | Table scroll owner, sticky header and first column, scrollbar styling, one-axis wheel lock, responsive table layout, scroll-region accessibility | `[DS-TABLE]` |
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
-| `references/animation.md` | Timing, easing, reduced motion, Motion library usage | `[DS-ANIMATION]` |
+| `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
 | `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 96px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |

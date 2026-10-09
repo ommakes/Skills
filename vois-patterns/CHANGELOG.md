@@ -6,6 +6,19 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.15.0] - 2026-10-09
+
+### Added
+
+- **`references/motion.md`**: when a state change should travel, morph, or stay still. It covers the decision test (shared element, label morph, icon morph, number ticker, directional, grow-from-trigger, reorder, then crossfade or nothing), a table of morph types with reduced-motion fallbacks, worked examples (Save to Saved, Review order to Submit order, a label with no overlap, a number ticker, an avatar moving into a header, a directional tab change, a confirmation panel), frequency rules, accessibility rules including the keyboard-moves-do-not-slide rule, anti-patterns, and a checklist.
+- Timing and easing values stay in `vois-tokens/references/animation.md`. The new reference points there instead of restating numbers.
+
+### Changed
+
+- **Version bump:** `1.14.2` → `1.15.0`
+
+---
+
 ## [1.14.2] - 2026-10-06
 
 **Fix** | `PATH-PERM-PII-MASK` said the full value appears only on a detail view, while `PATH-PERM-PII-REVEAL` puts a per-field reveal on the list, card, or header. Both now say the full value reaches only roles that need it, through the reveal control wherever the masked value appears or on a detail view, and a role that never needs it never receives it.

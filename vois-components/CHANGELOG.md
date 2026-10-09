@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.11.0] - 2026-10-09
+
+### Added
+
+- **`references/motion-morphs.md`**: specs for three morphs, the P0 set. Label morph (grapheme-aware prefix and suffix split, crossfade when nothing is shared, final label exposed once), shared element transfer (one identity, transform only, crossfade fallback when the target is missing), and number ticker (locale-aware parts, place-value keys, rate limit, one polite announcement). Each lists its tokens and its reduced-motion fallback. The P1 morphs are not specced yet.
+
+### Changed
+
+- The "Component specs" paragraph in `SKILL.md` points at the new reference.
+- **Version bump:** `1.10.3` → `1.11.0`
+
+---
+
 ## [1.10.3] - 2026-10-07
 
 ### Fixed
