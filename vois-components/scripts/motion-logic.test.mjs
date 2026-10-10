@@ -43,6 +43,64 @@ test("tokens: a missing or unreadable token means no motion", () => {
   assert.equal(lib.readMotionEase("ease-standard"), null);
 });
 
+test("tokens: a malformed value is unreadable, never a different value", () => {
+  // An empty segment is not 0. These stay inside 0 to 1, so only the number check can reject them.
+  assert.equal(lib.parseCubicBezier("cubic-bezier(.1,,.2,1)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(,.1,.2,.3)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(.1,.2,.3,)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(.1,.2, ,1)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(1,,3,4)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(,1,2,3)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(1,2,3,)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(1,2,3,4,)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(1,2,3,4,5)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(a,2,3,4)"), null);
+  // x1 and x2 must be in 0 to 1, as in CSS. y1 and y2 may leave it.
+  assert.equal(lib.parseCubicBezier("cubic-bezier(2,0,0,1)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(-0.1,0,0,1)"), null);
+  assert.equal(lib.parseCubicBezier("cubic-bezier(0,0,1.5,1)"), null);
+  assert.deepEqual(lib.parseCubicBezier("cubic-bezier(0, 0, 1, 1)"), [0, 0, 1, 1]);
+  assert.deepEqual(lib.parseCubicBezier("cubic-bezier(.4, -0.5, .2, 1.5)"), [0.4, -0.5, 0.2, 1.5]);
+  // A negative duration is unreadable.
+  assert.equal(lib.parseCssTimeToMs("-250ms"), null);
+  assert.equal(lib.parseCssTimeToMs("-0.25s"), null);
+  assert.equal(lib.parseCssTimeToMs("0ms"), 0);
+});
+
+test("tokens: reduced motion and bad tokens give 0, a good token gives its value", () => {
+  const saved = { matchMedia: window.matchMedia, document: globalThis.document, getComputedStyle: globalThis.getComputedStyle };
+  const tokens = {
+    "--motion-duration-base": "250ms",
+    "--motion-duration-bad": "fast",
+    "--motion-duration-negative": "-250ms",
+    "--motion-ease-standard": "cubic-bezier(.165, .84, .44, 1)",
+    "--motion-ease-bad": "cubic-bezier(1,,3,4)",
+  };
+  let reduce = false;
+  window.matchMedia = () => ({ matches: reduce });
+  globalThis.document = { documentElement: {} };
+  globalThis.getComputedStyle = () => ({ getPropertyValue: (name) => tokens[name] ?? "" });
+  try {
+    assert.equal(lib.prefersReducedMotion(), false);
+    assert.equal(lib.readMotionMs("duration-base"), 250);
+    assert.equal(lib.readMotionMs("duration-missing"), 0);
+    assert.equal(lib.readMotionMs("duration-bad"), 0);
+    assert.equal(lib.readMotionMs("duration-negative"), 0);
+    assert.deepEqual(lib.readMotionEase("ease-standard"), [0.165, 0.84, 0.44, 1]);
+    assert.equal(lib.readMotionEase("ease-bad"), null);
+    assert.equal(lib.readMotionEase("ease-missing"), null);
+    reduce = true;
+    assert.equal(lib.prefersReducedMotion(), true);
+    assert.equal(lib.readMotionMs("duration-base"), 0, "reduced motion wins over a good token");
+  } finally {
+    window.matchMedia = saved.matchMedia;
+    globalThis.document = saved.document;
+    globalThis.getComputedStyle = saved.getComputedStyle;
+    if (saved.document === undefined) delete globalThis.document;
+    if (saved.getComputedStyle === undefined) delete globalThis.getComputedStyle;
+  }
+});
+
 // ---- 2. label split ----
 
 test("label split: the documented cases", () => {
@@ -65,8 +123,14 @@ test("digit keys: the documented cases", () => {
   const nine = lib.keyedNumberChars(999, "en-US");
   const thousand = lib.keyedNumberChars(1000, "en-US");
   assert.equal(lib.changedKeys(nine, thousand).size, 5, "999 to 1,000 changes all five integer keys");
+  // `times` are the earlier updates. This one is the `max`th at most, so `max` earlier ones is too many.
   assert.equal(lib.withinRateLimit([0, 400, 900], 950, 2), false);
-  assert.equal(lib.withinRateLimit([0, 400, 900], 950, 3), true);
+  assert.equal(lib.withinRateLimit([0, 400, 900], 950, 3), false);
+  assert.equal(lib.withinRateLimit([0, 400, 900], 950, 4), true);
+  assert.equal(lib.withinRateLimit([], 950, 2), true, "the first update is always allowed");
+  assert.equal(lib.withinRateLimit([900], 950, 2), true, "this would be the second in the second");
+  assert.equal(lib.withinRateLimit([400, 900], 950, 2), false, "this would be the third in the second");
+  assert.equal(lib.withinRateLimit([0], 1000, 1), true, "an update exactly one second old is outside the window");
   assert.equal(lib.withinRateLimit([0], 5000, 2), true, "old updates fall out of the window");
 });
 
@@ -100,6 +164,7 @@ test("plans: icon, direction, grow origin", () => {
 
 // ---- 6. label alignment ----
 
+const graphemeCount = (t) => Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(t)).length;
 const kinds = (r) => r.ops.map((o) => `${o.kind[0]}${o.char}`).join(" ");
 const stays = (r) => r.ops.filter((o) => o.kind === "stay").map((o) => o.char).join("");
 
@@ -141,9 +206,12 @@ test("alignLabels: guards from the other side", () => {
   assert.equal(lib.alignLabels("Save", "").morphs, false);
   assert.equal(lib.alignLabels("a".repeat(49), "a".repeat(49)).morphs, false, "over 48 graphemes crossfades");
   assert.equal(lib.alignLabels("a".repeat(48), "a".repeat(48) + "b").morphs, false);
-  const t0 = performance.now();
-  lib.alignLabels("ab".repeat(24), "ba".repeat(24));
-  assert.ok(performance.now() - t0 < 200, "a 48-grapheme pair stays fast");
+  // The cap is a count, not a stopwatch: 48 graphemes align, 49 do not.
+  const at48 = lib.alignLabels("a".repeat(47) + "b", "a".repeat(47) + "c");
+  assert.equal(at48.ops.length, 49, "48 graphemes still align");
+  assert.equal(at48.morphs, true);
+  const at49 = lib.alignLabels("a".repeat(48) + "b", "a".repeat(48) + "c");
+  assert.deepEqual(at49, { ops: [], morphs: false }, "49 graphemes skip the table and crossfade");
   // A skin-tone emoji is one grapheme: it must never be split into its parts.
   const emoji = lib.alignLabels("👍🏽", "👍");
   assert.equal(emoji.morphs, false);
@@ -152,9 +220,13 @@ test("alignLabels: guards from the other side", () => {
   const ar = lib.alignLabels("حفظ", "حفظت");
   assert.equal(ar.morphs, true);
   assert.equal(stays(ar), "حفظ");
-  // Identical text is all stays and morphs nothing visible.
-  const same = lib.alignLabels("Save", "Save");
-  assert.ok(same.ops.every((o) => o.kind === "stay"));
+  // Identical text is all stays and nothing to morph, at every length. One grapheme must agree with two.
+  for (const text of ["A", "Go", "Save", "a".repeat(48)]) {
+    const same = lib.alignLabels(text, text);
+    assert.equal(same.ops.length, graphemeCount(text), `${text.slice(0, 6)}: one op per grapheme`);
+    assert.ok(same.ops.every((o) => o.kind === "stay" && o.from === o.to), `${text.slice(0, 6)}: all stays`);
+    assert.equal(same.morphs, false, `${text.slice(0, 6)}: identical text does not morph`);
+  }
 });
 
 // ---- 7. typed input keys ----
@@ -253,7 +325,11 @@ test("trayPlan: the documented cases", () => {
   assert.deepEqual(lib.trayPlan(250, 250, { reduced: false }), { approach: "none" });
   assert.deepEqual(lib.trayPlan(200, 300, { reduced: true }), { approach: "instant", to: 300 });
   assert.deepEqual(lib.trayPlan(0, 300, { reduced: false }), { approach: "instant", to: 300 });
-  assert.equal(lib.trayPlan(NaN, 300, { reduced: false }).approach, "instant");
-  assert.equal(lib.trayPlan(200, -1, { reduced: false }).approach, "instant");
+  assert.deepEqual(lib.trayPlan(NaN, 300, { reduced: false }), { approach: "instant", to: 300 });
+  // A target we cannot trust is never handed back as a height.
+  for (const bad of [NaN, -1, 0, Infinity]) {
+    assert.deepEqual(lib.trayPlan(200, bad, { reduced: false }), { approach: "instant", to: null }, `target ${bad}`);
+  }
+  assert.deepEqual(lib.trayPlan(NaN, NaN, { reduced: false }), { approach: "instant", to: null });
   assert.equal(lib.trayPlan(200, 300, { reduced: true, motionLayout: true }).approach, "instant", "reduced motion wins over a library");
 });

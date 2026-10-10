@@ -351,7 +351,7 @@ Never animate from `scale(0)` — start at 0.9 or higher `[DS-ANIMATION-005]`. S
 
 **GPU hints:** `will-change` only helps `transform`, `opacity`, `filter`, `clip-path` — it does nothing for `width`/`height`/`top`/`left`/`background`/`border`/`color`. Add it only when you actually observe first-frame stutter, not preemptively `[DS-ANIMATION-009]`.
 
-No bounce by default in Motion — spring animations are a native-iOS pattern, not standard web UI.
+No bounce in Motion. A spring is allowed on the web only at `bounce: 0`, with its duration taken from a motion token `[DS-MOTION-006]`.
 
 ## Accessibility `[DS-A11Y]`
 

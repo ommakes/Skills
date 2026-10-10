@@ -95,7 +95,7 @@ For cards, containers, and bordered buttons that exist to show **depth or elevat
   box-shadow: var(--shadow-border);
   transition-property: box-shadow;
   transition-duration: var(--motion-duration-fast);
-  transition-timing-function: ease-out;
+  transition-timing-function: var(--motion-ease-standard);
 }
 .card:hover { box-shadow: var(--shadow-border-hover); }
 ```
@@ -137,6 +137,8 @@ Don't animate one large container on enter. Split into semantic chunks (title, d
 Combine `opacity`, `blur`, and `translateY` for the enter effect — not just opacity alone.
 
 ```tsx
+import { motionDistance, motionDuration } from "./motion-tokens"; // see animation.md
+
 <motion.div
   initial="hidden"
   animate="visible"
@@ -152,6 +154,8 @@ Combine `opacity`, `blur`, and `translateY` for the enter effect — not just op
 </motion.div>
 ```
 
+The gap between chunks is the `instant` duration token (100ms). There is no separate stagger token, so a project that wants a different gap adds one to `motion-tokens.ts` instead of typing a number here.
+
 Use `initial={false}` on `AnimatePresence` to skip enter animations on first page load for elements already in their default state (icon swaps, tabs, toggles). Don't apply it to staged page-hero entrances that depend on the `initial` prop to fire at all — verify on a hard refresh. `[DS-SURFACE-012]`
 
 ---
@@ -166,8 +170,10 @@ Exits should be softer than enters — the user's attention is already moving to
 - Only use a full slide-out (`x: "-100%"`) when spatial context actually matters, like a card returning to a list.
 
 ```tsx
+import { motionDistance, motionDuration, motionEase } from "./motion-tokens";
+
 <motion.div
-  exit={{ opacity: 0, y: -motionDistance.short, filter: "blur(4px)", transition: { duration: motionDuration.fast, ease: "easeIn" } }}
+  exit={{ opacity: 0, y: -motionDistance.short, filter: "blur(4px)", transition: { duration: motionDuration.fast, ease: motionEase.standard } }}
 >
   {content}
 </motion.div>
@@ -186,6 +192,8 @@ When an icon swaps state (play→pause, like→liked, hover-revealed actions), a
 
 ```tsx
 // Motion — check package.json for motion/framer-motion first
+import { motionSpring } from "./motion-tokens";
+
 <AnimatePresence mode="popLayout" initial={false}>
   <motion.span
     key={isActive ? "active" : "inactive"}

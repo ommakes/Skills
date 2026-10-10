@@ -1,14 +1,15 @@
 # Motion Logic
 
-The specs in `motion-morphs.md` are enough to build from. This file holds the small pieces that are easy to get subtly wrong, as plain TypeScript with no dependencies. `scripts/motion-logic.test.mjs` runs every code block here and checks each "Check your port" line. Copy it into your project and adapt it. No timing value appears in this code. Values come from the motion tokens in `vois-tokens/references/animation.md`.
+The specs in `motion-morphs.md` are enough to build from. This file holds the small pieces that are easy to get subtly wrong, as plain TypeScript with no dependencies. `scripts/motion-logic.test.mjs` runs every code block here and checks each "Check your port" line. Copy and adapt it. No timing value appears in this code. Values come from the motion tokens in `vois-tokens/references/animation.md`.
 
 ## 1. Reading tokens
 
 A missing or unreadable token means no motion (0), never an invented default. Reduced motion also means 0.
 
 ```ts
-const TIME = /^(-?(?:\d+(?:\.\d+)?(?:e[+-]?\d+)?|\.\d+))(ms|s)$/i;
+const TIME = /^((?:\d+(?:\.\d+)?(?:e[+-]?\d+)?|\.\d+))(ms|s)$/i;
 const CURVE = /^cubic-bezier\(\s*([^)]+)\)$/i;
+const NUMBER = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:e[+-]?\d+)?$/i;
 
 export function parseCssTimeToMs(value: string): number | null {
   const m = TIME.exec(value.trim());
@@ -21,8 +22,11 @@ export type CubicBezier = [number, number, number, number];
 export function parseCubicBezier(value: string): CubicBezier | null {
   const m = CURVE.exec(value.trim());
   if (!m) return null;
-  const p = m[1].split(",").map((s) => Number(s.trim()));
-  return p.length === 4 && p.every(Number.isFinite) ? (p as CubicBezier) : null;
+  const parts = m[1].split(",").map((s) => s.trim());
+  // An empty segment is not 0, and x1 and x2 stay in 0 to 1, as in CSS.
+  if (parts.length !== 4 || !parts.every((s) => NUMBER.test(s))) return null;
+  const p = parts.map(Number);
+  return p.every(Number.isFinite) && p[0] >= 0 && p[0] <= 1 && p[2] >= 0 && p[2] <= 1 ? (p as CubicBezier) : null;
 }
 
 export function prefersReducedMotion(): boolean {
@@ -48,11 +52,11 @@ export function readMotionEase(name: string): CubicBezier | null { // "ease-stan
 }
 ```
 
-`--motion-distance-short` is only used in CSS (`translateY(var(--motion-distance-short))`). If it is missing the declaration is invalid and the element does not travel.
+`--motion-distance-short` is only used in CSS (`translateY(var(--motion-distance-short))`). If missing, the declaration is invalid and the element does not travel.
 
 ## 2. Label split (label morph)
 
-Compare grapheme clusters, not code units. The suffix is capped by what the prefix left over, so the two never overlap.
+Compare grapheme clusters, not code units. The suffix is capped by what the prefix left, so the two never overlap.
 
 ```ts
 const seg = typeof Intl !== "undefined" && "Segmenter" in Intl
@@ -115,12 +119,12 @@ export function changedKeys(prev: NumberChar[], next: NumberChar[]): Set<string>
   return changed;
 }
 
-// Updates in the last second, including this one, are within the limit.
+// `times` are earlier updates, not this one. True while fewer than `max` fell in the last second.
 export const withinRateLimit = (times: number[], now: number, max: number) =>
-  times.filter((t) => now - t < 1000).length <= max;
+  times.filter((t) => now - t < 1000).length < max;
 ```
 
-Check your port: `$1,240.00` has keys `currency`, `int:4`..`int:0`, `decimal`, `frac:0`, `frac:1`. Going to `$1,310.00` changes only `int:2` and `int:1`. Going from `999` to `1,000` changes all five integer keys, because the digits line up by place.
+Check your port: earlier updates at 0, 400 and 900 ms: an update at 950 ms is allowed for a `max` of 4, skipped for 3. At 5000 ms it is allowed. `$1,240.00` has keys `currency`, `int:4`..`int:0`, `decimal`, `frac:0`, `frac:1`. Going to `$1,310.00` changes only `int:2` and `int:1`. Going from `999` to `1,000` changes all five integer keys, because the digits line up by place.
 
 ## 4. Input source (keyboard or pointer)
 
@@ -184,6 +188,8 @@ export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs:
   if (!a.length || !b.length || a.length > MAX_LABEL_GRAPHEMES || b.length > MAX_LABEL_GRAPHEMES) {
     return { ops: [], morphs: false };
   }
+  // Same text: all stays, nothing to morph.
+  if (from === to) return { ops: a.map((char, i) => ({ char, kind: "stay" as const, from: i, to: i })), morphs: false };
   const dp = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
   for (let i = a.length - 1; i >= 0; i--)
     for (let j = b.length - 1; j >= 0; j--)
@@ -202,7 +208,7 @@ export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs:
 }
 ```
 
-Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. An empty string or a label over 48 graphemes crossfades. `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
+Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. An empty string or a label over 48 graphemes crossfades. Identical text gives all stays and `morphs: false` (`A` to `A` too). `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
 
 ## 7. Typed input keys
 
@@ -240,7 +246,7 @@ export function enterLeaveKeys(prev: NumberChar[] | null, next: NumberChar[] | n
 }
 ```
 
-Check your port: in `en-US`, `1000`→`10000` enters only `d:4` and keeps `g:1`. `100`→`1000` enters `d:3` and `g:1`. Deleting reverses both. A digit that changes at the same key swaps: `0`→`5` replaces `d:0`, and deleting the `2` from `1234` replaces `d:1` and `d:2` and removes `d:3` and `g:1` (`134` has no separator). `de-DE` swaps `.` and `,`. `en-IN` `1234567` is `12,34,567`, two separators. `1a` returns `null`, and a `null` side in `enterLeaveKeys` animates nothing. A 200-digit string works through `BigInt`.
+Check your port: in `en-US`, `1000`→`10000` enters only `d:4` and keeps `g:1`. `100`→`1000` enters `d:3` and `g:1`. Deleting reverses both. A digit changed at the same key swaps: `0`→`5` replaces `d:0`, and deleting the `2` from `1234` replaces `d:1` and `d:2` and removes `d:3` and `g:1`. `de-DE` swaps `.` and `,`. `en-IN` `1234567` is `12,34,567`. `1a` returns `null`, and a `null` side in `enterLeaveKeys` animates nothing. A 200-digit string works through `BigInt`.
 
 ## 8. Fit to width
 
@@ -289,12 +295,13 @@ Chooses how a tray changes height (the order is in `motion-tray.md`). Equal heig
 ```ts
 export type TrayPlan =
   | { approach: "none" }
-  | { approach: "instant"; to: number }
+  | { approach: "instant"; to: number | null } // null: use auto
   | { approach: "clip"; hold: number; clipFrom: number; clipTo: number }
   | { approach: "transform"; ratio: number };
 
 export function trayPlan(fromHeight: number, toHeight: number, opts: { reduced: boolean; motionLayout?: boolean }): TrayPlan {
-  if (![fromHeight, toHeight].every((h) => Number.isFinite(h) && h > 0)) return { approach: "instant", to: toHeight };
+  const usable = (h: number) => Number.isFinite(h) && h > 0;
+  if (!usable(fromHeight) || !usable(toHeight)) return { approach: "instant", to: usable(toHeight) ? toHeight : null };
   if (fromHeight === toHeight) return { approach: "none" };
   if (opts.reduced) return { approach: "instant", to: toHeight };
   if (opts.motionLayout) return { approach: "transform", ratio: fromHeight / toHeight }; // scaleY(ratio) to 1, content counter-scaled
@@ -303,5 +310,5 @@ export function trayPlan(fromHeight: number, toHeight: number, opts: { reduced: 
 }
 ```
 
-Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion, a zero height or `NaN` gives `instant`.
+Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion or a bad start height gives `instant` with the target. A bad target gives `instant` with `to: null`: set `height: auto`.
 

@@ -16,13 +16,15 @@ Rebuilt 2026-10-06 from the sources on `main`, and `vois-components` and `vois-t
 | `design-ask.md` | 1.0.0 | In sync |
 | `metrics-tagging.md` | 1.1.0 | 1.0.0: missed the Properties column, task-level events, and the taxonomy-bloat rules |
 | `righter.md` | 1.9.0 (behind: source is 1.9.1) | 1.4.0 |
-| `vois-components.md` | 1.12.0 (behind: source is 1.15.0) | 1.5.0 |
+| `vois-components.md` | 1.12.0 (behind: source is 1.15.1) | 1.5.0 |
 | `vois-patterns.md` | 1.15.0 (behind: source is 1.17.0) | 1.9.0 |
-| `vois-tokens.md` | 1.21.1 (behind: source is 1.23.0) | 1.13.0 |
+| `vois-tokens.md` | 1.21.1 (behind: source is 1.23.1) | 1.13.0 |
 
 There is still no build script, and the four Vois and Righter editions are condensed by hand, so they fall behind whenever a source changes. A rule worth keeping: rebuild an edition in the same pass as a source version bump, or note here that it's behind.
 
-The motion work in `vois-tokens` 1.23.0, `vois-patterns` 1.17.0 and `vois-components` 1.15.0 (the morph and tray specs, `DS-MOTION-003` to `007`) is not in any edition. None of the three editions covers motion at all, so they are behind by that much on top of the versions above. The full versions have it.
+The motion work in `vois-tokens` 1.23.0, `vois-patterns` 1.17.0 and `vois-components` 1.15.0 (the morph and tray specs, `DS-MOTION-003` to `007`) is not in any edition. The editions carry the older animation rules (durations, easing, reduced motion, icon transitions) but none of the morph, tray or delight guidance, so they are behind by that much on top of the versions above. The full versions have it. The one exception is a single line in `vois-tokens.md` about springs, corrected so it no longer contradicts the source.
+
+**Frontmatter versions.** A `version:` in an edition's frontmatter is the source version it was built from, so it moves only when the edition is rebuilt. When a source bumps and the edition is not rebuilt in the same pass, leave the frontmatter alone and mark the edition as behind in the table above.
 
 ## Community listing taglines
 

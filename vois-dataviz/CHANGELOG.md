@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.1.1] - 2026-10-10
+
+### Fixed
+
+- **The animate-flag example in `references/implementation.md` could animate on a poll.** The flag cleared only on `onAnimationEnd`. A picked range that returned the same points never ended an animation, so the flag stayed on and the next refetch animated. Under reduced motion `onAnimationEnd` never fires either. The example now clears the flag when the request settles with no animation started, and never turns it on under reduced motion. It also names where `motionDuration` comes from. It is not run against a live chart in this repo, and the text says so.
+- **The `slow-chart-animation` message claimed more than the check does.** It said "never replay it on a refetch", but the detector reads `animationDuration` only. The message now says what it checks and lists the rest as things to do. The rules `DV-A11Y-008` and `DV-IMPL-005` are unchanged.
+
+### Notes
+
+- **Version bump:** `1.1.0` → `1.1.1`
+
+---
+
 ## [1.1.0] - 2026-10-09
 
 ### Changed

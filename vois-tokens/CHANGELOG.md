@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.23.1] - 2026-10-10
+
+### Fixed
+
+- **`surfaces.md` did not read tokens only, as 1.23.0 said.** The card hover still used `ease-out` and the exit example still used `easeIn`, both literal curves against `DS-MOTION-001`. They now use `var(--motion-ease-standard)` and `motionEase.standard`. The Motion snippets also had no import for `motionDuration`, `motionDistance`, `motionEase` or `motionSpring`, so copied code did not compile. Each now imports from `motion-tokens.ts`.
+- The enter example's stagger reuses the `instant` duration token as the gap between chunks. The file now says so, and says a different gap belongs in the token file, not in the component.
+
+### Notes
+
+- No rule or token changed.
+- **Version bump:** `1.23.0` → `1.23.1`
+
+---
+
 ## [1.23.0] - 2026-10-09
 
 ### Added

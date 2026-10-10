@@ -1,7 +1,7 @@
 ---
 name: vois-dataviz
 description: Data visualization and dashboard rules for web apps. Use whenever a screen contains a chart, graph, sparkline, KPI tile, heatmap, map, or data-heavy dashboard, whether you are building it, picking a chart type, choosing chart colors, designing filters or date ranges, designing loading and empty states for data, or reviewing and improving an existing dashboard. Walks a chart-selection decision tree, gives do's and don'ts per principle, ships a chart spec, a code detector and a review protocol that agents can run. Optionally records the chart form via vois_record_component_choice if that tool is available.
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Vois Data Visualization Skill
