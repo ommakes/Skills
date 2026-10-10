@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.15.1] - 2026-10-10
+
+### Fixed
+
+Review findings on the helpers in `references/motion-logic.md`. Each has a test in `scripts/motion-logic.test.mjs`.
+
+- **`parseCubicBezier` accepted malformed curves.** An empty segment (`cubic-bezier(1,,3,4)`) read as 0, and an x value outside 0 to 1 (`cubic-bezier(2,0,0,1)`) was kept. Both now return `null`, which means no motion. y values may still leave 0 to 1, as in CSS.
+- **`parseCssTimeToMs` accepted a negative duration** (`-250ms` gave -250). A leading sign is now unreadable and gives `null`.
+- **`trayPlan` handed back an untrusted height.** A bad target (`NaN`, zero or negative) returned `{ approach: "instant", to: <the bad value> }`. It now returns `to: null`, meaning set `height: auto`. A bad start height with a good target still returns the target.
+- **`withinRateLimit` disagreed with its own comment.** The comment said the count includes this update. The code counted only earlier ones and allowed one more than the limit. It now allows an update while fewer than `max` earlier ones fell in the last second, so a `max` of 2 allows two per second, not three. `times` holds earlier updates only.
+- **`alignLabels` answered differently for identical text.** `Save` to `Save` morphed and `A` to `A` did not. Identical text now returns all stays and `morphs: false` at any length.
+
+### Changed
+
+- The test no longer uses a wall-clock assertion for the 48-grapheme cap. It checks that 48 graphemes align and 49 do not. It now runs the reduced-motion and bad-token paths of `readMotionMs`, `readMotionEase` and `prefersReducedMotion` against a stubbed `window` and `document`.
+- **Version bump:** `1.15.0` → `1.15.1`
+
+---
+
 ## [1.15.0] - 2026-10-09
 
 ### Fixed

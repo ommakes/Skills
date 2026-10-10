@@ -138,7 +138,7 @@ const DETECTORS = [
     run({ content }) {
       const hits = [];
       for (const m of content.matchAll(/animationDuration\s*[=:]\s*\{?\s*(\d+)/g)) {
-        if (Number(m[1]) > 300) hits.push({ index: m.index, message: `animationDuration ${m[1]}ms exceeds 300ms. Keep chart animation to 300ms or less, off under prefers-reduced-motion, and never replay it on a refetch.` });
+        if (Number(m[1]) > 300) hits.push({ index: m.index, message: `animationDuration ${m[1]}ms exceeds 300ms. Keep chart animation to 300ms or less (DV-A11Y-008). This check reads the duration only: also turn it off under prefers-reduced-motion and on a refetch.` });
       }
       return hits;
     },
