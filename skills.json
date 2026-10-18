@@ -63,6 +63,14 @@
       "tags": ["content", "writing", "essay", "blog", "narrative"]
     },
     {
+      "name": "case-study",
+      "path": "case-study",
+      "version": "1.0.0",
+      "author": "Personify Labs",
+      "description": "Write a portfolio case study teaser (recommended 100-150 words) through guided multiple choice questions, or review an existing teaser or full case study with edits and the principle behind each. Routes to righter for sentence mechanics and optionally uses persona, voice and rhythm files. Use when writing or reviewing a portfolio case study, role overview or work teaser.",
+      "tags": ["content", "portfolio", "case-study", "writing"]
+    },
+    {
       "name": "design-ask",
       "path": "design-ask",
       "version": "1.0.0",
