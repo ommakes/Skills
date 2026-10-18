@@ -154,6 +154,15 @@ Three-layer split with the other writing skills: **gtm-positioning** owns page/a
 
 ---
 
+### Case Study
+Writes or reviews portfolio case study teasers. Write mode asks one multiple choice question at a time (recommended option first) and builds a teaser with a plain headline, a proof line with a baseline, first-person contributions and a regret line, with no generic section labels. Review mode critiques an existing teaser or full case study and returns edits with the principle behind each. Routes to `righter` for sentence mechanics only. Optionally reads persona.md, voice.md and rhetoric-and-rhythm.md (the `longform` skill has all three) so drafts sound like you, and offers a five-question setup if you have none. See [`case-study/CHANGELOG.md`](./case-study/CHANGELOG.md) for version history.
+
+**Use when:** writing a case study teaser for a role, reviewing or tightening an existing case study, or checking that a result actually proves its goal.
+
+→ [`case-study/`](./case-study)
+
+---
+
 ### Changelog Writer
 Writes external-facing changelog and release note entries in a pithy, tastefully sassy, occasionally clever voice that makes software updates fun to read without burying what actually shipped. Modeled on what Slack, Basecamp, Linear, Raycast, and Tumblr do well. Ships with `check-all.mjs` and friends — scripts that check every draft for structure, sass budget, voice, length, and cadence before it's published.
 
