@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.23.2] - 2026-10-21
+
+### Fixed
+
+- **The `motionEase` starter in `references/animation.md` was a readonly tuple.** `as const` made each curve `readonly [number, number, number, number]`, and older versions of Motion type `ease` as a mutable tuple. It now declares `Bezier = [number, number, number, number]` and types `motionEase` with it, so it works with every version. (Motion 11.18 accepts the readonly form too, so this only matters for older versions.)
+- **The reduced-motion snippet still had a literal `duration: 0.3`.** The 1.23.1 entry said the Motion snippets read tokens only. This one did not. It now imports `motionDistance`, `motionDuration` and `motionEase` and uses them.
+
+### Notes
+
+- No rule or token changed. The Figma edition is unchanged and is marked behind in `figma-editions/README.md`, with its two stale motion lines named.
+- **Version bump:** `1.23.1` → `1.23.2`
+
+---
+
 ## [1.23.1] - 2026-10-10
 
 ### Fixed

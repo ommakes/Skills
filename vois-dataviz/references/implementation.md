@@ -205,28 +205,28 @@ Animate on first mount and when the user changes the range, filter or series. Ke
 // motionDuration is in seconds, from motion-tokens.ts (vois-tokens/references/animation.md).
 const reduce = useReducedMotion();
 const { data, isFetching } = useSeries(range); // keyed by range, so each range has its own data
+const [pick, setPick] = useState(0); // counts the user's own picks; mounting is the first
 const [animate, setAnimate] = useState(!reduce); // on at first mount, never on under reduced motion
-const started = useRef(false);
-const pickRange = (r: Range) => { started.current = false; setAnimate(!reduce); setRange(r); }; // only the user's pick turns it on
+const pickRange = (r: Range) => { setPick((n) => n + 1); setAnimate(!reduce); setRange(r); }; // only the user's pick opens the window
 
-// The request settled. If the picked range drew the same points, no animation started and none will end,
-// so nothing else would clear the flag. Wait one frame so a real animation has time to start first.
+// The window closes on a timer once the request has settled, one animation plus one more beat for a chart
+// that starts late. No chart event has to fire, so cached data, a pick that returns the same points and a
+// pick on the range that is already selected all close the same way. `pick` is a dependency so a repeat pick
+// restarts the timer even when nothing else changed.
 useEffect(() => {
-  if (isFetching) return;
-  const frame = requestAnimationFrame(() => { if (!started.current) setAnimate(false); });
-  return () => cancelAnimationFrame(frame);
-}, [isFetching, data]);
+  if (isFetching || !animate) return;
+  const id = window.setTimeout(() => setAnimate(false), (motionDuration.fast + motionDuration.instant) * 1000);
+  return () => window.clearTimeout(id);
+}, [isFetching, animate, pick]);
 
 <Line
   data={data}
   isAnimationActive={!reduce && animate}
   animationDuration={motionDuration.fast * 1000} // Recharts takes milliseconds
-  onAnimationStart={() => { started.current = true; }}
-  onAnimationEnd={() => setAnimate(false)}
 />
 ```
 
-The flag clears in one of two places. When an animation ends, so a slow response still gets its morph. Or when the request settles and no animation started, so a pick that returns the same points does not leave the flag on for the next poll. Under reduced motion it is never turned on, because `onAnimationEnd` does not fire when `isAnimationActive` is false. A refetch changes the data but never calls `pickRange`, so once the flag is off nothing moves. Each range has its own query key, so a background refetch of the old range cannot draw into the new one. This example is not run against a live chart in this repo, so check it in your own app: change the range to one with identical data, then poll, and confirm nothing moves. For a range change, the line morphs and the header figures roll. The behavior, and a helper that interpolates between real points, are in `vois-components/references/motion-context.md` (Chart range change). Check how your chart library handles a different number of points. If the morph looks wrong, crossfade the plot instead.
+The animation window opens in two places: the first mount, and the user's own pick. It closes a short time after the request settles, so a slow response still gets its morph. A refetch or a poll never opens it (it changes the data but never calls `pickRange`), so once the window is closed nothing moves. Under reduced motion it never opens. Each range has its own query key, so a background refetch of the old range cannot draw into the new one. A poll that lands inside the short window after a pick can still animate once. This example is not run against a live chart in this repo, so check it in your own app: mount with cached data, pick the range that is already selected, change to a range with identical data, then poll, and confirm nothing moves once the short window has closed. For a range change, the line morphs and the header figures roll. The behavior, and a helper that interpolates between real points, are in `vois-components/references/motion-context.md` (Chart range change). Check how your chart library handles a different number of points. If the morph looks wrong, crossfade the plot instead.
 
 ## Responsive
 

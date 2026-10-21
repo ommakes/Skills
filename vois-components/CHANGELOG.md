@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.15.2] - 2026-10-21
+
+### Fixed
+
+Review findings on `references/motion-logic.md` and its test. Each has a test in `scripts/motion-logic.test.mjs`, and the new ones fail against the 1.15.1 doc.
+
+- **`alignLabels` could pick a scattered alignment when a contiguous one was as long.** The walk broke ties greedily, so `ab` to `aXab` kept `a(0,0)` and `b(1,3)`, which are not neighbours, and crossfaded. It now scores every alignment by stays first and runs second (a run is two stays that are neighbours in both texts), so it keeps `a(0,2)` and `b(1,3)` and morphs. The result is still a longest common subsequence. Labels that already morphed or crossfaded give the same answer, apart from ties like this one.
+- **The identical-text shortcut did not hold "at any length".** It sat after the 48-grapheme guard, so a long label compared with itself returned no ops. It now sits above the guard. The 1.15.1 entry and the "Check your port" line were right about the intent and wrong about the code.
+- **`trayPlan`'s `to: null` had no caller.** The type is `number | null`, and a port that wrote `plan.to + "px"` produced `nullpx`. The doc now ships `heightFor(to)`, which gives `auto` for `null`, and the check line names it.
+
+### Changed
+
+- **Migration note for `withinRateLimit` (changed in 1.15.1).** `times` must hold earlier updates only, and the check is "fewer than `max` of them in the last second". A caller that passes an array which already includes the current update now hits the limit one update early (a `max` of 2 allows one). Drop the current update from the array, or pass `max + 1`.
+- The test now strips each code block on its own, so a syntax slip names its block. It checks that no two blocks declare the same name and that every exported helper in the doc reaches the module, instead of relying on a hard-coded name list alone. It stops with a clear message when `module.stripTypeScriptTypes` is missing (Node older than 22.13). The reduced-motion test no longer leaves `window.matchMedia` behind as `undefined`. A seeded fuzz test checks that `alignLabels` rebuilds both texts, keeps a longest common subsequence, and finds a run whenever one exists at that length.
+- **Version bump:** `1.15.1` → `1.15.2`
+
+---
+
 ## [1.15.1] - 2026-10-10
 
 ### Fixed

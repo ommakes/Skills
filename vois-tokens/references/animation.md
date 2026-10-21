@@ -39,7 +39,11 @@ The TypeScript side of the same tokens, for Motion. Keep the values identical to
 ```ts
 // motion-tokens.ts (seconds, to match Motion's API)
 export const motionDuration = { instant: 0.1, fast: 0.15, base: 0.25, slow: 0.4 } as const;
-export const motionEase = { standard: [0.165, 0.84, 0.44, 1], emphasized: [0.23, 1, 0.32, 1] } as const;
+type Bezier = [number, number, number, number]; // mutable, so every version of Motion accepts it as `ease`
+export const motionEase: { standard: Bezier; emphasized: Bezier } = {
+  standard: [0.165, 0.84, 0.44, 1],
+  emphasized: [0.23, 1, 0.32, 1],
+};
 export const motionDistance = { short: 12 } as const; // px, same as --motion-distance-short
 export const motionSpring = {
   standard: { type: "spring", bounce: 0, duration: motionDuration.base },
@@ -105,12 +109,13 @@ In Motion:
 
 ```tsx
 import { useReducedMotion } from "motion/react"
+import { motionDistance, motionDuration, motionEase } from "./motion-tokens"
 
 const shouldReduce = useReducedMotion()
 
 <motion.div
-  animate={{ opacity: 1, y: shouldReduce ? 0 : -10 }}
-  transition={{ duration: shouldReduce ? 0 : 0.3 }}
+  animate={{ opacity: 1, y: shouldReduce ? 0 : -motionDistance.short }}
+  transition={{ duration: shouldReduce ? 0 : motionDuration.base, ease: motionEase.standard }}
 />
 ```
 

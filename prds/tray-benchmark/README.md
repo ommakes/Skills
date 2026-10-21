@@ -48,7 +48,7 @@ I also found two harness bugs by looking at screenshots at 40% of the transition
 - Headless desktop Chromium with CPU throttling is a proxy for a phone, not a phone. A mid-range Android and an iPhone still need a check before this ships.
 - WebKit and Firefox were not run. Clip-path animation cost in iOS Safari is untested.
 - The harness measures the swap. It does not measure scroll inside a tray or the keyboard opening.
-- Medians over 12 to 20 runs per cell. Two passes of the same cell differed by up to 0.3 missed frames per swap, so treat gaps smaller than that as noise.
+- Medians over 12 to 20 runs per cell, for every column the harness prints. The missed-frames column in `results.txt` was a mean over the runs, from before the harness changed to a median, so re-run it to get comparable numbers. Two passes of the same cell differed by up to 0.3 missed frames per swap, so treat gaps smaller than that as noise.
 
 ## Result used in the spec
 
