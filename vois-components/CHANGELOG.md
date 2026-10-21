@@ -19,6 +19,7 @@ Review findings on `references/motion-logic.md` and its test. Each has a test in
 ### Changed
 
 - **Migration note for `withinRateLimit` (changed in 1.15.1).** `times` must hold earlier updates only, and the check is "fewer than `max` of them in the last second". A caller that passes an array which already includes the current update now hits the limit one update early (a `max` of 2 allows one). Drop the current update from the array, or pass `max + 1`.
+- **Wording matches the private repo.** `motion-logic.md` is the same file as in `ommakes/vois-skills`, where a size cap on motion references forced shorter comments and two shorter sentences. The code is unchanged. No behavior changed, so there is no version bump.
 - The test now strips each code block on its own, so a syntax slip names its block. It checks that no two blocks declare the same name and that every exported helper in the doc reaches the module, instead of relying on a hard-coded name list alone. It stops with a clear message when `module.stripTypeScriptTypes` is missing (Node older than 22.13). The reduced-motion test no longer leaves `window.matchMedia` behind as `undefined`. A seeded fuzz test checks that `alignLabels` rebuilds both texts, keeps a longest common subsequence, and finds a run whenever one exists at that length.
 - **Version bump:** `1.15.1` → `1.15.2`
 
