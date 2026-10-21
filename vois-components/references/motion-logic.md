@@ -177,7 +177,7 @@ Check your port: `menu`↔`close` declared gives `rotate` both ways, an undeclar
 
 ## 6. Label alignment (label morph)
 
-Longest common subsequence of graphemes: each stays, leaves or enters. Over 48 graphemes it crossfades, because the table is quadratic and a long label should not morph anyway.
+Longest common subsequence of graphemes: each stays, leaves or enters. Over 48 graphemes it crossfades (the table is quadratic, and a long label should not morph).
 
 ```ts
 export type LabelOp = { char: string; kind: "stay" | "leave" | "enter"; from: number | null; to: number | null };
@@ -185,15 +185,13 @@ export const MAX_LABEL_GRAPHEMES = 48;
 
 export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs: boolean } {
   const a = graphemes(from), b = graphemes(to);
-  // Same text: all stays, nothing to morph. Linear, so it holds at any length.
+  // Same text: all stays, at any length.
   if (from === to) return { ops: a.map((char, i) => ({ char, kind: "stay" as const, from: i, to: i })), morphs: false };
   if (!a.length || !b.length || a.length > MAX_LABEL_GRAPHEMES || b.length > MAX_LABEL_GRAPHEMES) {
     return { ops: [], morphs: false };
   }
-  // Best alignment of the suffixes a[i..] and b[j..], scored as (stays, runs): most stays first,
-  // then most runs, where a run is two stays that are neighbours in both texts. Picking by runs
-  // among the equally long alignments stops a tie from landing on a scattered one.
-  // S is the best from (i, j) onward. M is the best when a[i] is matched to b[j].
+  // Score = (stays, runs). A run is two stays that are neighbours in both texts, so a tie between
+  // equally long alignments goes to the contiguous one. S: best from (i, j). M: best with a[i] = b[j].
   const n = a.length, m = b.length, W = m + 1, at = (i: number, j: number) => i * W + j;
   const sSt = new Int32Array((n + 1) * W), sRun = new Int32Array((n + 1) * W);
   const mSt = new Int32Array((n + 1) * W), mRun = new Int32Array((n + 1) * W);
@@ -222,13 +220,13 @@ export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs:
     else { ops.push({ char: b[j], kind: "enter", from: null, to: j }); j++; }
   }
   const stays = ops.filter((o) => o.kind === "stay");
-  // Without a run the match is scattered and reads as noise.
+  // No run: scattered, reads as noise.
   const hasRun = stays.some((o, k) => k > 0 && o.from === stays[k - 1].from! + 1 && o.to === stays[k - 1].to! + 1);
   return { ops, morphs: hasRun && stays.length * 2 >= Math.min(a.length, b.length) };
 }
 ```
 
-Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. `ab`→`aXab` morphs, because the alignment that keeps `a` and `b` as a neighbouring pair beats the one that keeps the first `a`. An empty string or a label over 48 graphemes crossfades. Identical text gives all stays and `morphs: false` at any length (`A` to `A` too, and a 60-grapheme label to itself). `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
+Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. `ab`→`aXab` morphs. An empty string or a label over 48 graphemes crossfades. Identical text gives all stays and `morphs: false` at any length (`A` to `A`, 60 graphemes to themselves). `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
 
 ## 7. Typed input keys
 
@@ -329,9 +327,9 @@ export function trayPlan(fromHeight: number, toHeight: number, opts: { reduced: 
   return { approach: "clip", hold, clipFrom: hold - fromHeight, clipTo: hold - toHeight }; // inset top, in px
 }
 
-// `to` is a number or `null`. Never build the string from it directly: `null` would give "nullpx".
+// `to` is a number or `null`; `null` must become "auto", not "nullpx".
 export const heightFor = (to: number | null) => (to === null ? "auto" : `${to}px`);
 ```
 
-Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion or a bad start height gives `instant` with the target. A bad target gives `instant` with `to: null`. Write the height with `heightFor(plan.to)`, which gives `auto` for `null` and `250px` for 250, so a bad target never becomes `nullpx`.
+Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion or a bad start height gives `instant` with the target. A bad target gives `instant` with `to: null`. Write it with `heightFor(plan.to)`: `auto` for `null`, `250px` for 250.
 
