@@ -16,16 +16,46 @@ const DOC = readFileSync(join(HERE, "..", "references", "motion-logic.md"), "utf
 // A bare window, so the input-source tracker installs its listeners the way it does in a browser.
 globalThis.window = new EventTarget();
 
+if (typeof stripTypeScriptTypes !== "function") {
+  throw new Error("This test needs Node 22.13 or newer: module.stripTypeScriptTypes is missing on " + process.version);
+}
+
 const blocks = [...DOC.matchAll(/```ts\n([\s\S]*?)```/g)].map((m) => m[1]);
-const source = stripTypeScriptTypes(blocks.join("\n"), { mode: "strip" });
+// Each block is stripped on its own first, so a syntax slip names its block, not the whole file.
+const stripped = blocks.map((code, i) => {
+  try {
+    return stripTypeScriptTypes(code, { mode: "strip" });
+  } catch (error) {
+    throw new Error(`motion-logic.md block ${i + 1} does not strip: ${error.message}\n${code.split("\n")[0]}`);
+  }
+});
+const source = stripped.join("\n");
 const lib = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+
+test("the blocks do not redeclare each other", () => {
+  // Joining the blocks into one module hides a duplicate name behind a confusing import error.
+  const seen = new Map();
+  for (const [index, code] of blocks.entries()) {
+    for (const m of code.matchAll(/^(?:export )?(?:async )?(?:function|const|let|class|type|interface)\s+([A-Za-z_$][\w$]*)/gm)) {
+      if (seen.has(m[1])) assert.fail(`${m[1]} is declared in block ${seen.get(m[1])} and again in block ${index + 1}`);
+      seen.set(m[1], index + 1);
+    }
+  }
+  assert.ok(seen.size >= 30, `expected to read at least 30 declarations, read ${seen.size}`);
+});
+
+test("every exported helper in the doc reaches the module, so an export cannot be dropped silently", () => {
+  const exported = [...DOC.matchAll(/^export (?:async )?(?:function|const)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
+  assert.ok(exported.length >= 20, `expected at least 20 exported helpers, found ${exported.length}`);
+  for (const name of exported) assert.ok(name in lib, `${name} is exported in motion-logic.md but missing from the module`);
+});
 
 test("the doc still holds every helper the specs name", () => {
   assert.ok(blocks.length >= 10, `expected at least 10 code blocks, found ${blocks.length}`);
   for (const name of [
     "parseCssTimeToMs", "parseCubicBezier", "readMotionMs", "readMotionEase", "splitLabel", "keyedNumberChars",
     "changedKeys", "withinRateLimit", "inputSource", "planIconChange", "directionFor", "transformOriginFor",
-    "alignLabels", "keyedTypedChars", "enterLeaveKeys", "fitScale", "resampleSeries", "morphSeries", "trayPlan",
+    "alignLabels", "keyedTypedChars", "enterLeaveKeys", "fitScale", "resampleSeries", "morphSeries", "trayPlan", "heightFor",
   ]) assert.equal(typeof lib[name], "function", `${name} is missing from motion-logic.md`);
 });
 
@@ -93,9 +123,11 @@ test("tokens: reduced motion and bad tokens give 0, a good token gives its value
     assert.equal(lib.prefersReducedMotion(), true);
     assert.equal(lib.readMotionMs("duration-base"), 0, "reduced motion wins over a good token");
   } finally {
+    // Put back what was there, and delete what was not, so no stub leaves an undefined property behind.
     window.matchMedia = saved.matchMedia;
     globalThis.document = saved.document;
     globalThis.getComputedStyle = saved.getComputedStyle;
+    if (saved.matchMedia === undefined) delete window.matchMedia;
     if (saved.document === undefined) delete globalThis.document;
     if (saved.getComputedStyle === undefined) delete globalThis.getComputedStyle;
   }
@@ -221,7 +253,7 @@ test("alignLabels: guards from the other side", () => {
   assert.equal(ar.morphs, true);
   assert.equal(stays(ar), "حفظ");
   // Identical text is all stays and nothing to morph, at every length. One grapheme must agree with two.
-  for (const text of ["A", "Go", "Save", "a".repeat(48)]) {
+  for (const text of ["A", "Go", "Save", "a".repeat(48), "a".repeat(49), "Review the order before you pay, then confirm it"]) {
     const same = lib.alignLabels(text, text);
     assert.equal(same.ops.length, graphemeCount(text), `${text.slice(0, 6)}: one op per grapheme`);
     assert.ok(same.ops.every((o) => o.kind === "stay" && o.from === o.to), `${text.slice(0, 6)}: all stays`);
@@ -232,6 +264,55 @@ test("alignLabels: guards from the other side", () => {
 // ---- 7. typed input keys ----
 
 const typed = (raw, loc = "en-US") => lib.keyedTypedChars(raw, loc);
+
+test("alignLabels: a tie never lands on a scattered alignment when a contiguous one is as long", () => {
+  // Both alignments keep two characters. One pairs a(0,0) with b(1,3), which are not neighbours.
+  // The other pairs a(0,2) with b(1,3), a run. The run wins.
+  const r = lib.alignLabels("ab", "aXab");
+  assert.equal(r.morphs, true);
+  assert.deepEqual(r.ops.filter((o) => o.kind === "stay").map((o) => [o.from, o.to]), [[0, 2], [1, 3]]);
+  const longer = lib.alignLabels("abc", "aXabc");
+  assert.equal(longer.morphs, true);
+  assert.deepEqual(longer.ops.filter((o) => o.kind === "stay").map((o) => [o.from, o.to]), [[0, 2], [1, 3], [2, 4]]);
+});
+
+test("alignLabels: for any pair, the ops rebuild both texts and keep a longest common subsequence", () => {
+  // A small alphabet makes ties and repeats common, which is where a greedy walk goes wrong.
+  const lcs = (x, y) => {
+    const t = Array.from({ length: x.length + 1 }, () => new Array(y.length + 1).fill(0));
+    for (let i = x.length - 1; i >= 0; i--)
+      for (let j = y.length - 1; j >= 0; j--) t[i][j] = x[i] === y[j] ? t[i + 1][j + 1] + 1 : Math.max(t[i + 1][j], t[i][j + 1]);
+    return t[0][0];
+  };
+  let seed = 12345;
+  const rand = (n) => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff), seed % n);
+  const word = () => Array.from({ length: 1 + rand(9) }, () => "abc"[rand(3)]).join("");
+  for (let k = 0; k < 400; k++) {
+    const from = word(), to = word();
+    const { ops } = lib.alignLabels(from, to);
+    if (from === to) continue;
+    assert.equal(ops.filter((o) => o.kind !== "enter").map((o) => o.char).join(""), from, `${from} -> ${to}: old text`);
+    assert.equal(ops.filter((o) => o.kind !== "leave").map((o) => o.char).join(""), to, `${from} -> ${to}: new text`);
+    assert.equal(ops.filter((o) => o.kind === "stay").length, lcs(from, to), `${from} -> ${to}: stays are a longest common subsequence`);
+    // No alignment of the same length has a run that this one lacks.
+    const s = ops.filter((o) => o.kind === "stay");
+    const hasRun = s.some((o, i) => i > 0 && o.from === s[i - 1].from + 1 && o.to === s[i - 1].to + 1);
+    const best = (() => {
+      const x = [...from], y = [...to], want = lcs(from, to);
+      // Try every alignment: pick which positions of each text stay. Small words keep this cheap.
+      const walk = (i, j, count, prev) => {
+        if (count + Math.min(x.length - i, y.length - j) < want) return false;
+        if (i === x.length || j === y.length) return count === want && prev.run;
+        for (let a = i; a < x.length; a++)
+          for (let b = j; b < y.length; b++)
+            if (x[a] === y[b] && walk(a + 1, b + 1, count + 1, { run: prev.run || (prev.a === a - 1 && prev.b === b - 1 && count > 0), a, b })) return true;
+        return count === want && prev.run;
+      };
+      return walk(0, 0, 0, { run: false, a: -2, b: -2 });
+    })();
+    assert.equal(hasRun, best, `${from} -> ${to}: ${best ? "a run exists and must be found" : "no run exists"}`);
+  }
+});
 
 test("keyedTypedChars: the documented cases", () => {
   const a = typed("1000"), b = typed("10000");
@@ -332,4 +413,9 @@ test("trayPlan: the documented cases", () => {
   }
   assert.deepEqual(lib.trayPlan(NaN, NaN, { reduced: false }), { approach: "instant", to: null });
   assert.equal(lib.trayPlan(200, 300, { reduced: true, motionLayout: true }).approach, "instant", "reduced motion wins over a library");
+  // `to: null` must reach the page as `auto`, never as the string "nullpx".
+  assert.equal(lib.heightFor(null), "auto");
+  assert.equal(lib.heightFor(250), "250px");
+  assert.equal(lib.heightFor(lib.trayPlan(200, NaN, { reduced: false }).to), "auto");
+  assert.equal(lib.heightFor(lib.trayPlan(200, 300, { reduced: true }).to), "300px");
 });

@@ -185,30 +185,50 @@ export const MAX_LABEL_GRAPHEMES = 48;
 
 export function alignLabels(from: string, to: string): { ops: LabelOp[]; morphs: boolean } {
   const a = graphemes(from), b = graphemes(to);
+  // Same text: all stays, nothing to morph. Linear, so it holds at any length.
+  if (from === to) return { ops: a.map((char, i) => ({ char, kind: "stay" as const, from: i, to: i })), morphs: false };
   if (!a.length || !b.length || a.length > MAX_LABEL_GRAPHEMES || b.length > MAX_LABEL_GRAPHEMES) {
     return { ops: [], morphs: false };
   }
-  // Same text: all stays, nothing to morph.
-  if (from === to) return { ops: a.map((char, i) => ({ char, kind: "stay" as const, from: i, to: i })), morphs: false };
-  const dp = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
-  for (let i = a.length - 1; i >= 0; i--)
-    for (let j = b.length - 1; j >= 0; j--)
-      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  // Best alignment of the suffixes a[i..] and b[j..], scored as (stays, runs): most stays first,
+  // then most runs, where a run is two stays that are neighbours in both texts. Picking by runs
+  // among the equally long alignments stops a tie from landing on a scattered one.
+  // S is the best from (i, j) onward. M is the best when a[i] is matched to b[j].
+  const n = a.length, m = b.length, W = m + 1, at = (i: number, j: number) => i * W + j;
+  const sSt = new Int32Array((n + 1) * W), sRun = new Int32Array((n + 1) * W);
+  const mSt = new Int32Array((n + 1) * W), mRun = new Int32Array((n + 1) * W);
+  const beats = (st: number, run: number, st2: number, run2: number) => st > st2 || (st === st2 && run > run2);
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--) {
+      let st = sSt[at(i + 1, j)], run = sRun[at(i + 1, j)];
+      if (beats(sSt[at(i, j + 1)], sRun[at(i, j + 1)], st, run)) { st = sSt[at(i, j + 1)]; run = sRun[at(i, j + 1)]; }
+      if (a[i] === b[j]) {
+        let cSt = sSt[at(i + 1, j + 1)], cRun = sRun[at(i + 1, j + 1)];
+        if (i + 1 < n && j + 1 < m && a[i + 1] === b[j + 1] && beats(mSt[at(i + 1, j + 1)], mRun[at(i + 1, j + 1)] + 1, cSt, cRun)) {
+          cSt = mSt[at(i + 1, j + 1)]; cRun = mRun[at(i + 1, j + 1)] + 1;
+        }
+        mSt[at(i, j)] = 1 + cSt; mRun[at(i, j)] = cRun;
+        if (beats(mSt[at(i, j)], mRun[at(i, j)], st, run)) { st = mSt[at(i, j)]; run = mRun[at(i, j)]; }
+      }
+      sSt[at(i, j)] = st; sRun[at(i, j)] = run;
+    }
+  const same = (x: number, y: number) => sSt[x] === sSt[y] && sRun[x] === sRun[y];
   const ops: LabelOp[] = [];
   let i = 0, j = 0;
-  while (i < a.length || j < b.length) {
-    if (i < a.length && j < b.length && a[i] === b[j]) { ops.push({ char: a[i], kind: "stay", from: i, to: j }); i++; j++; }
-    else if (j >= b.length || (i < a.length && dp[i + 1][j] >= dp[i][j + 1])) { ops.push({ char: a[i], kind: "leave", from: i, to: null }); i++; }
+  while (i < n || j < m) {
+    if (i < n && j < m && a[i] === b[j] && sSt[at(i, j)] === mSt[at(i, j)] && sRun[at(i, j)] === mRun[at(i, j)]) {
+      ops.push({ char: a[i], kind: "stay", from: i, to: j }); i++; j++;
+    } else if (j >= m || (i < n && same(at(i + 1, j), at(i, j)))) { ops.push({ char: a[i], kind: "leave", from: i, to: null }); i++; }
     else { ops.push({ char: b[j], kind: "enter", from: null, to: j }); j++; }
   }
   const stays = ops.filter((o) => o.kind === "stay");
-  // Two stays that are neighbours in both texts. Without one the match is scattered and reads as noise.
+  // Without a run the match is scattered and reads as noise.
   const hasRun = stays.some((o, k) => k > 0 && o.from === stays[k - 1].from! + 1 && o.to === stays[k - 1].to! + 1);
   return { ops, morphs: hasRun && stays.length * 2 >= Math.min(a.length, b.length) };
 }
 ```
 
-Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. An empty string or a label over 48 graphemes crossfades. Identical text gives all stays and `morphs: false` (`A` to `A` too). `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
+Check your port: `Save`→`Saved` stays S, a, v, e and enters `d`. `Craft`→`Creative` stays C, r, a, t and morphs. `Confirm`↔`Confirm Slippage` morphs. `Continue`→`Pay $42` crossfades (nothing shared), and so does `Cancel`→`Confirm` (only `C` and `n` match, and they are not neighbours). `aa`→`aaa` stays twice and enters one `a`. `ab`→`aXab` morphs, because the alignment that keeps `a` and `b` as a neighbouring pair beats the one that keeps the first `a`. An empty string or a label over 48 graphemes crossfades. Identical text gives all stays and `morphs: false` at any length (`A` to `A` too, and a 60-grapheme label to itself). `👍🏽`→`👍` crossfades without splitting the modifier off the emoji.
 
 ## 7. Typed input keys
 
@@ -308,7 +328,10 @@ export function trayPlan(fromHeight: number, toHeight: number, opts: { reduced: 
   const hold = Math.max(fromHeight, toHeight);
   return { approach: "clip", hold, clipFrom: hold - fromHeight, clipTo: hold - toHeight }; // inset top, in px
 }
+
+// `to` is a number or `null`. Never build the string from it directly: `null` would give "nullpx".
+export const heightFor = (to: number | null) => (to === null ? "auto" : `${to}px`);
 ```
 
-Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion or a bad start height gives `instant` with the target. A bad target gives `instant` with `to: null`: set `height: auto`.
+Check your port: 200 to 300 gives `clip` with `hold` 300, `clipFrom` 100, `clipTo` 0, and 300 to 200 gives 0 and 100. With `motionLayout`, 200 to 300 gives a ratio near 0.667 and 300 to 200 gives 1.5. Equal heights give `none`. Reduced motion or a bad start height gives `instant` with the target. A bad target gives `instant` with `to: null`. Write the height with `heightFor(plan.to)`, which gives `auto` for `null` and `250px` for 250, so a bad target never becomes `nullpx`.
 

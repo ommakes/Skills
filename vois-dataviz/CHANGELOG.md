@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.1.2] - 2026-10-21
+
+### Fixed
+
+- **The animate-flag example could cancel its own first animation, and a repeat pick never cleared it.** 1.1.1 cleared the flag one animation frame after the request settled unless `onAnimationStart` had fired. With cached data the chart can start later than that frame, so the first-mount animation was switched off before it began. And a pick on the range that was already selected changed neither `isFetching` nor `data`, so the clearing effect did not run, no animation ended, and the next poll animated. The example now closes the animation window on a timer, one animation plus one beat after the request settles, restarted by every pick. No chart event has to fire. A poll that lands inside that short window after a pick can still animate once, and the text says so. It is still not run against a live chart in this repo.
+
+### Notes
+
+- No rule, detector or data changed.
+- **Version bump:** `1.1.1` → `1.1.2`
+
+---
+
 ## [1.1.1] - 2026-10-10
 
 ### Fixed
