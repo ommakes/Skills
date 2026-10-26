@@ -220,7 +220,8 @@ const DETECTORS = [
   },
 ];
 
-// The detector ids and the rule each one reports, for scripts/validate-data.py.
+// The detector ids and the rule each one reports, for the verification check
+// (scripts/validate-data.py in ommakes/vois-skills, scripts/check-verification.py in ommakes/Skills).
 export const DETECTOR_IDS = DETECTORS.map(({ id, ruleId }) => ({ id, ruleId }));
 
 export function detectFile(filePath, content) {
