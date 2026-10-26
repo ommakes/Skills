@@ -756,6 +756,20 @@
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
       "added_note": "Added 2026-10-07 so the back link branch has a scenario after EVAL-038 moved to the breadcrumb. Run blind 2026-10-07 after the decision: passed."
+    },
+    {
+      "id": "EVAL-055",
+      "source_job": "JOB-OVERLAY-INTERACTION",
+      "tree_path": [6],
+      "user_prompt": "On the mobile layout of the customers table, add filters for plan and status, and a sort control. People set them, then go back to the table.",
+      "condition": "Filters or sort controls for a list or table on a mobile layout",
+      "expected_outcome": "Drawer (slides from the bottom, closes when done)",
+      "forbidden_outcomes": [
+        "Sheet (a right-anchored Sheet covers most of a phone screen, so seeing the list behind it is no reason to choose it here)",
+        "A centered Dialog (filters and sort are more than a short, self-contained task)"
+      ],
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "added_note": "Added 2026-10-26 for the branch vois-components 1.17.0 added to JOB-OVERLAY-INTERACTION, after the lookalike and design-task runs showed agents choosing Sheet for mobile filters. Not yet run blind."
     }
   ]
 }

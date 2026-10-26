@@ -290,9 +290,11 @@
           { "condition": "Only a confirmation, not a record", "recommendation": "AlertDialog or Dialog" }
         ] },
         { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (action sheet pattern on mobile)" },
-        { "condition": "A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it", "recommendation": "Drawer used as a tray: one container that stays mounted while the steps swap inside it (see vois-components/references/motion-tray.md)" }
+        { "condition": "A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it", "recommendation": "Drawer used as a tray: one container that stays mounted while the steps swap inside it (see vois-components/references/motion-tray.md)" },
+        { "condition": "Filters or sort controls for a list or table on a mobile layout", "recommendation": "Drawer (slides from the bottom, closes when done). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone" }
       ],
       "rationale": [
+        { "question": "Why not Sheet for filters on mobile, when the user wants to see the list?", "answer": "On a phone a right-anchored Sheet leaves little of the list showing, so the reason to prefer it over a Drawer does not hold. Filters are a temporary task that opens and closes, which is what the Drawer is for (see JOB-SECONDARY-CONTENT). On wider layouts the Sheet branch above still applies." },
         { "question": "Why not Dialog for longer tasks?", "answer": "Dialogs are centered and feel disconnected from the data they relate to. A Sheet keeps spatial proximity to the list or item that triggered it." },
         { "question": "Why not Drawer on desktop for simple tasks?", "answer": "Drawers take up significant screen real estate. A Dialog is faster to close and draws less visual weight for simple interactions." },
         { "question": "Why not Sheet for a single-field inline edit (e.g. changing one row's status from a table)?", "answer": "Sheet implies enough content to warrant its own header, footer, and dedicated panel. For exactly one field, that's more chrome than the task needs, and it also visually detaches the edit from the exact cell it changes. Reserve Sheet for edits touching a handful of fields or more; anchor a true single-field edit as a Popover directly at the trigger instead, so the row's context and the edit surface stay visually connected." },
@@ -304,7 +306,8 @@
         "items": [
           "Popover: exactly one field/value, anchored to the exact row or item that triggered it",
           "Dialog: task is self-contained (1-4 fields or a single decision), user doesn't need context from the page behind it",
-          "Sheet: a handful of fields or more, task is contextual, user may want to reference the list/item that triggered it"
+          "Sheet: a handful of fields or more, task is contextual, user may want to reference the list/item that triggered it",
+          "Drawer on mobile: filters or sort for a list or table, even though the user would like to see the list. A Sheet covers most of a narrow screen"
         ]
       }
     },

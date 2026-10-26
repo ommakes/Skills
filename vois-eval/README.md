@@ -8,7 +8,7 @@ Not a new rule format. `scenarios.json` doesn't invent a YAML scenario schema â€
 
 Not a scored, weighted rubric yet. `score_categories` names the dimensions a run can be judged on (token/component/pattern/visual/decision-layer/anti-pattern/accessibility adherence), but none carry a weight. Assigning percentages to categories with zero scenarios run yet would be inventing numbers exactly the way `vois-tokens` warns against inventing token values â€” see `score_categories_note` in `scenarios.json`.
 
-Not automated for the 54 scenarios in `scenarios.json`. Their expected outcomes are prose, so running one still means: hand its `user_prompt` to an agent with the `vois-*` skills active, let it build the screen, and check the result against `expected_outcome` and `forbidden_outcomes` by hand. The tasks in `lookalike-pass/` and `tasks/` are different: they carry checks a script can run, and `run/run.mjs` runs them (see "Running the task runner" below).
+Not automated for the 55 scenarios in `scenarios.json`. Their expected outcomes are prose, so running one still means: hand its `user_prompt` to an agent with the `vois-*` skills active, let it build the screen, and check the result against `expected_outcome` and `forbidden_outcomes` by hand. The tasks in `lookalike-pass/` and `tasks/` are different: they carry checks a script can run, and `run/run.mjs` runs them (see "Running the task runner" below).
 
 ## Run log
 
@@ -32,7 +32,7 @@ Gaps the agents named in their reports. They are gaps, not conflicts, and I have
 - No spec for a dismissible Badge: markup, `aria-label`, focus after removal (EVAL-018).
 - No guidance on how to make a whole Card clickable, or on actions nested inside one (EVAL-040).
 - Panel has no shadcn component and no spec (EVAL-042).
-- Mobile filters in a Drawer are stated only in one job line, with no pattern (EVAL-043).
+- Mobile filters in a Drawer were stated only in one job line, with no pattern (EVAL-043). `vois-components` 1.17.0 added a branch to `JOB-OVERLAY-INTERACTION` that says Drawer (EVAL-055), after the lookalike and design-task runs showed agents choosing Sheet. There is still no pattern for it in `vois-patterns`.
 - Click-to-edit outside a table is not covered; one agent borrowed the table cell rule (EVAL-033).
 - Toggle versus ToggleGroup for independent toolbar buttons is unspecified (EVAL-019).
 - The presence indicator has no spec or token (EVAL-026).
@@ -42,9 +42,9 @@ Gaps the agents named in their reports. They are gaps, not conflicts, and I have
 
 ## Coverage
 
-All 21 jobs in `components-rules.json` have at least one scenario: 54 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` does not start with the tree's recommendation (up to the first bracket or dash, ignoring case and punctuation), or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
+All 21 jobs in `components-rules.json` have at least one scenario: 55 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` does not start with the tree's recommendation (up to the first bracket or dash, ignoring case and punctuation), or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
 
-Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, and EVAL-054 was added afterwards for the back link branch. Not every branch has one: 53 of the 97 branches that recommend something do, and the checker prints that count. The gaps include the Plain and Alert branches of the empty-content job, the Table, Tabs and Card branches of the data-visualization job, and the Input, Radio and Command branches of the text, binary-choice and list jobs.
+Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, EVAL-054 was added afterwards for the back link branch, and EVAL-055 for the mobile filters branch of `JOB-OVERLAY-INTERACTION`. Not every branch has one: 54 of the 99 branches that recommend something do, and the checker prints that count. The gaps include the Plain and Alert branches of the empty-content job, the Table, Tabs and Card branches of the data-visualization job, and the Input, Radio and Command branches of the text, binary-choice and list jobs.
 
 ## Running the task runner
 

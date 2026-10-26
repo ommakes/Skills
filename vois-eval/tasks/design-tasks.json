@@ -108,7 +108,7 @@
         "dialog",
         "alert-dialog"
       ],
-      "notes": "Rules disagree here. JOB-SECONDARY-CONTENT sends 'filters on mobile' to a Drawer; JOB-OVERLAY-INTERACTION sends a task where the user wants the page behind it to a Sheet. This prompt does not mention the page behind, so it tests the first rule alone. Skills-on runs that pick Sheet are evidence the second rule is winning."
+      "notes": "Settled 2026-10-26: Drawer wins. Before that, JOB-SECONDARY-CONTENT sent 'filters on mobile' to a Drawer while JOB-OVERLAY-INTERACTION sent a task where the user wants the page behind it to a Sheet, and agents chose Sheet. vois-components 1.17.0 added a last branch to JOB-OVERLAY-INTERACTION that says Drawer and takes precedence (scenario EVAL-055). Results from before that version are not comparable on this task."
     },
     {
       "id": "DT-05",
