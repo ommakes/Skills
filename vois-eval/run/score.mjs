@@ -18,9 +18,50 @@ export const CONDITIONS = ["on", "off"];
 const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 
 // Imports and patterns are read from code only. A component named in a comment, or a word like
-// "selected" in a note to the reader, must not satisfy a check. A "//" after a colon (a URL) or
-// inside a word is left alone.
-const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:\w"'`])\/\/.*$/gm, "$1");
+// "selected" in a note to the reader, must not satisfy a check.
+//
+// A small scanner, not a regex, because a regex cannot tell a comment from text that looks like one:
+//   - a string is skipped whole, so "components/*" does not start a block comment;
+//   - a quote with no partner on its line is an apostrophe in JSX text ("Don't"), not a string;
+//   - "//" starts a line comment only at the start of a line or right after ; { } , ) or a closing quote,
+//     so JSX text such as <p>Press // to search</p> and a URL (http://x) are left alone;
+//   - a block comment ends at the first "*/", and a "/*" inside a line comment does not start one.
+// The cost of that rule: a trailing comment after a plain word or number (x = 1 // note) is kept, which can only
+// make a check stricter about what is "not there", never let a comment satisfy it, apart from that one case.
+export function stripComments(src) {
+  let out = "";
+  let prev = ""; // last non-space character written on this line; "" at the start of a line
+  const n = src.length;
+  for (let i = 0; i < n; ) {
+    const c = src[i];
+    const d = src[i + 1];
+    if (c === "\n") { out += c; prev = ""; i++; continue; }
+    if (c === '"' || c === "'") {
+      let j = i + 1;
+      while (j < n && src[j] !== c && src[j] !== "\n") j += src[j] === "\\" ? 2 : 1;
+      if (src[j] === c) { out += src.slice(i, j + 1); prev = c; i = j + 1; continue; }
+      out += c; prev = c; i++; continue; // no partner on this line: an apostrophe
+    }
+    if (c === "`") {
+      let j = i + 1;
+      while (j < n && src[j] !== "`") j += src[j] === "\\" ? 2 : 1;
+      const end = Math.min(j + 1, n);
+      out += src.slice(i, end); prev = "`"; i = end; continue;
+    }
+    if (c === "/" && d === "*") {
+      const e = src.indexOf("*/", i + 2);
+      out += " "; i = e === -1 ? n : e + 2; continue;
+    }
+    if (c === "/" && d === "/" && (prev === "" || ";{}),\"'`".includes(prev))) {
+      while (i < n && src[i] !== "\n") i++;
+      continue;
+    }
+    out += c;
+    if (!/\s/.test(c)) prev = c;
+    i++;
+  }
+  return out;
+}
 
 export function scoreSample(raw, task) {
   const src = stripComments(raw);

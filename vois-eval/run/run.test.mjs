@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
-import { compareRuns, scoreSample, summarize } from "./score.mjs";
+import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
 import { buildPlan, extractCode, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
 import { validateRun } from "../check-results.mjs";
 
@@ -112,6 +112,38 @@ test("required and forbidden patterns", () => {
   assert.deepEqual(scoreSample(GOOD, t).pattern_failures, ["missing:sel"]);
   assert.deepEqual(scoreSample(GOOD + "\nconst l = '3 Selected';\n<PieChart/>", t).pattern_failures, ["forbidden:pie"]);
   assert.equal(scoreSample(GOOD + "\nconst l = '3 selected';", t).pass, true);
+});
+test("stripComments removes comments and keeps text that only looks like one", () => {
+  const keep = (src) => assert.equal(stripComments(src), src, src);
+  const gone = (src, left) => assert.equal(stripComments(src).replace(/\s+/g, " ").trim(), left, src);
+  // comments
+  gone("// from \"x\"\nconst a = 1;", "const a = 1;");
+  gone("const a = 1; // note", "const a = 1;");
+  gone("foo(); // note\nbar();", "foo(); bar();");
+  gone("<A/> {/* from \"x\" */}", "<A/> { }");
+  gone("/* a\nb */ code", "code");
+  gone("const s = \"a\"// note", 'const s = "a"');
+  // text that only looks like a comment
+  keep("<p>Press // to search</p> <Input aria-invalid />");
+  keep("const u = 'http://example.com';");
+  keep("const g = \"components/*\"; const h = 1; const z = '*/';");
+  keep("className=\"a // b\"");
+  keep("const t = `a // b ${c} /* d */`;");
+  // an unclosed /* inside a line comment must not swallow the code after it
+  gone("// see /* below\nimport { A } from \"@/components/ui/alert\";", 'import { A } from "@/components/ui/alert";');
+  // an apostrophe in JSX text is not a string, so a real comment after it is still removed
+  gone("<p>Don't</p> {/* from \"@/components/ui/table\" */}", "<p>Don't</p> { }");
+  // an unterminated block comment drops the rest instead of throwing
+  gone("code /* never closed", "code");
+  assert.equal(stripComments(""), "");
+});
+test("a required pattern still matches next to text that looks like a comment", () => {
+  const t = task({ required_patterns: [{ id: "inv", regex: "aria-invalid" }] });
+  assert.deepEqual(scoreSample(GOOD + "\nconst x = <><p>Press // to search</p> <Input aria-invalid /></>;", t).pattern_failures, []);
+});
+test("a component named in a comment after a quote does not count as imported", () => {
+  const src = `const a = "a"// import { AlertDialog } from "@/components/ui/alert-dialog";\nexport default () => <div />;`;
+  assert.equal(scoreSample(src, task()).decision, false);
 });
 test("a pattern in a comment does not satisfy a required pattern", () => {
   const t = task({ required_patterns: [{ id: "sel", regex: "selected" }] });
