@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, copySkills, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
+import { buildPlan, copySkills, defaultOutPath, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
 import { compareLatestPerModel, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -690,5 +690,49 @@ test("the runner marks only a complete default run as full", async () => {
     assert.equal(everything.run.full, true);
     assert.equal(everything.run.created_at, "2026-10-26T12:00:00.000Z");
     assert.deepEqual(validateRun(everything.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------- where results are written ----------
+
+test("the default file name is safe, says what kind of run it is, and never takes an existing name", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-name-"));
+  try {
+    const base = { date: "2026-10-26", model: "claude-a", smoke: false, full: true };
+    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a.json"));
+    assert.equal(defaultOutPath(dir, { ...base, smoke: true, full: false }), join(dir, "2026-10-26-claude-a-smoke.json"));
+    assert.equal(defaultOutPath(dir, { ...base, full: false }), join(dir, "2026-10-26-claude-a-partial.json"));
+    assert.equal(defaultOutPath(dir, { ...base, model: "anthropic/claude-x" }), join(dir, "2026-10-26-anthropic_claude-x.json"));
+    assert.equal(defaultOutPath(dir, { ...base, model: "../../etc/x" }), join(dir, "2026-10-26-.._.._etc_x.json"));
+    writeFileSync(defaultOutPath(dir, base), "{}");
+    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a-2.json"));
+    writeFileSync(defaultOutPath(dir, base), "{}");
+    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a-3.json"));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("two runs on the same day never overwrite each other, and a model with a slash stays in the results folder", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-same-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["a/b"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  const go = (extra) => main(["--model", "a/b", "--samples", "1", ...extra], { invoke, log: () => {}, resultsDir: dir, now: () => new Date("2026-10-26T12:00:00Z") });
+  try {
+    const one = await go(["--tasks", "DT-04"]);
+    const two = await go(["--tasks", "DT-04"]);
+    const three = await go(["--tasks", "DT-01"]);
+    assert.notEqual(one.out, two.out);
+    assert.deepEqual([one.out, two.out, three.out].map((p) => p.slice(dir.length + 1)), ["2026-10-26-a_b-partial.json", "2026-10-26-a_b-partial-2.json", "2026-10-26-a_b-partial-3.json"]);
+    assert.ok([one.out, two.out, three.out].every((p) => existsSync(p) && p.startsWith(dir + "/") && !p.slice(dir.length + 1).includes("/")));
+    assert.equal(JSON.parse(readFileSync(one.out, "utf8")).tasks[0], "DT-04", "the first file is untouched");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("an explicit --out that exists is refused unless --force, and --force overwrites only that file", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-force-"));
+  const out = join(dir, "r.json");
+  writeFileSync(out, "old");
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out], { invoke, log: () => {}, resultsDir: dir }), /--force/);
+    assert.equal(readFileSync(out, "utf8"), "old");
+    await main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out, "--force"], { invoke, log: () => {}, resultsDir: dir });
+    assert.notEqual(readFileSync(out, "utf8"), "old");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

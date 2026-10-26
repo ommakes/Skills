@@ -188,14 +188,27 @@ function skillVersions() {
 }
 const tryExec = (cmd, args, cwd) => { try { return execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim(); } catch { return "unknown"; } };
 
-export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date() } = {}) {
+// results/<date>-<model>[-smoke|-partial][-N].json. The model is made safe for a file name, so one with a "/" in it
+// cannot create a folder the checker never reads, and a name that is taken gets the next free -N, so a second run on
+// the same day never overwrites the first.
+export function defaultOutPath(resultsDir, { date, model, smoke, full }) {
+  const safe = model.replace(/[^A-Za-z0-9._-]/g, "_");
+  const stem = `${date}-${safe}${smoke ? "-smoke" : full ? "" : "-partial"}`;
+  let path = join(resultsDir, `${stem}.json`);
+  for (let n = 2; existsSync(path); n++) path = join(resultsDir, `${stem}-${n}.json`);
+  return path;
+}
+
+export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results") } = {}) {
   const o = parseArgs(argv);
   const tasks = loadTasks();
   const plan = buildPlan(tasks, o);
   const date = now().toISOString().slice(0, 10);
+  // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
+  const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
   // Decide where the file goes before spending anything, so a clash cannot throw away a paid run.
-  const out = resolve(o.out ?? join(REPO, "vois-eval", "results", `${date}-${o.model}${o.smoke ? "-smoke" : ""}.json`));
-  if (!o.dryrun && existsSync(out) && !o.force) throw new Error(`${out} already exists; pass --out or --force`);
+  const out = resolve(o.out ?? (o.dryrun ? "" : defaultOutPath(resultsDir, { date, model: o.model, smoke: o.smoke, full })));
+  if (!o.dryrun && o.out && existsSync(out) && !o.force) throw new Error(`${out} already exists; pass a different --out, or --force to overwrite it`);
   log(`${plan.length} call(s): ${new Set(plan.map((p) => p.task.id)).size} task(s) x ${o.condition === "both" ? "2 conditions" : o.condition} x ${o.samples} sample(s)`);
   if (o.dryrun) { for (const p of plan.slice(0, 20)) log(`  ${p.task.id} ${p.condition} #${p.sample}`); if (plan.length > 20) log(`  ... and ${plan.length - 20} more`); return null; }
 
@@ -212,8 +225,6 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
 
   const dirty = tryExec("git", ["status", "--porcelain"], REPO);
   if (dirty && dirty !== "unknown") log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
-  // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
-  const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
   const run = {
     schema: "vois-eval-results/1", date, created_at: now().toISOString(), model: o.model, smoke: Boolean(o.smoke), full,
     claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
