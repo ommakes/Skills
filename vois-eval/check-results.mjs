@@ -28,12 +28,16 @@ export function validateRun(run) {
   need(/^\d{4}-\d{2}-\d{2}$/.test(run.date ?? ""), "date must be YYYY-MM-DD");
   need(isStr(run.model), "model is missing");
   need(typeof run.smoke === "boolean", "smoke must be true or false");
+  need(typeof run.full === "boolean", "full must be true or false");
+  need(!(run.full && run.smoke), "a run cannot be both full and smoke");
+  need(typeof run.created_at === "string" && !Number.isNaN(Date.parse(run.created_at)) && run.created_at.startsWith(run.date ?? "?"), "created_at must be an ISO time on the run's date");
   need(typeof run.git_dirty === "boolean", "git_dirty must be true or false");
   need(isList(run.isolation) && run.isolation.length > 0, "isolation must list how the run was kept comparable");
   need(run.skills && typeof run.skills === "object" && Object.keys(run.skills).length > 0, "skills versions are missing");
   need(Number.isInteger(run.samples_per_task) && run.samples_per_task >= 1, "samples_per_task must be a whole number of 1 or more");
   need(isList(run.tasks) && run.tasks.length > 0, "tasks must be a non-empty list of ids");
   need(isList(run.conditions) && run.conditions.length > 0 && run.conditions.every((c) => CONDITIONS.includes(c)), "conditions must be a non-empty list of on and off");
+  need(!run.full || (isList(run.conditions) && CONDITIONS.every((c) => run.conditions.includes(c))), "a full run must cover both conditions");
   need(Array.isArray(run.results) && run.results.length > 0, "results must be a non-empty list");
   if (errs.length) return errs;
 
@@ -73,6 +77,19 @@ export function validateRun(run) {
   return errs;
 }
 
+// For each model, compare its newest full run with the full run before it. Smoke and partial runs are never
+// compared, and a run of another model in between does not hide a regression.
+export function compareLatestPerModel(runs) {
+  const byModel = {};
+  for (const r of runs) if (r.run.full) (byModel[r.run.model] ??= []).push(r); // validateRun guarantees a full run is not a smoke run
+  const out = [];
+  for (const list of Object.values(byModel)) {
+    list.sort((a, b) => Date.parse(a.run.created_at) - Date.parse(b.run.created_at) || a.f.localeCompare(b.f));
+    if (list.length >= 2) { const prev = list[list.length - 2], next = list[list.length - 1]; out.push({ prev, next, cmp: compareRuns(prev.run, next.run) }); }
+  }
+  return out;
+}
+
 function main() {
   if (!existsSync(dir)) { console.log(`note no results directory at ${dir}; nothing to check`); return; }
   const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
@@ -92,14 +109,13 @@ function main() {
     if (leaked) console.warn(`WARN ${f}: ${leaked} skills-off sample(s) touched files outside the run directory; check they did not read installed skills before trusting the off rate`);
     if (errs.length) { failed = true; console.error(`FAIL ${f}`); for (const e of errs) console.error(`  ${e}`); } else { runs.push({ f, run }); console.log(`ok   ${f}: ${run.model}, ${run.smoke ? "smoke, " : ""}${run.tasks.length} task(s), ${run.samples_per_task} sample(s)`); }
   }
-  const full = runs.filter(({ run }) => !run.smoke).sort((a, b) => a.run.date.localeCompare(b.run.date) || a.f.localeCompare(b.f));
-  if (full.length >= 2) {
-    const prev = full[full.length - 2], next = full[full.length - 1];
-    const cmp = compareRuns(prev.run, next.run);
+  const comparisons = compareLatestPerModel(runs);
+  for (const { prev, next, cmp } of comparisons) {
     if (cmp.status === "regressed") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: skills-on pass rate fell from ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s) (allowed drop ${cmp.threshold})`); }
     else if (cmp.status === "skipped") console.log(`note ${next.f} vs ${prev.f}: not compared, ${cmp.reason}`);
     else console.log(`ok   ${next.f} vs ${prev.f}: skills-on pass rate ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s)`);
-  } else console.log(`note ${full.length} full run(s) committed; the regression check needs two`);
+  }
+  if (!comparisons.length) console.log(`note ${runs.filter(({ run }) => run.full).length} full run(s) committed, none with an earlier full run of the same model; the regression check needs two`);
   if (failed) process.exit(1);
 }
 

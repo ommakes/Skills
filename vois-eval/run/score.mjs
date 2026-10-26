@@ -123,6 +123,7 @@ function rateOn(run, condition, taskIds) {
 // and only skills-on, because that is the condition the skills are responsible for.
 export function compareRuns(prev, next, { threshold = 0.1, minCommonTasks = 5 } = {}) {
   if (prev.model !== next.model) return { status: "skipped", reason: `model changed (${prev.model} to ${next.model})` };
+  if (prev.samples_per_task !== next.samples_per_task) return { status: "skipped", reason: `samples per task changed (${prev.samples_per_task} to ${next.samples_per_task})` };
   const swapped = (run) => run.results.some((r) => r.model_mismatch);
   if (swapped(prev) || swapped(next)) return { status: "skipped", reason: "a sample in one of the runs was answered by a different model than the file names" };
   const prevTasks = new Set(prev.results.filter((r) => r.condition === "on").map((r) => r.task));

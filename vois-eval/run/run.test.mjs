@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
 import { buildPlan, copySkills, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
-import { validateRun } from "../check-results.mjs";
+import { compareLatestPerModel, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
 const task = (extra = {}) => ({ id: "T-1", user_prompt: "Build a thing.", expected_imports: ["alert-dialog"], ...extra });
@@ -173,7 +173,7 @@ test("summarize keeps conditions apart and sums cost", () => {
 });
 
 const run = (model, passes, extra = {}) => ({
-  model,
+  model, samples_per_task: 1,
   results: passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p })),
   ...extra,
 });
@@ -209,7 +209,7 @@ test("only tasks both runs contain are compared", () => {
 
 function validRun() {
   const results = [row(), row({ sample: 2 }), row({ condition: "off", pass: false, decision: false }), row({ condition: "off", sample: 2, pass: false, decision: false })];
-  return { schema: "vois-eval-results/1", date: "2026-10-26", model: "m", smoke: false, git_dirty: false, isolation: ["x"], skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
+  return { schema: "vois-eval-results/1", date: "2026-10-26", created_at: "2026-10-26T10:00:00.000Z", model: "m", smoke: false, full: false, git_dirty: false, isolation: ["x"], skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
     conditions: ["on", "off"], tasks: ["T-1"], results, summary: summarize(results) };
 }
 test("a well-formed run validates", () => assert.deepEqual(validateRun(validRun()), []));
@@ -284,9 +284,9 @@ test("the checker exits non-zero for a regression in a directory of results", ()
   const dir = mkdtempSync(join(tmpdir(), "vois-eval-res-"));
   try {
     const mk = (date, passes) => {
-      const results = passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p }));
-      return { schema: "vois-eval-results/1", date, model: "m", smoke: false, git_dirty: false, isolation: ["x"], skills: { a: "1" }, samples_per_task: 1, conditions: ["on"],
-        tasks: results.map((r) => r.task), results, summary: summarize(results) };
+      const results = passes.flatMap((p, i) => [row({ task: `T-${i + 1}`, pass: p, decision: p }), row({ task: `T-${i + 1}`, condition: "off", pass: false, decision: false })]);
+      return { schema: "vois-eval-results/1", date, created_at: `${date}T10:00:00.000Z`, model: "m", smoke: false, full: true, git_dirty: false, isolation: ["x"], skills: { a: "1" }, samples_per_task: 1,
+        conditions: ["on", "off"], tasks: [...new Set(results.map((r) => r.task))], results, summary: summarize(results) };
     };
     const w = (n, o) => writeFileSync(join(dir, n), JSON.stringify(o));
     w("2026-10-01-m.json", mk("2026-10-01", Array(10).fill(true)));
@@ -599,4 +599,96 @@ test("the checker catches a model_mismatch flag that disagrees with served_model
   assert.match(validateRun(r).join("\n"), /served_models must be a list/);
   r = validRun(); delete r.results[0].model_mismatch;
   assert.match(validateRun(r).join("\n"), /model_mismatch must be true or false/);
+});
+
+// ---------- which runs get compared ----------
+
+const mkRun = (model, created, passes, extra = {}) => {
+  const results = passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p, served_models: [model] }));
+  const date = created.slice(0, 10);
+  return { schema: "vois-eval-results/1", date, created_at: created, model, smoke: false, full: true, git_dirty: false, isolation: ["x"], skills: { a: "1" },
+    samples_per_task: 1, conditions: ["on"], tasks: results.map((r) => r.task), results, summary: summarize(results), ...extra };
+};
+const entry = (f, run) => ({ f, run });
+const ten = (v) => Array(10).fill(v);
+
+test("a regression is found even when another model's run sits between the two runs of the same model", () => {
+  const runs = [
+    entry("a.json", mkRun("sonnet", "2026-10-01T10:00:00.000Z", ten(true))),
+    entry("b.json", mkRun("haiku", "2026-10-02T10:00:00.000Z", ten(true))),
+    entry("c.json", mkRun("sonnet", "2026-10-03T10:00:00.000Z", [...Array(7).fill(true), ...Array(3).fill(false)])),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].cmp.status, "regressed");
+  assert.equal(cmps[0].next.f, "c.json");
+});
+test("each model is compared with its own previous run", () => {
+  const runs = [
+    entry("a.json", mkRun("sonnet", "2026-10-01T10:00:00.000Z", ten(true))), entry("b.json", mkRun("sonnet", "2026-10-02T10:00:00.000Z", ten(true))),
+    entry("c.json", mkRun("haiku", "2026-10-01T10:00:00.000Z", ten(true))), entry("d.json", mkRun("haiku", "2026-10-02T10:00:00.000Z", ten(false))),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.deepEqual(cmps.map((c) => [c.next.run.model, c.cmp.status]).sort(), [["haiku", "regressed"], ["sonnet", "ok"]]);
+});
+test("a partial run without --smoke is kept but never becomes the baseline", () => {
+  const runs = [
+    entry("a.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true))),
+    entry("b.json", mkRun("m", "2026-10-02T10:00:00.000Z", [true, true], { full: false })),
+    entry("c.json", mkRun("m", "2026-10-03T10:00:00.000Z", ten(false))),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].prev.f, "a.json");
+  assert.equal(cmps[0].cmp.status, "regressed");
+});
+test("smoke runs are never compared, and order comes from created_at, not the file name", () => {
+  // "...-m-2.json" sorts before "...-m.json" by name, but it was made later.
+  const runs = [
+    entry("2026-10-01-m.json", mkRun("m", "2026-10-01T09:00:00.000Z", ten(true))),
+    entry("2026-10-01-m-2.json", mkRun("m", "2026-10-01T15:00:00.000Z", ten(false))),
+    entry("smoke.json", mkRun("m", "2026-10-02T10:00:00.000Z", ten(true), { smoke: true, full: false })),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].prev.f, "2026-10-01-m.json");
+  assert.equal(cmps[0].next.f, "2026-10-01-m-2.json");
+  assert.equal(cmps[0].cmp.status, "regressed");
+});
+test("a smoke run is not full: the file check refuses a run that is both", () => {
+  const r = mkRun("m", "2026-10-01T09:00:00.000Z", ten(true), { smoke: true });
+  assert.match(validateRun(r).join("\n"), /both full and smoke/);
+});
+test("runs with different samples per task are not compared", () => {
+  const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true));
+  const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(false), { samples_per_task: 3 });
+  assert.match(compareRuns(a, b).reason, /samples per task changed/);
+});
+test("full, created_at and conditions are validated in the file", () => {
+  let r = validRun(); delete r.full;
+  assert.match(validateRun(r).join("\n"), /full must be true or false/);
+  r = validRun(); r.full = true; r.smoke = true;
+  assert.match(validateRun(r).join("\n"), /both full and smoke/);
+  r = validRun(); r.full = true; r.conditions = ["on"]; r.results = r.results.filter((x) => x.condition === "on"); r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /full run must cover both conditions/);
+  r = validRun(); r.created_at = "2026-10-27T10:00:00.000Z";
+  assert.match(validateRun(r).join("\n"), /created_at/);
+  r = validRun(); r.created_at = "soon";
+  assert.match(validateRun(r).join("\n"), /created_at/);
+});
+test("the runner marks only a complete default run as full", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-full-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    const go = (extra, name) => main(["--model", "m", "--samples", "1", "--out", join(dir, name), ...extra], { invoke, log: () => {}, now: () => new Date("2026-10-26T12:00:00Z") });
+    assert.equal((await go(["--tasks", "DT-04"], "a.json")).run.full, false);
+    assert.equal((await go(["--limit", "2"], "b.json")).run.full, false);
+    assert.equal((await go(["--tasks", "DT-04", "--smoke"], "c.json")).run.full, false);
+    assert.equal((await go(["--condition", "on", "--limit", "1"], "d.json")).run.full, false);
+    assert.equal((await go(["--condition", "on", "--tasks", "all"], "e.json")).run.full, false, "one condition only is not full");
+    const everything = await go([], "f.json");
+    assert.equal(everything.run.full, true);
+    assert.equal(everything.run.created_at, "2026-10-26T12:00:00.000Z");
+    assert.deepEqual(validateRun(everything.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

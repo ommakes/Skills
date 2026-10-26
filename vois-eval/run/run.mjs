@@ -212,8 +212,10 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
 
   const dirty = tryExec("git", ["status", "--porcelain"], REPO);
   if (dirty && dirty !== "unknown") log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
+  // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
+  const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
   const run = {
-    schema: "vois-eval-results/1", date, model: o.model, smoke: Boolean(o.smoke),
+    schema: "vois-eval-results/1", date, created_at: now().toISOString(), model: o.model, smoke: Boolean(o.smoke), full,
     claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
     isolation: ISOLATION, skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),
