@@ -10,8 +10,12 @@
 //   on   the run directory holds a copy of the skills from this checkout under ./skills, and the
 //        prompt says they apply and where they are. This pins the version under test.
 //   off  an empty run directory and the baseline prompt that forbids reading skills.
-// Both get the same four tools (Read, Write, Glob, Grep). Nothing else is available, so the
-// agent cannot reach skills installed on the machine or the account, and cannot run code.
+// Both get the same four tools (Read, Write, Glob, Grep), no MCP servers and project-only settings. That removes
+// the Skill tool, skill listing, shell and any MCP tools. It does NOT sandbox the files: Read and Glob accept
+// absolute paths, and the user's own CLAUDE.md memory still loads. So a skills-off agent could in principle read
+// installed skills. The runner records every file-tool path outside the run directory (outside_cwd_access) so that
+// shows up in the results; the memory file it cannot see. Run on a machine whose user-level memory says nothing
+// about Vois, or the off rate may be too high.
 import { spawn, execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -21,6 +25,9 @@ import { loadTasks } from "./tasks.mjs";
 import { CONDITIONS, scoreSample, summarize } from "./score.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
+// What the runner does to keep the two conditions comparable. Recorded in every results file.
+export const ISOLATION = ["tools:Read,Write,Glob,Grep", "setting-sources:project", "strict-mcp-config", "file-access:logged-not-blocked", "user-memory:not-controlled"];
+const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd"];
 export const SKILLS_UNDER_TEST = ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"];
 const TEMPLATE_ON = readFileSync(new URL("../lookalike-pass/runner-prompt.md", import.meta.url), "utf8");
 const TEMPLATE_OFF = readFileSync(new URL("../lookalike-pass/runner-prompt-baseline.md", import.meta.url), "utf8");
@@ -104,11 +111,11 @@ export function outsideAccess(toolUses, dir) {
 export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000 }) {
   return new Promise((resolveP) => {
     const args = ["-p", prompt, "--model", model, "--output-format", "stream-json", "--verbose", "--no-session-persistence",
-      "--setting-sources", "project", "--tools", "Read,Write,Glob,Grep", "--allowedTools", "Read", "Write", "Glob", "Grep",
+      "--setting-sources", "project", "--strict-mcp-config", "--tools", "Read,Write,Glob,Grep", "--allowedTools", "Read", "Write", "Glob", "Grep",
       "--max-turns", String(maxTurns), "--max-budget-usd", String(budget)];
     const child = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
-    let out = "", err = "";
-    const timer = setTimeout(() => child.kill("SIGKILL"), timeoutMs);
+    let out = "", err = "", timedOut = false;
+    const timer = setTimeout(() => { timedOut = true; child.kill("SIGKILL"); }, timeoutMs);
     child.stdout.on("data", (d) => (out += d));
     child.stderr.on("data", (d) => (err += d));
     child.on("error", (e) => { clearTimeout(timer); resolveP({ error: `could not start ${bin}: ${e.message}` }); });
@@ -117,11 +124,17 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
       const events = [];
       for (const line of out.split("\n")) { try { if (line.trim()) events.push(JSON.parse(line)); } catch { /* not an event line */ } }
       const j = events.findLast?.((e) => e.type === "result") ?? [...events].reverse().find((e) => e.type === "result");
-      if (!j) { resolveP({ error: `exit ${code}, no result event: ${(err || out).slice(0, 200)}` }); return; }
+      // No result event means the model was probably paid for but we cannot say how much: flag the cost as unknown.
+      if (!j) { resolveP({ error: timedOut ? `timed out after ${Math.round(timeoutMs / 1000)}s` : `exit ${code}, no result event: ${(err || out).slice(0, 200)}`, cost_unknown: true }); return; }
       const tool_uses = events.filter((e) => e.type === "assistant").flatMap((e) => (e.message?.content ?? []).filter((c) => c?.type === "tool_use"));
+      // Hitting the turn or budget limit is not a failure of the run: the agent may already have written a whole screen.
+      // That sample is scored and flagged `truncated`, so a skills-on run that reads many files first is not marked down for it.
+      const truncated = TRUNCATED_SUBTYPES.includes(j.subtype);
+      const stopped = j.subtype && j.subtype !== "success" ? j.subtype : undefined;
       resolveP({
         result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0, tool_uses,
-        models: Object.keys(j.modelUsage ?? {}), error: j.is_error ? `claude reported an error: ${String(j.result).slice(0, 200)}` : undefined,
+        models: Object.keys(j.modelUsage ?? {}), truncated, stop_reason: stopped,
+        error: truncated ? undefined : j.is_error || stopped ? `claude stopped${stopped ? ` (${stopped})` : ""}: ${String(j.result).slice(0, 200)}` : undefined,
       });
     });
   });
@@ -141,7 +154,7 @@ export function copySkills(dir, repo = REPO, names = SKILLS_UNDER_TEST) {
 }
 
 const failedRow = (task, condition, sample, error, extra = {}) => ({ task: task.id, condition, sample, cost_usd: 0, duration_ms: 0, turns: 0, served_models: [],
-  pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
+  truncated: false, cost_unknown: false, pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
 
 // One bad sample (a copy that fails, a detector that throws on odd code) becomes an error row; it must not
 // take the other samples' paid results down with it.
@@ -157,7 +170,8 @@ async function runSampleInner({ task, condition, sample }, o, invoke) {
     const r = await invoke({ prompt: renderPrompt(condition, task), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget });
     const file = join(dir, "out.tsx");
     const src = r.error ? null : extractCode(existsSync(file) ? readFileSync(file, "utf8") : "", r.result);
-    const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [], outside_cwd_access: outsideAccess(r.tool_uses, dir) };
+    const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [], outside_cwd_access: outsideAccess(r.tool_uses, dir),
+      truncated: Boolean(r.truncated), cost_unknown: Boolean(r.cost_unknown), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
     if (src && o.saveOutput) { mkdirSync(o.saveOutput, { recursive: true }); writeFileSync(join(o.saveOutput, `${task.id}-${condition}-${sample}.tsx`), src); }
     if (!src) return failedRow(task, condition, sample, r.error ?? "the agent wrote no ./out.tsx and gave no code block", base);
     return { ...base, ...scoreSample(src, task) };
@@ -199,7 +213,7 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const run = {
     schema: "vois-eval-results/1", date, model: o.model, smoke: Boolean(o.smoke),
     claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
-    skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
+    isolation: ISOLATION, skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),
   };
   mkdirSync(join(out, ".."), { recursive: true });

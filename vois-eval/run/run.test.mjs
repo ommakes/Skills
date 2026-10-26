@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, copySkills, extractCode, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
+import { buildPlan, copySkills, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
 import { validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -157,7 +157,7 @@ test("detector findings are recorded but do not decide the pass", () => {
 
 // ---------- summary and comparison ----------
 
-const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], cost_usd: 0.01, duration_ms: 1000, ...o });
+const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], truncated: false, cost_unknown: false, cost_usd: 0.01, duration_ms: 1000, ...o });
 
 test("an errored sample counts as an attempt that failed", () => {
   const s = summarize([row(), row({ sample: 2, pass: false, decision: false, error: "boom" })]);
@@ -209,7 +209,7 @@ test("only tasks both runs contain are compared", () => {
 
 function validRun() {
   const results = [row(), row({ sample: 2 }), row({ condition: "off", pass: false, decision: false }), row({ condition: "off", sample: 2, pass: false, decision: false })];
-  return { schema: "vois-eval-results/1", date: "2026-10-26", model: "m", smoke: false, git_dirty: false, skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
+  return { schema: "vois-eval-results/1", date: "2026-10-26", model: "m", smoke: false, git_dirty: false, isolation: ["x"], skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
     conditions: ["on", "off"], tasks: ["T-1"], results, summary: summarize(results) };
 }
 test("a well-formed run validates", () => assert.deepEqual(validateRun(validRun()), []));
@@ -246,6 +246,18 @@ test("a failing sample still cannot claim a correct decision while importing a f
   const r = validRun(); Object.assign(r.results[2], { decision: true, forbidden_imports: ["dialog"] }); r.summary = summarize(r.results);
   assert.match(validateRun(r).join("\n"), /correct decision with forbidden imports/);
 });
+test("a run must say how it was isolated, and the runner records its settings", async () => {
+  const r = validRun(); delete r.isolation;
+  assert.match(validateRun(r).join("\n"), /isolation/);
+  assert.ok(ISOLATION.includes("strict-mcp-config") && ISOLATION.includes("user-memory:not-controlled"));
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-iso-"));
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", join(dir, "r.json")], {
+      invoke: async () => ({ result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", cost_usd: 0, duration_ms: 1, turns: 1, models: ["m"] }), log: () => {},
+    });
+    assert.deepEqual(res.run.isolation, ISOLATION);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
 test("a null result, an empty error and a missing git_dirty are rejected, not crashed on", () => {
   let r = validRun(); r.results.push(null);
   assert.match(validateRun(r).join("\n"), /not an object/);
@@ -273,7 +285,7 @@ test("the checker exits non-zero for a regression in a directory of results", ()
   try {
     const mk = (date, passes) => {
       const results = passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p }));
-      return { schema: "vois-eval-results/1", date, model: "m", smoke: false, git_dirty: false, skills: { a: "1" }, samples_per_task: 1, conditions: ["on"],
+      return { schema: "vois-eval-results/1", date, model: "m", smoke: false, git_dirty: false, isolation: ["x"], skills: { a: "1" }, samples_per_task: 1, conditions: ["on"],
         tasks: results.map((r) => r.task), results, summary: summarize(results) };
     };
     const w = (n, o) => writeFileSync(join(dir, n), JSON.stringify(o));
@@ -470,4 +482,95 @@ test("copySkills throws when a skill has no SKILL.md or does not exist", async (
     assert.throws(() => copySkills(join(root, "run"), join(root, "repo"), ["a"]), /SKILL.md is missing/);
     assert.throws(() => copySkills(join(root, "run2"), join(root, "repo"), ["nope"]));
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- the CLI boundary, with a stand-in for `claude` ----------
+
+const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
+const tsx = (name) => `import { ${name} } from "@/components/ui/drawer";\nexport default () => <${name}/>;`;
+const resultEvent = (o = {}) => ({ type: "result", subtype: "success", is_error: false, result: "done", total_cost_usd: 0.05, duration_ms: 12, num_turns: 3, modelUsage: { m: {} }, ...o });
+async function viaFake(cfg, extra = {}) {
+  process.env.FAKE_CLAUDE = JSON.stringify(cfg);
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-fake-"));
+  try {
+    const r = await invokeClaude({ prompt: "p", cwd: dir, model: "m", maxTurns: 5, budget: 1, bin: FAKE, ...extra });
+    return { r, argv: existsSync(join(dir, "argv.json")) ? JSON.parse(readFileSync(join(dir, "argv.json"), "utf8")) : null };
+  } finally { delete process.env.FAKE_CLAUDE; rmSync(dir, { recursive: true, force: true }); }
+}
+const rowFrom = (invokeResult, task) => runSample({ task, condition: "off", sample: 1 }, parseArgs(["--model", "m"]), async ({ cwd }) => {
+  if (invokeResult.writeFile) writeFileSync(join(cwd, "out.tsx"), invokeResult.writeFile);
+  return invokeResult.r;
+});
+
+test("the CLI is started with the isolation flags", async () => {
+  const { argv } = await viaFake({ events: [resultEvent()] });
+  for (const flag of ["--strict-mcp-config", "--no-session-persistence", "--verbose"]) assert.ok(argv.includes(flag), flag);
+  assert.equal(argv[argv.indexOf("--setting-sources") + 1], "project");
+  assert.equal(argv[argv.indexOf("--tools") + 1], "Read,Write,Glob,Grep");
+  assert.equal(argv[argv.indexOf("--output-format") + 1], "stream-json");
+  assert.equal(argv[argv.indexOf("--model") + 1], "m");
+});
+test("stream events are parsed: result, models, cost and the tool calls", async () => {
+  const events = [
+    { type: "assistant", message: { content: [{ type: "text", text: "hi" }, { type: "tool_use", name: "Read", input: { file_path: "./skills/a/SKILL.md" } }] } },
+    resultEvent({ total_cost_usd: 0.07, modelUsage: { "claude-x": {} } }),
+  ];
+  const { r } = await viaFake({ events });
+  assert.equal(r.error, undefined);
+  assert.equal(r.cost_usd, 0.07);
+  assert.deepEqual(r.models, ["claude-x"]);
+  assert.deepEqual(r.tool_uses.map((u) => u.name), ["Read"]);
+  assert.equal(r.truncated, false);
+});
+test("a run that hits the turn or budget limit is scored on the screen it wrote, flagged, and not an error", async () => {
+  for (const subtype of ["error_max_turns", "error_max_budget_usd"]) {
+    const { r } = await viaFake({ events: [resultEvent({ subtype, is_error: true, result: "stopped" })] });
+    assert.equal(r.truncated, true, subtype);
+    assert.equal(r.error, undefined, subtype);
+    assert.equal(r.stop_reason, subtype);
+    const row = await rowFrom({ r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+    assert.equal(row.pass, true, subtype);
+    assert.equal(row.truncated, true);
+    assert.equal(row.error, undefined);
+    assert.equal(row.stop_reason, subtype);
+  }
+});
+test("a truncated run with no screen written is an error row that still says it was truncated", async () => {
+  const { r } = await viaFake({ events: [resultEvent({ subtype: "error_max_turns", is_error: true })] });
+  const row = await rowFrom({ r }, task());
+  assert.equal(row.pass, false);
+  assert.match(row.error, /wrote no/);
+  assert.equal(row.truncated, true);
+});
+test("any other stop or error is an error row, even if a file was written", async () => {
+  for (const ev of [resultEvent({ subtype: "error_during_execution", is_error: true, result: "boom" }), resultEvent({ is_error: true, result: "overloaded" }), resultEvent({ subtype: "error_during_execution", is_error: false, result: "odd" })]) {
+    const { r } = await viaFake({ events: [ev] });
+    assert.match(r.error, /claude stopped/);
+    const row = await rowFrom({ r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+    assert.equal(row.pass, false);
+    assert.ok(row.error);
+  }
+});
+test("a timeout or a missing result event is an error with the cost marked unknown", async () => {
+  const slow = await viaFake({ sleepMs: 5000 }, { timeoutMs: 300 });
+  assert.match(slow.r.error, /timed out/);
+  assert.equal(slow.r.cost_unknown, true);
+  const none = await viaFake({ events: [{ type: "assistant", message: { content: [] } }] });
+  assert.match(none.r.error, /no result event/);
+  assert.equal(none.r.cost_unknown, true);
+  const row = await rowFrom({ r: slow.r }, task());
+  assert.equal(row.cost_unknown, true);
+  assert.equal(row.pass, false);
+});
+test("truncated and unknown-cost samples are counted in the summary and need valid flags in the file", () => {
+  const results = [row({ truncated: true, stop_reason: "error_max_turns" }), row({ sample: 2, cost_unknown: true, pass: false, decision: false, error: "timed out" })];
+  const s = summarize(results);
+  assert.equal(s.on.truncated, 1);
+  assert.equal(s.on.cost_unknown, 1);
+  const r = { ...validRun(), results, tasks: ["T-1"], samples_per_task: 2, conditions: ["on"], summary: s };
+  assert.deepEqual(validateRun(r), []);
+  const bad = structuredClone(r); bad.results[0].truncated = "yes"; bad.summary = s;
+  assert.match(validateRun(bad).join("\n"), /truncated and cost_unknown must be true or false/);
+  const bad2 = structuredClone(r); bad2.results[0].stop_reason = ""; 
+  assert.match(validateRun(bad2).join("\n"), /stop_reason must be a non-empty string/);
 });

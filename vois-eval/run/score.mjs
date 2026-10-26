@@ -99,11 +99,13 @@ export function summarize(results) {
       samples: rows.length,
       errors: rows.filter((r) => r.error).length,
       outside_access: rows.filter((r) => (r.outside_cwd_access ?? []).length > 0).length,
+      truncated: rows.filter((r) => r.truncated).length,
+      cost_unknown: rows.filter((r) => r.cost_unknown).length,
       pass_rate: round(rows.filter((r) => r.pass && !r.error).length / rows.length),
       decision_rate: round(rows.filter((r) => r.decision && !r.error).length / rows.length),
       mean_lookalike_hits: round(mean(rows.map((r) => r.lookalike_hits.length))),
       mean_detector_findings: round(mean(rows.map((r) => r.detector_findings.length))),
-      cost_usd: round(rows.reduce((a, r) => a + (r.cost_usd ?? 0), 0)),
+      cost_usd: round(rows.reduce((a, r) => a + (r.cost_usd ?? 0), 0)), // a lower bound when cost_unknown is above 0
       mean_duration_ms: Math.round(mean(rows.map((r) => r.duration_ms ?? 0))),
     };
   }

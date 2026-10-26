@@ -7,7 +7,7 @@
 //      different model are shown but not compared.
 //
 // Usage: node vois-eval/check-results.mjs [results-dir]
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CONDITIONS, compareRuns, summarize } from "./run/score.mjs";
@@ -29,6 +29,7 @@ export function validateRun(run) {
   need(isStr(run.model), "model is missing");
   need(typeof run.smoke === "boolean", "smoke must be true or false");
   need(typeof run.git_dirty === "boolean", "git_dirty must be true or false");
+  need(isList(run.isolation) && run.isolation.length > 0, "isolation must list how the run was kept comparable");
   need(run.skills && typeof run.skills === "object" && Object.keys(run.skills).length > 0, "skills versions are missing");
   need(Number.isInteger(run.samples_per_task) && run.samples_per_task >= 1, "samples_per_task must be a whole number of 1 or more");
   need(isList(run.tasks) && run.tasks.length > 0, "tasks must be a non-empty list of ids");
@@ -44,6 +45,8 @@ export function validateRun(run) {
     need(CONDITIONS.includes(r.condition), `${at}: condition must be on or off`);
     need(Number.isInteger(r.sample) && r.sample >= 1 && r.sample <= run.samples_per_task, `${at}: sample must be 1 to ${run.samples_per_task}`);
     need(typeof r.pass === "boolean" && typeof r.decision === "boolean", `${at}: pass and decision must be true or false`);
+    need(typeof r.truncated === "boolean" && typeof r.cost_unknown === "boolean", `${at}: truncated and cost_unknown must be true or false`);
+    need(r.stop_reason === undefined || isStr(r.stop_reason), `${at}: stop_reason must be a non-empty string when present`);
     for (const k of ["lookalike_hits", "forbidden_imports", "pattern_failures", "detector_findings", "dataviz_findings", "outside_cwd_access"]) need(isList(r[k]), `${at}: ${k} must be a list of strings`);
     need(r.error === undefined || isStr(r.error), `${at}: error must be a non-empty string when present`);
     need(typeof r.cost_usd === "number" && r.cost_usd >= 0, `${at}: cost_usd must be a number of 0 or more`);
@@ -68,6 +71,7 @@ export function validateRun(run) {
 }
 
 function main() {
+  if (!existsSync(dir)) { console.log(`note no results directory at ${dir}; nothing to check`); return; }
   const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
   const runs = [];
   let failed = false;
@@ -76,6 +80,10 @@ function main() {
     try { run = JSON.parse(readFileSync(join(dir, f), "utf8")); } catch (e) { console.error(`FAIL ${f}: ${e.message}`); failed = true; continue; }
     const errs = validateRun(run);
     const leaked = errs.length ? 0 : run.results.filter((r) => r.condition === "off" && r.outside_cwd_access.length > 0).length;
+    const cut = errs.length ? 0 : run.results.filter((r) => r.truncated).length;
+    const unknown = errs.length ? 0 : run.results.filter((r) => r.cost_unknown).length;
+    if (cut) console.warn(`WARN ${f}: ${cut} sample(s) hit the turn or budget limit and were scored as they stood; compare the on and off counts before reading the rates`);
+    if (unknown) console.warn(`WARN ${f}: ${unknown} sample(s) have an unknown cost (timed out or no result), so the cost total is a lower bound`);
     if (leaked) console.warn(`WARN ${f}: ${leaked} skills-off sample(s) touched files outside the run directory; check they did not read installed skills before trusting the off rate`);
     if (errs.length) { failed = true; console.error(`FAIL ${f}`); for (const e of errs) console.error(`  ${e}`); } else { runs.push({ f, run }); console.log(`ok   ${f}: ${run.model}, ${run.smoke ? "smoke, " : ""}${run.tasks.length} task(s), ${run.samples_per_task} sample(s)`); }
   }
