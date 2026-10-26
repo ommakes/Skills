@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
 import { buildPlan, checkResume, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, loadProgress, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
-import { compareLatestPerModel, validateRun } from "../check-results.mjs";
+import { compareLatestPerModel, mostCommon, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
 const task = (extra = {}) => ({ id: "T-1", user_prompt: "Build a thing.", expected_imports: ["alert-dialog"], ...extra });
@@ -915,17 +915,32 @@ test("a comparison skipped because of a model mismatch fails the check, with the
     assert.match(r.stderr, /answered by a model other than m/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("samples that list two models, or none, are warnings the reader cannot miss", () => {
+test("a helper model on every sample is not a warning, but a sample that differs from the rest is, and so is a sample with no model", () => {
   const dir = mkdtempSync(join(tmpdir(), "vois-eval-mixed-"));
-  try {
+  const check = (mutate) => {
     const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
-    a.results[0].served_models = ["m", "helper"]; a.results[1].served_models = []; a.summary = summarize(a.results);
+    for (const r of a.results) r.served_models = ["helper", "m"];
+    mutate(a); a.summary = summarize(a.results);
     writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
-    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
-    assert.equal(r.status, 0);
-    assert.match(r.stderr, /2 sample\(s\) list more than one model/, "one in each condition: the helper copies the rows");
-    assert.match(r.stderr, /2 scored sample\(s\) report no model at all/);
+    return spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+  };
+  try {
+    const quiet = check(() => {});
+    assert.equal(quiet.status, 0);
+    assert.doesNotMatch(quiet.stderr, /WARN/, "the same helper on every sample says nothing");
+    const odd = check((a) => { a.results[0].served_models = ["m", "other-helper"]; a.results[1].served_models = []; });
+    assert.equal(odd.status, 0);
+    assert.match(odd.stderr, /2 sample\(s\) list a different set of models from the run's usual "helper \+ m"/, "one in each condition: the copy doubles the rows");
+    assert.match(odd.stderr, /2 scored sample\(s\) report no model at all/);
+    const single = check((a) => { for (const r of a.results) r.served_models = ["m"]; a.results[0].served_models = ["m", "fallback"]; });
+    assert.match(single.stderr, /list a different set of models from the run's usual "m"/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("mostCommon picks the most frequent value, breaks ties the same way every time, and copes with nothing", () => {
+  assert.equal(mostCommon(["a", "b", "b"]), "b");
+  assert.equal(mostCommon(["b", "a"]), "a", "a tie goes to the first by sort order");
+  assert.equal(mostCommon(["a", "b"]), "a");
+  assert.equal(mostCommon([]), "");
 });
 function withBothConditions(run) {
   const off = run.results.map((r) => ({ ...r, condition: "off", pass: false, decision: false }));
@@ -1220,4 +1235,101 @@ test("checkResume names every field that differs", () => {
   assert.doesNotThrow(() => checkResume(a, { ...a, created_at: "later", git_dirty: true }));
   assert.throws(() => checkResume(a, { ...a, skills: { s: "2" } }), /skills/);
   assert.throws(() => checkResume(a, { ...a, model: "n", samples: 4 }), /model, samples/);
+});
+
+// ---------- runs that hit errors ----------
+
+const GOODRESULT = { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0.01, duration_ms: 1, turns: 1 };
+const LIMIT = { error: "claude stopped: You've hit your session limit" };
+
+test("a run stops itself after five errors in a row, saves what it has, and writes no results file", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-breaker-"));
+  let calls = 0;
+  try {
+    await assert.rejects(
+      main(["--model", "m", "--samples", "3", "--concurrency", "2", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl")], {
+        invoke: async () => { calls++; return calls <= 3 ? GOODRESULT : LIMIT; }, log: () => {}, git: () => GIT, resultsDir: dir }),
+      /5 samples in a row ended in an error.*session limit.*--resume --retry-errors --progress/s);
+    assert.equal(existsSync(join(dir, "r.json")), false, "no results file");
+    assert.ok(calls >= 8 && calls <= 9, `stopped launching after the fifth error, not after all 270 (made ${calls} calls)`);
+    const { rows } = loadProgress(join(dir, "p.jsonl"));
+    assert.equal(rows.length, calls, "every sample that ran was saved");
+    assert.equal(rows.filter((r) => r.error).length, calls - 3);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("errors that are not in a row do not stop a run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-scattered-"));
+  let calls = 0;
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04,DT-01,DT-02", "--samples", "3", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl")], {
+      invoke: async () => (++calls % 3 === 0 ? LIMIT : GOODRESULT), log: () => {}, git: () => GIT, resultsDir: dir });
+    assert.equal(res.run.results.length, 18);
+    assert.equal(res.run.results.filter((r) => r.error).length, 6, "six errors in all, more than the limit of five, but never in a row");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a run with any errored sample is saved as partial, says how to retry, and is never full", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-notfull-"));
+  const logs = [];
+  let calls = 0;
+  try {
+    const res = await main(["--model", "m", "--samples", "1", "--progress", join(dir, "p.jsonl")], {
+      invoke: async () => (++calls === 7 ? LIMIT : GOODRESULT), log: (m) => logs.push(m), git: () => GIT, resultsDir: dir, now: () => new Date("2026-10-26T10:00:00Z") });
+    assert.equal(res.run.full, false, "every default task and both conditions, but one sample errored");
+    assert.match(res.out, /-partial\.json$/);
+    assert.ok(logs.some((l) => /1 of 90 sample\(s\) ended in an error.*--resume --retry-errors/s.test(l)));
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--resume --retry-errors runs only the errored samples again, rewrites the progress file safely, and the run then comes out full", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-retry-"));
+  const common = ["--model", "m", "--samples", "1", "--progress", join(dir, "p.jsonl")];
+  let calls = 0;
+  const when = { now: () => new Date("2026-10-26T10:00:00Z"), git: () => GIT, resultsDir: dir, log: () => {} };
+  try {
+    const first = await main(common, { ...when, invoke: async () => (++calls % 30 === 0 ? LIMIT : GOODRESULT) });
+    assert.equal(first.run.results.filter((r) => r.error).length, 3);
+    assert.equal(first.run.full, false);
+    const before = loadProgress(join(dir, "p.jsonl")).rows.length;
+    assert.equal(before, 90);
+
+    const again = { n: 0 };
+    const logs = [];
+    const second = await main([...common, "--resume", "--retry-errors"], { ...when, log: (m) => logs.push(m), now: () => new Date("2026-10-27T01:00:00Z"), invoke: async () => { again.n++; return GOODRESULT; } });
+    assert.equal(again.n, 3, "only the three errored samples were run again");
+    assert.ok(logs.some((l) => /retrying 3 sample\(s\) that ended in an error/.test(l)));
+    assert.equal(second.run.results.filter((r) => r.error).length, 0);
+    assert.equal(second.run.full, true, "no errors left, every task and condition");
+    assert.equal(second.run.created_at, "2026-10-26T10:00:00.000Z", "the run keeps its start time");
+    assert.deepEqual(validateRun(second.run), []);
+    const { rows } = loadProgress(join(dir, "p.jsonl"));
+    assert.equal(rows.length, 90);
+    assert.equal(rows.filter((r) => r.error).length, 0, "the errored lines were replaced, not duplicated");
+    assert.equal(existsSync(join(dir, "p.jsonl.tmp")), false, "no temporary file left behind");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("without --retry-errors a resume keeps errored samples as they are", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-keep-"));
+  const common = ["--model", "m", "--tasks", "DT-04", "--samples", "2", "--progress", join(dir, "p.jsonl")];
+  let calls = 0;
+  const when = { now: () => new Date("2026-10-26T10:00:00Z"), git: () => GIT, resultsDir: dir, log: () => {} };
+  try {
+    await main(common, { ...when, invoke: async () => (++calls === 2 ? LIMIT : GOODRESULT) });
+    const n = { n: 0 };
+    const res = await main([...common, "--resume"], { ...when, invoke: async () => { n.n++; return GOODRESULT; } });
+    assert.equal(n.n, 0, "nothing re-run");
+    assert.equal(res.run.results.filter((r) => r.error).length, 1);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--retry-errors needs --resume, and the checker refuses a full run that contains an error", () => {
+  assert.throws(() => parseArgs(["--model", "m", "--retry-errors"]), /only makes sense with --resume/);
+  const r = validRun(); r.full = true;
+  r.results[0].error = "limit"; r.results[0].pass = false; r.results[0].decision = false; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /a full run cannot contain a sample that ended in an error/);
+  r.full = false;
+  assert.deepEqual(validateRun(r), [], "the same samples are fine in a run that says it is not full");
 });
