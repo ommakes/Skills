@@ -72,10 +72,13 @@ const SIGNALS = [
     viaHook("LOOKALIKE-009")],
 ];
 
+// Whether the file imports a component. Expected and forbidden imports both go through this one rule.
+// The rule matches the last part of the path, so it also matches Sonner's own package import: `from "sonner"`.
+export const importsComponent = imp;
+
 export function scan(src, expected) {
   const hits = SIGNALS.filter(([, , , t]) => t(src)).map(([id]) => id);
-  // Sonner's toast() is normally imported from the "sonner" package itself, not from the ui wrapper.
-  const usedExpected = expected.filter((e) => imp(src, e) || (e === "sonner" && /from\s+["']sonner["']/.test(src)));
+  const usedExpected = expected.filter((e) => importsComponent(src, e));
   return { hits, usedExpected, missingExpected: usedExpected.length === 0 };
 }
 

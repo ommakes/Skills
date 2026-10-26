@@ -90,6 +90,13 @@ test("a forbidden component fails even when the expected one is present", () => 
 test("forbidden dialog does not match alert-dialog", () => {
   assert.equal(scoreSample(GOOD, task({ forbidden_imports: ["dialog"] })).pass, true);
 });
+test("expected and forbidden imports use the same rule, sonner's package import included", () => {
+  const src = `import { toast } from "sonner";\nexport default () => <div />;`;
+  assert.deepEqual(scoreSample(src, task({ expected_imports: [], forbidden_imports: ["sonner"], required_patterns: [{ id: "x", regex: "toast" }] })).forbidden_imports, ["sonner"]);
+  assert.equal(scoreSample(src, task({ expected_imports: ["sonner"] })).decision, true);
+  const deep = `import x from "sonner/dist";\nexport default () => <div />;`;
+  assert.equal(scoreSample(deep, task({ expected_imports: ["sonner"] })).decision, false, "a longer path is not the component");
+});
 test("sonner counts when imported from the package itself", () => {
   const src = `import { toast } from "sonner";\nexport default () => <button onClick={() => toast("x")} />;`;
   assert.equal(scoreSample(src, task({ expected_imports: ["sonner"] })).decision, true);

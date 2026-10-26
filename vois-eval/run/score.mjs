@@ -9,15 +9,11 @@
 //   4. every required pattern matches and no forbidden pattern does.
 // The vois-tokens and vois-dataviz detector findings are recorded but do not decide the
 // pass: they are advisory by design (see vois-tokens/references/hooks.md).
-import { scan, imp } from "../lookalike-pass/scan.mjs";
+import { scan, importsComponent } from "../lookalike-pass/scan.mjs";
 import { detectFile as detectTokens } from "../../vois-tokens/scripts/detect.mjs";
 import { detectFile as detectDataviz } from "../../vois-dataviz/scripts/detect.mjs";
 
 export const CONDITIONS = ["on", "off"];
-
-// Sonner's toast() normally comes from the "sonner" package itself, not the ui wrapper.
-const importsComponent = (src, name) =>
-  imp(src, name) || (name === "sonner" && /from\s+["']sonner["']/.test(src));
 
 const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 
