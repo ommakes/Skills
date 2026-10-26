@@ -333,6 +333,22 @@ test("outsideAccess lists file-tool paths outside the run directory and ignores 
     ].sort());
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test("outsideAccess treats ~ as the home directory and looks at Grep's glob", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-home-"));
+  try {
+    const uses = [
+      { name: "Read", input: { file_path: "~/.claude/skills/vois-tokens/SKILL.md" } },
+      { name: "Glob", input: { pattern: "~/.claude/**" } },
+      { name: "Read", input: { file_path: "~" } },
+      { name: "Grep", input: { pattern: "x", path: ".", glob: "../../**/SKILL.md" } },
+      { name: "Grep", input: { pattern: "x", path: ".", glob: "*.tsx" } },
+      { name: "Read", input: { glob: "../../x" } }, // only Grep has a glob input
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:~/.claude/**", "Grep:../../**/SKILL.md", "Read:~", "Read:~/.claude/skills/vois-tokens/SKILL.md",
+    ]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
 test("the two conditions get different prompts and only 'on' points at the skills", () => {
   const t = { user_prompt: "Do X." };
   assert.match(renderPrompt("on", t), /\.\/skills\//);

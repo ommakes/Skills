@@ -14,7 +14,7 @@
 // agent cannot reach skills installed on the machine or the account, and cannot run code.
 import { spawn, execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks } from "./tasks.mjs";
@@ -87,11 +87,14 @@ export function outsideAccess(toolUses, dir) {
   const found = new Set();
   for (const u of toolUses ?? []) {
     const input = u?.input ?? {};
-    for (const key of ["file_path", "path", "notebook_path", "pattern"]) {
+    for (const key of ["file_path", "path", "notebook_path", "pattern", "glob"]) {
       const v = input[key];
       if (typeof v !== "string" || !v) continue;
       if (key === "pattern" && u.name !== "Glob") continue; // a Grep pattern is a regex, not a path
-      if (!inside(resolve(dir, v))) found.add(`${u.name}:${v}`);
+      if (key === "glob" && u.name !== "Grep") continue; // Grep's glob filters files under its path
+      // "~" is the home directory. If the tool does not expand it, counting it as outside is still the safe answer.
+      const p = v === "~" || v.startsWith("~/") ? join(homedir(), v.slice(1)) : v;
+      if (!inside(resolve(dir, p))) found.add(`${u.name}:${v}`);
     }
   }
   return [...found].sort().slice(0, 10);
