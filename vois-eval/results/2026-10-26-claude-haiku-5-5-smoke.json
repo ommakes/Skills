@@ -1,0 +1,158 @@
+{
+  "schema": "vois-eval-results/1",
+  "date": "2026-10-26",
+  "created_at": "2026-10-26T15:53:37.143Z",
+  "model": "claude-haiku-5-5",
+  "smoke": true,
+  "full": false,
+  "claude_cli": "2.1.310 (Claude Code)",
+  "git_sha": "e2161bbcb0710a13411b84211c1056997bfe827b",
+  "git_dirty": false,
+  "isolation": [
+    "tools:Read,Write,Glob,Grep",
+    "setting-sources:project",
+    "strict-mcp-config",
+    "file-access:logged-not-blocked",
+    "user-memory:not-controlled"
+  ],
+  "skills": {
+    "vois-patterns": "1.17.0",
+    "vois-components": "1.15.2",
+    "vois-tokens": "1.23.2",
+    "vois-dataviz": "1.1.2",
+    "righter": "1.10.0"
+  },
+  "samples_per_task": 1,
+  "conditions": [
+    "on",
+    "off"
+  ],
+  "tasks": [
+    "LP-03a",
+    "DT-04"
+  ],
+  "results": [
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.01610351,
+      "duration_ms": 40853,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.00554387,
+      "duration_ms": 28458,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-TYPOGRAPHY-009"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.01582874,
+      "duration_ms": 51180,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0046856499999999995,
+      "duration_ms": 25897,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    }
+  ],
+  "summary": {
+    "on": {
+      "samples": 2,
+      "errors": 0,
+      "outside_access": 0,
+      "truncated": 0,
+      "cost_unknown": 0,
+      "model_mismatch": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 0,
+      "cost_usd": 0.032,
+      "mean_duration_ms": 46017
+    },
+    "off": {
+      "samples": 2,
+      "errors": 0,
+      "outside_access": 0,
+      "truncated": 0,
+      "cost_unknown": 0,
+      "model_mismatch": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 1,
+      "cost_usd": 0.01,
+      "mean_duration_ms": 27178
+    }
+  }
+}

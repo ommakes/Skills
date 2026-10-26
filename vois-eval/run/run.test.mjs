@@ -1,0 +1,1223 @@
+// Tests for the eval runner's scoring, task loading, results checking and run loop.
+// The model is replaced by a stub, so nothing here costs money. Each guard has a test that
+// tries to get past it, and removing the guard makes that test fail.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { execFile, execFileSync, spawnSync } from "node:child_process";
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadTasks, validateTask } from "./tasks.mjs";
+import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
+import { buildPlan, checkResume, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, loadProgress, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
+import { compareLatestPerModel, validateRun } from "../check-results.mjs";
+
+const REPO = fileURLToPath(new URL("../../", import.meta.url));
+const task = (extra = {}) => ({ id: "T-1", user_prompt: "Build a thing.", expected_imports: ["alert-dialog"], ...extra });
+const GOOD = `import { AlertDialog } from "@/components/ui/alert-dialog";\nexport default function A() { return <AlertDialog />; }`;
+
+// ---------- tasks ----------
+
+test("the committed task files load and every task has an expectation", () => {
+  const tasks = loadTasks();
+  assert.ok(tasks.length >= 45);
+  assert.ok(tasks.some((t) => t.id === "DT-01"));
+});
+
+test("every source_rules entry on the design tasks is a real id", () => {
+  const ids = new Set();
+  const j = (p) => JSON.parse(readFileSync(join(REPO, p), "utf8"));
+  for (const n of j("vois-patterns/data/patterns-rules.json").nodes) ids.add(n.id);
+  for (const n of j("vois-components/data/components-rules.json").jobs) ids.add(n.id);
+  for (const n of j("vois-tokens/data/vois-rules.json").rules) ids.add(n.id);
+  // DS-SLOP-* rules are deliberately not indexed in the JSON; their tags live in anti-slop.md.
+  for (const m of readFileSync(join(REPO, "vois-tokens/references/anti-slop.md"), "utf8").matchAll(/`\[(DS-SLOP-\d+)\]`/g)) ids.add(m[1]);
+  const dt = j("vois-eval/tasks/design-tasks.json").scenarios;
+  for (const t of dt) for (const r of t.source_rules) {
+    if (r.startsWith("vois-dataviz ")) continue; // named by tree and job, not by id
+    assert.ok(ids.has(r), `${t.id}: source rule ${r} does not exist`);
+  }
+});
+
+test("a task that checks nothing is rejected", () => {
+  assert.throws(() => validateTask({ id: "T", user_prompt: "x" }), /no expectations/);
+});
+test("a broken regex stops the run instead of scoring as nothing", () => {
+  assert.throws(() => validateTask(task({ required_patterns: [{ id: "p", regex: "(" }] })), /not a valid regex/);
+});
+test("an unknown field, a bad component name and an empty prompt are rejected", () => {
+  assert.throws(() => validateTask(task({ expected_import: ["x"] })), /unknown field/);
+  assert.throws(() => validateTask(task({ expected_imports: ["Alert Dialog"] })), /component file names/);
+  assert.throws(() => validateTask(task({ user_prompt: "  " })), /user_prompt is empty/);
+});
+test("the same task id in two files is rejected", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-dup-"));
+  try {
+    const f = (n) => { const p = join(dir, n); writeFileSync(p, JSON.stringify({ scenarios: [task({ id: "SAME" })] })); return p; };
+    assert.throws(() => loadTasks([f("a.json"), f("b.json")]), /duplicate task id SAME/);
+    assert.equal(loadTasks([f("a.json")]).length, 1);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("duplicate pattern ids are rejected", () => {
+  const p = { id: "a", regex: "x" };
+  assert.throws(() => validateTask(task({ required_patterns: [p, p] })), /duplicate pattern id/);
+});
+
+// ---------- scoring ----------
+
+test("a screen with the expected component and nothing else wrong passes", () => {
+  const s = scoreSample(GOOD, task());
+  assert.equal(s.pass, true);
+  assert.equal(s.decision, true);
+});
+test("missing the expected component fails the decision", () => {
+  const s = scoreSample(`export default function A() { return <div />; }`, task());
+  assert.equal(s.pass, false);
+  assert.equal(s.decision, false);
+});
+test("an import named only in a comment does not count", () => {
+  const src = `// import { AlertDialog } from "@/components/ui/alert-dialog";\n/* from "@/components/ui/alert-dialog" */\nexport default () => <div />;`;
+  assert.equal(scoreSample(src, task()).decision, false);
+});
+test("a forbidden component fails even when the expected one is present", () => {
+  const src = GOOD + `\nimport { Dialog } from "@/components/ui/dialog";`;
+  const s = scoreSample(src, task({ forbidden_imports: ["dialog"] }));
+  assert.deepEqual(s.forbidden_imports, ["dialog"]);
+  assert.equal(s.pass, false);
+});
+test("forbidden dialog does not match alert-dialog", () => {
+  assert.equal(scoreSample(GOOD, task({ forbidden_imports: ["dialog"] })).pass, true);
+});
+test("expected and forbidden imports use the same rule, sonner's package import included", () => {
+  const src = `import { toast } from "sonner";\nexport default () => <div />;`;
+  assert.deepEqual(scoreSample(src, task({ expected_imports: [], forbidden_imports: ["sonner"], required_patterns: [{ id: "x", regex: "toast" }] })).forbidden_imports, ["sonner"]);
+  assert.equal(scoreSample(src, task({ expected_imports: ["sonner"] })).decision, true);
+  const deep = `import x from "sonner/dist";\nexport default () => <div />;`;
+  assert.equal(scoreSample(deep, task({ expected_imports: ["sonner"] })).decision, false, "a longer path is not the component");
+});
+test("sonner counts when imported from the package itself", () => {
+  const src = `import { toast } from "sonner";\nexport default () => <button onClick={() => toast("x")} />;`;
+  assert.equal(scoreSample(src, task({ expected_imports: ["sonner"] })).decision, true);
+});
+test("markup that does a component's job fails, even with the right import", () => {
+  const src = GOOD + `\nexport function X() { return <button onClick={() => window.confirm("sure?")}>Delete</button>; }`;
+  const s = scoreSample(src, task());
+  assert.ok(s.lookalike_hits.length > 0, "expected a lookalike hit");
+  assert.equal(s.pass, false);
+});
+test("required and forbidden patterns", () => {
+  const t = task({ required_patterns: [{ id: "sel", regex: "selected", flags: "i" }], forbidden_patterns: [{ id: "pie", regex: "PieChart" }] });
+  assert.deepEqual(scoreSample(GOOD, t).pattern_failures, ["missing:sel"]);
+  assert.deepEqual(scoreSample(GOOD + "\nconst l = '3 Selected';\n<PieChart/>", t).pattern_failures, ["forbidden:pie"]);
+  assert.equal(scoreSample(GOOD + "\nconst l = '3 selected';", t).pass, true);
+});
+test("stripComments removes comments and keeps text that only looks like one", () => {
+  const keep = (src) => assert.equal(stripComments(src), src, src);
+  const gone = (src, left) => assert.equal(stripComments(src).replace(/\s+/g, " ").trim(), left, src);
+  // comments
+  gone("// from \"x\"\nconst a = 1;", "const a = 1;");
+  gone("const a = 1; // note", "const a = 1;");
+  gone("foo(); // note\nbar();", "foo(); bar();");
+  gone("<A/> {/* from \"x\" */}", "<A/> { }");
+  gone("/* a\nb */ code", "code");
+  gone("const s = \"a\"// note", 'const s = "a"');
+  // text that only looks like a comment
+  keep("<p>Press // to search</p> <Input aria-invalid />");
+  keep("const u = 'http://example.com';");
+  keep("const g = \"components/*\"; const h = 1; const z = '*/';");
+  keep("className=\"a // b\"");
+  keep("const t = `a // b ${c} /* d */`;");
+  // an unclosed /* inside a line comment must not swallow the code after it
+  gone("// see /* below\nimport { A } from \"@/components/ui/alert\";", 'import { A } from "@/components/ui/alert";');
+  // an apostrophe in JSX text is not a string, so a real comment after it is still removed
+  gone("<p>Don't</p> {/* from \"@/components/ui/table\" */}", "<p>Don't</p> { }");
+  // an unterminated block comment drops the rest instead of throwing
+  gone("code; /* never closed", "code;");
+  // a /* in JSX text must not start a comment and swallow the code after it
+  keep("<p>See src/* for details</p>\nimport { Select } from '@/components/ui/select';");
+  gone("foo(/* c */ 1)", "foo( 1)");
+  gone("const x = /* c */ 1;", "const x = 1;");
+  gone("const o = { /* c */ a: 1 };", "const o = { a: 1 };");
+  keep("a = b /* kept: after a plain word */ ;");
+  keep("<p>\n  Press // to search</p>"); // the line closes a tag, so the // is text
+  assert.equal(stripComments(""), "");
+});
+test("an import after JSX text containing /* is still found", () => {
+  const src = `export const A = () => <p>See src/* for details</p>;\nimport { AlertDialog } from "@/components/ui/alert-dialog";\n`;
+  assert.equal(scoreSample(src, task()).decision, true);
+});
+test("a required pattern still matches next to text that looks like a comment", () => {
+  const t = task({ required_patterns: [{ id: "inv", regex: "aria-invalid" }] });
+  assert.deepEqual(scoreSample(GOOD + "\nconst x = <><p>Press // to search</p> <Input aria-invalid /></>;", t).pattern_failures, []);
+});
+test("a component named in a comment after a quote does not count as imported", () => {
+  const src = `const a = "a"// import { AlertDialog } from "@/components/ui/alert-dialog";\nexport default () => <div />;`;
+  assert.equal(scoreSample(src, task()).decision, false);
+});
+test("a pattern in a comment does not satisfy a required pattern", () => {
+  const t = task({ required_patterns: [{ id: "sel", regex: "selected" }] });
+  assert.deepEqual(scoreSample(GOOD + "\n// selected\n/* selected */", t).pattern_failures, ["missing:sel"]);
+});
+test("detector findings are recorded but do not decide the pass", () => {
+  const s = scoreSample(GOOD + `\nconst c = <div className="h-screen" />;`, task());
+  assert.ok(s.detector_findings.includes("DS-LAYOUT-001"));
+  assert.equal(s.pass, true);
+});
+
+// ---------- summary and comparison ----------
+
+const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], truncated: false, cost_unknown: false, model_mismatch: false, served_models: ["m"], cost_usd: 0.01, duration_ms: 1000, ...o });
+
+test("an errored sample counts as an attempt that failed", () => {
+  const s = summarize([row(), row({ sample: 2, pass: false, decision: false, error: "boom" })]);
+  assert.equal(s.on.samples, 2);
+  assert.equal(s.on.errors, 1);
+  assert.equal(s.on.pass_rate, 0.5);
+});
+test("summarize keeps conditions apart and sums cost", () => {
+  const s = summarize([row(), row({ condition: "off", pass: false, decision: false, cost_usd: 0.5 })]);
+  assert.equal(s.on.pass_rate, 1);
+  assert.equal(s.off.pass_rate, 0);
+  assert.equal(s.off.cost_usd, 0.5);
+});
+
+const run = (model, passes, extra = {}) => ({
+  model, samples_per_task: 1,
+  results: passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p })),
+  ...extra,
+});
+test("compareRuns flags a drop of more than the threshold on shared tasks", () => {
+  const prev = run("m", [true, true, true, true, true, true, true, true, true, true]);
+  const next = run("m", [true, true, true, true, true, true, true, false, false, false]);
+  assert.equal(compareRuns(prev, next).status, "regressed");
+});
+test("a drop of exactly the threshold is allowed", () => {
+  const prev = run("m", Array(10).fill(true));
+  const next = run("m", [...Array(9).fill(true), false]);
+  assert.equal(compareRuns(prev, next).status, "ok");
+});
+test("a drop of exactly the threshold is allowed even where floating point says 0.7 < 0.7000000000000001", () => {
+  const prev = run("m", [...Array(8).fill(true), false, false]);
+  const next = run("m", [...Array(7).fill(true), ...Array(3).fill(false)]);
+  assert.equal(compareRuns(prev, next).status, "ok");
+  const worse = run("m", [...Array(6).fill(true), ...Array(4).fill(false)]);
+  assert.equal(compareRuns(prev, worse).status, "regressed");
+});
+test("compareRuns does not compare across models or with too few shared tasks", () => {
+  assert.equal(compareRuns(run("a", Array(10).fill(true)), run("b", Array(10).fill(false))).status, "skipped");
+  assert.equal(compareRuns(run("a", [true, true]), run("a", [false, false])).status, "skipped");
+});
+test("only tasks both runs contain are compared", () => {
+  const prev = run("m", Array(6).fill(true));
+  const next = run("m", Array(6).fill(true));
+  next.results.push(row({ task: "NEW-1", pass: false, decision: false }));
+  assert.equal(compareRuns(prev, next).status, "ok");
+});
+
+// ---------- results file checks ----------
+
+function validRun() {
+  const results = [row(), row({ sample: 2 }), row({ condition: "off", pass: false, decision: false }), row({ condition: "off", sample: 2, pass: false, decision: false })];
+  return { schema: "vois-eval-results/1", date: "2026-10-26", created_at: "2026-10-26T10:00:00.000Z", model: "m", smoke: false, full: false, git_dirty: false, isolation: ["x"], skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
+    conditions: ["on", "off"], tasks: ["T-1"], results, summary: summarize(results) };
+}
+test("a well-formed run validates", () => assert.deepEqual(validateRun(validRun()), []));
+test("a summary that disagrees with the results is rejected", () => {
+  const r = validRun(); r.summary.on.pass_rate = 1; r.results[0].pass = false; r.results[0].decision = false;
+  assert.match(validateRun(r).join("\n"), /summary does not match/);
+});
+test("a summary written with its keys in another order is accepted", () => {
+  const r = validRun();
+  r.summary = Object.fromEntries(Object.entries(r.summary).map(([k, v]) => [k, Object.fromEntries(Object.entries(v).reverse())]));
+  assert.deepEqual(validateRun(r), []);
+});
+test("a trimmed file that hides a failing sample is rejected", () => {
+  const r = validRun(); r.results.pop(); r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /missing sample T-1\|off\|2/);
+});
+test("duplicate samples, unknown tasks and unlisted conditions are rejected", () => {
+  let r = validRun(); r.results[1].sample = 1;
+  assert.match(validateRun(r).join("\n"), /duplicate sample/);
+  r = validRun(); r.results[0].task = "OTHER";
+  assert.match(validateRun(r).join("\n"), /not in tasks/);
+  r = validRun(); r.conditions = ["on"];
+  assert.match(validateRun(r).join("\n"), /condition the header does not list/);
+});
+test("a flag flipped by hand cannot hide a failure", () => {
+  for (const [field, value] of [["pattern_failures", ["missing:x"]], ["forbidden_imports", ["dialog"]], ["lookalike_hits", ["fake-button"]]]) {
+    const r = validRun(); r.results[0][field] = value; r.summary = summarize(r.results);
+    assert.match(validateRun(r).join("\n"), /marked as/, field);
+  }
+  const r = validRun(); r.results[0].decision = false; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /wrong decision/);
+});
+test("a failing sample still cannot claim a correct decision while importing a forbidden component", () => {
+  const r = validRun(); Object.assign(r.results[2], { decision: true, forbidden_imports: ["dialog"] }); r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /correct decision with forbidden imports/);
+});
+test("a run must say how it was isolated, and the runner records its settings", async () => {
+  const r = validRun(); delete r.isolation;
+  assert.match(validateRun(r).join("\n"), /isolation/);
+  assert.ok(ISOLATION.includes("strict-mcp-config") && ISOLATION.includes("user-memory:not-controlled"));
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-iso-"));
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", join(dir, "r.json")], {
+      invoke: async () => ({ result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", cost_usd: 0, duration_ms: 1, turns: 1, models: ["m"] }), log: () => {},
+    });
+    assert.deepEqual(res.run.isolation, ISOLATION);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("a null result, an empty error and a missing git_dirty are rejected, not crashed on", () => {
+  let r = validRun(); r.results.push(null);
+  assert.match(validateRun(r).join("\n"), /not an object/);
+  r = validRun(); r.results[2].error = ""; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /error must be a non-empty string/);
+  r = validRun(); delete r.git_dirty;
+  assert.match(validateRun(r).join("\n"), /git_dirty/);
+});
+test("an errored or lookalike-ridden sample cannot be marked as passing", () => {
+  let r = validRun(); r.results[0].error = "x"; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /errored sample cannot be marked as passing/);
+  r = validRun(); r.results[0].lookalike_hits = ["fake-button"]; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /lookalike hits/);
+});
+test("wrong schema, null and missing fields are rejected", () => {
+  assert.ok(validateRun(null).length);
+  const r = validRun(); r.schema = "other"; delete r.model;
+  assert.match(validateRun(r).join("\n"), /schema is/);
+});
+test("the committed results directory passes the checker", () => {
+  execFileSync("node", [join(REPO, "vois-eval/check-results.mjs")], { stdio: "pipe" });
+});
+test("the checker exits non-zero for a regression in a directory of results", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-res-"));
+  try {
+    const mk = (date, passes) => {
+      const results = passes.flatMap((p, i) => [row({ task: `T-${i + 1}`, pass: p, decision: p }), row({ task: `T-${i + 1}`, condition: "off", pass: false, decision: false })]);
+      return { schema: "vois-eval-results/1", date, created_at: `${date}T10:00:00.000Z`, model: "m", smoke: false, full: true, git_dirty: false, isolation: ["x"], skills: { a: "1" }, samples_per_task: 1,
+        conditions: ["on", "off"], tasks: [...new Set(results.map((r) => r.task))], results, summary: summarize(results) };
+    };
+    const w = (n, o) => writeFileSync(join(dir, n), JSON.stringify(o));
+    w("2026-10-01-m.json", mk("2026-10-01", Array(10).fill(true)));
+    w("2026-10-20-m.json", mk("2026-10-20", [...Array(6).fill(true), ...Array(4).fill(false)]));
+    assert.throws(() => execFileSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { stdio: "pipe" }), (e) => e.status === 1 && /fell from 1 to 0.6/.test(e.stderr.toString()));
+    w("2026-10-30-m-smoke.json", { ...mk("2026-10-30", [false, false, false, false, false]), smoke: true });
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------- the run loop, with the model stubbed ----------
+
+test("parseArgs rejects what would silently produce a bad run", () => {
+  assert.throws(() => parseArgs(["--samples", "0", "--model", "m"]), /whole number/);
+  assert.throws(() => parseArgs(["--samples", "2.5", "--model", "m"]), /whole number/);
+  assert.throws(() => parseArgs(["--condition", "maybe", "--model", "m"]), /on, off or both/);
+  assert.throws(() => parseArgs(["--nope", "x"]), /unknown option/);
+  assert.throws(() => parseArgs(["--model"]), /needs a value/);
+  assert.throws(() => parseArgs(["--model", "--smoke"]), /needs a value/);
+  assert.throws(() => parseArgs([]), /--model is required/);
+  assert.throws(() => parseArgs(["--model", "m", "--budget", "0"]), /more than 0/);
+  assert.equal(parseArgs(["--dry-run"]).dryrun, true);
+});
+test("buildPlan expands tasks x conditions x samples and rejects unknown ids", () => {
+  const tasks = loadTasks();
+  const o = parseArgs(["--model", "m", "--tasks", "DT-01,DT-02", "--samples", "3"]);
+  assert.equal(buildPlan(tasks, o).length, 2 * 2 * 3);
+  assert.equal(buildPlan(tasks, parseArgs(["--model", "m", "--tasks", "DT-01", "--condition", "on", "--samples", "1"])).length, 1);
+  assert.throws(() => buildPlan(tasks, parseArgs(["--model", "m", "--tasks", "DT-99"])), /unknown task id/);
+});
+test("a dollar sign sequence in a prompt is kept literally", () => {
+  const p = renderPrompt("off", { user_prompt: "It costs $& and $' and $$ and $`." });
+  assert.ok(p.includes("It costs $& and $' and $$ and $`."), p);
+  assert.doesNotMatch(p, /\{\{/);
+});
+test("an empty task selection is rejected instead of running nothing or everything", () => {
+  const tasks = loadTasks();
+  assert.throws(() => buildPlan(tasks, parseArgs(["--model", "m", "--tasks", ","])), /names no task/);
+  assert.throws(() => parseArgs(["--model", "m", "--tasks", ""]), /needs a value/);
+  assert.throws(() => parseArgs(["--model", "m", "--tasks", "  "]), /needs a value/);
+});
+test("outsideAccess lists file-tool paths outside the run directory and ignores the inside", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-out-"));
+  try {
+    const uses = [
+      { name: "Read", input: { file_path: join(dir, "skills/a/SKILL.md") } },
+      { name: "Read", input: { file_path: "./out.tsx" } },
+      { name: "Glob", input: { pattern: "skills/**/SKILL.md" } },
+      { name: "Grep", input: { pattern: "/etc/passwd|\\.claude", path: "." } },
+      { name: "Read", input: { file_path: "/home/u/.claude/skills/vois-tokens/SKILL.md" } },
+      { name: "Glob", input: { pattern: "/home/u/.claude/skills/**" } },
+      { name: "Read", input: { file_path: join(dir, "..", "elsewhere", "x") } },
+      { name: "Read", input: { file_path: dir + "-sibling/x" } },
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:/home/u/.claude/skills/**", "Read:/home/u/.claude/skills/vois-tokens/SKILL.md", `Read:${dir}-sibling/x`, `Read:${join(dir, "..", "elsewhere", "x")}`,
+    ].sort());
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("outsideAccess treats ~ as the home directory and looks at Grep's glob", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-home-"));
+  try {
+    const uses = [
+      { name: "Read", input: { file_path: "~/.claude/skills/vois-tokens/SKILL.md" } },
+      { name: "Glob", input: { pattern: "~/.claude/**" } },
+      { name: "Read", input: { file_path: "~" } },
+      { name: "Grep", input: { pattern: "x", path: ".", glob: "../../**/SKILL.md" } },
+      { name: "Grep", input: { pattern: "x", path: ".", glob: "*.tsx" } },
+      { name: "Read", input: { glob: "../../x" } }, // only Grep has a glob input
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:~/.claude/**", "Grep:../../**/SKILL.md", "Read:~", "Read:~/.claude/skills/vois-tokens/SKILL.md",
+    ]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("expandBraces lists alternatives, nested ones too, and leaves other text alone", () => {
+  assert.deepEqual(expandBraces("a/b"), ["a/b"]);
+  assert.deepEqual(expandBraces("{a,b}/x"), ["a/x", "b/x"]);
+  assert.deepEqual(expandBraces("{/home/u/.claude,/etc}/skills/**"), ["/home/u/.claude/skills/**", "/etc/skills/**"]);
+  assert.deepEqual(expandBraces("x/{a,{b,c}}/y").sort(), ["x/a/y", "x/b/y", "x/c/y"]);
+  assert.deepEqual(expandBraces("a{b"), ["a{b"], "an unclosed brace is literal text");
+  assert.deepEqual(expandBraces("{}"), [""], "an empty brace has one empty alternative");
+  assert.ok(expandBraces("{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}").length > 64, "past the cap it stops and reports more than the cap");
+});
+test("outsideAccess checks every brace alternative and treats ~name as outside", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-brace-"));
+  try {
+    const uses = [
+      { name: "Glob", input: { pattern: "{/home/u/.claude,/etc}/skills/**" } },
+      { name: "Glob", input: { pattern: "{skills,references}/**/*.md" } }, // both inside
+      { name: "Glob", input: { pattern: "src/{a,{b,../../c}}.tsx" } },
+      { name: "Read", input: { file_path: "~root/.claude/skills/x/SKILL.md" } },
+      { name: "Read", input: { file_path: "~/.claude/skills/x/SKILL.md" } },
+      { name: "Glob", input: { pattern: "{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}" } }, // too many to check: outside
+      { name: "Glob", input: { pattern: "src/{a,b}.tsx" } },
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:src/{a,{b,../../c}}.tsx", "Glob:{/home/u/.claude,/etc}/skills/**", "Glob:{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}",
+      "Read:~/.claude/skills/x/SKILL.md", "Read:~root/.claude/skills/x/SKILL.md",
+    ].sort());
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("the two conditions get different prompts and only 'on' points at the skills", () => {
+  const t = { user_prompt: "Do X." };
+  assert.match(renderPrompt("on", t), /\.\/skills\//);
+  assert.doesNotMatch(renderPrompt("off", t), /\.\/skills\//);
+  assert.match(renderPrompt("off", t), /Do not invoke any skill/);
+  assert.match(renderPrompt("on", t), /Do X\./);
+  assert.doesNotMatch(renderPrompt("on", t), /\{\{/);
+});
+test("extractCode prefers the written file, falls back to a code block, else null", () => {
+  assert.equal(extractCode("file", "```tsx\nblock\n```"), "file");
+  assert.equal(extractCode("", "```tsx\nblock\n```"), "block\n");
+  assert.equal(extractCode("  \n", "no code"), null);
+});
+
+test("main runs the plan, scores each sample, and writes a results file the checker accepts", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-main-"));
+  const out = join(dir, "r.json");
+  const calls = [];
+  const invoke = async ({ prompt, cwd }) => {
+    calls.push({ prompt, skills: existsSync(join(cwd, "skills", "vois-tokens", "SKILL.md")) });
+    return { result: "```tsx\nimport { Dialog } from \"@/components/ui/dialog\";\nexport default () => <Dialog/>;\n```", cost_usd: 0.02, duration_ms: 5, turns: 1, models: ["m"] };
+  };
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--samples", "2", "--out", out], { invoke, log: () => {} });
+    assert.equal(calls.length, 4);
+    assert.deepEqual(calls.filter((c) => c.skills).length, 2, "skills are copied in only for the 'on' condition");
+    assert.equal(res.run.results.length, 4);
+    assert.ok(res.run.results.every((r) => r.pass === false && r.forbidden_imports.includes("dialog")));
+    assert.deepEqual(validateRun(JSON.parse(readFileSync(out, "utf8"))), []);
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out], { invoke, log: () => {} }), /already exists/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a model error or an empty answer becomes a failed, flagged sample and never a pass", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-err-"));
+  const answers = [{ error: "claude reported an error: overloaded" }, { result: "I could not do that." }];
+  let i = 0;
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "2", "--out", join(dir, "r.json")], { invoke: async () => answers[i++], log: () => {} });
+    assert.ok(res.run.results.every((r) => r.pass === false && r.error));
+    assert.equal(res.run.summary.on.errors, 2);
+    assert.equal(res.run.summary.on.pass_rate, 0);
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a dry run calls nothing and writes nothing", async () => {
+  let called = false;
+  const res = await main(["--dry-run", "--tasks", "DT-01"], { invoke: async () => { called = true; }, log: () => {} });
+  assert.equal(called, false);
+  assert.equal(res, null);
+});
+
+test("a sample that throws becomes an error row and the other samples still run", async () => {
+  const t = loadTasks().find((x) => x.id === "DT-04");
+  const o = parseArgs(["--model", "m"]);
+  const boom = await runSample({ task: t, condition: "off", sample: 1 }, o, async () => { throw new Error("disk full"); });
+  assert.equal(boom.pass, false);
+  assert.match(boom.error, /runner error: disk full/);
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-throw-"));
+  let n = 0;
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "3", "--out", join(dir, "r.json")], {
+      invoke: async () => { if (++n === 2) throw new Error("boom"); return { result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", cost_usd: 0.01, duration_ms: 1, turns: 1, models: ["m"] }; },
+      log: () => {},
+    });
+    assert.deepEqual(res.run.results.map((r) => r.pass), [true, false, true]);
+    assert.equal(res.run.summary.on.errors, 1);
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a results file that already exists stops the run before any model call is made", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-exists-"));
+  const out = join(dir, "r.json");
+  writeFileSync(out, "{}");
+  let called = 0;
+  try {
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out], { invoke: async () => { called++; return {}; }, log: () => {} }), /already exists/);
+    assert.equal(called, 0);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("file access outside the run directory is recorded on the sample", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-leak-"));
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "off", "--samples", "1", "--out", join(dir, "r.json")], {
+      invoke: async () => ({ result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", tool_uses: [{ name: "Read", input: { file_path: "/root/.claude/skills/x/SKILL.md" } }], cost_usd: 0, duration_ms: 1, turns: 2, models: ["m"] }),
+      log: () => {},
+    });
+    assert.deepEqual(res.run.results[0].outside_cwd_access, ["Read:/root/.claude/skills/x/SKILL.md"]);
+    assert.equal(res.run.summary.off.outside_access, 1);
+    assert.equal(typeof res.run.git_dirty, "boolean");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("copySkills copies from a checkout that sits under node_modules and leaves nested node_modules out", () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-nm-"));
+  try {
+    const repo = join(root, "node_modules", "some-pkg", "skills-checkout");
+    for (const n of ["a", "b"]) {
+      mkdirSync(join(repo, n, "references"), { recursive: true });
+      mkdirSync(join(repo, n, "node_modules", "dep"), { recursive: true });
+      writeFileSync(join(repo, n, "SKILL.md"), `# ${n}`);
+      writeFileSync(join(repo, n, "references", "x.md"), "x");
+      writeFileSync(join(repo, n, "node_modules", "dep", "index.js"), "1");
+    }
+    const dest = join(root, "run");
+    copySkills(dest, repo, ["a", "b"]);
+    assert.ok(existsSync(join(dest, "skills", "a", "SKILL.md")));
+    assert.ok(existsSync(join(dest, "skills", "b", "references", "x.md")));
+    assert.equal(existsSync(join(dest, "skills", "a", "node_modules")), false);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+test("copySkills throws when a skill has no SKILL.md or does not exist", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-nomd-"));
+  try {
+    mkdirSync(join(root, "repo", "a"), { recursive: true });
+    assert.throws(() => copySkills(join(root, "run"), join(root, "repo"), ["a"]), /SKILL.md is missing/);
+    assert.throws(() => copySkills(join(root, "run2"), join(root, "repo"), ["nope"]));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- the CLI boundary, with a stand-in for `claude` ----------
+
+const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
+const tsx = (name) => `import { ${name} } from "@/components/ui/drawer";\nexport default () => <${name}/>;`;
+const resultEvent = (o = {}) => ({ type: "result", subtype: "success", is_error: false, result: "done", total_cost_usd: 0.05, duration_ms: 12, num_turns: 3, modelUsage: { m: {} }, ...o });
+async function viaFake(cfg, extra = {}) {
+  process.env.FAKE_CLAUDE = JSON.stringify(cfg);
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-fake-"));
+  try {
+    const r = await invokeClaude({ prompt: "p", cwd: dir, model: "m", maxTurns: 5, budget: 1, bin: FAKE, ...extra });
+    return { r, argv: existsSync(join(dir, "argv.json")) ? JSON.parse(readFileSync(join(dir, "argv.json"), "utf8")) : null };
+  } finally { delete process.env.FAKE_CLAUDE; rmSync(dir, { recursive: true, force: true }); }
+}
+const rowFrom = (invokeResult, task) => runSample({ task, condition: "off", sample: 1 }, parseArgs(["--model", "m"]), async ({ cwd }) => {
+  if (invokeResult.writeFile) writeFileSync(join(cwd, "out.tsx"), invokeResult.writeFile);
+  return invokeResult.r;
+});
+
+test("the CLI is started with the isolation flags", async () => {
+  const { argv } = await viaFake({ events: [resultEvent()] });
+  for (const flag of ["--strict-mcp-config", "--no-session-persistence", "--verbose"]) assert.ok(argv.includes(flag), flag);
+  assert.equal(argv[argv.indexOf("--setting-sources") + 1], "project");
+  assert.equal(argv[argv.indexOf("--tools") + 1], "Read,Write,Glob,Grep");
+  assert.equal(argv[argv.indexOf("--output-format") + 1], "stream-json");
+  assert.equal(argv[argv.indexOf("--model") + 1], "m");
+});
+test("stream events are parsed: result, models, cost and the tool calls", async () => {
+  const events = [
+    { type: "assistant", message: { content: [{ type: "text", text: "hi" }, { type: "tool_use", name: "Read", input: { file_path: "./skills/a/SKILL.md" } }] } },
+    resultEvent({ total_cost_usd: 0.07, modelUsage: { "claude-x": {} } }),
+  ];
+  const { r } = await viaFake({ events });
+  assert.equal(r.error, undefined);
+  assert.equal(r.cost_usd, 0.07);
+  assert.deepEqual(r.models, ["claude-x"]);
+  assert.deepEqual(r.tool_uses.map((u) => u.name), ["Read"]);
+  assert.equal(r.truncated, false);
+});
+test("a run that hits the turn or budget limit is scored on the screen it wrote, flagged, and not an error", async () => {
+  for (const subtype of ["error_max_turns", "error_max_budget_usd"]) {
+    const { r } = await viaFake({ events: [resultEvent({ subtype, is_error: true, result: "stopped" })] });
+    assert.equal(r.truncated, true, subtype);
+    assert.equal(r.error, undefined, subtype);
+    assert.equal(r.stop_reason, subtype);
+    const row = await rowFrom({ r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+    assert.equal(row.pass, true, subtype);
+    assert.equal(row.truncated, true);
+    assert.equal(row.error, undefined);
+    assert.equal(row.stop_reason, subtype);
+  }
+});
+test("a truncated run with no screen written is an error row that still says it was truncated", async () => {
+  const { r } = await viaFake({ events: [resultEvent({ subtype: "error_max_turns", is_error: true })] });
+  const row = await rowFrom({ r }, task());
+  assert.equal(row.pass, false);
+  assert.match(row.error, /wrote no/);
+  assert.equal(row.truncated, true);
+});
+test("any other stop or error is an error row, even if a file was written", async () => {
+  for (const ev of [resultEvent({ subtype: "error_during_execution", is_error: true, result: "boom" }), resultEvent({ is_error: true, result: "overloaded" }), resultEvent({ subtype: "error_during_execution", is_error: false, result: "odd" })]) {
+    const { r } = await viaFake({ events: [ev] });
+    assert.match(r.error, /claude stopped/);
+    const row = await rowFrom({ r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+    assert.equal(row.pass, false);
+    assert.ok(row.error);
+  }
+});
+test("a timeout is scored on the screen that was written, flagged, with the cost marked unknown", async () => {
+  const slow = await viaFake({ sleepMs: 5000 }, { timeoutMs: 300 });
+  assert.equal(slow.r.error, undefined);
+  assert.equal(slow.r.truncated, true);
+  assert.equal(slow.r.stop_reason, "timeout");
+  assert.equal(slow.r.cost_unknown, true);
+  const done = await rowFrom({ r: slow.r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+  assert.equal(done.pass, true, "a whole screen written before the hang is scored");
+  assert.equal(done.truncated, true);
+  assert.equal(done.cost_unknown, true);
+  assert.equal(done.stop_reason, "timeout");
+  const empty = await rowFrom({ r: slow.r }, task());
+  assert.equal(empty.pass, false);
+  assert.match(empty.error, /wrote no/);
+  assert.equal(empty.cost_unknown, true);
+  // the checker accepts both rows: a timeout counts as truncated, so stop_reason and the flag agree
+  const results = [{ ...done, condition: "on", sample: 1 }, { ...empty, condition: "on", sample: 2 }].map((r) => ({ ...r, task: "T-1" }));
+  const file = { ...validRun(), results, tasks: ["T-1"], samples_per_task: 2, conditions: ["on"], full: false, summary: summarize(results) };
+  assert.deepEqual(validateRun(file), []);
+});
+test("a missing result event without a timeout is still an error with the cost marked unknown", async () => {
+  const none = await viaFake({ events: [{ type: "assistant", message: { content: [] } }] });
+  assert.match(none.r.error, /no result event/);
+  assert.equal(none.r.cost_unknown, true);
+  const row = await rowFrom({ r: none.r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+  assert.equal(row.pass, false);
+  assert.ok(row.error);
+});
+test("truncated and unknown-cost samples are counted in the summary and need valid flags in the file", () => {
+  const results = [row({ truncated: true, stop_reason: "error_max_turns" }), row({ sample: 2, cost_unknown: true, pass: false, decision: false, error: "timed out" })];
+  const s = summarize(results);
+  assert.equal(s.on.truncated, 1);
+  assert.equal(s.on.cost_unknown, 1);
+  const r = { ...validRun(), results, tasks: ["T-1"], samples_per_task: 2, conditions: ["on"], summary: s };
+  assert.deepEqual(validateRun(r), []);
+  const bad = structuredClone(r); bad.results[0].truncated = "yes"; bad.summary = s;
+  assert.match(validateRun(bad).join("\n"), /truncated and cost_unknown must be true or false/);
+  const bad2 = structuredClone(r); bad2.results[0].stop_reason = ""; 
+  assert.match(validateRun(bad2).join("\n"), /stop_reason must be a non-empty string/);
+});
+
+test("a sample answered by another model is flagged, summarised, and blocks the comparison", async () => {
+  const t = loadTasks().find((x) => x.id === "DT-04");
+  const o = parseArgs(["--model", "claude-a"]);
+  const swapped = await runSample({ task: t, condition: "on", sample: 1 }, o, async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["claude-b"], cost_usd: 0, duration_ms: 1, turns: 1 }));
+  assert.equal(swapped.model_mismatch, true);
+  const same = await runSample({ task: t, condition: "on", sample: 1 }, o, async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["claude-a"], cost_usd: 0, duration_ms: 1, turns: 1 }));
+  assert.equal(same.model_mismatch, false);
+  assert.equal(summarize([swapped, { ...same, sample: 2 }]).on.model_mismatch, 1);
+  const prev = run("m", Array(10).fill(true));
+  const next = run("m", Array(10).fill(false));
+  next.results[0].model_mismatch = true;
+  assert.equal(compareRuns(prev, next).status, "skipped");
+  assert.match(compareRuns(prev, next).reason, /different model/);
+  assert.equal(compareRuns(prev, run("m", Array(10).fill(false))).status, "regressed", "without the mismatch the same drop is a regression");
+});
+test("the checker catches a model_mismatch flag that disagrees with served_models", () => {
+  let r = validRun(); r.results[0].served_models = ["other"]; r.results[0].model_mismatch = false; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /model_mismatch does not match/);
+  r = validRun(); r.results[0].served_models = ["other"]; r.results[0].model_mismatch = true; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r = validRun(); r.results[0].served_models = "m"; 
+  assert.match(validateRun(r).join("\n"), /served_models must be a list/);
+  r = validRun(); delete r.results[0].model_mismatch;
+  assert.match(validateRun(r).join("\n"), /model_mismatch must be true or false/);
+});
+
+// ---------- which runs get compared ----------
+
+const mkRun = (model, created, passes, extra = {}) => {
+  const results = passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p, served_models: [model] }));
+  const date = created.slice(0, 10);
+  return { schema: "vois-eval-results/1", date, created_at: created, model, smoke: false, full: true, git_dirty: false, isolation: ["x"], skills: { a: "1" },
+    samples_per_task: 1, conditions: ["on"], tasks: results.map((r) => r.task), results, summary: summarize(results), ...extra };
+};
+const entry = (f, run) => ({ f, run });
+const ten = (v) => Array(10).fill(v);
+
+test("a regression is found even when another model's run sits between the two runs of the same model", () => {
+  const runs = [
+    entry("a.json", mkRun("sonnet", "2026-10-01T10:00:00.000Z", ten(true))),
+    entry("b.json", mkRun("haiku", "2026-10-02T10:00:00.000Z", ten(true))),
+    entry("c.json", mkRun("sonnet", "2026-10-03T10:00:00.000Z", [...Array(7).fill(true), ...Array(3).fill(false)])),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].cmp.status, "regressed");
+  assert.equal(cmps[0].next.f, "c.json");
+});
+test("each model is compared with its own previous run", () => {
+  const runs = [
+    entry("a.json", mkRun("sonnet", "2026-10-01T10:00:00.000Z", ten(true))), entry("b.json", mkRun("sonnet", "2026-10-02T10:00:00.000Z", ten(true))),
+    entry("c.json", mkRun("haiku", "2026-10-01T10:00:00.000Z", ten(true))), entry("d.json", mkRun("haiku", "2026-10-02T10:00:00.000Z", ten(false))),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.deepEqual(cmps.map((c) => [c.next.run.model, c.cmp.status]).sort(), [["haiku", "regressed"], ["sonnet", "ok"]]);
+});
+test("a partial run without --smoke is kept but never becomes the baseline", () => {
+  const runs = [
+    entry("a.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true))),
+    entry("b.json", mkRun("m", "2026-10-02T10:00:00.000Z", [true, true], { full: false })),
+    entry("c.json", mkRun("m", "2026-10-03T10:00:00.000Z", ten(false))),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].prev.f, "a.json");
+  assert.equal(cmps[0].cmp.status, "regressed");
+});
+test("smoke runs are never compared, and order comes from created_at, not the file name", () => {
+  // "...-m-2.json" sorts before "...-m.json" by name, but it was made later.
+  const runs = [
+    entry("2026-10-01-m.json", mkRun("m", "2026-10-01T09:00:00.000Z", ten(true))),
+    entry("2026-10-01-m-2.json", mkRun("m", "2026-10-01T15:00:00.000Z", ten(false))),
+    entry("smoke.json", mkRun("m", "2026-10-02T10:00:00.000Z", ten(true), { smoke: true, full: false })),
+  ];
+  const cmps = compareLatestPerModel(runs);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].prev.f, "2026-10-01-m.json");
+  assert.equal(cmps[0].next.f, "2026-10-01-m-2.json");
+  assert.equal(cmps[0].cmp.status, "regressed");
+});
+test("a smoke run is not full: the file check refuses a run that is both", () => {
+  const r = mkRun("m", "2026-10-01T09:00:00.000Z", ten(true), { smoke: true });
+  assert.match(validateRun(r).join("\n"), /both full and smoke/);
+});
+test("runs with different samples per task are not compared", () => {
+  const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true));
+  const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(false), { samples_per_task: 3 });
+  assert.match(compareRuns(a, b).reason, /samples per task changed/);
+});
+test("full, created_at and conditions are validated in the file", () => {
+  let r = validRun(); delete r.full;
+  assert.match(validateRun(r).join("\n"), /full must be true or false/);
+  r = validRun(); r.full = true; r.smoke = true;
+  assert.match(validateRun(r).join("\n"), /both full and smoke/);
+  r = validRun(); r.full = true; r.conditions = ["on"]; r.results = r.results.filter((x) => x.condition === "on"); r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /full run must cover both conditions/);
+  r = validRun(); r.created_at = "2026-10-27T10:00:00.000Z";
+  assert.match(validateRun(r).join("\n"), /created_at/);
+  r = validRun(); r.created_at = "soon";
+  assert.match(validateRun(r).join("\n"), /created_at/);
+});
+test("the runner marks only a complete default run as full", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-full-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    const go = (extra, name) => main(["--model", "m", "--samples", "1", "--out", join(dir, name), ...extra], { invoke, log: () => {}, now: () => new Date("2026-10-26T12:00:00Z") });
+    assert.equal((await go(["--tasks", "DT-04"], "a.json")).run.full, false);
+    assert.equal((await go(["--limit", "2"], "b.json")).run.full, false);
+    assert.equal((await go(["--tasks", "DT-04", "--smoke"], "c.json")).run.full, false);
+    assert.equal((await go(["--condition", "on", "--limit", "1"], "d.json")).run.full, false);
+    assert.equal((await go(["--condition", "on", "--tasks", "all"], "e.json")).run.full, false, "one condition only is not full");
+    const everything = await go([], "f.json");
+    assert.equal(everything.run.full, true);
+    assert.equal(everything.run.created_at, "2026-10-26T12:00:00.000Z");
+    assert.deepEqual(validateRun(everything.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------- where results are written ----------
+
+test("the result file name is safe, says what kind of run it is, and never takes an existing name", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-name-"));
+  try {
+    const base = { date: "2026-10-26", model: "claude-a", smoke: false, full: true };
+    assert.equal(resultStem(base), "2026-10-26-claude-a");
+    assert.equal(resultStem({ ...base, smoke: true, full: false }), "2026-10-26-claude-a-smoke");
+    assert.equal(resultStem({ ...base, full: false }), "2026-10-26-claude-a-partial");
+    assert.equal(resultStem({ ...base, model: "anthropic/claude-x" }), "2026-10-26-anthropic_claude-x");
+    assert.equal(resultStem({ ...base, model: "../../etc/x" }), "2026-10-26-.._.._etc_x");
+    assert.equal(writeResultFile(dir, base, "one"), join(dir, "2026-10-26-claude-a.json"));
+    assert.equal(writeResultFile(dir, base, "two"), join(dir, "2026-10-26-claude-a-2.json"));
+    assert.equal(writeResultFile(dir, base, "three"), join(dir, "2026-10-26-claude-a-3.json"));
+    assert.equal(readFileSync(join(dir, "2026-10-26-claude-a.json"), "utf8"), "one", "the first file is untouched");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("runs that finish at the same moment, in separate processes, each get their own file", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-race-"));
+  const runMjs = fileURLToPath(new URL("./run.mjs", import.meta.url));
+  const code = `import { writeResultFile } from ${JSON.stringify(runMjs)}; for (let i = 0; i < 20; i++) writeResultFile(process.argv[1], { date: "2026-10-26", model: "m", smoke: false, full: true }, process.argv[2] + ":" + i);`;
+  try {
+    await Promise.all(["a", "b", "c", "d", "e", "f"].map((who) => new Promise((res, rej) => execFile("node", ["--input-type=module", "-e", code, dir, who], (e) => (e ? rej(e) : res())))));
+    const files = readdirSync(dir);
+    assert.equal(files.length, 120, "every one of the 6 x 20 writes got a file of its own");
+    const bodies = files.map((f) => readFileSync(join(dir, f), "utf8"));
+    assert.equal(new Set(bodies).size, 120, "no file was overwritten");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("two runs on the same day never overwrite each other, and a model with a slash stays in the results folder", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-same-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["a/b"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  const go = (extra) => main(["--model", "a/b", "--samples", "1", ...extra], { invoke, log: () => {}, resultsDir: dir, now: () => new Date("2026-10-26T12:00:00Z") });
+  try {
+    const one = await go(["--tasks", "DT-04"]);
+    const two = await go(["--tasks", "DT-04"]);
+    const three = await go(["--tasks", "DT-01"]);
+    assert.notEqual(one.out, two.out);
+    assert.deepEqual([one.out, two.out, three.out].map((p) => p.slice(dir.length + 1)), ["2026-10-26-a_b-partial.json", "2026-10-26-a_b-partial-2.json", "2026-10-26-a_b-partial-3.json"]);
+    assert.ok([one.out, two.out, three.out].every((p) => existsSync(p) && p.startsWith(dir + "/") && !p.slice(dir.length + 1).includes("/")));
+    assert.equal(JSON.parse(readFileSync(one.out, "utf8")).tasks[0], "DT-04", "the first file is untouched");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("an explicit --out that exists is refused unless --force, and --force overwrites only that file", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-force-"));
+  const out = join(dir, "r.json");
+  writeFileSync(out, "old");
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out], { invoke, log: () => {}, resultsDir: dir }), /--force/);
+    assert.equal(readFileSync(out, "utf8"), "old");
+    await main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out, "--force"], { invoke, log: () => {}, resultsDir: dir });
+    assert.notEqual(readFileSync(out, "utf8"), "old");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------- the DT-01 patterns, from both sides ----------
+
+test("DT-01 empty-state patterns accept a real filtered empty state and reject code that only looks like one", () => {
+  const dt01 = loadTasks().find((t) => t.id === "DT-01");
+  const only = (src) => scoreSample(src, { ...dt01, expected_imports: [] }).pattern_failures.filter((f) => /empty-message|clear-filters/.test(f));
+  const good = `<p className="text-sm">No customers match your filters.</p>\n<Button onClick={clearFilters}>Clear filters</Button>`;
+  assert.deepEqual(only(good), []);
+  assert.deepEqual(only(`<p>{count} selected</p>\n<p>Nothing found for this search</p><Button>Reset all filters</Button>`), []);
+  assert.deepEqual(only(`toast("No rows match the filters"); const label = 'Clear filters';`), []);
+  // identifiers and comments are not visible text
+  assert.deepEqual(only(`const [search, setSearch] = useState("");\n// no results\nconst noMatch = rows.length === 0;\nclearFilters();`), ["missing:filtered-empty-message", "missing:clear-filters-label"]);
+  // an empty state that does not blame the filters, and a message with no way to clear them
+  assert.deepEqual(only(`<p>No customers yet.</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<p>No customers match your filters.</p>`), ["missing:clear-filters-label"]);
+  assert.deepEqual(only(`<p>{rows.length === 0 && "none"}</p>`), ["missing:filtered-empty-message", "missing:clear-filters-label"]);
+  // JSX text on its own line, as Prettier lays out a long paragraph
+  assert.deepEqual(only(`<p className="text-muted-foreground">\n  No tasks match your filters.\n</p>\n<Button>\n  Clear filters\n</Button>`), []);
+  assert.deepEqual(only(`<p>\n  Nothing found for this search\n</p><Button>Clear filters</Button>`), []);
+  // templated copy, and copy that names the filters without the word "no"
+  assert.deepEqual(only(`<p>No results for {query}. Try adjusting your search.</p><Button>Clear filters</Button>`), []);
+  assert.deepEqual(only(`<p>\n  No tasks found for this search{suffix}\n</p><Button>Clear filters</Button>`), [], "text, then a {expression}");
+  assert.deepEqual(only(`<p>\n  No tasks found{search ? " for that search" : ""}\n</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"], "the filter word is only inside an expression, so it is not visible text");
+  assert.deepEqual(only(`<p>Couldn't find any tasks matching those filters</p><Button>Clear filters</Button>`), []);
+  // an unfiltered empty state that only mentions search later is not a filtered empty state
+  assert.deepEqual(only(`<p>There are no tasks yet. Create one. Use search later.</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"]);
+  // a line of code is not text, even when it has the right words in it
+  assert.deepEqual(only(`if (no === search) {\n  return null;\n}\nconst x = noMatch;\nclear filters`), ["missing:filtered-empty-message"]);
+});
+
+// ---------- review follow-ups ----------
+
+test("a model reported with a context suffix, or next to a helper model, is not 'another model'", () => {
+  assert.equal(answeredByOtherModel(["claude-a[1m]"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a"], "claude-a[1m]"), false);
+  assert.equal(answeredByOtherModel(["claude-a", "claude-helper"], "claude-a"), false, "a helper next to the requested model is not a fallback");
+  assert.equal(answeredByOtherModel(["claude-b"], "claude-a"), true, "a fallback replaces the requested model");
+  assert.equal(answeredByOtherModel(["claude-b", "claude-c"], "claude-a"), true);
+  assert.equal(answeredByOtherModel(["claude-ab"], "claude-a"), true, "a name that merely starts the same is a different model");
+  assert.equal(answeredByOtherModel([], "claude-a"), false, "nothing reported is an error row, not a mismatch");
+  assert.equal(answeredByOtherModel(undefined, "claude-a"), false);
+});
+test("a mismatch is shown loudly, not as a quiet note", () => {
+  const prev = run("m", Array(10).fill(true));
+  const next = run("m", Array(10).fill(false)); next.results[0].model_mismatch = true;
+  const cmp = compareRuns(prev, next);
+  assert.equal(cmp.status, "skipped");
+  assert.equal(cmp.kind, "mismatch");
+  assert.equal(compareRuns(prev, run("other", Array(10).fill(false))).kind, undefined, "a plain model change is only a note");
+});
+test("a missing results directory is an error, not a pass", () => {
+  assert.throws(() => execFileSync("node", [join(REPO, "vois-eval/check-results.mjs"), join(tmpdir(), "vois-eval-no-such-dir")], { stdio: "pipe" }), (e) => e.status !== 0);
+});
+test("date and created_at come from the same moment, even for a run that crosses midnight", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-midnight-"));
+  const times = ["2026-10-26T23:40:00.000Z", "2026-10-27T00:20:00.000Z"];
+  let i = 0;
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", join(dir, "r.json")], { invoke, log: () => {}, now: () => new Date(times[Math.min(i++, 1)]) });
+    assert.equal(res.run.date, "2026-10-26");
+    assert.equal(res.run.created_at, "2026-10-26T23:40:00.000Z");
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("truncated must agree with stop_reason in the file", () => {
+  let r = validRun(); r.results[0].truncated = true; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /truncated must be true exactly when stop_reason is/);
+  r = validRun(); r.results[0].stop_reason = "error_max_turns"; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /truncated must be true exactly when stop_reason is/);
+  r = validRun(); Object.assign(r.results[0], { stop_reason: "error_max_turns", truncated: true }); r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r = validRun(); r.results[0].stop_reason = "error_during_execution"; r.results[0].error = "stopped"; r.results[0].pass = false; r.results[0].decision = false; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), [], "another stop reason is allowed on an error row without being truncated");
+});
+
+test("a file that appears at --out during the run is left alone and the paid results are saved under another name", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-appears-"));
+  const out = join(dir, "r.json");
+  const logs = [];
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", out], {
+      invoke: async () => { writeFileSync(out, "someone else's file"); return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; },
+      log: (m) => logs.push(m), resultsDir: dir, now: () => new Date("2026-10-26T12:00:00Z"),
+    });
+    assert.equal(readFileSync(out, "utf8"), "someone else's file");
+    assert.notEqual(res.out, out);
+    assert.deepEqual(validateRun(JSON.parse(readFileSync(res.out, "utf8"))), []);
+    assert.ok(logs.some((l) => /appeared during the run/.test(l)));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("the checker accepts a served model with a context suffix", () => {
+  const r = validRun(); r.results[0].served_models = ["m[1m]"]; r.results[0].model_mismatch = false; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r.results[0].model_mismatch = true; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /model_mismatch does not match/);
+});
+test("a comparison skipped because of a model mismatch fails the check, with the reason on stderr", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-warn-"));
+  try {
+    const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
+    const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(true), { conditions: ["on"] });
+    b.results[0].served_models = ["other"]; b.results[0].model_mismatch = true; b.summary = summarize(b.results);
+    writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
+    writeFileSync(join(dir, "b.json"), JSON.stringify(withBothConditions(b)));
+    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+    assert.equal(r.status, 1, "even though the pass rate did not drop, the run could not be compared");
+    assert.match(r.stderr, /NOT COMPARED/);
+    assert.match(r.stderr, /Redo the run/);
+    assert.match(r.stderr, /answered by a model other than m/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("samples that list two models, or none, are warnings the reader cannot miss", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-mixed-"));
+  try {
+    const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
+    a.results[0].served_models = ["m", "helper"]; a.results[1].served_models = []; a.summary = summarize(a.results);
+    writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
+    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+    assert.equal(r.status, 0);
+    assert.match(r.stderr, /2 sample\(s\) list more than one model/, "one in each condition: the helper copies the rows");
+    assert.match(r.stderr, /2 scored sample\(s\) report no model at all/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+function withBothConditions(run) {
+  const off = run.results.map((r) => ({ ...r, condition: "off", pass: false, decision: false }));
+  const results = [...run.results, ...off];
+  return { ...run, conditions: ["on", "off"], results, summary: summarize(results) };
+}
+
+// ---------- third-round follow-ups ----------
+
+test("a throw while scoring keeps the cost, the models and the flags of the call that was paid for", async () => {
+  const bad = { id: "T-bad", user_prompt: "x", expected_imports: ["("] }; // not a valid pattern once it reaches the scorer
+  const row = await runSample({ task: bad, condition: "off", sample: 1 }, parseArgs(["--model", "m"]), async () => ({
+    result: "```tsx\nexport default () => <div/>;\n```", cost_usd: 0.4, duration_ms: 9, turns: 3, models: ["m"], truncated: true, stop_reason: "error_max_turns",
+  }));
+  assert.match(row.error, /scoring error/);
+  assert.equal(row.pass, false);
+  assert.equal(row.cost_usd, 0.4);
+  assert.equal(row.turns, 3);
+  assert.deepEqual(row.served_models, ["m"]);
+  assert.equal(row.truncated, true);
+  assert.equal(row.stop_reason, "error_max_turns");
+});
+test("a dated model id is the same model", () => {
+  assert.equal(answeredByOtherModel(["claude-a-20260301"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a"], "claude-a-20260301"), false);
+  assert.equal(answeredByOtherModel(["claude-a-20260301[1m]"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a-2026"], "claude-a"), true, "only an 8-digit date is stripped");
+  assert.equal(answeredByOtherModel(["claude-b-20260301"], "claude-a"), true);
+});
+test("one skipped run does not leave the next run with nothing to be compared against", () => {
+  const withMismatch = (r) => { r.results[0].served_models = ["other"]; r.results[0].model_mismatch = true; r.summary = summarize(r.results); return r; };
+  const A = entry("a.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true)));
+  const B = entry("b.json", { ...withMismatch(mkRun("m", "2026-10-02T10:00:00.000Z", ten(true))) });
+  const C = entry("c.json", mkRun("m", "2026-10-03T10:00:00.000Z", [...Array(6).fill(true), ...Array(4).fill(false)]));
+  const [cmp] = compareLatestPerModel([A, B, C]);
+  assert.equal(cmp.prev.f, "a.json", "skips over the run with the fallback sample");
+  assert.equal(cmp.cmp.status, "regressed");
+  // when the newest run is the one with the fallback sample, nothing can be compared and it is reported as a mismatch
+  const [last] = compareLatestPerModel([A, entry("d.json", withMismatch(mkRun("m", "2026-10-04T10:00:00.000Z", ten(false))))]);
+  assert.equal(last.cmp.status, "skipped");
+  assert.equal(last.cmp.kind, "mismatch");
+  // when every earlier run is uncomparable the first skip reason is returned
+  const only = compareLatestPerModel([entry("e.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { samples_per_task: 2 })), entry("f.json", mkRun("m", "2026-10-02T10:00:00.000Z", ten(true)))]);
+  assert.match(only[0].cmp.reason, /samples per task changed/);
+});
+test("the comparison reports how many skills-on samples were truncated in each run", () => {
+  const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true));
+  const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(true));
+  for (const r of b.results.slice(0, 3)) { r.truncated = true; r.stop_reason = "error_max_turns"; }
+  const cmp = compareRuns(a, b);
+  assert.equal(cmp.truncated_before, 0);
+  assert.equal(cmp.truncated_after, 3);
+});
+test("a lone apostrophe in JSX text does not let a following // start a comment", () => {
+  const src = "<p>the users' // hi</p>";
+  assert.equal(stripComments(src), src);
+  assert.equal(stripComments("const a = 'x' // hi\nb"), "const a = 'x' \nb", "a real string followed by a comment still works");
+});
+test("the isolation recorded in a results file comes from the flags the CLI is started with", async () => {
+  const { argv } = await viaFake({ events: [resultEvent()] });
+  const at = argv.indexOf(ISOLATION_FLAGS[0]);
+  assert.deepEqual(argv.slice(at, at + ISOLATION_FLAGS.length), ISOLATION_FLAGS, "the flags are passed as one block");
+  const allowed = argv.indexOf("--allowedTools");
+  assert.deepEqual(argv.slice(allowed + 1, allowed + 1 + TOOLS.length), TOOLS);
+  assert.ok(ISOLATION.includes(`tools:${argv[argv.indexOf("--tools") + 1]}`));
+  assert.ok(ISOLATION.includes(`setting-sources:${argv[argv.indexOf("--setting-sources") + 1]}`));
+  assert.equal(ISOLATION.includes("strict-mcp-config"), argv.includes("--strict-mcp-config"));
+});
+test("a repository change during the run is recorded as dirty, and a clean unchanged one is not", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-git-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  const go = (states, name) => { let i = 0; return main(["--model", "m", "--tasks", "DT-04", "--condition", "off", "--samples", "1", "--out", join(dir, name)], { invoke, log: () => {}, git: () => states[Math.min(i++, states.length - 1)] }); };
+  const clean = { sha: "aaa", status: "", dirty: false };
+  try {
+    assert.equal((await go([clean], "a.json")).run.git_dirty, false);
+    assert.equal((await go([{ ...clean, dirty: true, status: " M x" }], "b.json")).run.git_dirty, true, "dirty from the start");
+    const moved = await go([clean, { ...clean, sha: "bbb" }], "c.json");
+    assert.equal(moved.run.git_dirty, true, "committed during the run");
+    assert.equal(moved.run.git_sha, "aaa", "the sha is the one at the start");
+    assert.equal((await go([clean, { ...clean, dirty: true, status: " M y" }], "d.json")).run.git_dirty, true, "edited during the run");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("a broken skills checkout stops the run before anything is spent, and only when skills are used", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-pre-"));
+  let calls = 0;
+  const invoke = async () => { calls++; return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; };
+  try {
+    mkdirSync(join(root, "repo"), { recursive: true });
+    const go = (extra) => main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", join(root, `${Math.random()}.json`), ...extra], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+    await assert.rejects(go([]), /SKILL.md is missing|ENOENT/);
+    await assert.rejects(go(["--condition", "on"]), /SKILL.md is missing|ENOENT/);
+    assert.equal(calls, 0, "no model call was made");
+    const off = await go(["--condition", "off"]);
+    assert.equal(off.run.results.length, 1, "skills-off does not need the skills");
+    assert.equal(calls, 1);
+    await main(["--dry-run", "--tasks", "DT-04"], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- fourth-round follow-ups ----------
+
+test("a trailing comment after a word, a number or an arrow is a comment, so it cannot satisfy a check", () => {
+  const dialog = task({ expected_imports: ["alert-dialog"], required_patterns: [{ id: "clear", regex: "clear filters", flags: "i" }] });
+  const withComment = (line) => scoreSample(`export default () => null\n${line}\n`, dialog);
+  for (const line of [
+    'import { x } from "y" // import { AlertDialog } from "@/components/ui/alert-dialog"',
+    "const open = isOpen // shows the Dialog, Clear filters",
+    "return // Clear filters",
+    'const f = () => // from "@/components/ui/alert-dialog"',
+    "const n = 1 // Clear filters",
+  ]) {
+    const r = withComment(line);
+    assert.equal(r.decision, false, line);
+    assert.deepEqual(r.pattern_failures, ["missing:clear"], line);
+  }
+  assert.equal(stripComments("const open = isOpen // note\nnext").trim(), "const open = isOpen \nnext");
+});
+test("a // in JSX text is kept when its line closes a tag, and a URL is never a comment", () => {
+  const keep = (src) => assert.equal(stripComments(src), src, src);
+  keep("<p>Press // to search</p>");
+  keep("<li>a // b</li> <li>c</li>");
+  keep("<Input placeholder='x' /> // hi />"); // the rest of the line closes a tag, so it is kept: a known gap, not a comment
+  keep("const u = http://example.com;");
+  keep("<a href=\"x\">http://example.com/a//b</a>");
+  keep("<p>see https://example.com for details</p>");
+  assert.equal(stripComments("const o = { k: /* c */ 1 };"), "const o = { k:   1 };", "a block comment after a colon is still a comment");
+  keep("a = b//no-space");
+});
+test("DT-01 message pattern: whole words only, entities and curly apostrophes, and bounded time", () => {
+  const dt01 = loadTasks().find((t) => t.id === "DT-01");
+  const only = (src) => scoreSample(src, { ...dt01, expected_imports: [] }).pattern_failures.filter((f) => /empty-message/.test(f));
+  // attribute values are not visible text
+  assert.deepEqual(only(`<div data-testid="no-search-results" />`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<div className="no-scroll filter-bar">x</div>`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<div className="pre-no filters">x</div>`), ["missing:filtered-empty-message"], "a hyphen before the word");
+  assert.deepEqual(only(`<div className="no match">x</div>`), []); // a space-separated attribute does read as words: a known gap
+  // apostrophes as typed, as entities and as curly quotes
+  for (const apos of ["'", "&apos;", "&rsquo;", "&#39;", "\u2019"]) {
+    assert.deepEqual(only(`<p>We couldn${apos}t find anything matching your filters.</p>`), [], apos);
+    assert.deepEqual(only(`<p>\n  We didn${apos}t find anything for this search\n</p>`), [], apos);
+  }
+  // a very long line does not stall the scorer
+  const long = "<p>" + "no ".repeat(20000) + "</p>";
+  const start = Date.now();
+  only(long);
+  only("<p>" + "x ".repeat(30000));
+  assert.ok(Date.now() - start < 2000, `took ${Date.now() - start} ms`);
+});
+test("the skills repo given to main is the one every skills-on sample copies from", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-repo-"));
+  try {
+    for (const n of ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"]) {
+      mkdirSync(join(root, "repo", n), { recursive: true });
+      writeFileSync(join(root, "repo", n, "SKILL.md"), `FAKE-${n}`);
+    }
+    const seen = [];
+    const invoke = async ({ cwd }) => { seen.push(readFileSync(join(cwd, "skills", "vois-tokens", "SKILL.md"), "utf8")); return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; };
+    await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", join(root, "r.json")], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+    assert.deepEqual(seen, ["FAKE-vois-tokens"]);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- progress file and resume ----------
+
+const okInvoke = (counter) => async () => { if (counter) counter.n++; return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0.01, duration_ms: 1, turns: 1 }; };
+const GIT = { sha: "abc", status: "", dirty: false };
+const baseArgs = (dir, extra = []) => ["--model", "m", "--tasks", "DT-04,DT-01", "--samples", "2", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl"), ...extra];
+const deps = (over = {}) => ({ log: () => {}, git: () => GIT, resultsDir: undefined, now: () => new Date("2026-10-26T10:00:00Z"), ...over });
+
+test("every finished sample is appended to the progress file, after a header that pins the run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-prog-"));
+  try {
+    const res = await main(baseArgs(dir), deps({ invoke: okInvoke() }));
+    const { header, rows } = loadProgress(join(dir, "p.jsonl"));
+    assert.equal(header.model, "m");
+    assert.equal(header.plan_size, 8);
+    assert.deepEqual(header.tasks, ["DT-01", "DT-04"].sort((a, b) => ["DT-04", "DT-01"].indexOf(a) - ["DT-04", "DT-01"].indexOf(b)).sort());
+    assert.equal(header.git_sha, "abc");
+    assert.equal(rows.length, 8);
+    assert.deepEqual(rows.map((r) => `${r.task}|${r.condition}|${r.sample}`).sort(), res.run.results.map((r) => `${r.task}|${r.condition}|${r.sample}`).sort());
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a crash partway through loses nothing: --resume runs only the missing samples and gives the same results as an uninterrupted run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-resume-"));
+  try {
+    let seen = 0;
+    const crashing = deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 5) throw new Error("container lost"); } });
+    await assert.rejects(main(baseArgs(dir), crashing), /container lost/);
+    assert.equal(existsSync(join(dir, "r.json")), false, "no results file was written");
+    assert.equal(loadProgress(join(dir, "p.jsonl")).rows.length, 5, "the five finished samples were saved");
+
+    const counter = { n: 0 };
+    const logs = [];
+    const res = await main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke(counter), log: (m) => logs.push(m), now: () => new Date("2026-10-27T03:00:00Z") }));
+    assert.equal(counter.n, 3, "only the three missing samples were run");
+    assert.ok(logs.some((l) => /resuming: 5 of 8/.test(l)));
+    assert.equal(res.run.results.length, 8);
+    assert.deepEqual(validateRun(res.run), []);
+
+    const fresh = mkdtempSync(join(tmpdir(), "vois-eval-fresh-"));
+    try {
+      const whole = await main(baseArgs(fresh), deps({ invoke: okInvoke() }));
+      const keyed = (run) => run.results.map((r) => `${r.task}|${r.condition}|${r.sample}|${r.pass}`).sort();
+      assert.deepEqual(keyed(res.run), keyed(whole.run));
+      assert.deepEqual(res.run.summary, whole.run.summary);
+      assert.equal(res.run.created_at, "2026-10-26T10:00:00.000Z", "the run keeps the start time of its first part");
+      assert.equal(res.run.date, "2026-10-26");
+      assert.equal(res.run.created_at, whole.run.created_at);
+      assert.deepEqual(validateRun(res.run), [], "date and created_at still agree after the restart");
+    } finally { rmSync(fresh, { recursive: true, force: true }); }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("resume refuses a run that is not the same run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-nomatch-"));
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const attempt = (extra, d = {}) => main(baseArgs(dir, ["--resume", ...extra]), deps({ invoke: okInvoke(), ...d }));
+    await assert.rejects(main(["--model", "other", ...baseArgs(dir, ["--resume"]).slice(2)], deps({ invoke: okInvoke() })), /differs from this one in model/);
+    await assert.rejects(main([...baseArgs(dir, ["--resume"]).filter((a) => a !== "2"), "--samples", "3"].filter((a, i, arr) => !(a === "--samples" && arr[i + 1] === "2")), deps({ invoke: okInvoke() })), /samples/);
+    await assert.rejects(attempt([], { git: () => ({ ...GIT, sha: "def" }) }), /git_sha/);
+    await assert.rejects(attempt([], { git: () => ({ ...GIT, status: " M x", dirty: true }) }), /git_status/);
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "2", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl"), "--resume"], deps({ invoke: okInvoke() })), /tasks|plan_size/);
+    await assert.rejects(main(baseArgs(dir, ["--resume", "--condition", "on"]), deps({ invoke: okInvoke() })), /condition|plan_size/);
+    await assert.rejects(main(baseArgs(dir, ["--resume", "--max-turns", "7"]), deps({ invoke: okInvoke() })), /max_turns/);
+    assert.equal(loadProgress(join(dir, "p.jsonl")).rows.length, 2, "a refused resume does not touch the file");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a progress file is never reused without --resume, and --resume needs one that exists", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-reuse-"));
+  try {
+    await main(baseArgs(dir), deps({ invoke: okInvoke() }));
+    const before = readFileSync(join(dir, "p.jsonl"), "utf8");
+    const elsewhere = (extra = []) => baseArgs(dir, extra).map((a) => (a === join(dir, "r.json") ? join(dir, "r2.json") : a));
+    await assert.rejects(main(elsewhere(), deps({ invoke: okInvoke() })), /already exists; pass --resume/);
+    await assert.rejects(main(elsewhere(["--force"]), deps({ invoke: okInvoke() })), /already exists; pass --resume/, "--force overwrites a results file, never a progress file");
+    assert.equal(readFileSync(join(dir, "p.jsonl"), "utf8"), before);
+    await assert.rejects(main(elsewhere(["--resume"]).map((a) => (a === join(dir, "p.jsonl") ? join(dir, "none.jsonl") : a)), deps({ invoke: okInvoke() })), /does not exist/);
+    assert.throws(() => parseArgs(["--model", "m", "--resume"]), /--resume needs --progress/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("the progress file is read carefully: a torn last line is dropped, damage elsewhere is an error", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-torn-"));
+  try {
+    const head = JSON.stringify({ type: "header", model: "m" });
+    const rowLine = JSON.stringify({ type: "row", row: { task: "T", condition: "on", sample: 1 } });
+    writeFileSync(join(dir, "a.jsonl"), `${head}\n${rowLine}\n{"type":"row","ro`);
+    assert.equal(loadProgress(join(dir, "a.jsonl")).rows.length, 1);
+    writeFileSync(join(dir, "b.jsonl"), `${head}\n{"type":"row","ro\n${rowLine}\n`);
+    assert.throws(() => loadProgress(join(dir, "b.jsonl")), /line 2 is not valid JSON/);
+    writeFileSync(join(dir, "c.jsonl"), `${rowLine}\n`);
+    assert.throws(() => loadProgress(join(dir, "c.jsonl")), /not a progress header/);
+    writeFileSync(join(dir, "d.jsonl"), `${head}\n${JSON.stringify({ type: "header" })}\n`);
+    assert.throws(() => loadProgress(join(dir, "d.jsonl")), /not a sample row/);
+    writeFileSync(join(dir, "e.jsonl"), `${head}\n${JSON.stringify({ type: "row", row: null })}\n`);
+    assert.throws(() => loadProgress(join(dir, "e.jsonl")), /not a sample row/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a progress file with a sample twice or one outside the plan cannot be resumed", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-dupe-"));
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const p = join(dir, "p.jsonl");
+    const lines = readFileSync(p, "utf8").trim().split("\n");
+    appendFileSync(p, lines[1] + "\n");
+    await assert.rejects(main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke() })), /appears twice/);
+    writeFileSync(p, lines.slice(0, 2).join("\n") + "\n" + JSON.stringify({ type: "row", row: { ...JSON.parse(lines[1]).row, task: "DT-99" } }) + "\n");
+    await assert.rejects(main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke() })), /not in this plan/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a resumed run of a dirty tree is recorded as dirty", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-dirtyresume-"));
+  const dirty = { sha: "abc", status: " M x", dirty: true };
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), git: () => dirty, log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const res = await main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke(), git: () => dirty }));
+    assert.equal(res.run.git_dirty, true);
+    assert.equal(res.run.git_sha, "abc");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("checkResume names every field that differs", () => {
+  const a = { model: "m", samples: 3, condition: "both", max_turns: 40, tasks: ["A"], plan_size: 6, git_sha: "x", git_status: "", skills: { s: "1" } };
+  assert.doesNotThrow(() => checkResume(a, { ...a, created_at: "later", git_dirty: true }));
+  assert.throws(() => checkResume(a, { ...a, skills: { s: "2" } }), /skills/);
+  assert.throws(() => checkResume(a, { ...a, model: "n", samples: 4 }), /model, samples/);
+});

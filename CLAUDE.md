@@ -14,6 +14,8 @@ node vois-tokens/scripts/detect.test.mjs
 node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all
 node vois-eval/check-scenarios.mjs
+node --test vois-eval/run/run.test.mjs
+node vois-eval/check-results.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-components/scripts/motion-logic.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs

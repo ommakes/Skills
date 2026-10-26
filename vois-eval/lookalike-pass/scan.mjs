@@ -13,8 +13,9 @@ import { openingTags } from "../../vois-tokens/scripts/jsx-tags.mjs";
 // scanner and the hook cannot drift apart. The rest are scanner-only.
 const viaHook = (ruleId) => (s) => detectFile("scan.tsx", s).some((f) => f.ruleId === ruleId);
 
-// An import of the component from any path whose last part is its name ("@/components/ui/x", "~/components/ui/x", "./ui/x", "react-x").
-const imp = (src, name) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${name}["']`).test(src);
+// An import of the component from any path whose last part is its name ("@/components/ui/x", "~/components/ui/x", "./ui/x", "react-x"),
+// or a package named exactly that (from "sonner"). The scanner and the eval runner's expected and forbidden imports all use this.
+export const imp = (src, name) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${name}["']`).test(src);
 
 // Whether any opening tag with one of these names has attribute text that passes `keep`. Tags are read
 // with the hook's scanner, so a ">" inside an arrow function or a comparison does not end the tag.
@@ -72,10 +73,10 @@ const SIGNALS = [
     viaHook("LOOKALIKE-009")],
 ];
 
+
 export function scan(src, expected) {
   const hits = SIGNALS.filter(([, , , t]) => t(src)).map(([id]) => id);
-  // Sonner's toast() is normally imported from the "sonner" package itself, not from the ui wrapper.
-  const usedExpected = expected.filter((e) => imp(src, e) || (e === "sonner" && /from\s+["']sonner["']/.test(src)));
+  const usedExpected = expected.filter((e) => imp(src, e));
   return { hits, usedExpected, missingExpected: usedExpected.length === 0 };
 }
 
