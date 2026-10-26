@@ -12,10 +12,10 @@
 //   off  an empty run directory and the baseline prompt that forbids reading skills.
 // Both get the same four tools (Read, Write, Glob, Grep), no MCP servers and project-only settings. That removes
 // the Skill tool, skill listing, shell and any MCP tools. It does NOT sandbox the files: Read and Glob accept
-// absolute paths, and the user's own CLAUDE.md memory still loads. So a skills-off agent could in principle read
-// installed skills. The runner records every file-tool path outside the run directory (outside_cwd_access) so that
-// shows up in the results; the memory file it cannot see. Run on a machine whose user-level memory says nothing
-// about Vois, or the off rate may be too high.
+// absolute paths, and the user's own CLAUDE.md memory may still load (untested, and not controlled here). So a
+// skills-off agent could in principle read installed skills. The runner records every file-tool path outside the run
+// directory (outside_cwd_access) so that shows up in the results; a memory file it cannot see. Run on a machine whose
+// user-level memory says nothing about Vois, or the off rate may be too high.
 import { spawn, execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
