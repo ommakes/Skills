@@ -17,7 +17,8 @@
 // directory (outside_cwd_access) so that shows up in the results. A memory file it cannot see, so run on a machine
 // whose user-level memory says nothing about Vois, or the off rate may be too high.
 import { spawn, execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { homedir, tmpdir } from "node:os";
 import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -54,7 +55,7 @@ export function extractCode(fileText, resultText) {
 
 export function parseArgs(argv) {
   const o = { condition: "both", samples: 3, maxTurns: 40, budget: 1, concurrency: 1 };
-  const flags = new Set(["--dry-run", "--smoke", "--force"]);
+  const flags = new Set(["--dry-run", "--smoke", "--force", "--resume"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (flags.has(a)) { o[a.slice(2).replace(/-/g, "")] = true; continue; }
@@ -62,7 +63,7 @@ export function parseArgs(argv) {
     if (v === undefined || v.startsWith("--")) throw new Error(`${a} needs a value`);
     if (a === "--tasks" && !v.trim()) throw new Error(`--tasks needs a value`);
     const key = { "--model": "model", "--tasks": "tasks", "--condition": "condition", "--samples": "samples", "--out": "out",
-      "--save-output": "saveOutput", "--max-turns": "maxTurns", "--budget": "budget", "--concurrency": "concurrency", "--limit": "limit" }[a];
+      "--save-output": "saveOutput", "--progress": "progress", "--max-turns": "maxTurns", "--budget": "budget", "--concurrency": "concurrency", "--limit": "limit" }[a];
     if (!key) throw new Error(`unknown option ${a}`);
     o[key] = ["samples", "maxTurns", "budget", "concurrency", "limit"].includes(key) ? Number(v) : v;
   }
@@ -71,6 +72,7 @@ export function parseArgs(argv) {
   if (!(o.budget > 0)) throw new Error("--budget must be more than 0");
   if (o.limit !== undefined && !(Number.isInteger(o.limit) && o.limit >= 1)) throw new Error("--limit must be a whole number of 1 or more");
   if (!o.dryrun && !o.model) throw new Error("--model is required, so the results file says which model produced it");
+  if (o.resume && !o.progress) throw new Error("--resume needs --progress <file>, the progress file of the run to continue");
   return o;
 }
 
@@ -249,6 +251,34 @@ export function writeResultFile(resultsDir, parts, text) {
   }
 }
 
+// ---- progress file: every finished sample is appended as one line, so a crash does not throw away what was paid for ----
+// Line 1 is a header that pins what this run is (model, samples, tasks, conditions, git sha, skill versions). --resume
+// continues a run only if the header still matches, so a resumed run is one run on one version of the skills.
+export function progressHeader({ o, plan, startedAt, git, skills }) {
+  return {
+    type: "header", model: o.model, samples: o.samples, condition: o.condition, max_turns: o.maxTurns,
+    tasks: [...new Set(plan.map((p) => p.task.id))], plan_size: plan.length, git_sha: git.sha, git_dirty: git.dirty, git_status: git.status,
+    skills, created_at: startedAt,
+  };
+}
+const HEADER_MUST_MATCH = ["model", "samples", "condition", "max_turns", "tasks", "plan_size", "git_sha", "git_status", "skills"];
+
+// Read a progress file. A torn last line (the process died mid-write) is dropped; a bad line anywhere else is an error.
+export function loadProgress(path) {
+  const lines = readFileSync(path, "utf8").split("\n").filter((l) => l.length > 0);
+  const parsed = lines.map((l, i) => { try { return JSON.parse(l); } catch { if (i === lines.length - 1) return null; throw new Error(`${path}: line ${i + 1} is not valid JSON`); } });
+  const items = parsed.filter((x) => x !== null);
+  const [header, ...rest] = items;
+  if (!header || header.type !== "header") throw new Error(`${path}: the first line is not a progress header`);
+  const rows = rest.map((x, i) => { if (x?.type !== "row" || typeof x.row !== "object" || x.row === null) throw new Error(`${path}: line ${i + 2} is not a sample row`); return x.row; });
+  return { header, rows };
+}
+
+export function checkResume(saved, now) {
+  const differs = HEADER_MUST_MATCH.filter((k) => JSON.stringify(saved[k]) !== JSON.stringify(now[k]));
+  if (differs.length) throw new Error(`cannot resume: the saved run differs from this one in ${differs.join(", ")}`);
+}
+
 // Copy the skills once into a scratch folder before the plan starts. A broken checkout then stops the run before anything
 // is spent, instead of turning every skills-on sample into an error row while the skills-off ones are still paid for.
 export function preflightSkills(repo = REPO) {
@@ -256,7 +286,7 @@ export function preflightSkills(repo = REPO) {
   try { copySkills(dir, repo); } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 
-export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results"), skillsRepo = REPO, git = gitState } = {}) {
+export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results"), skillsRepo = REPO, git = gitState, progressDir = tmpdir() } = {}) {
   const o = parseArgs(argv);
   const tasks = loadTasks();
   const plan = buildPlan(tasks, o);
@@ -272,19 +302,39 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const explicitOut = o.out ? resolve(o.out) : null;
   if (!o.dryrun && explicitOut && existsSync(explicitOut) && !o.force) throw new Error(`${explicitOut} already exists; pass a different --out, or --force to overwrite it`);
   log(`${plan.length} call(s): ${new Set(plan.map((p) => p.task.id)).size} task(s) x ${o.condition === "both" ? "2 conditions" : o.condition} x ${o.samples} sample(s)`);
-  if (!o.dryrun && plan.some((p) => p.condition === "on")) preflightSkills(skillsRepo);
   if (o.dryrun) { for (const p of plan.slice(0, 20)) log(`  ${p.task.id} ${p.condition} #${p.sample}`); if (plan.length > 20) log(`  ... and ${plan.length - 20} more`); return null; }
+  if (plan.some((p) => p.condition === "on")) preflightSkills(skillsRepo);
 
+  // Progress file: new runs create it (and refuse to reuse one), --resume continues one whose header still matches.
+  const progressPath = resolve(o.progress ?? join(progressDir, `vois-eval-progress-${startedAt.replace(/[^0-9]/g, "")}-${randomUUID().slice(0, 8)}.jsonl`));
+  const header = progressHeader({ o, plan, startedAt, git: gitAtStart, skills: skillVersions() });
   const results = new Array(plan.length);
-  let next = 0, done = 0;
+  let startedAtRun = startedAt;
+  if (o.resume) {
+    if (!existsSync(progressPath)) throw new Error(`--resume: ${progressPath} does not exist`);
+    const { header: saved, rows } = loadProgress(progressPath);
+    checkResume(saved, header);
+    const keyOf = (r) => `${r.task}|${r.condition}|${r.sample}`;
+    const wanted = new Map(plan.map((p, i) => [`${p.task.id}|${p.condition}|${p.sample}`, i]));
+    for (const r of rows) { const i = wanted.get(keyOf(r)); if (i === undefined) throw new Error(`cannot resume: the progress file has a sample (${keyOf(r)}) that is not in this plan`); if (results[i]) throw new Error(`cannot resume: ${keyOf(r)} appears twice in the progress file`); results[i] = r; }
+    startedAtRun = saved.created_at; // one run, one start time, even across a restart
+    log(`resuming: ${rows.length} of ${plan.length} sample(s) already done (${progressPath})`);
+  } else {
+    mkdirSync(join(progressPath, ".."), { recursive: true });
+    try { writeFileSync(progressPath, JSON.stringify(header) + "\n", { flag: "wx" }); } catch (e) { if (e.code === "EEXIST") throw new Error(`${progressPath} already exists; pass --resume to continue that run, or a different --progress`); throw e; }
+    log(`progress is saved to ${progressPath} (if this run dies, continue it with the same arguments plus --resume --progress ${progressPath})`);
+  }
+  const todo = plan.map((_, i) => i).filter((i) => !results[i]);
+  let next = 0, done = plan.length - todo.length;
   const worker = async () => {
-    while (next < plan.length) {
-      const i = next++;
+    while (next < todo.length) {
+      const i = todo[next++];
       results[i] = await runSample(plan[i], o, invoke, skillsRepo);
+      appendFileSync(progressPath, JSON.stringify({ type: "row", row: results[i] }) + "\n");
       log(`  [${++done}/${plan.length}] ${results[i].task} ${results[i].condition} #${results[i].sample}: ${results[i].error ? "ERROR " + results[i].error : results[i].pass ? "pass" : "fail"}`);
     }
   };
-  await Promise.all(Array.from({ length: Math.min(o.concurrency, plan.length) }, worker));
+  await Promise.all(Array.from({ length: Math.min(o.concurrency, todo.length) }, worker));
 
   // The skills are copied from the working tree for every sample. If the tree changed while the run was going, the samples
   // do not all share one skill text, so the run is recorded as not reproducible.
@@ -294,7 +344,7 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   if (gitChanged) log("\nnote: the repository changed while the run was going, so its samples may not share one skill text; recorded as git_dirty");
   else if (gitDirty) log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
   const run = {
-    schema: "vois-eval-results/1", date, created_at: startedAt, model: o.model, smoke: Boolean(o.smoke), full,
+    schema: "vois-eval-results/1", date: startedAtRun.slice(0, 10), created_at: startedAtRun, model: o.model, smoke: Boolean(o.smoke), full,
     claude_cli: tryExec("claude", ["--version"], REPO), git_sha: gitAtStart.sha, git_dirty: gitDirty,
     isolation: ISOLATION, skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),

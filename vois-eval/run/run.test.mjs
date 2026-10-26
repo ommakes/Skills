@@ -4,13 +4,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFile, execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
+import { buildPlan, checkResume, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, loadProgress, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
 import { compareLatestPerModel, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -1086,4 +1086,138 @@ test("the skills repo given to main is the one every skills-on sample copies fro
     await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", join(root, "r.json")], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
     assert.deepEqual(seen, ["FAKE-vois-tokens"]);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- progress file and resume ----------
+
+const okInvoke = (counter) => async () => { if (counter) counter.n++; return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0.01, duration_ms: 1, turns: 1 }; };
+const GIT = { sha: "abc", status: "", dirty: false };
+const baseArgs = (dir, extra = []) => ["--model", "m", "--tasks", "DT-04,DT-01", "--samples", "2", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl"), ...extra];
+const deps = (over = {}) => ({ log: () => {}, git: () => GIT, resultsDir: undefined, now: () => new Date("2026-10-26T10:00:00Z"), ...over });
+
+test("every finished sample is appended to the progress file, after a header that pins the run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-prog-"));
+  try {
+    const res = await main(baseArgs(dir), deps({ invoke: okInvoke() }));
+    const { header, rows } = loadProgress(join(dir, "p.jsonl"));
+    assert.equal(header.model, "m");
+    assert.equal(header.plan_size, 8);
+    assert.deepEqual(header.tasks, ["DT-01", "DT-04"].sort((a, b) => ["DT-04", "DT-01"].indexOf(a) - ["DT-04", "DT-01"].indexOf(b)).sort());
+    assert.equal(header.git_sha, "abc");
+    assert.equal(rows.length, 8);
+    assert.deepEqual(rows.map((r) => `${r.task}|${r.condition}|${r.sample}`).sort(), res.run.results.map((r) => `${r.task}|${r.condition}|${r.sample}`).sort());
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a crash partway through loses nothing: --resume runs only the missing samples and gives the same results as an uninterrupted run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-resume-"));
+  try {
+    let seen = 0;
+    const crashing = deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 5) throw new Error("container lost"); } });
+    await assert.rejects(main(baseArgs(dir), crashing), /container lost/);
+    assert.equal(existsSync(join(dir, "r.json")), false, "no results file was written");
+    assert.equal(loadProgress(join(dir, "p.jsonl")).rows.length, 5, "the five finished samples were saved");
+
+    const counter = { n: 0 };
+    const logs = [];
+    const res = await main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke(counter), log: (m) => logs.push(m), now: () => new Date("2026-10-27T03:00:00Z") }));
+    assert.equal(counter.n, 3, "only the three missing samples were run");
+    assert.ok(logs.some((l) => /resuming: 5 of 8/.test(l)));
+    assert.equal(res.run.results.length, 8);
+    assert.deepEqual(validateRun(res.run), []);
+
+    const fresh = mkdtempSync(join(tmpdir(), "vois-eval-fresh-"));
+    try {
+      const whole = await main(baseArgs(fresh), deps({ invoke: okInvoke() }));
+      const keyed = (run) => run.results.map((r) => `${r.task}|${r.condition}|${r.sample}|${r.pass}`).sort();
+      assert.deepEqual(keyed(res.run), keyed(whole.run));
+      assert.deepEqual(res.run.summary, whole.run.summary);
+      assert.equal(res.run.created_at, "2026-10-26T10:00:00.000Z", "the run keeps the start time of its first part");
+      assert.equal(res.run.date, "2026-10-26");
+      assert.equal(res.run.created_at, whole.run.created_at);
+      assert.deepEqual(validateRun(res.run), [], "date and created_at still agree after the restart");
+    } finally { rmSync(fresh, { recursive: true, force: true }); }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("resume refuses a run that is not the same run", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-nomatch-"));
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const attempt = (extra, d = {}) => main(baseArgs(dir, ["--resume", ...extra]), deps({ invoke: okInvoke(), ...d }));
+    await assert.rejects(main(["--model", "other", ...baseArgs(dir, ["--resume"]).slice(2)], deps({ invoke: okInvoke() })), /differs from this one in model/);
+    await assert.rejects(main([...baseArgs(dir, ["--resume"]).filter((a) => a !== "2"), "--samples", "3"].filter((a, i, arr) => !(a === "--samples" && arr[i + 1] === "2")), deps({ invoke: okInvoke() })), /samples/);
+    await assert.rejects(attempt([], { git: () => ({ ...GIT, sha: "def" }) }), /git_sha/);
+    await assert.rejects(attempt([], { git: () => ({ ...GIT, status: " M x", dirty: true }) }), /git_status/);
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "2", "--out", join(dir, "r.json"), "--progress", join(dir, "p.jsonl"), "--resume"], deps({ invoke: okInvoke() })), /tasks|plan_size/);
+    await assert.rejects(main(baseArgs(dir, ["--resume", "--condition", "on"]), deps({ invoke: okInvoke() })), /condition|plan_size/);
+    await assert.rejects(main(baseArgs(dir, ["--resume", "--max-turns", "7"]), deps({ invoke: okInvoke() })), /max_turns/);
+    assert.equal(loadProgress(join(dir, "p.jsonl")).rows.length, 2, "a refused resume does not touch the file");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a progress file is never reused without --resume, and --resume needs one that exists", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-reuse-"));
+  try {
+    await main(baseArgs(dir), deps({ invoke: okInvoke() }));
+    const before = readFileSync(join(dir, "p.jsonl"), "utf8");
+    const elsewhere = (extra = []) => baseArgs(dir, extra).map((a) => (a === join(dir, "r.json") ? join(dir, "r2.json") : a));
+    await assert.rejects(main(elsewhere(), deps({ invoke: okInvoke() })), /already exists; pass --resume/);
+    await assert.rejects(main(elsewhere(["--force"]), deps({ invoke: okInvoke() })), /already exists; pass --resume/, "--force overwrites a results file, never a progress file");
+    assert.equal(readFileSync(join(dir, "p.jsonl"), "utf8"), before);
+    await assert.rejects(main(elsewhere(["--resume"]).map((a) => (a === join(dir, "p.jsonl") ? join(dir, "none.jsonl") : a)), deps({ invoke: okInvoke() })), /does not exist/);
+    assert.throws(() => parseArgs(["--model", "m", "--resume"]), /--resume needs --progress/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("the progress file is read carefully: a torn last line is dropped, damage elsewhere is an error", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-torn-"));
+  try {
+    const head = JSON.stringify({ type: "header", model: "m" });
+    const rowLine = JSON.stringify({ type: "row", row: { task: "T", condition: "on", sample: 1 } });
+    writeFileSync(join(dir, "a.jsonl"), `${head}\n${rowLine}\n{"type":"row","ro`);
+    assert.equal(loadProgress(join(dir, "a.jsonl")).rows.length, 1);
+    writeFileSync(join(dir, "b.jsonl"), `${head}\n{"type":"row","ro\n${rowLine}\n`);
+    assert.throws(() => loadProgress(join(dir, "b.jsonl")), /line 2 is not valid JSON/);
+    writeFileSync(join(dir, "c.jsonl"), `${rowLine}\n`);
+    assert.throws(() => loadProgress(join(dir, "c.jsonl")), /not a progress header/);
+    writeFileSync(join(dir, "d.jsonl"), `${head}\n${JSON.stringify({ type: "header" })}\n`);
+    assert.throws(() => loadProgress(join(dir, "d.jsonl")), /not a sample row/);
+    writeFileSync(join(dir, "e.jsonl"), `${head}\n${JSON.stringify({ type: "row", row: null })}\n`);
+    assert.throws(() => loadProgress(join(dir, "e.jsonl")), /not a sample row/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a progress file with a sample twice or one outside the plan cannot be resumed", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-dupe-"));
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const p = join(dir, "p.jsonl");
+    const lines = readFileSync(p, "utf8").trim().split("\n");
+    appendFileSync(p, lines[1] + "\n");
+    await assert.rejects(main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke() })), /appears twice/);
+    writeFileSync(p, lines.slice(0, 2).join("\n") + "\n" + JSON.stringify({ type: "row", row: { ...JSON.parse(lines[1]).row, task: "DT-99" } }) + "\n");
+    await assert.rejects(main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke() })), /not in this plan/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a resumed run of a dirty tree is recorded as dirty", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-dirtyresume-"));
+  const dirty = { sha: "abc", status: " M x", dirty: true };
+  try {
+    let seen = 0;
+    await assert.rejects(main(baseArgs(dir), deps({ invoke: okInvoke(), git: () => dirty, log: (m) => { if (/^\s+\[\d+\/8\]/.test(m) && ++seen === 2) throw new Error("lost"); } })), /lost/);
+    const res = await main(baseArgs(dir, ["--resume"]), deps({ invoke: okInvoke(), git: () => dirty }));
+    assert.equal(res.run.git_dirty, true);
+    assert.equal(res.run.git_sha, "abc");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("checkResume names every field that differs", () => {
+  const a = { model: "m", samples: 3, condition: "both", max_turns: 40, tasks: ["A"], plan_size: 6, git_sha: "x", git_status: "", skills: { s: "1" } };
+  assert.doesNotThrow(() => checkResume(a, { ...a, created_at: "later", git_dirty: true }));
+  assert.throws(() => checkResume(a, { ...a, skills: { s: "2" } }), /skills/);
+  assert.throws(() => checkResume(a, { ...a, model: "n", samples: 4 }), /model, samples/);
 });
