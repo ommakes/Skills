@@ -48,6 +48,12 @@ jobs:
       - name: Eval scenarios match the decision trees (vois-eval)
         run: node vois-eval/check-scenarios.mjs
 
+      - name: Eval runner tests, with the model stubbed (vois-eval)
+        run: node --test vois-eval/run/run.test.mjs
+
+      - name: Committed eval results are well formed and have not regressed (vois-eval)
+        run: node vois-eval/check-results.mjs
+
       - name: Data viz scripts and data integrity (vois-dataviz)
         run: node vois-dataviz/scripts/dataviz.test.mjs
 

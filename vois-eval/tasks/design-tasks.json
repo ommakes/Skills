@@ -1,0 +1,63 @@
+{
+  "description": "Design tasks beyond the lookalike pass. Each pairs a realistic prompt with checks a script can run on the generated TSX. The checks are heuristics read from the rules named in source_rules, so a pass means the obvious failure did not happen, not that the screen is good. 'review: unreviewed' means no designer has signed off on the expectations yet; do not treat a rate from these tasks as settled until someone has.",
+  "scenarios": [
+    {
+      "id": "DT-01",
+      "source_rules": ["PATH-TABLE-SELECT-CHECKBOX", "PATH-TABLE-BULK-BAR", "PATH-TABLE-BULK-DESTRUCTIVE", "PATH-TABLE-STATE-EMPTY-FILTERED", "PATH-TABLE-INLINE-EDIT"],
+      "style": "concrete",
+      "review": "unreviewed",
+      "user_prompt": "Build a customers screen. The table holds about 500 customers (name, email, plan, status). People filter by plan, select several rows to archive or reassign them in bulk, and can change one customer's status right in the row.",
+      "expected_imports": ["table", "checkbox"],
+      "required_patterns": [
+        { "id": "selected-count", "regex": "selected", "flags": "i" },
+        { "id": "filtered-empty-state", "regex": "\\b(no|nothing)\\b[^\\n]{0,60}\\b(match|found|results?|customers)\\b", "flags": "i" }
+      ]
+    },
+    {
+      "id": "DT-02",
+      "source_rules": ["PATH-C-SIMPLE", "DS-A11Y-009"],
+      "style": "concrete",
+      "review": "unreviewed",
+      "user_prompt": "Build an account profile form with name, email and phone. Validate when the user saves. If the email is already taken the server says so, and the user should be able to fix it and try again. If they try to leave with unsaved changes, warn them.",
+      "expected_imports": ["input", "button"],
+      "required_patterns": [
+        { "id": "unsaved-guard", "regex": "isDirty|dirty|unsaved|beforeunload|useBlocker", "flags": "i" },
+        { "id": "invalid-state-a11y", "regex": "aria-invalid" }
+      ]
+    },
+    {
+      "id": "DT-03",
+      "source_rules": ["vois-dataviz decision-tree: time job", "vois-dataviz decision-tree: compare job"],
+      "style": "concrete",
+      "review": "unreviewed",
+      "user_prompt": "Build the top of a support team dashboard. Show how ticket volume changed over the last 12 weeks, and which of five channels (email, chat, phone, social, web form) created the most tickets this week.",
+      "expected_imports": ["chart", "recharts"],
+      "required_patterns": [
+        { "id": "trend-as-line-or-area", "regex": "LineChart|AreaChart|<Line\\b|<Area\\b" },
+        { "id": "channels-as-bars", "regex": "BarChart|<Bar\\b" }
+      ],
+      "forbidden_patterns": [
+        { "id": "pie-for-ranking", "regex": "PieChart|<Pie\\b" }
+      ]
+    },
+    {
+      "id": "DT-04",
+      "source_rules": ["JOB-OVERLAY-INTERACTION", "JOB-SECONDARY-CONTENT"],
+      "style": "concrete",
+      "review": "unreviewed",
+      "user_prompt": "On the mobile layout of a product list, add filters for category, price range and in-stock. The list should stay visible behind them. Decide how the filters open.",
+      "expected_imports": ["drawer"],
+      "forbidden_imports": ["dialog", "alert-dialog"]
+    },
+    {
+      "id": "DT-05",
+      "source_rules": ["PATH-G-BLOCKS", "DS-SLOP-003"],
+      "style": "concrete",
+      "review": "unreviewed",
+      "user_prompt": "Write the features section of a landing page for a project management tool. We have six features: timelines, boards, automations, reports, integrations and permissions. It should feel designed, not like a template.",
+      "forbidden_patterns": [
+        { "id": "equal-card-grid", "regex": "(?=[\\s\\S]*grid-cols-3)(?=[\\s\\S]*<Card\\b)" }
+      ]
+    }
+  ]
+}

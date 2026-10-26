@@ -8,7 +8,7 @@ Not a new rule format. `scenarios.json` doesn't invent a YAML scenario schema â€
 
 Not a scored, weighted rubric yet. `score_categories` names the dimensions a run can be judged on (token/component/pattern/visual/decision-layer/anti-pattern/accessibility adherence), but none carry a weight. Assigning percentages to categories with zero scenarios run yet would be inventing numbers exactly the way `vois-tokens` warns against inventing token values â€” see `score_categories_note` in `scenarios.json`.
 
-Not automated. There's no runner script. Running a scenario means: hand its `user_prompt` to an agent with the `vois-*` skills active as if it were a real feature request, let it build the screen, and check the result against `expected_outcome` and `forbidden_outcomes` by hand.
+Not automated for the 54 scenarios in `scenarios.json`. Their expected outcomes are prose, so running one still means: hand its `user_prompt` to an agent with the `vois-*` skills active, let it build the screen, and check the result against `expected_outcome` and `forbidden_outcomes` by hand. The tasks in `lookalike-pass/` and `tasks/` are different: they carry checks a script can run, and `run/run.mjs` runs them (see "Running the task runner" below).
 
 ## Run log
 
@@ -45,6 +45,28 @@ Gaps the agents named in their reports. They are gaps, not conflicts, and I have
 All 21 jobs in `components-rules.json` have at least one scenario: 54 in total. Each one names its branch of the job's decision tree with `tree_path` (indexes into `decision_tree`, then `sub_branches`). `node check-scenarios.mjs` fails if a scenario's `condition` is not that branch's text word for word, if its `expected_outcome` does not start with the tree's recommendation (up to the first bracket or dash, ignoring case and punctuation), or if a job or score category does not exist. It runs in CI, so a tree change that makes a scenario stale shows up as a failing check.
 
 Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, and EVAL-054 was added afterwards for the back link branch. Not every branch has one: 53 of the 97 branches that recommend something do, and the checker prints that count. The gaps include the Plain and Alert branches of the empty-content job, the Table, Tabs and Card branches of the data-visualization job, and the Input, Radio and Command branches of the text, binary-choice and list jobs.
+
+## Running the task runner
+
+`run/run.mjs` takes the lookalike prompts (`LP-*`, `HP-*`) and the design tasks in `tasks/design-tasks.json` (`DT-*`), builds each screen with the `claude` CLI, and scores the TSX with scripts. It runs every task with the skills on and with them off, several times each, and writes one results file to `results/`.
+
+```
+node vois-eval/run/run.mjs --dry-run                                   # show the plan, call nothing
+node vois-eval/run/run.mjs --model claude-sonnet-5-5 --samples 3        # all tasks, both conditions
+node vois-eval/run/run.mjs --model claude-haiku-5-5 --tasks DT-01,DT-04 --samples 1 --smoke
+```
+
+It calls a model, so it costs money and is run by hand, before a release or after a change to a skill. CI never runs it. `--model` is required so the results file always says which model produced it. `--samples` defaults to 3, because one sample per prompt says nothing about variance. `--budget` caps the cost of each call (default $1).
+
+**The two conditions.** *On*: the run directory holds a copy of `vois-patterns`, `vois-components`, `vois-tokens`, `vois-dataviz` and `righter` from this checkout under `./skills`, and the prompt says they apply and where they are. That pins the skill version under test. *Off*: an empty directory and the baseline prompt that forbids reading skills. Both get the same four tools (Read, Write, Glob, Grep) and nothing else. That is deliberate: in a probe with the CLI's default tools and project-only settings, the agent still listed the account's installed Vois skills, which would have leaked into the off condition.
+
+**What a pass means.** A sample passes when all of these hold: it imports one of the task's `expected_imports`, imports none of its `forbidden_imports`, the lookalike scanner (`lookalike-pass/scan.mjs`) finds nothing, and every `required_patterns` regex matches while no `forbidden_patterns` regex does. Comments are ignored, so naming a component in a comment does not count. The `vois-tokens` and `vois-dataviz` detector findings are recorded in each row but do not decide the pass, because those detectors are advisory.
+
+**What it does not measure.** It does not render anything, so layout, spacing, contrast and interaction are not checked. The pattern checks are heuristics read from the rules named in each task's `source_rules`: a pass means the obvious failure did not happen, not that the screen is good. The `DT-*` tasks are marked `review: unreviewed`, because a designer has not yet signed off on their expectations; treat their rates as provisional until someone has. There is no LLM judge. Errors (the CLI failed, or the agent wrote no code) count as failed samples and are reported separately, so an outage cannot make a run look better.
+
+**The results file** (`results/<date>-<model>.json`, schema `vois-eval-results/1`) records the model, the `claude` CLI version, the git sha, the version of each skill under test, every sample with its score, cost and duration, and a per-condition summary. `check-results.mjs` runs in CI. It checks each file's shape, that nothing is missing or duplicated, and that the summary matches the samples. It then compares the newest full run with the one before it and fails if the skills-on pass rate fell by more than 10 points over the tasks they share. Smoke runs (`--smoke`) and runs of a different model are listed but not compared. The comparison needs at least 5 shared tasks.
+
+`node vois-eval/run/run.test.mjs` tests the scoring, task loading, results checks and run loop with the model stubbed out.
 
 ## Using a run's results
 

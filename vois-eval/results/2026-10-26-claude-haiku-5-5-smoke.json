@@ -1,0 +1,124 @@
+{
+  "schema": "vois-eval-results/1",
+  "date": "2026-10-26",
+  "model": "claude-haiku-5-5",
+  "smoke": true,
+  "claude_cli": "2.1.310 (Claude Code)",
+  "git_sha": "0913f2d9d992c982f564e8b2c87d9d14395289fc",
+  "skills": {
+    "vois-patterns": "1.17.0",
+    "vois-components": "1.15.2",
+    "vois-tokens": "1.23.2",
+    "vois-dataviz": "1.1.2",
+    "righter": "1.10.0"
+  },
+  "samples_per_task": 1,
+  "conditions": [
+    "on",
+    "off"
+  ],
+  "tasks": [
+    "LP-03a",
+    "DT-04"
+  ],
+  "results": [
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.01337415,
+      "duration_ms": 36681,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.007171609999999999,
+      "duration_ms": 36733,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.01436817,
+      "duration_ms": 43670,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0040786,
+      "duration_ms": 21654,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    }
+  ],
+  "summary": {
+    "on": {
+      "samples": 2,
+      "errors": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 0,
+      "cost_usd": 0.028,
+      "mean_duration_ms": 40176
+    },
+    "off": {
+      "samples": 2,
+      "errors": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 1,
+      "cost_usd": 0.011,
+      "mean_duration_ms": 29194
+    }
+  }
+}

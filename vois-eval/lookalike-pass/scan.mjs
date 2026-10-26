@@ -14,7 +14,7 @@ import { openingTags } from "../../vois-tokens/scripts/jsx-tags.mjs";
 const viaHook = (ruleId) => (s) => detectFile("scan.tsx", s).some((f) => f.ruleId === ruleId);
 
 // An import of the component from any path whose last part is its name ("@/components/ui/x", "~/components/ui/x", "./ui/x", "react-x").
-const imp = (src, name) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${name}["']`).test(src);
+export const imp = (src, name) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${name}["']`).test(src);
 
 // Whether any opening tag with one of these names has attribute text that passes `keep`. Tags are read
 // with the hook's scanner, so a ">" inside an arrow function or a comparison does not end the tag.
