@@ -81,6 +81,8 @@ export function validateRun(run) {
 
 // For each model, compare its newest full run with the full run before it. Smoke and partial runs are never
 // compared, and a run of another model in between does not hide a regression.
+export const mostCommon = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) ?? 0) + 1); return [...n.entries()].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0]?.[0] ?? ""; };
+
 export function compareLatestPerModel(runs) {
   const byModel = {};
   for (const r of runs) if (r.run.full) (byModel[r.run.model] ??= []).push(r); // validateRun guarantees a full run is not a smoke run
@@ -113,9 +115,13 @@ function main() {
     const leaked = errs.length ? 0 : run.results.filter((r) => r.condition === "off" && r.outside_cwd_access.length > 0).length;
     const cut = errs.length ? 0 : run.results.filter((r) => r.truncated).length;
     const unknown = errs.length ? 0 : run.results.filter((r) => r.cost_unknown).length;
-    const mixed = errs.length ? 0 : run.results.filter((r) => r.served_models.length > 1).length;
+    // The CLI lists a small helper model next to the one you named on every call, so "more than one model" is normal and
+    // warning about all of them says nothing. Warn about the samples whose set of models differs from the run's usual set.
+    const setOf = (r) => [...r.served_models].sort().join(" + ");
+    const usual = errs.length ? "" : mostCommon(run.results.map(setOf));
+    const mixed = errs.length ? 0 : run.results.filter((r) => r.served_models.length > 1 && setOf(r) !== usual).length;
     const unreported = errs.length ? 0 : run.results.filter((r) => r.served_models.length === 0 && r.error === undefined).length;
-    if (mixed) console.warn(`WARN ${f}: ${mixed} sample(s) list more than one model in served_models (a helper model, or a fallback after the named one answered); check them before trusting the rates`);
+    if (mixed) console.warn(`WARN ${f}: ${mixed} sample(s) list a different set of models from the run's usual "${usual}" (a fallback after the named model answered, or an extra helper); check them before trusting the rates`);
     if (unreported) console.warn(`WARN ${f}: ${unreported} scored sample(s) report no model at all, so the model that answered is unconfirmed`);
     const swapped = errs.length ? 0 : run.results.filter((r) => r.model_mismatch).length;
     if (swapped) console.warn(`WARN ${f}: ${swapped} sample(s) were answered by a model other than ${run.model}; the pass rate mixes models and is not compared`);

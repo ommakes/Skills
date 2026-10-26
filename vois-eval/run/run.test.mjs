@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
 import { buildPlan, checkResume, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, loadProgress, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
-import { compareLatestPerModel, validateRun } from "../check-results.mjs";
+import { compareLatestPerModel, mostCommon, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
 const task = (extra = {}) => ({ id: "T-1", user_prompt: "Build a thing.", expected_imports: ["alert-dialog"], ...extra });
@@ -915,17 +915,32 @@ test("a comparison skipped because of a model mismatch fails the check, with the
     assert.match(r.stderr, /answered by a model other than m/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("samples that list two models, or none, are warnings the reader cannot miss", () => {
+test("a helper model on every sample is not a warning, but a sample that differs from the rest is, and so is a sample with no model", () => {
   const dir = mkdtempSync(join(tmpdir(), "vois-eval-mixed-"));
-  try {
+  const check = (mutate) => {
     const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
-    a.results[0].served_models = ["m", "helper"]; a.results[1].served_models = []; a.summary = summarize(a.results);
+    for (const r of a.results) r.served_models = ["helper", "m"];
+    mutate(a); a.summary = summarize(a.results);
     writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
-    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
-    assert.equal(r.status, 0);
-    assert.match(r.stderr, /2 sample\(s\) list more than one model/, "one in each condition: the helper copies the rows");
-    assert.match(r.stderr, /2 scored sample\(s\) report no model at all/);
+    return spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+  };
+  try {
+    const quiet = check(() => {});
+    assert.equal(quiet.status, 0);
+    assert.doesNotMatch(quiet.stderr, /WARN/, "the same helper on every sample says nothing");
+    const odd = check((a) => { a.results[0].served_models = ["m", "other-helper"]; a.results[1].served_models = []; });
+    assert.equal(odd.status, 0);
+    assert.match(odd.stderr, /2 sample\(s\) list a different set of models from the run's usual "helper \+ m"/, "one in each condition: the copy doubles the rows");
+    assert.match(odd.stderr, /2 scored sample\(s\) report no model at all/);
+    const single = check((a) => { for (const r of a.results) r.served_models = ["m"]; a.results[0].served_models = ["m", "fallback"]; });
+    assert.match(single.stderr, /list a different set of models from the run's usual "m"/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("mostCommon picks the most frequent value, breaks ties the same way every time, and copes with nothing", () => {
+  assert.equal(mostCommon(["a", "b", "b"]), "b");
+  assert.equal(mostCommon(["b", "a"]), "a", "a tie goes to the first by sort order");
+  assert.equal(mostCommon(["a", "b"]), "a");
+  assert.equal(mostCommon([]), "");
 });
 function withBothConditions(run) {
   const off = run.results.map((r) => ({ ...r, condition: "off", pass: false, decision: false }));
