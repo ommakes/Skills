@@ -46,6 +46,9 @@ export function validateRun(run) {
     need(Number.isInteger(r.sample) && r.sample >= 1 && r.sample <= run.samples_per_task, `${at}: sample must be 1 to ${run.samples_per_task}`);
     need(typeof r.pass === "boolean" && typeof r.decision === "boolean", `${at}: pass and decision must be true or false`);
     need(typeof r.truncated === "boolean" && typeof r.cost_unknown === "boolean", `${at}: truncated and cost_unknown must be true or false`);
+    need(typeof r.model_mismatch === "boolean", `${at}: model_mismatch must be true or false`);
+    need(!isList(r.served_models) || r.model_mismatch === r.served_models.some((m) => m !== run.model), `${at}: model_mismatch does not match served_models and the model the file names`);
+    need(isList(r.served_models), `${at}: served_models must be a list of strings`);
     need(r.stop_reason === undefined || isStr(r.stop_reason), `${at}: stop_reason must be a non-empty string when present`);
     for (const k of ["lookalike_hits", "forbidden_imports", "pattern_failures", "detector_findings", "dataviz_findings", "outside_cwd_access"]) need(isList(r[k]), `${at}: ${k} must be a list of strings`);
     need(r.error === undefined || isStr(r.error), `${at}: error must be a non-empty string when present`);
@@ -82,6 +85,8 @@ function main() {
     const leaked = errs.length ? 0 : run.results.filter((r) => r.condition === "off" && r.outside_cwd_access.length > 0).length;
     const cut = errs.length ? 0 : run.results.filter((r) => r.truncated).length;
     const unknown = errs.length ? 0 : run.results.filter((r) => r.cost_unknown).length;
+    const swapped = errs.length ? 0 : run.results.filter((r) => r.model_mismatch).length;
+    if (swapped) console.warn(`WARN ${f}: ${swapped} sample(s) were answered by a model other than ${run.model}; the pass rate mixes models and is not compared`);
     if (cut) console.warn(`WARN ${f}: ${cut} sample(s) hit the turn or budget limit and were scored as they stood; compare the on and off counts before reading the rates`);
     if (unknown) console.warn(`WARN ${f}: ${unknown} sample(s) have an unknown cost (timed out or no result), so the cost total is a lower bound`);
     if (leaked) console.warn(`WARN ${f}: ${leaked} skills-off sample(s) touched files outside the run directory; check they did not read installed skills before trusting the off rate`);

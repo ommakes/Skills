@@ -157,7 +157,7 @@ test("detector findings are recorded but do not decide the pass", () => {
 
 // ---------- summary and comparison ----------
 
-const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], truncated: false, cost_unknown: false, cost_usd: 0.01, duration_ms: 1000, ...o });
+const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], truncated: false, cost_unknown: false, model_mismatch: false, served_models: ["m"], cost_usd: 0.01, duration_ms: 1000, ...o });
 
 test("an errored sample counts as an attempt that failed", () => {
   const s = summarize([row(), row({ sample: 2, pass: false, decision: false, error: "boom" })]);
@@ -573,4 +573,30 @@ test("truncated and unknown-cost samples are counted in the summary and need val
   assert.match(validateRun(bad).join("\n"), /truncated and cost_unknown must be true or false/);
   const bad2 = structuredClone(r); bad2.results[0].stop_reason = ""; 
   assert.match(validateRun(bad2).join("\n"), /stop_reason must be a non-empty string/);
+});
+
+test("a sample answered by another model is flagged, summarised, and blocks the comparison", async () => {
+  const t = loadTasks().find((x) => x.id === "DT-04");
+  const o = parseArgs(["--model", "claude-a"]);
+  const swapped = await runSample({ task: t, condition: "on", sample: 1 }, o, async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["claude-b"], cost_usd: 0, duration_ms: 1, turns: 1 }));
+  assert.equal(swapped.model_mismatch, true);
+  const same = await runSample({ task: t, condition: "on", sample: 1 }, o, async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["claude-a"], cost_usd: 0, duration_ms: 1, turns: 1 }));
+  assert.equal(same.model_mismatch, false);
+  assert.equal(summarize([swapped, { ...same, sample: 2 }]).on.model_mismatch, 1);
+  const prev = run("m", Array(10).fill(true));
+  const next = run("m", Array(10).fill(false));
+  next.results[0].model_mismatch = true;
+  assert.equal(compareRuns(prev, next).status, "skipped");
+  assert.match(compareRuns(prev, next).reason, /different model/);
+  assert.equal(compareRuns(prev, run("m", Array(10).fill(false))).status, "regressed", "without the mismatch the same drop is a regression");
+});
+test("the checker catches a model_mismatch flag that disagrees with served_models", () => {
+  let r = validRun(); r.results[0].served_models = ["other"]; r.results[0].model_mismatch = false; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /model_mismatch does not match/);
+  r = validRun(); r.results[0].served_models = ["other"]; r.results[0].model_mismatch = true; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r = validRun(); r.results[0].served_models = "m"; 
+  assert.match(validateRun(r).join("\n"), /served_models must be a list/);
+  r = validRun(); delete r.results[0].model_mismatch;
+  assert.match(validateRun(r).join("\n"), /model_mismatch must be true or false/);
 });

@@ -154,7 +154,7 @@ export function copySkills(dir, repo = REPO, names = SKILLS_UNDER_TEST) {
 }
 
 const failedRow = (task, condition, sample, error, extra = {}) => ({ task: task.id, condition, sample, cost_usd: 0, duration_ms: 0, turns: 0, served_models: [],
-  truncated: false, cost_unknown: false, pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
+  truncated: false, cost_unknown: false, model_mismatch: false, pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
 
 // One bad sample (a copy that fails, a detector that throws on odd code) becomes an error row; it must not
 // take the other samples' paid results down with it.
@@ -171,7 +171,9 @@ async function runSampleInner({ task, condition, sample }, o, invoke) {
     const file = join(dir, "out.tsx");
     const src = r.error ? null : extractCode(existsSync(file) ? readFileSync(file, "utf8") : "", r.result);
     const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [], outside_cwd_access: outsideAccess(r.tool_uses, dir),
-      truncated: Boolean(r.truncated), cost_unknown: Boolean(r.cost_unknown), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
+      truncated: Boolean(r.truncated), cost_unknown: Boolean(r.cost_unknown),
+      // The CLI can fall back to another model on overload. Say so, so a change in pass rate is not blamed on the skills.
+      model_mismatch: (r.models ?? []).some((m) => m !== o.model), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
     if (src && o.saveOutput) { mkdirSync(o.saveOutput, { recursive: true }); writeFileSync(join(o.saveOutput, `${task.id}-${condition}-${sample}.tsx`), src); }
     if (!src) return failedRow(task, condition, sample, r.error ?? "the agent wrote no ./out.tsx and gave no code block", base);
     return { ...base, ...scoreSample(src, task) };

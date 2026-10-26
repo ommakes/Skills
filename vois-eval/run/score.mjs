@@ -101,6 +101,7 @@ export function summarize(results) {
       outside_access: rows.filter((r) => (r.outside_cwd_access ?? []).length > 0).length,
       truncated: rows.filter((r) => r.truncated).length,
       cost_unknown: rows.filter((r) => r.cost_unknown).length,
+      model_mismatch: rows.filter((r) => r.model_mismatch).length,
       pass_rate: round(rows.filter((r) => r.pass && !r.error).length / rows.length),
       decision_rate: round(rows.filter((r) => r.decision && !r.error).length / rows.length),
       mean_lookalike_hits: round(mean(rows.map((r) => r.lookalike_hits.length))),
@@ -122,6 +123,8 @@ function rateOn(run, condition, taskIds) {
 // and only skills-on, because that is the condition the skills are responsible for.
 export function compareRuns(prev, next, { threshold = 0.1, minCommonTasks = 5 } = {}) {
   if (prev.model !== next.model) return { status: "skipped", reason: `model changed (${prev.model} to ${next.model})` };
+  const swapped = (run) => run.results.some((r) => r.model_mismatch);
+  if (swapped(prev) || swapped(next)) return { status: "skipped", reason: "a sample in one of the runs was answered by a different model than the file names" };
   const prevTasks = new Set(prev.results.filter((r) => r.condition === "on").map((r) => r.task));
   const common = new Set(next.results.filter((r) => r.condition === "on" && prevTasks.has(r.task)).map((r) => r.task));
   if (common.size < minCommonTasks) return { status: "skipped", reason: `only ${common.size} task(s) in common, need ${minCommonTasks}` };
