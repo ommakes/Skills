@@ -86,7 +86,17 @@ export function compareLatestPerModel(runs) {
   const out = [];
   for (const list of Object.values(byModel)) {
     list.sort((a, b) => Date.parse(a.run.created_at) - Date.parse(b.run.created_at) || a.f.localeCompare(b.f));
-    if (list.length >= 2) { const prev = list[list.length - 2], next = list[list.length - 1]; out.push({ prev, next, cmp: compareRuns(prev.run, next.run) }); }
+    if (list.length < 2) continue;
+    // Compare with the newest earlier run that can be compared, so one run that had to be skipped (a fallback model, a
+    // different sample count) does not leave the next run with nothing to be compared against.
+    const next = list[list.length - 1];
+    let chosen = null;
+    for (let i = list.length - 2; i >= 0; i--) {
+      const cmp = compareRuns(list[i].run, next.run);
+      chosen ??= { prev: list[i], next, cmp };
+      if (cmp.status !== "skipped") { chosen = { prev: list[i], next, cmp }; break; }
+    }
+    out.push(chosen);
   }
   return out;
 }
@@ -111,10 +121,10 @@ function main() {
   }
   const comparisons = compareLatestPerModel(runs);
   for (const { prev, next, cmp } of comparisons) {
-    if (cmp.status === "regressed") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: skills-on pass rate fell from ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s) (allowed drop ${cmp.threshold})`); }
+    if (cmp.status === "regressed") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: skills-on pass rate fell from ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s) (allowed drop ${cmp.threshold}; truncated skills-on samples ${cmp.truncated_before} to ${cmp.truncated_after})`); }
     else if (cmp.status === "skipped" && cmp.kind === "mismatch") console.warn(`WARN ${next.f} vs ${prev.f}: NOT COMPARED, ${cmp.reason}. The regression check did not run for this model.`);
     else if (cmp.status === "skipped") console.log(`note ${next.f} vs ${prev.f}: not compared, ${cmp.reason}`);
-    else console.log(`ok   ${next.f} vs ${prev.f}: skills-on pass rate ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s)`);
+    else console.log(`ok   ${next.f} vs ${prev.f}: skills-on pass rate ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s)${cmp.truncated_before || cmp.truncated_after ? `, truncated skills-on samples ${cmp.truncated_before} to ${cmp.truncated_after}` : ""}`);
   }
   if (!comparisons.length) console.log(`note ${runs.filter(({ run }) => run.full).length} full run(s) committed, none with an earlier full run of the same model; the regression check needs two`);
   if (failed) process.exit(1);

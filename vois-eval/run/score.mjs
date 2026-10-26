@@ -15,9 +15,9 @@ import { detectFile as detectDataviz } from "../../vois-dataviz/scripts/detect.m
 
 export const CONDITIONS = ["on", "off"];
 
-// The CLI can report a model with a context-window suffix ("claude-x[1m]") and can list a helper model next to the
+// The CLI can report a model with a context-window suffix ("claude-x[1m]") or a date ("claude-x-20260301"), and can list a helper model next to the
 // main one. A sample is "answered by another model" only when the requested model is not among those reported.
-const baseModel = (m) => String(m).replace(/\[[^\]]*\]$/, "");
+const baseModel = (m) => String(m).replace(/\[[^\]]*\]$/, "").replace(/-\d{8}$/, "");
 export const answeredByOtherModel = (served, model) => Array.isArray(served) && served.length > 0 && !served.some((m) => baseModel(m) === baseModel(model));
 export const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd"];
 
@@ -32,8 +32,9 @@ const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 //   - "//" and "/*" start a comment only at the start of a line or right after ; { } ( ) [ ] , = : or a quote,
 //     so JSX text such as <p>Press // to search</p>, <p>See src/* for details</p> and a URL (http://x) are left alone;
 //   - a block comment ends at the first "*/", and a "/*" inside a line comment does not start one.
-// The cost of that rule: a trailing comment after a plain word or number (x = 1 // note) is kept, so a component
-// named in such a comment could satisfy an import check. That is the one known gap.
+// The cost of that rule: a trailing comment after a plain word, a number or ">" (x = 1 // note, () => // note) is kept, so a
+// component named in such a comment could satisfy an import check. And "//" right after a closing quote starts a comment
+// even in JSX text (<p>say "x" // hi</p>), because that is how a string followed by a comment is written in code.
 const COMMENT_MAY_FOLLOW = ";{}()[],=:\"'`";
 export function stripComments(src) {
   let out = "";
@@ -47,7 +48,7 @@ export function stripComments(src) {
       let j = i + 1;
       while (j < n && src[j] !== c && src[j] !== "\n") j += src[j] === "\\" ? 2 : 1;
       if (src[j] === c) { out += src.slice(i, j + 1); prev = c; i = j + 1; continue; }
-      out += c; prev = c; i++; continue; // no partner on this line: an apostrophe
+      out += c; prev = "a"; i++; continue; // no partner on this line: an apostrophe in text, which cannot be followed by a comment
     }
     if (c === "`") {
       let j = i + 1;
@@ -139,11 +140,14 @@ export function compareRuns(prev, next, { threshold = 0.1, minCommonTasks = 5 } 
   if (common.size < minCommonTasks) return { status: "skipped", reason: `only ${common.size} task(s) in common, need ${minCommonTasks}` };
   const before = rateOn(prev, "on", common);
   const after = rateOn(next, "on", common);
+  const cut = (run) => run.results.filter((r) => r.condition === "on" && common.has(r.task) && r.truncated).length;
   return {
     // A small epsilon: 0.8 - 0.1 is 0.7000000000000001 in floating point, and a drop of exactly the threshold is allowed.
     status: after < before - threshold - 1e-9 ? "regressed" : "ok",
     before: round(before),
     after: round(after),
+    truncated_before: cut(prev),
+    truncated_after: cut(next),
     common_tasks: common.size,
     threshold,
   };

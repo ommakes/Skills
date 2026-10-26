@@ -26,7 +26,14 @@ import { answeredByOtherModel, CONDITIONS, scoreSample, summarize, TRUNCATED_SUB
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
 // What the runner does to keep the two conditions comparable. Recorded in every results file.
-export const ISOLATION = ["tools:Read,Write,Glob,Grep", "setting-sources:project", "strict-mcp-config", "file-access:logged-not-blocked", "user-memory:not-controlled"];
+// The isolation flags are written once. The args passed to the CLI and the `isolation` list recorded in every results
+// file both come from here, so the file cannot claim a flag the run did not have.
+export const TOOLS = ["Read", "Write", "Glob", "Grep"];
+export const ISOLATION_FLAGS = ["--setting-sources", "project", "--strict-mcp-config", "--tools", TOOLS.join(",")];
+export const ISOLATION = [
+  `tools:${TOOLS.join(",")}`, `setting-sources:${ISOLATION_FLAGS[ISOLATION_FLAGS.indexOf("--setting-sources") + 1]}`, "strict-mcp-config",
+  "file-access:logged-not-blocked", "user-memory:not-controlled",
+];
 export const SKILLS_UNDER_TEST = ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"];
 const TEMPLATE_ON = readFileSync(new URL("../lookalike-pass/runner-prompt.md", import.meta.url), "utf8");
 const TEMPLATE_OFF = readFileSync(new URL("../lookalike-pass/runner-prompt-baseline.md", import.meta.url), "utf8");
@@ -139,7 +146,7 @@ export function outsideAccess(toolUses, dir) {
 export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000 }) {
   return new Promise((resolveP) => {
     const args = ["-p", prompt, "--model", model, "--output-format", "stream-json", "--verbose", "--no-session-persistence",
-      "--setting-sources", "project", "--strict-mcp-config", "--tools", "Read,Write,Glob,Grep", "--allowedTools", "Read", "Write", "Glob", "Grep",
+      ...ISOLATION_FLAGS, "--allowedTools", ...TOOLS,
       "--max-turns", String(maxTurns), "--max-budget-usd", String(budget)];
     const child = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
     let out = "", err = "", timedOut = false;
@@ -204,7 +211,8 @@ async function runSampleInner({ task, condition, sample }, o, invoke) {
       model_mismatch: answeredByOtherModel(r.models, o.model), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
     if (src && o.saveOutput) { mkdirSync(o.saveOutput, { recursive: true }); writeFileSync(join(o.saveOutput, `${task.id}-${condition}-${sample}.tsx`), src); }
     if (!src) return failedRow(task, condition, sample, r.error ?? "the agent wrote no ./out.tsx and gave no code block", base);
-    return { ...base, ...scoreSample(src, task) };
+    try { return { ...base, ...scoreSample(src, task) }; }
+    catch (e) { return failedRow(task, condition, sample, `scoring error: ${String(e?.message ?? e).slice(0, 200)}`, base); } // the call was paid for: keep its cost and flags
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -213,6 +221,10 @@ async function runSampleInner({ task, condition, sample }, o, invoke) {
 function skillVersions() {
   const sj = JSON.parse(readFileSync(join(REPO, "skills.json"), "utf8"));
   return Object.fromEntries(SKILLS_UNDER_TEST.map((n) => [n, sj.skills.find((s) => s.name === n)?.version ?? "unknown"]));
+}
+function gitState() {
+  const status = tryExec("git", ["status", "--porcelain"], REPO);
+  return { sha: tryExec("git", ["rev-parse", "HEAD"], REPO), status, dirty: status === "unknown" || status.length > 0 };
 }
 const tryExec = (cmd, args, cwd) => { try { return execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim(); } catch { return "unknown"; } };
 
@@ -234,13 +246,21 @@ export function writeResultFile(resultsDir, parts, text) {
   }
 }
 
-export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results") } = {}) {
+// Copy the skills once into a scratch folder before the plan starts. A broken checkout then stops the run before anything
+// is spent, instead of turning every skills-on sample into an error row while the skills-off ones are still paid for.
+export function preflightSkills(repo = REPO) {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-preflight-"));
+  try { copySkills(dir, repo); } finally { rmSync(dir, { recursive: true, force: true }); }
+}
+
+export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results"), skillsRepo = REPO, git = gitState } = {}) {
   const o = parseArgs(argv);
   const tasks = loadTasks();
   const plan = buildPlan(tasks, o);
   // One timestamp for the whole run, taken at the start: a run that crosses midnight must not get a date and a
   // created_at that disagree, which the results check rejects.
   const startedAt = now().toISOString();
+  const gitAtStart = git();
   const date = startedAt.slice(0, 10);
   // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
   const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
@@ -249,6 +269,7 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const explicitOut = o.out ? resolve(o.out) : null;
   if (!o.dryrun && explicitOut && existsSync(explicitOut) && !o.force) throw new Error(`${explicitOut} already exists; pass a different --out, or --force to overwrite it`);
   log(`${plan.length} call(s): ${new Set(plan.map((p) => p.task.id)).size} task(s) x ${o.condition === "both" ? "2 conditions" : o.condition} x ${o.samples} sample(s)`);
+  if (!o.dryrun && plan.some((p) => p.condition === "on")) preflightSkills(skillsRepo);
   if (o.dryrun) { for (const p of plan.slice(0, 20)) log(`  ${p.task.id} ${p.condition} #${p.sample}`); if (plan.length > 20) log(`  ... and ${plan.length - 20} more`); return null; }
 
   const results = new Array(plan.length);
@@ -262,11 +283,16 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   };
   await Promise.all(Array.from({ length: Math.min(o.concurrency, plan.length) }, worker));
 
-  const dirty = tryExec("git", ["status", "--porcelain"], REPO);
-  if (dirty && dirty !== "unknown") log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
+  // The skills are copied from the working tree for every sample. If the tree changed while the run was going, the samples
+  // do not all share one skill text, so the run is recorded as not reproducible.
+  const gitAtEnd = git();
+  const gitChanged = gitAtEnd.sha !== gitAtStart.sha || gitAtEnd.dirty !== gitAtStart.dirty || gitAtEnd.status !== gitAtStart.status;
+  const gitDirty = gitAtStart.dirty || gitChanged;
+  if (gitChanged) log("\nnote: the repository changed while the run was going, so its samples may not share one skill text; recorded as git_dirty");
+  else if (gitDirty) log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
   const run = {
     schema: "vois-eval-results/1", date, created_at: startedAt, model: o.model, smoke: Boolean(o.smoke), full,
-    claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
+    claude_cli: tryExec("claude", ["--version"], REPO), git_sha: gitAtStart.sha, git_dirty: gitDirty,
     isolation: ISOLATION, skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),
   };

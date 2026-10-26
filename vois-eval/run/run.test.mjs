@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, writeResultFile } from "./run.mjs";
+import { buildPlan, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, ISOLATION_FLAGS, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, TOOLS, writeResultFile } from "./run.mjs";
 import { compareLatestPerModel, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -804,6 +804,13 @@ test("DT-01 empty-state patterns accept a real filtered empty state and reject c
   // JSX text on its own line, as Prettier lays out a long paragraph
   assert.deepEqual(only(`<p className="text-muted-foreground">\n  No tasks match your filters.\n</p>\n<Button>\n  Clear filters\n</Button>`), []);
   assert.deepEqual(only(`<p>\n  Nothing found for this search\n</p><Button>Clear filters</Button>`), []);
+  // templated copy, and copy that names the filters without the word "no"
+  assert.deepEqual(only(`<p>No results for {query}. Try adjusting your search.</p><Button>Clear filters</Button>`), []);
+  assert.deepEqual(only(`<p>\n  No tasks found for this search{suffix}\n</p><Button>Clear filters</Button>`), [], "text, then a {expression}");
+  assert.deepEqual(only(`<p>\n  No tasks found{search ? " for that search" : ""}\n</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"], "the filter word is only inside an expression, so it is not visible text");
+  assert.deepEqual(only(`<p>Couldn't find any tasks matching those filters</p><Button>Clear filters</Button>`), []);
+  // an unfiltered empty state that only mentions search later is not a filtered empty state
+  assert.deepEqual(only(`<p>There are no tasks yet. Create one. Use search later.</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"]);
   // a line of code is not text, even when it has the right words in it
   assert.deepEqual(only(`if (no === search) {\n  return null;\n}\nconst x = noMatch;\nclear filters`), ["missing:filtered-empty-message"]);
 });
@@ -894,3 +901,95 @@ function withBothConditions(run) {
   const results = [...run.results, ...off];
   return { ...run, conditions: ["on", "off"], results, summary: summarize(results) };
 }
+
+// ---------- third-round follow-ups ----------
+
+test("a throw while scoring keeps the cost, the models and the flags of the call that was paid for", async () => {
+  const bad = { id: "T-bad", user_prompt: "x", expected_imports: ["("] }; // not a valid pattern once it reaches the scorer
+  const row = await runSample({ task: bad, condition: "off", sample: 1 }, parseArgs(["--model", "m"]), async () => ({
+    result: "```tsx\nexport default () => <div/>;\n```", cost_usd: 0.4, duration_ms: 9, turns: 3, models: ["m"], truncated: true, stop_reason: "error_max_turns",
+  }));
+  assert.match(row.error, /scoring error/);
+  assert.equal(row.pass, false);
+  assert.equal(row.cost_usd, 0.4);
+  assert.equal(row.turns, 3);
+  assert.deepEqual(row.served_models, ["m"]);
+  assert.equal(row.truncated, true);
+  assert.equal(row.stop_reason, "error_max_turns");
+});
+test("a dated model id is the same model", () => {
+  assert.equal(answeredByOtherModel(["claude-a-20260301"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a"], "claude-a-20260301"), false);
+  assert.equal(answeredByOtherModel(["claude-a-20260301[1m]"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a-2026"], "claude-a"), true, "only an 8-digit date is stripped");
+  assert.equal(answeredByOtherModel(["claude-b-20260301"], "claude-a"), true);
+});
+test("one skipped run does not leave the next run with nothing to be compared against", () => {
+  const withMismatch = (r) => { r.results[0].served_models = ["other"]; r.results[0].model_mismatch = true; r.summary = summarize(r.results); return r; };
+  const A = entry("a.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true)));
+  const B = entry("b.json", { ...withMismatch(mkRun("m", "2026-10-02T10:00:00.000Z", ten(true))) });
+  const C = entry("c.json", mkRun("m", "2026-10-03T10:00:00.000Z", [...Array(6).fill(true), ...Array(4).fill(false)]));
+  const [cmp] = compareLatestPerModel([A, B, C]);
+  assert.equal(cmp.prev.f, "a.json", "skips over the run with the fallback sample");
+  assert.equal(cmp.cmp.status, "regressed");
+  // when the newest run is the one with the fallback sample, nothing can be compared and it is reported as a mismatch
+  const [last] = compareLatestPerModel([A, entry("d.json", withMismatch(mkRun("m", "2026-10-04T10:00:00.000Z", ten(false))))]);
+  assert.equal(last.cmp.status, "skipped");
+  assert.equal(last.cmp.kind, "mismatch");
+  // when every earlier run is uncomparable the first skip reason is returned
+  const only = compareLatestPerModel([entry("e.json", mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { samples_per_task: 2 })), entry("f.json", mkRun("m", "2026-10-02T10:00:00.000Z", ten(true)))]);
+  assert.match(only[0].cmp.reason, /samples per task changed/);
+});
+test("the comparison reports how many skills-on samples were truncated in each run", () => {
+  const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true));
+  const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(true));
+  for (const r of b.results.slice(0, 3)) { r.truncated = true; r.stop_reason = "error_max_turns"; }
+  const cmp = compareRuns(a, b);
+  assert.equal(cmp.truncated_before, 0);
+  assert.equal(cmp.truncated_after, 3);
+});
+test("a lone apostrophe in JSX text does not let a following // start a comment", () => {
+  const src = "<p>the users' // hi</p>";
+  assert.equal(stripComments(src), src);
+  assert.equal(stripComments("const a = 'x' // hi\nb"), "const a = 'x' \nb", "a real string followed by a comment still works");
+});
+test("the isolation recorded in a results file comes from the flags the CLI is started with", async () => {
+  const { argv } = await viaFake({ events: [resultEvent()] });
+  const at = argv.indexOf(ISOLATION_FLAGS[0]);
+  assert.deepEqual(argv.slice(at, at + ISOLATION_FLAGS.length), ISOLATION_FLAGS, "the flags are passed as one block");
+  const allowed = argv.indexOf("--allowedTools");
+  assert.deepEqual(argv.slice(allowed + 1, allowed + 1 + TOOLS.length), TOOLS);
+  assert.ok(ISOLATION.includes(`tools:${argv[argv.indexOf("--tools") + 1]}`));
+  assert.ok(ISOLATION.includes(`setting-sources:${argv[argv.indexOf("--setting-sources") + 1]}`));
+  assert.equal(ISOLATION.includes("strict-mcp-config"), argv.includes("--strict-mcp-config"));
+});
+test("a repository change during the run is recorded as dirty, and a clean unchanged one is not", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-git-"));
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  const go = (states, name) => { let i = 0; return main(["--model", "m", "--tasks", "DT-04", "--condition", "off", "--samples", "1", "--out", join(dir, name)], { invoke, log: () => {}, git: () => states[Math.min(i++, states.length - 1)] }); };
+  const clean = { sha: "aaa", status: "", dirty: false };
+  try {
+    assert.equal((await go([clean], "a.json")).run.git_dirty, false);
+    assert.equal((await go([{ ...clean, dirty: true, status: " M x" }], "b.json")).run.git_dirty, true, "dirty from the start");
+    const moved = await go([clean, { ...clean, sha: "bbb" }], "c.json");
+    assert.equal(moved.run.git_dirty, true, "committed during the run");
+    assert.equal(moved.run.git_sha, "aaa", "the sha is the one at the start");
+    assert.equal((await go([clean, { ...clean, dirty: true, status: " M y" }], "d.json")).run.git_dirty, true, "edited during the run");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("a broken skills checkout stops the run before anything is spent, and only when skills are used", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-pre-"));
+  let calls = 0;
+  const invoke = async () => { calls++; return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; };
+  try {
+    mkdirSync(join(root, "repo"), { recursive: true });
+    const go = (extra) => main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", join(root, `${Math.random()}.json`), ...extra], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+    await assert.rejects(go([]), /SKILL.md is missing|ENOENT/);
+    await assert.rejects(go(["--condition", "on"]), /SKILL.md is missing|ENOENT/);
+    assert.equal(calls, 0, "no model call was made");
+    const off = await go(["--condition", "off"]);
+    assert.equal(off.run.results.length, 1, "skills-off does not need the skills");
+    assert.equal(calls, 1);
+    await main(["--dry-run", "--tasks", "DT-04"], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
