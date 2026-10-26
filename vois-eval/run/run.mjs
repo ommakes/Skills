@@ -15,7 +15,7 @@
 import { spawn, execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve, sep } from "node:path";
+import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks } from "./tasks.mjs";
 import { CONDITIONS, scoreSample, summarize } from "./score.mjs";
@@ -124,6 +124,19 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
   });
 }
 
+// Copy the skills under test into the run directory. The node_modules filter looks at the path inside each
+// skill folder, not the absolute path, so a checkout that itself sits under a node_modules folder still
+// copies. A copy that comes out without its SKILL.md throws: running "skills on" with no skills in the
+// folder would record a meaningless result as a real one.
+export function copySkills(dir, repo = REPO, names = SKILLS_UNDER_TEST) {
+  for (const name of names) {
+    const from = join(repo, name);
+    const to = join(dir, "skills", name);
+    cpSync(from, to, { recursive: true, filter: (p) => !relative(from, p).split(sep).includes("node_modules") });
+    if (!existsSync(join(to, "SKILL.md"))) throw new Error(`skills/${name}/SKILL.md is missing after the copy from ${from}`);
+  }
+}
+
 const failedRow = (task, condition, sample, error, extra = {}) => ({ task: task.id, condition, sample, cost_usd: 0, duration_ms: 0, turns: 0, served_models: [],
   pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
 
@@ -137,7 +150,7 @@ export async function runSample(item, o, invoke = invokeClaude) {
 async function runSampleInner({ task, condition, sample }, o, invoke) {
   const dir = mkdtempSync(join(tmpdir(), `vois-eval-${task.id}-${condition}-`));
   try {
-    if (condition === "on") for (const s of SKILLS_UNDER_TEST) cpSync(join(REPO, s), join(dir, "skills", s), { recursive: true, filter: (p) => !p.includes("node_modules") });
+    if (condition === "on") copySkills(dir);
     const r = await invoke({ prompt: renderPrompt(condition, task), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget });
     const file = join(dir, "out.tsx");
     const src = r.error ? null : extractCode(existsSync(file) ? readFileSync(file, "utf8") : "", r.result);

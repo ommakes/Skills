@@ -4,13 +4,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, extractCode, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
+import { buildPlan, copySkills, extractCode, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
 import { validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -427,4 +427,31 @@ test("file access outside the run directory is recorded on the sample", async ()
     assert.equal(res.run.summary.off.outside_access, 1);
     assert.equal(typeof res.run.git_dirty, "boolean");
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("copySkills copies from a checkout that sits under node_modules and leaves nested node_modules out", () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-nm-"));
+  try {
+    const repo = join(root, "node_modules", "some-pkg", "skills-checkout");
+    for (const n of ["a", "b"]) {
+      mkdirSync(join(repo, n, "references"), { recursive: true });
+      mkdirSync(join(repo, n, "node_modules", "dep"), { recursive: true });
+      writeFileSync(join(repo, n, "SKILL.md"), `# ${n}`);
+      writeFileSync(join(repo, n, "references", "x.md"), "x");
+      writeFileSync(join(repo, n, "node_modules", "dep", "index.js"), "1");
+    }
+    const dest = join(root, "run");
+    copySkills(dest, repo, ["a", "b"]);
+    assert.ok(existsSync(join(dest, "skills", "a", "SKILL.md")));
+    assert.ok(existsSync(join(dest, "skills", "b", "references", "x.md")));
+    assert.equal(existsSync(join(dest, "skills", "a", "node_modules")), false);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+test("copySkills throws when a skill has no SKILL.md or does not exist", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-nomd-"));
+  try {
+    mkdirSync(join(root, "repo", "a"), { recursive: true });
+    assert.throws(() => copySkills(join(root, "run"), join(root, "repo"), ["a"]), /SKILL.md is missing/);
+    assert.throws(() => copySkills(join(root, "run2"), join(root, "repo"), ["nope"]));
+  } finally { rmSync(root, { recursive: true, force: true }); }
 });
