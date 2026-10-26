@@ -1,0 +1,129 @@
+{
+  "schema": "vois-eval-results/1",
+  "date": "2026-10-26",
+  "model": "claude-haiku-5-5",
+  "smoke": true,
+  "claude_cli": "2.1.310 (Claude Code)",
+  "git_sha": "5872306ed7bfffef2db742d85f63b6d26e40d19d",
+  "git_dirty": false,
+  "skills": {
+    "vois-patterns": "1.17.0",
+    "vois-components": "1.15.2",
+    "vois-tokens": "1.23.2",
+    "vois-dataviz": "1.1.2",
+    "righter": "1.10.0"
+  },
+  "samples_per_task": 1,
+  "conditions": [
+    "on",
+    "off"
+  ],
+  "tasks": [
+    "LP-03a",
+    "DT-04"
+  ],
+  "results": [
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.015474990000000001,
+      "duration_ms": 46397,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.006512990000000001,
+      "duration_ms": 35967,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.01278896,
+      "duration_ms": 33732,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.00517625,
+      "duration_ms": 27757,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    }
+  ],
+  "summary": {
+    "on": {
+      "samples": 2,
+      "errors": 0,
+      "outside_access": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 0.5,
+      "cost_usd": 0.028,
+      "mean_duration_ms": 40065
+    },
+    "off": {
+      "samples": 2,
+      "errors": 0,
+      "outside_access": 0,
+      "pass_rate": 0.5,
+      "decision_rate": 0.5,
+      "mean_lookalike_hits": 0,
+      "mean_detector_findings": 0,
+      "cost_usd": 0.012,
+      "mean_duration_ms": 31862
+    }
+  }
+}
