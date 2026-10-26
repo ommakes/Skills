@@ -60,6 +60,7 @@ export function validateRun(run) {
     need(typeof r.cost_usd === "number" && r.cost_usd >= 0, `${at}: cost_usd must be a number of 0 or more`);
     need(typeof r.duration_ms === "number" && r.duration_ms >= 0, `${at}: duration_ms must be a number of 0 or more`);
     need(!(r.pass && r.error !== undefined), `${at}: an errored sample cannot be marked as passing`);
+    need(!(run.full && r.error !== undefined), `${at}: a full run cannot contain a sample that ended in an error`);
     // The flags must follow from the findings, so flipping one by hand cannot hide a failure.
     const none = (k) => Array.isArray(r[k]) && r[k].length === 0;
     need(!r.decision || none("forbidden_imports"), `${at}: marked as a correct decision with forbidden imports`);

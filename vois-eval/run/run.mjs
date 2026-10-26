@@ -17,7 +17,7 @@
 // directory (outside_cwd_access) so that shows up in the results. A memory file it cannot see, so run on a machine
 // whose user-level memory says nothing about Vois, or the off rate may be too high.
 import { spawn, execFileSync } from "node:child_process";
-import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { homedir, tmpdir } from "node:os";
 import { join, relative, resolve, sep } from "node:path";
@@ -35,6 +35,7 @@ export const ISOLATION = [
   `tools:${TOOLS.join(",")}`, `setting-sources:${ISOLATION_FLAGS[ISOLATION_FLAGS.indexOf("--setting-sources") + 1]}`, "strict-mcp-config",
   "file-access:logged-not-blocked", "user-memory:not-controlled",
 ];
+const BREAKER_AFTER = 5; // consecutive errored samples before a run stops itself
 export const SKILLS_UNDER_TEST = ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"];
 const TEMPLATE_ON = readFileSync(new URL("../lookalike-pass/runner-prompt.md", import.meta.url), "utf8");
 const TEMPLATE_OFF = readFileSync(new URL("../lookalike-pass/runner-prompt-baseline.md", import.meta.url), "utf8");
@@ -55,7 +56,7 @@ export function extractCode(fileText, resultText) {
 
 export function parseArgs(argv) {
   const o = { condition: "both", samples: 3, maxTurns: 40, budget: 1, concurrency: 1 };
-  const flags = new Set(["--dry-run", "--smoke", "--force", "--resume"]);
+  const flags = new Set(["--dry-run", "--smoke", "--force", "--resume", "--retry-errors"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (flags.has(a)) { o[a.slice(2).replace(/-/g, "")] = true; continue; }
@@ -72,6 +73,7 @@ export function parseArgs(argv) {
   if (!(o.budget > 0)) throw new Error("--budget must be more than 0");
   if (o.limit !== undefined && !(Number.isInteger(o.limit) && o.limit >= 1)) throw new Error("--limit must be a whole number of 1 or more");
   if (!o.dryrun && !o.model) throw new Error("--model is required, so the results file says which model produced it");
+  if (o.retryerrors && !o.resume) throw new Error("--retry-errors only makes sense with --resume");
   if (o.resume && !o.progress) throw new Error("--resume needs --progress <file>, the progress file of the run to continue");
   return o;
 }
@@ -295,8 +297,9 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const startedAt = now().toISOString();
   const gitAtStart = git();
   const date = startedAt.slice(0, 10);
-  // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
-  const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
+  // Only a run of every default task, with both conditions, and no sample that ended in an error, is "full". A partial run is
+  // kept but never compared. The error part is decided after the run.
+  const fullPlan = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
   // An explicit --out that is taken is refused before anything is spent. The default name cannot clash: it is chosen
   // when the file is written, as the first free one.
   const explicitOut = o.out ? resolve(o.out) : null;
@@ -312,8 +315,18 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   let startedAtRun = startedAt;
   if (o.resume) {
     if (!existsSync(progressPath)) throw new Error(`--resume: ${progressPath} does not exist`);
-    const { header: saved, rows } = loadProgress(progressPath);
+    const { header: saved, rows: allRows } = loadProgress(progressPath);
     checkResume(saved, header);
+    let rows = allRows;
+    if (o.retryerrors) {
+      // Drop the samples that ended in an error (a usage limit, an outage) so they are run again. The file is rewritten
+      // whole to a temporary name and renamed, so a crash cannot leave it half written.
+      rows = allRows.filter((r) => !r.error);
+      const tmp = `${progressPath}.tmp`;
+      writeFileSync(tmp, [JSON.stringify(saved), ...rows.map((r) => JSON.stringify({ type: "row", row: r }))].join("\n") + "\n");
+      renameSync(tmp, progressPath);
+      log(`retrying ${allRows.length - rows.length} sample(s) that ended in an error`);
+    }
     const keyOf = (r) => `${r.task}|${r.condition}|${r.sample}`;
     const wanted = new Map(plan.map((p, i) => [`${p.task.id}|${p.condition}|${p.sample}`, i]));
     for (const r of rows) { const i = wanted.get(keyOf(r)); if (i === undefined) throw new Error(`cannot resume: the progress file has a sample (${keyOf(r)}) that is not in this plan`); if (results[i]) throw new Error(`cannot resume: ${keyOf(r)} appears twice in the progress file`); results[i] = r; }
@@ -325,16 +338,28 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
     log(`progress is saved to ${progressPath} (if this run dies, continue it with the same arguments plus --resume --progress ${progressPath})`);
   }
   const todo = plan.map((_, i) => i).filter((i) => !results[i]);
-  let next = 0, done = plan.length - todo.length;
+  let next = 0, done = plan.length - todo.length, inARow = 0, stopped = null;
   const worker = async () => {
-    while (next < todo.length) {
+    // Stop launching samples after a run of errors in a row: when the account hits its usage limit, or the service is down,
+    // every remaining sample fails the same way, and a results file full of them is worse than none.
+    while (next < todo.length && !stopped) {
       const i = todo[next++];
       results[i] = await runSample(plan[i], o, invoke, skillsRepo);
       appendFileSync(progressPath, JSON.stringify({ type: "row", row: results[i] }) + "\n");
+      inARow = results[i].error ? inARow + 1 : 0;
+      if (inARow >= BREAKER_AFTER && !stopped) stopped = `${BREAKER_AFTER} samples in a row ended in an error (the latest: ${results[i].error})`;
       log(`  [${++done}/${plan.length}] ${results[i].task} ${results[i].condition} #${results[i].sample}: ${results[i].error ? "ERROR " + results[i].error : results[i].pass ? "pass" : "fail"}`);
     }
   };
   await Promise.all(Array.from({ length: Math.min(o.concurrency, todo.length) }, worker));
+  if (stopped) {
+    const saved = results.filter(Boolean).length;
+    throw new Error(`${stopped}. Stopped before spending more: ${saved} of ${plan.length} samples are saved in ${progressPath}, and no results file was written. `
+      + `Fix the cause (a usage limit resets on its own), then continue with the same arguments plus --resume --retry-errors --progress ${progressPath}`);
+  }
+  const errored = results.filter((r) => r.error).length;
+  const full = fullPlan && errored === 0;
+  if (errored) log(`\nwarning: ${errored} of ${plan.length} sample(s) ended in an error, so this run is saved as partial and will not be compared. Re-run just those with the same arguments plus --resume --retry-errors --progress ${progressPath}`);
 
   // The skills are copied from the working tree for every sample. If the tree changed while the run was going, the samples
   // do not all share one skill text, so the run is recorded as not reproducible.
