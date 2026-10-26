@@ -24,11 +24,17 @@
           "flags": "i"
         },
         {
-          "id": "filtered-empty-state",
-          "regex": "\\b(?:no|nothing)\\b[^\\n]{0,60}\\b(?:match|matches|matching)\\b|\\b(?:no|nothing)\\b[^\\n]{0,80}\\b(?:filters?|search)\\b|\\b(?:filters?|search)\\b[^\\n]{0,80}\\b(?:no|nothing)\\b",
+          "id": "filtered-empty-message",
+          "regex": "[\"'`>][^\"'`<>{}\\n]*\\b(?:no|nothing)\\b[^\"'`<>{}\\n]*\\b(?:filters?|search|match(?:es|ing)?)\\b",
+          "flags": "i"
+        },
+        {
+          "id": "clear-filters-label",
+          "regex": "\\b(?:clear|reset)\\s+(?:all\\s+)?filters?\\b",
           "flags": "i"
         }
-      ]
+      ],
+      "notes": "Both empty-state patterns read visible text only (a quoted string or JSX text), so an identifier like clearFilters or a search state variable does not satisfy them. PATH-TABLE-STATE-EMPTY-FILTERED asks for a message that says filters caused the empty result, and a Clear filters control."
     },
     {
       "id": "DT-02",

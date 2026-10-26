@@ -736,3 +736,20 @@ test("an explicit --out that exists is refused unless --force, and --force overw
     assert.notEqual(readFileSync(out, "utf8"), "old");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+// ---------- the DT-01 patterns, from both sides ----------
+
+test("DT-01 empty-state patterns accept a real filtered empty state and reject code that only looks like one", () => {
+  const dt01 = loadTasks().find((t) => t.id === "DT-01");
+  const only = (src) => scoreSample(src, { ...dt01, expected_imports: [] }).pattern_failures.filter((f) => /empty-message|clear-filters/.test(f));
+  const good = `<p className="text-sm">No customers match your filters.</p>\n<Button onClick={clearFilters}>Clear filters</Button>`;
+  assert.deepEqual(only(good), []);
+  assert.deepEqual(only(`<p>{count} selected</p>\n<p>Nothing found for this search</p><Button>Reset all filters</Button>`), []);
+  assert.deepEqual(only(`toast("No rows match the filters"); const label = 'Clear filters';`), []);
+  // identifiers and comments are not visible text
+  assert.deepEqual(only(`const [search, setSearch] = useState("");\n// no results\nconst noMatch = rows.length === 0;\nclearFilters();`), ["missing:filtered-empty-message", "missing:clear-filters-label"]);
+  // an empty state that does not blame the filters, and a message with no way to clear them
+  assert.deepEqual(only(`<p>No customers yet.</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<p>No customers match your filters.</p>`), ["missing:clear-filters-label"]);
+  assert.deepEqual(only(`<p>{rows.length === 0 && "none"}</p>`), ["missing:filtered-empty-message", "missing:clear-filters-label"]);
+});
