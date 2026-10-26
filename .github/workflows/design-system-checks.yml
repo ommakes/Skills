@@ -68,6 +68,12 @@ jobs:
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs
 
+      - name: Every rule says how it is verified, and detectors match the code
+        run: python3 scripts/check-verification.py
+
+      - name: Verification check tests
+        run: python3 scripts/check-verification.test.py
+
       - name: SKILL.md frontmatter validation
         run: bash scripts/validate-skills.sh
 

@@ -1,6 +1,6 @@
 {
   "source": "vois-tokens/references/*.md (15 files; excludes anti-slop.md and hooks.md — see note)",
-  "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either.",
+  "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either. Every rule also has `verification`: `detector` (a check in scripts/registry.mjs catches some or all violations of it, named in `detector`; passing the check does not prove the rule is met, and gaps are listed in references/hooks.md), `spec` (a chart-spec check), `rendered` (needs the page rendered) or `judgment` (an agent reads the code). It says how a rule can be checked, which is a different question from `enforcement` (whether a hook may deny the edit) and `severity` (how much the rule weighs).",
   "categories": {
     "DS-A11Y": "Accessibility",
     "DS-ANIMATION": "Animation",
@@ -29,7 +29,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Every interactive element has a hit area of at least var(--hit-area-min) in both dimensions. The visual element can be smaller. Extend the hit area with a pseudo-element, and never size the visible control with this token.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-002",
@@ -38,7 +39,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "`:focus-visible` — triggers only when the browser determines a visible focus indicator is needed. This covers keyboard navigation and assistive technology, but not mouse clicks. Use this for focus rings on buttons and links",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-003",
@@ -47,7 +49,9 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Never remove `outline` without providing a `:focus-visible` replacement.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-A11Y-003"
     },
     {
       "id": "DS-A11Y-004",
@@ -56,7 +60,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Minimum contrast ratio: 4.5:1 for normal text (under 18px regular, under 14px bold); 3:1 for large text (18px+ regular, 14px+ bold) and for UI components and graphical objects.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-005",
@@ -65,7 +70,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "`<button>` for actions. `<a>` for navigation. Not `<div onClick>`.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-006",
@@ -74,7 +80,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Form inputs need associated `<label>` elements, not just placeholder text.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-007",
@@ -83,7 +90,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Icon-only buttons need `aria-label`.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-008",
@@ -92,7 +100,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Decorative icons need `aria-hidden=\"true\"`.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-009",
@@ -101,7 +110,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Error messages need `aria-live=\"polite\"` or `role=\"alert\"`.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-010",
@@ -110,7 +120,9 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Images need `alt`. Decorative images get `alt=\"\"`, not a missing alt attribute.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-A11Y-010"
     },
     {
       "id": "DS-A11Y-011",
@@ -119,7 +131,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Use `<ul>` or `<ol>` for lists of items. Don't use a stack of `<div>` siblings when the content is semantically a list.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-012",
@@ -128,7 +141,9 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Use `<br>` only for intentional line breaks in content (addresses, poems). Never use it to create visual spacing between elements — that's a layout problem.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-A11Y-012"
     },
     {
       "id": "DS-A11Y-013",
@@ -138,6 +153,7 @@
       "rule": "`loading=\"lazy\"` on all images that aren't in the initial viewport. Skip it on hero images and above-the-fold content — those should load immediately.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "images not in the initial viewport",
       "does_not_apply_when": "hero images and above-the-fold content — those should load immediately"
     },
@@ -148,7 +164,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "`<time datetime=\"...\">` for dates and times. The `datetime` attribute is machine-readable; the element content is human-readable.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-015",
@@ -157,7 +174,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Don't use heading elements (`<h1>`–`<h6>`) just to get a certain font size. Use them for document structure. Style with CSS.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-016",
@@ -166,7 +184,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "`<fieldset>` and `<legend>` for groups of related form controls (radio groups, checkbox groups). Don't skip this — screen readers announce the group label with each input.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-A11Y-017",
@@ -175,7 +194,8 @@
       "source_file": "vois-tokens/references/accessibility.md",
       "rule": "Never use color as the only signal for state. Error, success, and warning states always need a secondary indicator — an icon, a text label, or both.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ANIMATION-001",
@@ -184,7 +204,9 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "UI animations: under `300ms` as a default.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-ANIMATION-001"
     },
     {
       "id": "DS-ANIMATION-002",
@@ -193,7 +215,8 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Large elements (drawers, action sheets, modals entering): up to `500ms`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ANIMATION-003",
@@ -203,6 +226,7 @@
       "rule": "Never animate keyboard-triggered interactions. Repeated actions feel slower when animated. Keyboard users feel this.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "keyboard-triggered interactions specifically"
     },
     {
@@ -212,7 +236,9 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Always respect `prefers-reduced-motion`. Users who set this have real reasons — vestibular disorders, epilepsy, motion sensitivity.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-ANIMATION-004"
     },
     {
       "id": "DS-ANIMATION-005",
@@ -221,7 +247,9 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Never animate from `scale(0)`. Start at `0.9` or higher. Zero-scale animations feel mechanical.",
       "severity": "required",
-      "enforcement": "blocking"
+      "enforcement": "blocking",
+      "verification": "detector",
+      "detector": "DS-ANIMATION-005"
     },
     {
       "id": "DS-ANIMATION-006",
@@ -230,7 +258,8 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Set `transform-origin` to the trigger point. A dropdown expands from the button that opened it. A tooltip appears from the element it describes. The default `center` is wrong in most cases.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ANIMATION-007",
@@ -239,7 +268,8 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Tailwind v4's `hover:` only fires on devices that support hover. If writing raw CSS, guard hover styles with `@media (hover: hover) and (pointer: fine)`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ANIMATION-008",
@@ -248,7 +278,9 @@
       "source_file": "vois-tokens/references/animation.md",
       "rule": "Use `scale(0.96)` on button press. Never go below `0.95` — anything smaller reads as exaggerated rather than tactile. Not every button needs this — add a `static` prop to disable it where the motion would be distracting (e.g. inside a list with frequent clicks).",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-ANIMATION-008"
     },
     {
       "id": "DS-ANIMATION-009",
@@ -258,6 +290,8 @@
       "rule": "Set `will-change` on GPU-compositable properties (`transform`, `opacity`, `filter`, `clip-path`) to pre-promote an element to its own GPU layer and avoid a one-frame stutter on first animation. It does nothing for `width`, `height`, `top`, `left`, `background`, `border`, or `color`. Add it only when you actually notice first-frame stutter, not preemptively — each layer costs memory.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-ANIMATION-009",
       "applies_when": "only after first-frame stutter is actually observed on a GPU-compositable property — not preemptively"
     },
     {
@@ -268,6 +302,8 @@
       "rule": "Timing and easing come from motion tokens (`var(--motion-duration-*)`, `var(--motion-ease-*)`, or `motion-tokens.ts` for Motion). Component code holds no literal durations, `cubic-bezier(...)` curves, or numeric easing arrays. Only the token file (`motion-tokens.{css,scss,ts,js}`) may define them.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-MOTION-001",
       "applies_when": "any transition, animation, or Motion component in code or CSS"
     },
     {
@@ -278,6 +314,7 @@
       "rule": "The slow duration token is for large elements only (drawers, sheets, modals entering). It can run up to 500ms. Any other UI animation stays under 300ms, whichever token it uses.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a slow duration token is applied to an element that is not a large surface"
     },
     {
@@ -288,6 +325,7 @@
       "rule": "A morph runs inside one duration token. Old content leaves while new content arrives, so the whole morph takes one token, never two added together. Out-then-in in sequence doubles the time and breaks `DS-ANIMATION-001`.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a label, text or icon morph that animates the old value out and the new value in"
     },
     {
@@ -298,6 +336,7 @@
       "rule": "A tray (a persistent bottom container that shows one step at a time) is one element. Steps swap inside it and its height follows the new step. It never unmounts between steps.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a multi-step bottom sheet or drawer where each step has its own content"
     },
     {
@@ -308,6 +347,7 @@
       "rule": "When a shared element travels between views, the content it leaves behind may dim and blur. The blur never exceeds the value in `DS-SURFACE-014`, and the travelling element is never blurred.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a shared element transfer between two full views or from a list item into its detail"
     },
     {
@@ -318,6 +358,7 @@
       "rule": "Springs are allowed when `bounce` is `0` and the duration comes from a motion token (`motionSpring` in `motion-tokens.ts`). A transition that is retargeted mid-flight continues from its current position and velocity, not from the start.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a spring transition, or an animation the user can interrupt"
     },
     {
@@ -328,6 +369,7 @@
       "rule": "Delight never gates the task and never carries meaning alone. A loop pauses under `prefers-reduced-motion` and while the page is hidden, nothing flashes more than three times a second, and a one-off occasion effect plays once and can be skipped.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "a decorative or expressive animation, an ambient loop, or an easter egg"
     },
     {
@@ -337,7 +379,9 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Never hardcode hex values. Use CSS tokens.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-COLOR-001"
     },
     {
       "id": "DS-COLOR-002",
@@ -347,6 +391,8 @@
       "rule": "Never use Tailwind's built-in color palette (`blue-500`, `red-400`, etc.) if a token exists for it. The token is always preferred.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-COLOR-002",
       "engines": ["tailwind"]
     },
     {
@@ -356,7 +402,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Color cannot be the only signal. Error states, success states, warnings — always pair color with an icon, label, or text. Never rely on color alone.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-004",
@@ -365,7 +412,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "60/30/10 distribution: roughly 60% neutral, 30% complementary/secondary, 10% accent/brand. This prevents visual stress and keeps hierarchy clear.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-005",
@@ -374,7 +422,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Decorative icons that add no information get `aria-hidden=\"true\"`. Don't let screen readers announce them.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-006",
@@ -383,7 +432,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Dark mode is implemented via `@custom-variant dark (&:is(.dark *))`. Every color token must have a dark mode value.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-007",
@@ -392,7 +442,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Before shipping any component, verify both light and dark mode manually.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-008",
@@ -401,7 +452,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Status color comes from four semantic roles: `info`, `positive`, `negative`, `warning`. Each role has four tokens: `--color-{role}`, `--color-{role}-foreground`, `--color-{role}-surface`, `--color-{role}-border`. Components that show status (Alert, Badge, Toast, inline validation, banners) use these tokens. Never a palette class or a literal color for status, and never a one-off token invented for a single component.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COLOR-009",
@@ -410,7 +462,8 @@
       "source_file": "vois-tokens/references/color.md",
       "rule": "Pick the status role by meaning, not by hue. `info` is neutral context. `positive` is success or completion. `negative` is an error, a failure, or a destructive action. `warning` is caution or something that needs attention before it becomes an error. There is no separate `destructive` token: a destructive Button reads `--color-negative`, and `destructive` is only the shadcn variant name. Don't keep `--color-destructive` or `--color-success`; use `negative` and `positive`. If the workspace token set is missing a role, propose it. Don't fall back to stock component variants or a palette color.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-001",
@@ -419,7 +472,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "Check the manifest first. If `<Button>`, `<AlertBanner>`, or `<DataTable>` exists, use it. Don't rebuild it.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-002",
@@ -428,7 +482,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "Use a typed, centralized variant-authorship mechanism for all variant styling — Class Variance Authority (cva) under Tailwind, composed `stylex.create()` keys under StyleX (see `[DS-STYLEX-004]`). No ad-hoc className/style ternaries.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-003",
@@ -437,7 +492,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "Use `data-slot` attributes for styling component internals — don't reach into component children with arbitrary CSS selectors.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-004",
@@ -446,7 +502,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "New-York style is the default for shadcn. The \"default\" style is deprecated.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-005",
@@ -455,7 +512,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "Components use a 2-layer architecture: Radix UI (or another unstyled primitive library) for structure/behavior, the project's styling engine — Tailwind or StyleX — for style. Don't collapse these.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-COMPONENT-006",
@@ -464,7 +522,8 @@
       "source_file": "vois-tokens/references/components.md",
       "rule": "When using a component with variants, use the most semantically appropriate variant. Don't default to `default` when `destructive`, `ghost`, or `outline` is more correct.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MODAL-001",
@@ -474,6 +533,8 @@
       "rule": "Trap focus using `inert`. When a modal opens, add `inert` to all content outside the modal. This blocks keyboard and screen reader access to background content without manual focus trapping",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-MODAL",
       "applies_when": "custom (non-Radix) dialog/modal implementations — Radix UI handles inert/focus-trap automatically"
     },
     {
@@ -484,6 +545,8 @@
       "rule": "Prevent scroll bleed. Add `overscroll-behavior: contain` to the modal's scrollable container so scrolling inside doesn't scroll the page behind it",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-MODAL",
       "applies_when": "custom (non-Radix) dialog/modal implementations — Radix UI handles this automatically"
     },
     {
@@ -494,6 +557,7 @@
       "rule": "Prevent layout shift. When a modal opens and the page scrollbar disappears, the layout jumps. Fix it with `scrollbar-gutter` on `html`",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "custom (non-Radix) dialog/modal implementations — Radix UI handles this automatically"
     },
     {
@@ -503,7 +567,8 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "No inline styles for values that have token equivalents.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-CSS-002",
@@ -512,7 +577,9 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Never use `#id` selectors for styling. IDs have high specificity and make overrides painful.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-CSS-002"
     },
     {
       "id": "DS-CSS-003",
@@ -521,7 +588,8 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Keep selectors shallow. If your selector has more than 2 levels of nesting, you're coupling styles to DOM structure. Add a class instead.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-CSS-004",
@@ -530,7 +598,8 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Use `:is()` to group selectors without multiplying specificity.",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-CSS-005",
@@ -539,7 +608,8 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Use `:where()` when you want zero-specificity base styles that are easy to override.",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-CSS-006",
@@ -548,7 +618,8 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Separate layout from visual concerns.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-CSS-007",
@@ -557,7 +628,9 @@
       "source_file": "vois-tokens/references/css-architecture.md",
       "rule": "Use `em` for breakpoints, not `px`. Breakpoints in `em` respect the user's browser font size preference and scale correctly when users zoom.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-CSS-007"
     },
     {
       "id": "DS-ELEVATION-001",
@@ -566,7 +639,8 @@
       "source_file": "vois-tokens/references/elevation.md",
       "rule": "The backdrop behind a modal is a separate concern from the modal's own shadow — use a scrim color (`oklch(0 0 0 / 0.4)`), not a darker shadow.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ELEVATION-002",
@@ -575,7 +649,8 @@
       "source_file": "vois-tokens/references/elevation.md",
       "rule": "Match the elevation tier to the z-index layer it occupies — overlay elevation pairs with the dropdown/overlay z-index, modal elevation pairs with the modal z-index. Don't put a heavier shadow on a lower-stacked element than a lighter one above it.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ICON-001",
@@ -584,7 +659,8 @@
       "source_file": "vois-tokens/references/iconography.md",
       "rule": "Use a single stroke width across the icon set — 1.5px for the default (lucide-react/Radix Icons default). Don't mix stroke weights within the same screen; it reads as a design system bug, not a deliberate choice.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-ICON-002",
@@ -593,7 +669,8 @@
       "source_file": "vois-tokens/references/iconography.md",
       "rule": "If an icon's surrounding text size doesn't map cleanly to one of the four defined sizes (16/20/24/32px), round to the nearest one rather than introducing an arbitrary size.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-001",
@@ -602,7 +679,9 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Stop using `vh`. It breaks on mobile because browser chrome changes the available height as you scroll. Use the right unit for the context",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-LAYOUT-001"
     },
     {
       "id": "DS-LAYOUT-002",
@@ -611,7 +690,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "For pages with significant vertical scroll, use `content-visibility: auto` on sections that are far below the fold to skip rendering them until they approach the viewport",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-001",
@@ -620,7 +700,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Mobile-first. No prefix = mobile baseline. `md:`, `lg:` are progressive enhancements.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-002",
@@ -629,7 +710,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Test at `sm` (640px), `md` (768px), `lg` (1024px) before considering a component done.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-003",
@@ -638,7 +720,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Use container queries for component-level responsiveness. Use breakpoints for layout-level responsiveness.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-004",
@@ -647,7 +730,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Touch targets, font sizes, and contrast ratios must meet minimums at every breakpoint.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-005",
@@ -656,7 +740,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Don't build desktop-first and assume it'll work on mobile. It won't.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-006",
@@ -665,7 +750,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Preserve task hierarchy before shrinking type. Identify the primary task/content on the screen and keep it at a comfortable, legible size at every breakpoint; let secondary and tertiary content absorb the constraint first.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-RESPONSIVE-007",
@@ -674,7 +760,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "When content doesn't fit, prefer reflow, then collapse, then hide, in that order, before shrinking text or spacing to cram the same layout into less room. Shrinking is the last resort and never overrides the DS-RESPONSIVE-004 minimums.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-COMP-001",
@@ -683,7 +770,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "No `padding-bottom`/`margin-top` used to space siblings — use `gap` on the parent.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-COMP-002",
@@ -692,7 +780,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "No wrapper divs that serve no layout purpose.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-COMP-003",
@@ -701,7 +790,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "`min-width: 0` on flex children containing text or overflow-prone content.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-COMP-006",
@@ -710,7 +800,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Images with set dimensions need `object-fit`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-COMP-005",
@@ -719,7 +810,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Use `aspect-ratio` instead of the padding-top percentage hack.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SPACING-001",
@@ -728,7 +820,9 @@
       "source_file": "vois-tokens/references/spacing.md",
       "rule": "All spacing must be divisible by 4 or 8. No exceptions.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-SPACING-001"
     },
     {
       "id": "DS-SPACING-002",
@@ -737,7 +831,8 @@
       "source_file": "vois-tokens/references/spacing.md",
       "rule": "Use `gap` for layout spacing between elements. Use padding for internal component spacing. Avoid margin for layout — it's harder to reason about and doesn't compose well with flex/grid.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SPACING-003",
@@ -746,7 +841,8 @@
       "source_file": "vois-tokens/references/spacing.md",
       "rule": "Tailwind v4 note: Dynamic spacing utilities accept any value without arbitrary syntax. This makes it easy to accidentally use off-grid values. Don't. Stay on the scale.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SPACING-004",
@@ -755,7 +851,8 @@
       "source_file": "vois-tokens/references/spacing.md",
       "rule": "Verify spacing holds at every responsive breakpoint before considering a component done.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-001",
@@ -764,7 +861,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Mismatched radii on nested elements is one of the most common things that makes UI feel off.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-002",
@@ -774,6 +872,7 @@
       "rule": "If padding between the two surfaces is larger than `24px`, treat them as independent surfaces and pick each radius on its own — forcing strict concentric math at that distance looks over-engineered, not intentional.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "applies_when": "padding between the two nested surfaces exceeds 24px"
     },
     {
@@ -783,7 +882,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "When geometric centering looks wrong, align optically instead.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-004",
@@ -792,7 +892,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Buttons with text + icon: use slightly less padding on the icon side. Rule of thumb: `icon-side padding = text-side padding - 2px`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-005",
@@ -801,7 +902,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Play button triangles: the geometric center of a triangle is not its visual center. Shift right ~2px.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-006",
@@ -810,7 +912,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Asymmetric icons (stars, arrows, carets): fix the SVG's `viewBox`/path directly if possible, so no compensating margin is needed in component code. Fall back to a small margin only if you can't touch the SVG.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-007",
@@ -819,7 +922,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "For cards, containers, and bordered buttons that exist to show depth or elevation, prefer a layered `box-shadow` over a solid `border`. Shadows use transparency so they adapt to any background color or image; solid border colors only look right on the background they were tuned for.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-008",
@@ -828,7 +932,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Do not apply this to dividers (`border-b`, `border-t`, list separators) or anything whose job is layout separation, not depth. Those stay as borders.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-009",
@@ -837,7 +942,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Add a subtle `1px` outline to images for consistent depth, especially in systems that already use borders/shadows elsewhere.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-010",
@@ -846,7 +952,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Never use a near-black/near-white from the palette (slate-900, zinc-900, `#0a0a0a`, etc.) and never match it to the accent/ink color. A tinted outline picks up the surface color underneath and reads as dirt on the image edge.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-011",
@@ -855,7 +962,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Don't animate one large container on enter. Split into semantic chunks (title, description, actions) and stagger with ~100ms delay between groups. For titles, splitting into individual words with ~80ms stagger reads even better, but isn't required for routine UI.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-012",
@@ -864,7 +972,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Use `initial={false}` on `AnimatePresence` to skip enter animations on first page load for elements already in their default state (icon swaps, tabs, toggles). Don't apply it to staged page-hero entrances that depend on the `initial` prop to fire at all — verify on a hard refresh.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-013",
@@ -873,7 +982,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "Exits should be softer than enters — the user's attention is already moving to the next thing.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-SURFACE-014",
@@ -882,7 +992,8 @@
       "source_file": "vois-tokens/references/surfaces.md",
       "rule": "When an icon swaps state (play→pause, like→liked, hover-revealed actions), animate `opacity` + `scale` + `blur` instead of toggling visibility. Use exactly these values — don't deviate",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-STYLEX-001",
@@ -892,6 +1003,7 @@
       "rule": "StyleX requires the official Babel plugin (or the equivalent bundler/SWC plugin) wired into the build before any `stylex.create()` call does anything — styles are inert without it. Confirm the plugin is configured before writing StyleX styles in a project.",
       "severity": "required",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -902,6 +1014,7 @@
       "rule": "Define tokens with `stylex.defineVars()` and reference them from `stylex.create()`. Never use a literal value in `stylex.create()` where a defined token exists — the StyleX-side version of `[DS-CSS-001]`/`[DS-COLOR-001]`.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -912,6 +1025,7 @@
       "rule": "Use `stylex.createTheme()` to override a `defineVars()` group for theme variants (dark mode, brand variants). Don't hand-roll a second, parallel token set.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -922,6 +1036,7 @@
       "rule": "Compose variant styling from multiple `stylex.create()` keys merged in `stylex.props()`, most-specific override passed last. This is StyleX's equivalent of `[DS-COMPONENT-002]`'s variant-authorship requirement — no ad-hoc conditional style objects.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -932,6 +1047,7 @@
       "rule": "Don't use an inline `style={{}}` prop where a `stylex.create()` key already covers the value. Inline styles have higher specificity than any StyleX-generated class and silently win over intended variant styling.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -942,6 +1058,7 @@
       "rule": "Use `stylex.defineConsts()` for breakpoints and other compile-time constants instead of repeating literal media-query strings. Author breakpoint values in `em`, not `px` — same rule as `[DS-CSS-007]`.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["stylex"]
     },
     {
@@ -952,6 +1069,7 @@
       "rule": "Replace `@layer base` with `@theme` for token definitions.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["tailwind"]
     },
     {
@@ -962,6 +1080,7 @@
       "rule": "Use `@import \"tailwindcss\"` instead of `@tailwind base / components / utilities`.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["tailwind"]
     },
     {
@@ -972,6 +1091,7 @@
       "rule": "Arbitrary values (`w-[237px]`, `mt-[13px]`) are a smell. If you need an arbitrary value, either it belongs on the spacing scale or it's a missing token. Round it or flag it.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "judgment",
       "engines": ["tailwind"]
     },
     {
@@ -982,6 +1102,8 @@
       "rule": "No `!important` except for utility overrides you explicitly own and document.",
       "severity": "required",
       "enforcement": "blocking",
+      "verification": "detector",
+      "detector": "DS-TAILWIND-004",
       "engines": ["tailwind"]
     },
     {
@@ -992,6 +1114,8 @@
       "rule": "Never `transition: all`. List properties explicitly: `transition: background-color 150ms ease-out, transform 150ms ease-out`.",
       "severity": "recommended",
       "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-TAILWIND-005",
       "engines": ["tailwind"]
     },
     {
@@ -1001,7 +1125,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Use no more than 3 text styles in any single component or section.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-002",
@@ -1010,7 +1135,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Never skip heading levels. `h1` then `h2` then `h3`. Never `h1` directly to `h3`.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-003",
@@ -1019,7 +1145,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Use the monospace variant for all numeric data — prices, counts, measurements, timestamps. Add `font-variant-numeric: tabular-nums` when numbers appear in columns or need to align.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-004",
@@ -1028,7 +1155,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Font size communicates hierarchy. If two things feel equally important, one of them should be deprioritized.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-005",
@@ -1037,7 +1165,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Always reference the token (`font-[var(--font-heading)]`) rather than a font name directly. If the workspace swaps the font, components update automatically without code changes.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-006",
@@ -1046,7 +1175,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Apply `text-wrap: balance` to all headings (H0 through H3) by default.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-007",
@@ -1055,7 +1185,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Apply `text-wrap: pretty` to body copy in articles, descriptions, and anywhere text wraps across multiple lines.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-008",
@@ -1064,7 +1195,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Cap text containers at `65ch`. The `ch` unit is relative to the current font's character width, so this stays readable at any font size.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-009",
@@ -1073,7 +1205,9 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Use `…` (the ellipsis character), not `...` (three periods)",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-TYPOGRAPHY-009"
     },
     {
       "id": "DS-TYPOGRAPHY-010",
@@ -1082,7 +1216,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Use curly quotes `\"` `\"` not straight `\"`",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-011",
@@ -1091,7 +1226,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Loading states end with ellipsis character: `\"Loading…\"` not `\"Loading...\"`",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-012",
@@ -1100,7 +1236,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Active voice: \"Save changes\" not \"Changes will be saved\"",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-013",
@@ -1109,7 +1246,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Specific button labels: \"Delete project\" not \"Confirm\" or \"OK\"",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TYPOGRAPHY-014",
@@ -1118,7 +1256,8 @@
       "source_file": "vois-tokens/references/typography.md",
       "rule": "Error messages tell the user what to do next, not just what went wrong",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-WIDTH-001",
@@ -1127,7 +1266,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Form containers use max-width: var(--width-form-max). No hardcoded width values.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-WIDTH-002",
@@ -1136,7 +1276,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Single-line fields use max-width: var(--width-field-max) by default. Short fixed-format values use var(--width-field-narrow). Only textareas may extend to var(--width-form-max).",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-WIDTH-003",
@@ -1145,7 +1286,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Layouts must hold at var(--width-viewport-min) with no horizontal scroll.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-WIDTH-004",
@@ -1154,7 +1296,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Desktop dialogs use max-width: var(--width-dialog-sm) or var(--width-dialog-lg). No hardcoded dialog widths. Which tier applies is decided in vois-patterns PATH-D-SIZE.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-FIELD-001",
@@ -1163,7 +1306,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Text areas that grow with their content use field-sizing: content (Tailwind v4: field-sizing-content). No JavaScript autosizing: no scrollHeight measuring, ResizeObserver, or autosize libraries.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-FIELD-002",
@@ -1172,7 +1316,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Always set an explicit inline-size with field-sizing: content. Content sizing also shrinks the width, and an unset width collapses to a sliver.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-FIELD-003",
@@ -1181,7 +1326,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Set min-block-size and max-block-size from the line-count tokens using the lh unit plus the field's block padding. Do not rely on the rows attribute for the minimum, because browsers ignore rows under field-sizing: content. Scroll inside the field with overflow-y: auto at the maximum.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-FIELD-004",
@@ -1190,7 +1336,8 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "Wrap field-sizing styles in @supports (field-sizing: content). Keep the rows attribute and resize: vertical as the fallback for browsers without support.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-001",
@@ -1199,7 +1346,9 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A table has exactly one scroll owner, chosen on purpose. A sticky header sticks to its nearest scroll-container ancestor, and any overflow other than visible or clip creates one, so nothing between the header and the intended owner may change that by accident.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-TABLE-001"
     },
     {
       "id": "DS-TABLE-002",
@@ -1208,7 +1357,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A complex table's wrapper owns both axes: overflow: auto with a bounded block size, a sticky header inside it, scrollbar-gutter: stable, overscroll-behavior-x: contain, and scroll-padding-block-start equal to the header height.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-003",
@@ -1217,7 +1367,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A simple table sets no overflow on its wrapper, so its sticky header sticks to the page (offset by any fixed app header), and it never scrolls sideways.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-004",
@@ -1226,7 +1377,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Do not use overflow: auto clip, or overflow-x: auto with overflow-y: clip, to keep a header sticky to the page. clip computes to hidden next to auto, which is still a scroll container.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-005",
@@ -1235,7 +1387,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Every flex or grid ancestor between the app shell and a table wrapper has min-inline-size: 0 and min-block-size: 0, so the table neither widens the page nor loses its bounded height.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-006",
@@ -1244,7 +1397,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A pinned first column uses position: sticky with inset-inline-start: 0 and an opaque background. Layers are small local z-index values (pinned column 1, header row 2, corner cell 3) inside a stacking context made by isolation: isolate on the scroll owner, so they never outrank an overlay. Add scroll-padding-inline-start equal to the column width.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-007",
@@ -1253,7 +1407,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Tables with sticky cells use border-collapse: separate with border-spacing: 0. Collapsed borders do not travel with sticky cells.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-008",
@@ -1262,7 +1417,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Table layout changes key off the container, not the viewport: container-type: inline-size on an element outside the scroll wrapper, and @container (width < 40em) for the narrow layout.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-009",
@@ -1271,7 +1427,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Use table-layout: fixed with explicit column widths, text-overflow: ellipsis on text cells, right-aligned numbers with tabular-nums, and left-aligned text.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-010",
@@ -1280,7 +1437,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Style table scrollbars with scrollbar-width: thin and scrollbar-color from an existing neutral token such as the muted foreground. No ::-webkit-scrollbar. Do not hide the scrollbar on a table that scrolls sideways.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-011",
@@ -1289,7 +1447,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "scrollbar-gutter: stable on the scroll owner, so header and body columns stay aligned when a scrollbar appears.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-012",
@@ -1298,7 +1457,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "overscroll-behavior-x: contain on the scroll owner. Do not contain the vertical axis.",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-013",
@@ -1307,7 +1467,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "scroll-padding-block-start equal to the sticky header height on the scroll owner, so focused rows are not hidden under it.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-014",
@@ -1316,7 +1477,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A complex table that scrolls on both axes scrolls one axis per gesture: a wheel handler (passive: false, ctrlKey passes through) that scrolls only the dominant axis, shared as one hook, with an opt-out. Simple tables do not use it. Leave touch alone.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-015",
@@ -1325,7 +1487,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A scroll owner has tabindex=\"0\", role=\"region\", and an aria-label. Keep real table elements, a button inside a sortable th, and aria-sort on the sorted th. Use role=\"grid\" only with arrow-key cell navigation.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-016",
@@ -1334,7 +1497,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Paginate by default. Virtualize only for database-style grids with thousands of rows, and test the sticky header and pinned column with a long scroll.",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-017",
@@ -1343,7 +1507,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Highlights for just-added or just-saved rows and any scroll-shadow transition respect prefers-reduced-motion.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-018",
@@ -1352,7 +1517,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "A table that scrolls sideways shows a cue that more content exists, such as an edge shadow on the pinned column or a partly visible column, because overlay scrollbars are hidden until scroll.",
       "severity": "preferred",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-TABLE-019",
@@ -1361,7 +1527,8 @@
       "source_file": "vois-tokens/references/data-tables.md",
       "rule": "Header height and row height per density come from the table_sizes tokens. Check the workspace token set first. If one is missing, propose adding it, never hardcode. The space above a complex table and a fixed app header's height are set by the page, not tokens, and the component supplies a fallback.",
       "severity": "required",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-001",
@@ -1370,7 +1537,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "Apply the marketing type and spacing rules only on marketing surfaces (landing pages, product marketing, public site pages). Product UI keeps DS-TYPOGRAPHY and DS-SPACING as written.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-002",
@@ -1379,7 +1547,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "The display face (`--font-heading`) carries display and h2 only and is never used below 28px. The text face (`--font-body`) carries everything else. Both roles can be one family at different weights.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-003",
@@ -1388,7 +1557,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "One display headline per page and one h2 per section.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-004",
@@ -1397,7 +1567,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "Use the marketing type scale as a starting point: display 40/44 mobile and 72/76 desktop, h2 28/34 and 44/50, h3 20/26 and 24/30, lead 18/26 and 20/30, body 16/24 and 17/26, small 14/20 and 15/22. Values are estimates. Keep the ratios and adjust per site.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-005",
@@ -1406,7 +1577,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "Cap marketing body text at `56ch`. This replaces the 65ch cap in DS-TYPOGRAPHY-008 on marketing surfaces. Headings may run narrower.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-006",
@@ -1415,7 +1587,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "The gap between sections is about 4x the gap between a section heading and its content, and 12 to 15x the gap between a heading and its body text. If a page feels cramped, widen the section gap first, then cut content. Do not add dividers to compensate.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-007",
@@ -1424,7 +1597,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "Keep the gap inside a block smaller than the gap between blocks. If they match, the page reads as one pile.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-MKT-008",
@@ -1433,7 +1607,8 @@
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
       "rule": "On marketing surfaces, section-to-section gaps may exceed 96px, up to 240px, in steps of 8, using a spacing token. This is an exception to the allowed-values list in spacing.md. DS-SPACING-001 (divisible by 4 or 8) still holds.",
       "severity": "recommended",
-      "enforcement": "advisory"
+      "enforcement": "advisory",
+      "verification": "judgment"
     }
   ]
 }

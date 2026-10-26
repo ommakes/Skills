@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.16.0] - 2026-10-26
+
+### Added
+
+- **`verification` and `detector` on the lookalike table.** The nine rows that `vois-tokens` checks (`LOOKALIKE-001`, `002`, `003`, `005`, `007`, `008`, `009`, `010`, `011`) are marked `detector` and name the check. `LOOKALIKE-004` and `LOOKALIKE-006` are `judgment`. `scripts/check-verification.py` fails if a row and the registry disagree.
+
+### Notes
+
+- No job, decision tree or lookalike wording changed. Decision-tree jobs have no `verification` field, because none of them has a check yet.
+- **Version bump:** `1.15.2` → `1.16.0`
+
+---
+
 ## [1.15.2] - 2026-10-21
 
 ### Fixed

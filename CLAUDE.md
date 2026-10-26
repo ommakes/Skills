@@ -8,6 +8,8 @@ Run what CI runs:
 
 ```
 node scripts/check-rule-sync.mjs
+python3 scripts/check-verification.py
+python3 scripts/check-verification.test.py
 python3 scripts/check-routing.py
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
