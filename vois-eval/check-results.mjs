@@ -7,10 +7,10 @@
 //      different model are shown but not compared.
 //
 // Usage: node vois-eval/check-results.mjs [results-dir]
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CONDITIONS, compareRuns, summarize } from "./run/score.mjs";
+import { answeredByOtherModel, CONDITIONS, TRUNCATED_SUBTYPES, compareRuns, summarize } from "./run/score.mjs";
 
 const dir = process.argv[2] ?? fileURLToPath(new URL("./results", import.meta.url));
 
@@ -51,8 +51,9 @@ export function validateRun(run) {
     need(typeof r.pass === "boolean" && typeof r.decision === "boolean", `${at}: pass and decision must be true or false`);
     need(typeof r.truncated === "boolean" && typeof r.cost_unknown === "boolean", `${at}: truncated and cost_unknown must be true or false`);
     need(typeof r.model_mismatch === "boolean", `${at}: model_mismatch must be true or false`);
-    need(!isList(r.served_models) || r.model_mismatch === r.served_models.some((m) => m !== run.model), `${at}: model_mismatch does not match served_models and the model the file names`);
+    need(!isList(r.served_models) || r.model_mismatch === answeredByOtherModel(r.served_models, run.model), `${at}: model_mismatch does not match served_models and the model the file names`);
     need(isList(r.served_models), `${at}: served_models must be a list of strings`);
+    need(r.truncated === TRUNCATED_SUBTYPES.includes(r.stop_reason), `${at}: truncated must be true exactly when stop_reason is ${TRUNCATED_SUBTYPES.join(" or ")}`);
     need(r.stop_reason === undefined || isStr(r.stop_reason), `${at}: stop_reason must be a non-empty string when present`);
     for (const k of ["lookalike_hits", "forbidden_imports", "pattern_failures", "detector_findings", "dataviz_findings", "outside_cwd_access"]) need(isList(r[k]), `${at}: ${k} must be a list of strings`);
     need(r.error === undefined || isStr(r.error), `${at}: error must be a non-empty string when present`);
@@ -91,7 +92,6 @@ export function compareLatestPerModel(runs) {
 }
 
 function main() {
-  if (!existsSync(dir)) { console.log(`note no results directory at ${dir}; nothing to check`); return; }
   const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
   const runs = [];
   let failed = false;
@@ -112,6 +112,7 @@ function main() {
   const comparisons = compareLatestPerModel(runs);
   for (const { prev, next, cmp } of comparisons) {
     if (cmp.status === "regressed") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: skills-on pass rate fell from ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s) (allowed drop ${cmp.threshold})`); }
+    else if (cmp.status === "skipped" && cmp.kind === "mismatch") console.warn(`WARN ${next.f} vs ${prev.f}: NOT COMPARED, ${cmp.reason}. The regression check did not run for this model.`);
     else if (cmp.status === "skipped") console.log(`note ${next.f} vs ${prev.f}: not compared, ${cmp.reason}`);
     else console.log(`ok   ${next.f} vs ${prev.f}: skills-on pass rate ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s)`);
   }

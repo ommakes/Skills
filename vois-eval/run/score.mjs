@@ -9,11 +9,17 @@
 //   4. every required pattern matches and no forbidden pattern does.
 // The vois-tokens and vois-dataviz detector findings are recorded but do not decide the
 // pass: they are advisory by design (see vois-tokens/references/hooks.md).
-import { scan, importsComponent } from "../lookalike-pass/scan.mjs";
+import { scan, imp } from "../lookalike-pass/scan.mjs";
 import { detectFile as detectTokens } from "../../vois-tokens/scripts/detect.mjs";
 import { detectFile as detectDataviz } from "../../vois-dataviz/scripts/detect.mjs";
 
 export const CONDITIONS = ["on", "off"];
+
+// The CLI can report a model with a context-window suffix ("claude-x[1m]") and can list a helper model next to the
+// main one. A sample is "answered by another model" only when the requested model is not among those reported.
+const baseModel = (m) => String(m).replace(/\[[^\]]*\]$/, "");
+export const answeredByOtherModel = (served, model) => Array.isArray(served) && served.length > 0 && !served.some((m) => baseModel(m) === baseModel(model));
+export const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd"];
 
 const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 
@@ -23,11 +29,12 @@ const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 // A small scanner, not a regex, because a regex cannot tell a comment from text that looks like one:
 //   - a string is skipped whole, so "components/*" does not start a block comment;
 //   - a quote with no partner on its line is an apostrophe in JSX text ("Don't"), not a string;
-//   - "//" starts a line comment only at the start of a line or right after ; { } , ) or a closing quote,
-//     so JSX text such as <p>Press // to search</p> and a URL (http://x) are left alone;
+//   - "//" and "/*" start a comment only at the start of a line or right after ; { } ( ) [ ] , = : or a quote,
+//     so JSX text such as <p>Press // to search</p>, <p>See src/* for details</p> and a URL (http://x) are left alone;
 //   - a block comment ends at the first "*/", and a "/*" inside a line comment does not start one.
-// The cost of that rule: a trailing comment after a plain word or number (x = 1 // note) is kept, which can only
-// make a check stricter about what is "not there", never let a comment satisfy it, apart from that one case.
+// The cost of that rule: a trailing comment after a plain word or number (x = 1 // note) is kept, so a component
+// named in such a comment could satisfy an import check. That is the one known gap.
+const COMMENT_MAY_FOLLOW = ";{}()[],=:\"'`";
 export function stripComments(src) {
   let out = "";
   let prev = ""; // last non-space character written on this line; "" at the start of a line
@@ -48,11 +55,12 @@ export function stripComments(src) {
       const end = Math.min(j + 1, n);
       out += src.slice(i, end); prev = "`"; i = end; continue;
     }
-    if (c === "/" && d === "*") {
+    const startsComment = prev === "" || COMMENT_MAY_FOLLOW.includes(prev);
+    if (c === "/" && d === "*" && startsComment) {
       const e = src.indexOf("*/", i + 2);
       out += " "; i = e === -1 ? n : e + 2; continue;
     }
-    if (c === "/" && d === "/" && (prev === "" || ";{}),\"'`".includes(prev))) {
+    if (c === "/" && d === "/" && startsComment) {
       while (i < n && src[i] !== "\n") i++;
       continue;
     }
@@ -68,7 +76,7 @@ export function scoreSample(raw, task) {
   const expected = task.expected_imports ?? [];
   const { hits, usedExpected } = scan(src, expected);
   const decisionOk = expected.length === 0 || usedExpected.length > 0;
-  const forbiddenImports = (task.forbidden_imports ?? []).filter((n) => importsComponent(src, n));
+  const forbiddenImports = (task.forbidden_imports ?? []).filter((n) => imp(src, n));
   const patternFailures = [
     ...(task.required_patterns ?? []).filter((p) => !compile(p).test(src)).map((p) => `missing:${p.id}`),
     ...(task.forbidden_patterns ?? []).filter((p) => compile(p).test(src)).map((p) => `forbidden:${p.id}`),
@@ -125,7 +133,7 @@ export function compareRuns(prev, next, { threshold = 0.1, minCommonTasks = 5 } 
   if (prev.model !== next.model) return { status: "skipped", reason: `model changed (${prev.model} to ${next.model})` };
   if (prev.samples_per_task !== next.samples_per_task) return { status: "skipped", reason: `samples per task changed (${prev.samples_per_task} to ${next.samples_per_task})` };
   const swapped = (run) => run.results.some((r) => r.model_mismatch);
-  if (swapped(prev) || swapped(next)) return { status: "skipped", reason: "a sample in one of the runs was answered by a different model than the file names" };
+  if (swapped(prev) || swapped(next)) return { status: "skipped", kind: "mismatch", reason: "a sample in one of the runs was answered by a different model than the file names, so the pass rates mix models" };
   const prevTasks = new Set(prev.results.filter((r) => r.condition === "on").map((r) => r.task));
   const common = new Set(next.results.filter((r) => r.condition === "on" && prevTasks.has(r.task)).map((r) => r.task));
   if (common.size < minCommonTasks) return { status: "skipped", reason: `only ${common.size} task(s) in common, need ${minCommonTasks}` };

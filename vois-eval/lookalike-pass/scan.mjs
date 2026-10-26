@@ -13,7 +13,8 @@ import { openingTags } from "../../vois-tokens/scripts/jsx-tags.mjs";
 // scanner and the hook cannot drift apart. The rest are scanner-only.
 const viaHook = (ruleId) => (s) => detectFile("scan.tsx", s).some((f) => f.ruleId === ruleId);
 
-// An import of the component from any path whose last part is its name ("@/components/ui/x", "~/components/ui/x", "./ui/x", "react-x").
+// An import of the component from any path whose last part is its name ("@/components/ui/x", "~/components/ui/x", "./ui/x", "react-x"),
+// or a package named exactly that (from "sonner"). The scanner and the eval runner's expected and forbidden imports all use this.
 export const imp = (src, name) => new RegExp(`from\\s+["'](?:[^"']*/)?(?:react-)?${name}["']`).test(src);
 
 // Whether any opening tag with one of these names has attribute text that passes `keep`. Tags are read
@@ -72,13 +73,10 @@ const SIGNALS = [
     viaHook("LOOKALIKE-009")],
 ];
 
-// Whether the file imports a component. Expected and forbidden imports both go through this one rule.
-// The rule matches the last part of the path, so it also matches Sonner's own package import: `from "sonner"`.
-export const importsComponent = imp;
 
 export function scan(src, expected) {
   const hits = SIGNALS.filter(([, , , t]) => t(src)).map(([id]) => id);
-  const usedExpected = expected.filter((e) => importsComponent(src, e));
+  const usedExpected = expected.filter((e) => imp(src, e));
   return { hits, usedExpected, missingExpected: usedExpected.length === 0 };
 }
 

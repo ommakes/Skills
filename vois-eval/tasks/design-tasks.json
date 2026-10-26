@@ -25,8 +25,8 @@
         },
         {
           "id": "filtered-empty-message",
-          "regex": "[\"'`>][^\"'`<>{}\\n]*\\b(?:no|nothing)\\b[^\"'`<>{}\\n]*\\b(?:filters?|search|match(?:es|ing)?)\\b",
-          "flags": "i"
+          "regex": "(?:[\"'`>][^\"'`<>{}\\n]*|^[ \\t]*[^\"'`<>{}()=;\\n]*?)\\b(?:no|nothing)\\b[^\"'`<>{}\\n]*\\b(?:filters?|search|match(?:es|ing)?)\\b",
+          "flags": "im"
         },
         {
           "id": "clear-filters-label",
@@ -34,7 +34,7 @@
           "flags": "i"
         }
       ],
-      "notes": "Both empty-state patterns read visible text only (a quoted string or JSX text), so an identifier like clearFilters or a search state variable does not satisfy them. PATH-TABLE-STATE-EMPTY-FILTERED asks for a message that says filters caused the empty result, and a Clear filters control."
+      "notes": "Both empty-state patterns read visible text only: a quoted string, text after a >, or a line of plain text inside JSX. An identifier like clearFilters, a search state variable or a line of code does not satisfy them. PATH-TABLE-STATE-EMPTY-FILTERED asks for a message that says filters caused the empty result, and a Clear filters control."
     },
     {
       "id": "DT-02",

@@ -14,20 +14,19 @@
 // the Skill tool, skill listing, shell and any MCP tools. It does NOT sandbox the files: Read and Glob accept
 // absolute paths, and the user's own CLAUDE.md memory may still load (untested, and not controlled here). So a
 // skills-off agent could in principle read installed skills. The runner records every file-tool path outside the run
-// directory (outside_cwd_access) so that shows up in the results; a memory file it cannot see. Run on a machine whose
-// user-level memory says nothing about Vois, or the off rate may be too high.
+// directory (outside_cwd_access) so that shows up in the results. A memory file it cannot see, so run on a machine
+// whose user-level memory says nothing about Vois, or the off rate may be too high.
 import { spawn, execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks } from "./tasks.mjs";
-import { CONDITIONS, scoreSample, summarize } from "./score.mjs";
+import { answeredByOtherModel, CONDITIONS, scoreSample, summarize, TRUNCATED_SUBTYPES } from "./score.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
 // What the runner does to keep the two conditions comparable. Recorded in every results file.
 export const ISOLATION = ["tools:Read,Write,Glob,Grep", "setting-sources:project", "strict-mcp-config", "file-access:logged-not-blocked", "user-memory:not-controlled"];
-const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd"];
 export const SKILLS_UNDER_TEST = ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"];
 const TEMPLATE_ON = readFileSync(new URL("../lookalike-pass/runner-prompt.md", import.meta.url), "utf8");
 const TEMPLATE_OFF = readFileSync(new URL("../lookalike-pass/runner-prompt-baseline.md", import.meta.url), "utf8");
@@ -87,6 +86,32 @@ export function buildPlan(tasks, o) {
 
 // Paths the agent's file tools touched outside the run directory. In the off condition any entry means
 // the agent went looking elsewhere (for example in ~/.claude/skills), so the run needs a look.
+// Expand {a,b} alternatives, nested ones included, so a Glob like {/home/u/.claude,/etc}/skills/** is checked per
+// alternative. Past the cap, or with an unclosed brace, the pattern is returned as it is (and an over-long list is
+// reported as outside, because it cannot be checked).
+const BRACE_CAP = 64;
+export function expandBraces(p) {
+  const out = [];
+  const walk = (s) => {
+    if (out.length > BRACE_CAP) return;
+    const open = s.indexOf("{");
+    if (open === -1) { out.push(s); return; }
+    let depth = 0, close = -1;
+    for (let i = open; i < s.length && close === -1; i++) { if (s[i] === "{") depth++; else if (s[i] === "}" && --depth === 0) close = i; }
+    if (close === -1) { out.push(s); return; }
+    const alts = [];
+    let level = 0, from = open + 1;
+    for (let i = open + 1; i < close; i++) {
+      if (s[i] === "{") level++; else if (s[i] === "}") level--;
+      else if (s[i] === "," && level === 0) { alts.push(s.slice(from, i)); from = i + 1; }
+    }
+    alts.push(s.slice(from, close));
+    for (const a of alts) walk(s.slice(0, open) + a + s.slice(close + 1));
+  };
+  walk(p);
+  return out;
+}
+
 export function outsideAccess(toolUses, dir) {
   const roots = new Set([resolve(dir)]);
   try { roots.add(realpathSync(dir)); } catch { /* the directory is gone; compare lexically */ }
@@ -99,9 +124,12 @@ export function outsideAccess(toolUses, dir) {
       if (typeof v !== "string" || !v) continue;
       if (key === "pattern" && u.name !== "Glob") continue; // a Grep pattern is a regex, not a path
       if (key === "glob" && u.name !== "Grep") continue; // Grep's glob filters files under its path
-      // "~" is the home directory. If the tool does not expand it, counting it as outside is still the safe answer.
-      const p = v === "~" || v.startsWith("~/") ? join(homedir(), v.slice(1)) : v;
-      if (!inside(resolve(dir, p))) found.add(`${u.name}:${v}`);
+      // "~" is the home directory. "~name" is someone else's, which cannot be resolved here, so it counts as outside.
+      // If a tool does not expand "~" at all, counting it as outside is still the safe answer.
+      const alternatives = expandBraces(v);
+      const unresolvable = alternatives.length > BRACE_CAP || alternatives.some((a) => /^~[^/]/.test(a));
+      const outside = unresolvable || alternatives.some((a) => !inside(resolve(dir, a === "~" || a.startsWith("~/") ? join(homedir(), a.slice(1)) : a)));
+      if (outside) found.add(`${u.name}:${v}`);
     }
   }
   return [...found].sort().slice(0, 10);
@@ -173,7 +201,7 @@ async function runSampleInner({ task, condition, sample }, o, invoke) {
     const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [], outside_cwd_access: outsideAccess(r.tool_uses, dir),
       truncated: Boolean(r.truncated), cost_unknown: Boolean(r.cost_unknown),
       // The CLI can fall back to another model on overload. Say so, so a change in pass rate is not blamed on the skills.
-      model_mismatch: (r.models ?? []).some((m) => m !== o.model), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
+      model_mismatch: answeredByOtherModel(r.models, o.model), ...(r.stop_reason ? { stop_reason: r.stop_reason } : {}) };
     if (src && o.saveOutput) { mkdirSync(o.saveOutput, { recursive: true }); writeFileSync(join(o.saveOutput, `${task.id}-${condition}-${sample}.tsx`), src); }
     if (!src) return failedRow(task, condition, sample, r.error ?? "the agent wrote no ./out.tsx and gave no code block", base);
     return { ...base, ...scoreSample(src, task) };
@@ -191,24 +219,35 @@ const tryExec = (cmd, args, cwd) => { try { return execFileSync(cmd, args, { cwd
 // results/<date>-<model>[-smoke|-partial][-N].json. The model is made safe for a file name, so one with a "/" in it
 // cannot create a folder the checker never reads, and a name that is taken gets the next free -N, so a second run on
 // the same day never overwrites the first.
-export function defaultOutPath(resultsDir, { date, model, smoke, full }) {
-  const safe = model.replace(/[^A-Za-z0-9._-]/g, "_");
-  const stem = `${date}-${safe}${smoke ? "-smoke" : full ? "" : "-partial"}`;
-  let path = join(resultsDir, `${stem}.json`);
-  for (let n = 2; existsSync(path); n++) path = join(resultsDir, `${stem}-${n}.json`);
-  return path;
+export function resultStem({ date, model, smoke, full }) {
+  return `${date}-${model.replace(/[^A-Za-z0-9._-]/g, "_")}${smoke ? "-smoke" : full ? "" : "-partial"}`;
+}
+
+// Write the file under the first free name. The write itself fails if the name is taken ("wx"), so two runs that
+// finish at the same moment, in two shells, take different names instead of one overwriting the other.
+export function writeResultFile(resultsDir, parts, text) {
+  mkdirSync(resultsDir, { recursive: true });
+  const stem = resultStem(parts);
+  for (let n = 1; ; n++) {
+    const path = join(resultsDir, n === 1 ? `${stem}.json` : `${stem}-${n}.json`);
+    try { writeFileSync(path, text, { flag: "wx" }); return path; } catch (e) { if (e.code !== "EEXIST") throw e; }
+  }
 }
 
 export async function main(argv, { invoke = invokeClaude, log = console.log, now = () => new Date(), resultsDir = join(REPO, "vois-eval", "results") } = {}) {
   const o = parseArgs(argv);
   const tasks = loadTasks();
   const plan = buildPlan(tasks, o);
-  const date = now().toISOString().slice(0, 10);
+  // One timestamp for the whole run, taken at the start: a run that crosses midnight must not get a date and a
+  // created_at that disagree, which the results check rejects.
+  const startedAt = now().toISOString();
+  const date = startedAt.slice(0, 10);
   // Only a run of every default task, with both conditions, is "full". A partial run is kept but never compared.
   const full = !o.smoke && !o.limit && (!o.tasks || o.tasks === "all") && o.condition === "both";
-  // Decide where the file goes before spending anything, so a clash cannot throw away a paid run.
-  const out = resolve(o.out ?? (o.dryrun ? "" : defaultOutPath(resultsDir, { date, model: o.model, smoke: o.smoke, full })));
-  if (!o.dryrun && o.out && existsSync(out) && !o.force) throw new Error(`${out} already exists; pass a different --out, or --force to overwrite it`);
+  // An explicit --out that is taken is refused before anything is spent. The default name cannot clash: it is chosen
+  // when the file is written, as the first free one.
+  const explicitOut = o.out ? resolve(o.out) : null;
+  if (!o.dryrun && explicitOut && existsSync(explicitOut) && !o.force) throw new Error(`${explicitOut} already exists; pass a different --out, or --force to overwrite it`);
   log(`${plan.length} call(s): ${new Set(plan.map((p) => p.task.id)).size} task(s) x ${o.condition === "both" ? "2 conditions" : o.condition} x ${o.samples} sample(s)`);
   if (o.dryrun) { for (const p of plan.slice(0, 20)) log(`  ${p.task.id} ${p.condition} #${p.sample}`); if (plan.length > 20) log(`  ... and ${plan.length - 20} more`); return null; }
 
@@ -226,13 +265,25 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const dirty = tryExec("git", ["status", "--porcelain"], REPO);
   if (dirty && dirty !== "unknown") log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
   const run = {
-    schema: "vois-eval-results/1", date, created_at: now().toISOString(), model: o.model, smoke: Boolean(o.smoke), full,
+    schema: "vois-eval-results/1", date, created_at: startedAt, model: o.model, smoke: Boolean(o.smoke), full,
     claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
     isolation: ISOLATION, skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),
   };
-  mkdirSync(join(out, ".."), { recursive: true });
-  writeFileSync(out, JSON.stringify(run, null, 2) + "\n");
+  const text = JSON.stringify(run, null, 2) + "\n";
+  let out;
+  if (explicitOut) {
+    mkdirSync(join(explicitOut, ".."), { recursive: true });
+    try {
+      writeFileSync(explicitOut, text, { flag: o.force ? "w" : "wx" });
+      out = explicitOut;
+    } catch (e) {
+      // A file appeared at --out while the run was going. Do not overwrite it, and do not lose a paid run either.
+      if (e.code !== "EEXIST") throw e;
+      out = writeResultFile(resultsDir, { date, model: o.model, smoke: o.smoke, full }, text);
+      log(`\nnote: ${explicitOut} appeared during the run and was left alone; the results were saved to ${out} instead`);
+    }
+  } else out = writeResultFile(resultsDir, { date, model: o.model, smoke: o.smoke, full }, text);
   log(`\nwrote ${out}`);
   for (const [c, s] of Object.entries(run.summary)) log(`  ${c}: ${s.pass_rate} pass over ${s.samples} sample(s), ${s.errors} error(s), $${s.cost_usd}${s.outside_access ? `, ${s.outside_access} sample(s) touched files outside the run directory` : ""}`);
   return { out, run };

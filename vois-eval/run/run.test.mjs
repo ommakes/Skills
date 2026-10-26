@@ -3,14 +3,14 @@
 // tries to get past it, and removing the guard makes that test fail.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { execFile, execFileSync, spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
-import { compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
-import { buildPlan, copySkills, defaultOutPath, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
+import { answeredByOtherModel, compareRuns, scoreSample, stripComments, summarize } from "./score.mjs";
+import { buildPlan, copySkills, expandBraces, extractCode, invokeClaude, ISOLATION, main, outsideAccess, parseArgs, renderPrompt, resultStem, runSample, writeResultFile } from "./run.mjs";
 import { compareLatestPerModel, validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -134,8 +134,18 @@ test("stripComments removes comments and keeps text that only looks like one", (
   // an apostrophe in JSX text is not a string, so a real comment after it is still removed
   gone("<p>Don't</p> {/* from \"@/components/ui/table\" */}", "<p>Don't</p> { }");
   // an unterminated block comment drops the rest instead of throwing
-  gone("code /* never closed", "code");
+  gone("code; /* never closed", "code;");
+  // a /* in JSX text must not start a comment and swallow the code after it
+  keep("<p>See src/* for details</p>\nimport { Select } from '@/components/ui/select';");
+  gone("foo(/* c */ 1)", "foo( 1)");
+  gone("const x = /* c */ 1;", "const x = 1;");
+  gone("const o = { /* c */ a: 1 };", "const o = { a: 1 };");
+  keep("a = b /* kept: after a plain word */ ;");
   assert.equal(stripComments(""), "");
+});
+test("an import after JSX text containing /* is still found", () => {
+  const src = `export const A = () => <p>See src/* for details</p>;\nimport { AlertDialog } from "@/components/ui/alert-dialog";\n`;
+  assert.equal(scoreSample(src, task()).decision, true);
 });
 test("a required pattern still matches next to text that looks like a comment", () => {
   const t = task({ required_patterns: [{ id: "inv", regex: "aria-invalid" }] });
@@ -359,6 +369,33 @@ test("outsideAccess treats ~ as the home directory and looks at Grep's glob", ()
     assert.deepEqual(outsideAccess(uses, dir), [
       "Glob:~/.claude/**", "Grep:../../**/SKILL.md", "Read:~", "Read:~/.claude/skills/vois-tokens/SKILL.md",
     ]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("expandBraces lists alternatives, nested ones too, and leaves other text alone", () => {
+  assert.deepEqual(expandBraces("a/b"), ["a/b"]);
+  assert.deepEqual(expandBraces("{a,b}/x"), ["a/x", "b/x"]);
+  assert.deepEqual(expandBraces("{/home/u/.claude,/etc}/skills/**"), ["/home/u/.claude/skills/**", "/etc/skills/**"]);
+  assert.deepEqual(expandBraces("x/{a,{b,c}}/y").sort(), ["x/a/y", "x/b/y", "x/c/y"]);
+  assert.deepEqual(expandBraces("a{b"), ["a{b"], "an unclosed brace is literal text");
+  assert.deepEqual(expandBraces("{}"), [""], "an empty brace has one empty alternative");
+  assert.ok(expandBraces("{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}").length > 64, "past the cap it stops and reports more than the cap");
+});
+test("outsideAccess checks every brace alternative and treats ~name as outside", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-brace-"));
+  try {
+    const uses = [
+      { name: "Glob", input: { pattern: "{/home/u/.claude,/etc}/skills/**" } },
+      { name: "Glob", input: { pattern: "{skills,references}/**/*.md" } }, // both inside
+      { name: "Glob", input: { pattern: "src/{a,{b,../../c}}.tsx" } },
+      { name: "Read", input: { file_path: "~root/.claude/skills/x/SKILL.md" } },
+      { name: "Read", input: { file_path: "~/.claude/skills/x/SKILL.md" } },
+      { name: "Glob", input: { pattern: "{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}" } }, // too many to check: outside
+      { name: "Glob", input: { pattern: "src/{a,b}.tsx" } },
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:src/{a,{b,../../c}}.tsx", "Glob:{/home/u/.claude,/etc}/skills/**", "Glob:{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}{1,2,3,4}",
+      "Read:~/.claude/skills/x/SKILL.md", "Read:~root/.claude/skills/x/SKILL.md",
+    ].sort());
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test("the two conditions get different prompts and only 'on' points at the skills", () => {
@@ -695,19 +732,31 @@ test("the runner marks only a complete default run as full", async () => {
 
 // ---------- where results are written ----------
 
-test("the default file name is safe, says what kind of run it is, and never takes an existing name", () => {
+test("the result file name is safe, says what kind of run it is, and never takes an existing name", () => {
   const dir = mkdtempSync(join(tmpdir(), "vois-eval-name-"));
   try {
     const base = { date: "2026-10-26", model: "claude-a", smoke: false, full: true };
-    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a.json"));
-    assert.equal(defaultOutPath(dir, { ...base, smoke: true, full: false }), join(dir, "2026-10-26-claude-a-smoke.json"));
-    assert.equal(defaultOutPath(dir, { ...base, full: false }), join(dir, "2026-10-26-claude-a-partial.json"));
-    assert.equal(defaultOutPath(dir, { ...base, model: "anthropic/claude-x" }), join(dir, "2026-10-26-anthropic_claude-x.json"));
-    assert.equal(defaultOutPath(dir, { ...base, model: "../../etc/x" }), join(dir, "2026-10-26-.._.._etc_x.json"));
-    writeFileSync(defaultOutPath(dir, base), "{}");
-    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a-2.json"));
-    writeFileSync(defaultOutPath(dir, base), "{}");
-    assert.equal(defaultOutPath(dir, base), join(dir, "2026-10-26-claude-a-3.json"));
+    assert.equal(resultStem(base), "2026-10-26-claude-a");
+    assert.equal(resultStem({ ...base, smoke: true, full: false }), "2026-10-26-claude-a-smoke");
+    assert.equal(resultStem({ ...base, full: false }), "2026-10-26-claude-a-partial");
+    assert.equal(resultStem({ ...base, model: "anthropic/claude-x" }), "2026-10-26-anthropic_claude-x");
+    assert.equal(resultStem({ ...base, model: "../../etc/x" }), "2026-10-26-.._.._etc_x");
+    assert.equal(writeResultFile(dir, base, "one"), join(dir, "2026-10-26-claude-a.json"));
+    assert.equal(writeResultFile(dir, base, "two"), join(dir, "2026-10-26-claude-a-2.json"));
+    assert.equal(writeResultFile(dir, base, "three"), join(dir, "2026-10-26-claude-a-3.json"));
+    assert.equal(readFileSync(join(dir, "2026-10-26-claude-a.json"), "utf8"), "one", "the first file is untouched");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("runs that finish at the same moment, in separate processes, each get their own file", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-race-"));
+  const runMjs = fileURLToPath(new URL("./run.mjs", import.meta.url));
+  const code = `import { writeResultFile } from ${JSON.stringify(runMjs)}; for (let i = 0; i < 20; i++) writeResultFile(process.argv[1], { date: "2026-10-26", model: "m", smoke: false, full: true }, process.argv[2] + ":" + i);`;
+  try {
+    await Promise.all(["a", "b", "c", "d", "e", "f"].map((who) => new Promise((res, rej) => execFile("node", ["--input-type=module", "-e", code, dir, who], (e) => (e ? rej(e) : res())))));
+    const files = readdirSync(dir);
+    assert.equal(files.length, 120, "every one of the 6 x 20 writes got a file of its own");
+    const bodies = files.map((f) => readFileSync(join(dir, f), "utf8"));
+    assert.equal(new Set(bodies).size, 120, "no file was overwritten");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test("two runs on the same day never overwrite each other, and a model with a slash stays in the results folder", async () => {
@@ -752,4 +801,96 @@ test("DT-01 empty-state patterns accept a real filtered empty state and reject c
   assert.deepEqual(only(`<p>No customers yet.</p><Button>Clear filters</Button>`), ["missing:filtered-empty-message"]);
   assert.deepEqual(only(`<p>No customers match your filters.</p>`), ["missing:clear-filters-label"]);
   assert.deepEqual(only(`<p>{rows.length === 0 && "none"}</p>`), ["missing:filtered-empty-message", "missing:clear-filters-label"]);
+  // JSX text on its own line, as Prettier lays out a long paragraph
+  assert.deepEqual(only(`<p className="text-muted-foreground">\n  No tasks match your filters.\n</p>\n<Button>\n  Clear filters\n</Button>`), []);
+  assert.deepEqual(only(`<p>\n  Nothing found for this search\n</p><Button>Clear filters</Button>`), []);
+  // a line of code is not text, even when it has the right words in it
+  assert.deepEqual(only(`if (no === search) {\n  return null;\n}\nconst x = noMatch;\nclear filters`), ["missing:filtered-empty-message"]);
 });
+
+// ---------- review follow-ups ----------
+
+test("a model reported with a context suffix, or next to a helper model, is not 'another model'", () => {
+  assert.equal(answeredByOtherModel(["claude-a[1m]"], "claude-a"), false);
+  assert.equal(answeredByOtherModel(["claude-a"], "claude-a[1m]"), false);
+  assert.equal(answeredByOtherModel(["claude-a", "claude-helper"], "claude-a"), false, "a helper next to the requested model is not a fallback");
+  assert.equal(answeredByOtherModel(["claude-b"], "claude-a"), true, "a fallback replaces the requested model");
+  assert.equal(answeredByOtherModel(["claude-b", "claude-c"], "claude-a"), true);
+  assert.equal(answeredByOtherModel(["claude-ab"], "claude-a"), true, "a name that merely starts the same is a different model");
+  assert.equal(answeredByOtherModel([], "claude-a"), false, "nothing reported is an error row, not a mismatch");
+  assert.equal(answeredByOtherModel(undefined, "claude-a"), false);
+});
+test("a mismatch is shown loudly, not as a quiet note", () => {
+  const prev = run("m", Array(10).fill(true));
+  const next = run("m", Array(10).fill(false)); next.results[0].model_mismatch = true;
+  const cmp = compareRuns(prev, next);
+  assert.equal(cmp.status, "skipped");
+  assert.equal(cmp.kind, "mismatch");
+  assert.equal(compareRuns(prev, run("other", Array(10).fill(false))).kind, undefined, "a plain model change is only a note");
+});
+test("a missing results directory is an error, not a pass", () => {
+  assert.throws(() => execFileSync("node", [join(REPO, "vois-eval/check-results.mjs"), join(tmpdir(), "vois-eval-no-such-dir")], { stdio: "pipe" }), (e) => e.status !== 0);
+});
+test("date and created_at come from the same moment, even for a run that crosses midnight", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-midnight-"));
+  const times = ["2026-10-26T23:40:00.000Z", "2026-10-27T00:20:00.000Z"];
+  let i = 0;
+  const invoke = async () => ({ result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 });
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", join(dir, "r.json")], { invoke, log: () => {}, now: () => new Date(times[Math.min(i++, 1)]) });
+    assert.equal(res.run.date, "2026-10-26");
+    assert.equal(res.run.created_at, "2026-10-26T23:40:00.000Z");
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("truncated must agree with stop_reason in the file", () => {
+  let r = validRun(); r.results[0].truncated = true; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /truncated must be true exactly when stop_reason is/);
+  r = validRun(); r.results[0].stop_reason = "error_max_turns"; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /truncated must be true exactly when stop_reason is/);
+  r = validRun(); Object.assign(r.results[0], { stop_reason: "error_max_turns", truncated: true }); r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r = validRun(); r.results[0].stop_reason = "error_during_execution"; r.results[0].error = "stopped"; r.results[0].pass = false; r.results[0].decision = false; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), [], "another stop reason is allowed on an error row without being truncated");
+});
+
+test("a file that appears at --out during the run is left alone and the paid results are saved under another name", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-appears-"));
+  const out = join(dir, "r.json");
+  const logs = [];
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", out], {
+      invoke: async () => { writeFileSync(out, "someone else's file"); return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; },
+      log: (m) => logs.push(m), resultsDir: dir, now: () => new Date("2026-10-26T12:00:00Z"),
+    });
+    assert.equal(readFileSync(out, "utf8"), "someone else's file");
+    assert.notEqual(res.out, out);
+    assert.deepEqual(validateRun(JSON.parse(readFileSync(res.out, "utf8"))), []);
+    assert.ok(logs.some((l) => /appeared during the run/.test(l)));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("the checker accepts a served model with a context suffix", () => {
+  const r = validRun(); r.results[0].served_models = ["m[1m]"]; r.results[0].model_mismatch = false; r.summary = summarize(r.results);
+  assert.deepEqual(validateRun(r), []);
+  r.results[0].model_mismatch = true; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /model_mismatch does not match/);
+});
+test("a skipped comparison caused by a model mismatch is a warning on stderr, not a quiet note", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-warn-"));
+  try {
+    const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
+    const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(false), { conditions: ["on"] });
+    b.results[0].served_models = ["other"]; b.results[0].model_mismatch = true; b.summary = summarize(b.results);
+    writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
+    writeFileSync(join(dir, "b.json"), JSON.stringify(withBothConditions(b)));
+    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+    assert.equal(r.status, 0);
+    assert.match(r.stderr, /NOT COMPARED/);
+    assert.match(r.stderr, /answered by a model other than m/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+function withBothConditions(run) {
+  const off = run.results.map((r) => ({ ...r, condition: "off", pass: false, decision: false }));
+  const results = [...run.results, ...off];
+  return { ...run, conditions: ["on", "off"], results, summary: summarize(results) };
+}
