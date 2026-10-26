@@ -372,6 +372,9 @@ export const RULES = [
   },
   {
     id: "DS-MODAL",
+    // The one detector that reports a single id for several rules: it checks inert (-001) and overscroll-behavior (-002).
+    // scripts/validate-data.py reads this to link the detector to its rules in data/vois-rules.json.
+    covers: ["DS-MODAL-001", "DS-MODAL-002"],
     title: "Dialog/Modal missing inert / overscroll-behavior safeguards",
     severity: "quality",
     extensions: CODE_EXT,

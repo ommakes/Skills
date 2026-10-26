@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.23.2** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.24.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
@@ -79,6 +79,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.24.0**: every rule in `data/vois-rules.json` now says how it can be checked (`verification`), and the rules a detector covers name it (`detector`).
 - **1.23.2**: the `animation.md` starter types `motionEase` as mutable tuples and its reduced-motion snippet reads tokens only.
 - **1.23.1**: the `surfaces.md` snippets read tokens only for real (no literal `ease-out` or `easeIn`) and carry their imports.
 - **1.23.0**: `DS-MOTION-003` to `007` (one duration token per morph, the tray container, context blur, springs at `bounce: 0` with interruption, delight). The spring contradiction between `animation.md` and `surfaces.md` is resolved and `surfaces.md` reads tokens only.

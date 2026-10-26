@@ -220,6 +220,9 @@ const DETECTORS = [
   },
 ];
 
+// The detector ids and the rule each one reports, for scripts/validate-data.py.
+export const DETECTOR_IDS = DETECTORS.map(({ id, ruleId }) => ({ id, ruleId }));
+
 export function detectFile(filePath, content) {
   if (!isChartFile(content)) return [];
   const rules = ruleIndex();

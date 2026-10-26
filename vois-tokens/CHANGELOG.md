@@ -4,6 +4,24 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.24.0] - 2026-10-26
+
+### Added
+
+- **`verification` on every rule in `data/vois-rules.json`.** `detector` means a check in `scripts/registry.mjs` catches some or all violations of it (passing is not proof the rule is met), `judgment` means an agent reads the code. The vocabulary also allows `spec` and `rendered`, for rules checked against a chart spec or a rendered page. Rules marked `detector` carry a `detector` field with the registry id, so `DS-MODAL-001` and `DS-MODAL-002` both name `DS-MODAL`.
+- **`scripts/check-verification.py` checks the link.** It fails when a rule has no valid `verification`, when a `detector` rule names no detector or one that is not in the registry, when a rule names a detector but is not marked `detector`, and when the registry has a detector no rule claims. `DS-SLOP-002` is exempt because the `DS-SLOP-*` family is not indexed in the JSON. `scripts/check-verification.test.py` breaks each of these inputs in a copy and expects a failure.
+
+### Changed
+
+- `references/hooks.md` says the `detector` field is the source of truth for its coverage table, and `SKILL.md` names `scripts/check-verification.py` next to `scripts/check-rule-sync.mjs`.
+
+### Notes
+
+- No rule text, severity or enforcement changed. The only code change is a `covers` field on the `DS-MODAL` registry entry, which says it also covers `DS-MODAL-001` and `-002`; no finding changes. The Figma edition is unchanged.
+- **Version bump:** `1.23.2` → `1.24.0`
+
+---
+
 ## [1.23.2] - 2026-10-21
 
 ### Fixed

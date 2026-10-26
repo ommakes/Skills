@@ -1,7 +1,7 @@
 ---
 name: vois-dataviz
 description: Data visualization and dashboard rules for web apps. Use whenever a screen contains a chart, graph, sparkline, KPI tile, heatmap, map, or data-heavy dashboard, whether you are building it, picking a chart type, choosing chart colors, designing filters or date ranges, designing loading and empty states for data, or reviewing and improving an existing dashboard. Walks a chart-selection decision tree, gives do's and don'ts per principle, ships a chart spec, a code detector and a review protocol that agents can run. Optionally records the chart form via vois_record_component_choice if that tool is available.
-version: 1.1.2
+version: 1.2.0
 ---
 
 # Vois Data Visualization Skill
@@ -151,7 +151,7 @@ Written by hand:
 
 | File | Keyed by | Holds |
 |---|---|---|
-| `data/dataviz-rules.json` | `DV-<AREA>-NNN` | 14 principles and 114 rules: severity, enforcement, do, don't, check, sources, evidence |
+| `data/dataviz-rules.json` | `DV-<AREA>-NNN` | 14 principles and 114 rules: severity, enforcement, verification, do, don't, check, sources, evidence |
 | `data/decision-tree.json` | question and result node ids | The tree as a graph, job entry points, gates |
 | `data/chart-catalog.json` | `FORM-*` | 48 forms with fit, audience, baseline, color job, build hint |
 | `data/dashboard-patterns.json` | `DASH-*` | Templates and pieces: structure, components, rules, evidence |

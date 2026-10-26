@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.2.0] - 2026-10-26
+
+### Added
+
+- **`verification` on every rule in `data/dataviz-rules.json`.** It says the same thing as `enforcement` in the vocabulary the other skills use: `auto` is `detector`, `spec` is `spec`, `judgment` is `judgment`. `scripts/check-verification.py` fails if the two disagree.
+
+### Notes
+
+- No rule text, severity, enforcement or detector behavior changed. `scripts/detect.mjs` now also exports `DETECTOR_IDS` (each detector's id and the rule it reports) so `check-verification.py` can import the list instead of parsing the source.
+- **Version bump:** `1.1.2` → `1.2.0`
+
+---
+
 ## [1.1.2] - 2026-10-21
 
 ### Fixed

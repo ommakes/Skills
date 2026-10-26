@@ -16,9 +16,9 @@ Rebuilt 2026-10-06 from the sources on `main`, and `vois-components` and `vois-t
 | `design-ask.md` | 1.0.0 | In sync |
 | `metrics-tagging.md` | 1.1.0 | 1.0.0: missed the Properties column, task-level events, and the taxonomy-bloat rules |
 | `righter.md` | 1.9.0 (behind: source is 1.9.1) | 1.4.0 |
-| `vois-components.md` | 1.12.0 (behind: source is 1.15.2) | 1.5.0 |
+| `vois-components.md` | 1.12.0 (behind: source is 1.16.0) | 1.5.0 |
 | `vois-patterns.md` | 1.15.0 (behind: source is 1.17.0) | 1.9.0 |
-| `vois-tokens.md` | 1.21.1 (behind: source is 1.23.2) | 1.13.0 |
+| `vois-tokens.md` | 1.21.1 (behind: source is 1.24.0) | 1.13.0 |
 
 There is still no build script, and the four Vois and Righter editions are condensed by hand, so they fall behind whenever a source changes. A rule worth keeping: rebuild an edition in the same pass as a source version bump, or note here that it's behind.
 
