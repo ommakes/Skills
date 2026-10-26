@@ -1,0 +1,6688 @@
+{
+  "schema": "vois-eval-results/1",
+  "date": "2026-10-26",
+  "created_at": "2026-10-26T17:14:37.290Z",
+  "model": "claude-sonnet-5-5",
+  "smoke": false,
+  "full": true,
+  "claude_cli": "2.1.311 (Claude Code)",
+  "git_sha": "f884f712ef8a2fe0ad0cb14f826687b5943e622e",
+  "git_dirty": false,
+  "isolation": [
+    "tools:Read,Write,Glob,Grep",
+    "setting-sources:project",
+    "strict-mcp-config",
+    "file-access:logged-not-blocked",
+    "user-memory:not-controlled"
+  ],
+  "skills": {
+    "vois-patterns": "1.17.0",
+    "vois-components": "1.15.2",
+    "vois-tokens": "1.23.2",
+    "vois-dataviz": "1.1.2",
+    "righter": "1.10.0"
+  },
+  "samples_per_task": 3,
+  "conditions": [
+    "on",
+    "off"
+  ],
+  "tasks": [
+    "LP-01a",
+    "LP-01b",
+    "LP-01c",
+    "LP-02a",
+    "LP-02b",
+    "LP-02c",
+    "LP-03a",
+    "LP-03b",
+    "LP-03c",
+    "LP-04a",
+    "LP-04b",
+    "LP-04c",
+    "LP-05a",
+    "LP-05b",
+    "LP-05c",
+    "LP-06a",
+    "LP-06b",
+    "LP-06c",
+    "LP-07a",
+    "LP-07b",
+    "LP-07c",
+    "LP-08a",
+    "LP-08b",
+    "LP-08c",
+    "LP-09a",
+    "LP-09b",
+    "LP-09c",
+    "LP-10a",
+    "LP-10b",
+    "LP-10c",
+    "HP-01",
+    "HP-02",
+    "HP-03",
+    "HP-04",
+    "HP-05",
+    "HP-06",
+    "HP-07",
+    "HP-08",
+    "HP-09",
+    "HP-10",
+    "DT-01",
+    "DT-02",
+    "DT-03",
+    "DT-04",
+    "DT-05"
+  ],
+  "results": [
+    {
+      "task": "LP-01a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.20385760000000003,
+      "duration_ms": 40401,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.20790630000000002,
+      "duration_ms": 34996,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.202519,
+      "duration_ms": 31493,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0389163,
+      "duration_ms": 17294,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0379103,
+      "duration_ms": 17578,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0406501,
+      "duration_ms": 17722,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.20141659999999995,
+      "duration_ms": 30415,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.20767659999999996,
+      "duration_ms": 35222,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2214372,
+      "duration_ms": 33407,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.045022599999999996,
+      "duration_ms": 20697,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.03663860000000001,
+      "duration_ms": 21362,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0371868,
+      "duration_ms": 15623,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1695395,
+      "duration_ms": 18591,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.12039910000000001,
+      "duration_ms": 19596,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.16806379999999999,
+      "duration_ms": 20947,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0283977,
+      "duration_ms": 13801,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0420556,
+      "duration_ms": 19872,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-01c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.022976000000000003,
+      "duration_ms": 16236,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.22080289999999997,
+      "duration_ms": 40008,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2044716,
+      "duration_ms": 33969,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.20492479999999996,
+      "duration_ms": 37309,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0478049,
+      "duration_ms": 18586,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0455185,
+      "duration_ms": 20544,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.045488299999999995,
+      "duration_ms": 27082,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.24713059999999998,
+      "duration_ms": 43373,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2174127,
+      "duration_ms": 41202,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2064943,
+      "duration_ms": 34428,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0456019,
+      "duration_ms": 22389,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0412805,
+      "duration_ms": 21372,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0460285,
+      "duration_ms": 20030,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1554971,
+      "duration_ms": 33564,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.18987430000000002,
+      "duration_ms": 33407,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.14892719999999998,
+      "duration_ms": 28321,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.041501100000000006,
+      "duration_ms": 23137,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0382308,
+      "duration_ms": 16170,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "native-dialog"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "LOOKALIKE-009"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-02c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.037878999999999996,
+      "duration_ms": 16356,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.23441199999999998,
+      "duration_ms": 38721,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2408722,
+      "duration_ms": 40027,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.23817509999999997,
+      "duration_ms": 38759,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0421824,
+      "duration_ms": 18600,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0351673,
+      "duration_ms": 17078,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0364878,
+      "duration_ms": 16547,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.21539619999999998,
+      "duration_ms": 34085,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.26091800000000004,
+      "duration_ms": 41264,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.21085989999999996,
+      "duration_ms": 36956,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0324324,
+      "duration_ms": 14218,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0347367,
+      "duration_ms": 15933,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0338117,
+      "duration_ms": 15279,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2271838,
+      "duration_ms": 33071,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2140637,
+      "duration_ms": 42306,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.25837540000000003,
+      "duration_ms": 44706,
+      "turns": 12,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0365674,
+      "duration_ms": 15146,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.030869,
+      "duration_ms": 16873,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-03c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.04251,
+      "duration_ms": 18823,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.13623899999999997,
+      "duration_ms": 18610,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.16464689999999998,
+      "duration_ms": 17648,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.16327889999999998,
+      "duration_ms": 19555,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0226078,
+      "duration_ms": 10341,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0207993,
+      "duration_ms": 19811,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.018724900000000003,
+      "duration_ms": 9492,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1911313,
+      "duration_ms": 28877,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2048195,
+      "duration_ms": 31850,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1501092,
+      "duration_ms": 26690,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.029281,
+      "duration_ms": 12552,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.026439200000000003,
+      "duration_ms": 20397,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0225212,
+      "duration_ms": 25027,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.13887739999999998,
+      "duration_ms": 21315,
+      "turns": 7,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1283673,
+      "duration_ms": 21599,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1272859,
+      "duration_ms": 19495,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0218891,
+      "duration_ms": 9939,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0187656,
+      "duration_ms": 8364,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-04c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.018836699999999998,
+      "duration_ms": 9185,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.19435029999999998,
+      "duration_ms": 25401,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.19345819999999997,
+      "duration_ms": 27475,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.18585149999999998,
+      "duration_ms": 35173,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0328374,
+      "duration_ms": 13155,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.033820100000000006,
+      "duration_ms": 14844,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0547126,
+      "duration_ms": 22566,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1596993,
+      "duration_ms": 36046,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1610569,
+      "duration_ms": 33357,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1656677,
+      "duration_ms": 38250,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0345441,
+      "duration_ms": 16347,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.037455,
+      "duration_ms": 22257,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0340948,
+      "duration_ms": 25437,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.12831040000000002,
+      "duration_ms": 20776,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1250741,
+      "duration_ms": 27216,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.12823489999999999,
+      "duration_ms": 27691,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0245518,
+      "duration_ms": 10738,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.020082799999999998,
+      "duration_ms": 9311,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.020776799999999998,
+      "duration_ms": 19355,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.23163969999999998,
+      "duration_ms": 40720,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2288779,
+      "duration_ms": 53115,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2827,
+      "duration_ms": 59162,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.052023099999999996,
+      "duration_ms": 25519,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.045708,
+      "duration_ms": 22994,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.051565099999999996,
+      "duration_ms": 25724,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.21896920000000003,
+      "duration_ms": 41262,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.23222389999999998,
+      "duration_ms": 45102,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2444032,
+      "duration_ms": 45535,
+      "turns": 8,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0569326,
+      "duration_ms": 22188,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0535956,
+      "duration_ms": 28156,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.05494979999999999,
+      "duration_ms": 24697,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2096402,
+      "duration_ms": 35768,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.20774420000000002,
+      "duration_ms": 35452,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.214892,
+      "duration_ms": 38637,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.056706999999999994,
+      "duration_ms": 26441,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0505182,
+      "duration_ms": 21650,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-06c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.05216799999999999,
+      "duration_ms": 21538,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2653744,
+      "duration_ms": 70771,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2512059,
+      "duration_ms": 46233,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-A11Y-003",
+        "DV-CLARITY-004"
+      ]
+    },
+    {
+      "task": "LP-07a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2554779,
+      "duration_ms": 48297,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-A11Y-003",
+        "DV-CLARITY-004",
+        "DV-SUSTAIN-005"
+      ]
+    },
+    {
+      "task": "LP-07a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.035200100000000005,
+      "duration_ms": 16401,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0596703,
+      "duration_ms": 24600,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.03150649999999999,
+      "duration_ms": 20885,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2752618,
+      "duration_ms": 49958,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-A11Y-003"
+      ]
+    },
+    {
+      "task": "LP-07b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.289467,
+      "duration_ms": 55265,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-CLARITY-004"
+      ]
+    },
+    {
+      "task": "LP-07b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2603788,
+      "duration_ms": 47683,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.05847599999999999,
+      "duration_ms": 29023,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.049423100000000005,
+      "duration_ms": 21821,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0537649,
+      "duration_ms": 25568,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1338565,
+      "duration_ms": 19947,
+      "turns": 6,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1753239,
+      "duration_ms": 19509,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1746239,
+      "duration_ms": 24582,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0313093,
+      "duration_ms": 14875,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0322201,
+      "duration_ms": 16796,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-07c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0322478,
+      "duration_ms": 16398,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.22080290000000002,
+      "duration_ms": 31253,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.19843280000000002,
+      "duration_ms": 36549,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.22575280000000003,
+      "duration_ms": 23687,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.021985499999999998,
+      "duration_ms": 12032,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0186691,
+      "duration_ms": 11721,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0182531,
+      "duration_ms": 12400,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.25429909999999994,
+      "duration_ms": 42255,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2573625,
+      "duration_ms": 44804,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2506525,
+      "duration_ms": 36009,
+      "turns": 9,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0305577,
+      "duration_ms": 14989,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0323879,
+      "duration_ms": 16347,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0318039,
+      "duration_ms": 15210,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.181529,
+      "duration_ms": 42865,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.18609490000000004,
+      "duration_ms": 33840,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1749562,
+      "duration_ms": 24401,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0220589,
+      "duration_ms": 13022,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.023788300000000002,
+      "duration_ms": 13619,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-08c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.021506700000000004,
+      "duration_ms": 11735,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.14618330000000002,
+      "duration_ms": 24754,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.138736,
+      "duration_ms": 24575,
+      "turns": 8,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1963595,
+      "duration_ms": 29139,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.030958500000000003,
+      "duration_ms": 15499,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0263682,
+      "duration_ms": 12911,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.027735,
+      "duration_ms": 16123,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2226893,
+      "duration_ms": 30791,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1964807,
+      "duration_ms": 29757,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2202648,
+      "duration_ms": 29684,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0273486,
+      "duration_ms": 11927,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0248926,
+      "duration_ms": 13037,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.023939000000000002,
+      "duration_ms": 10367,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1372051,
+      "duration_ms": 21349,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.21241349999999998,
+      "duration_ms": 28222,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.14636470000000001,
+      "duration_ms": 21455,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0301399,
+      "duration_ms": 17669,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.026532,
+      "duration_ms": 11855,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-09c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.027688000000000004,
+      "duration_ms": 12773,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1971427,
+      "duration_ms": 34202,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2025498,
+      "duration_ms": 32966,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1526519,
+      "duration_ms": 34047,
+      "turns": 6,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.047908,
+      "duration_ms": 20557,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0420063,
+      "duration_ms": 34017,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10a",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.044920800000000004,
+      "duration_ms": 19428,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2378158,
+      "duration_ms": 45872,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-A11Y-003"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.22767440000000003,
+      "duration_ms": 45277,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2250036,
+      "duration_ms": 48109,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.08306870000000001,
+      "duration_ms": 36135,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0905335,
+      "duration_ms": 37001,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "title-tooltip"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "LOOKALIKE-011"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10b",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0746912,
+      "duration_ms": 33531,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1856475,
+      "duration_ms": 27408,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1860061,
+      "duration_ms": 24851,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1802181,
+      "duration_ms": 24755,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0285734,
+      "duration_ms": 12690,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.025743999999999996,
+      "duration_ms": 14486,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-10c",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.025899999999999996,
+      "duration_ms": 12600,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.20831460000000002,
+      "duration_ms": 28195,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2025988,
+      "duration_ms": 29391,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.17399950000000003,
+      "duration_ms": 24128,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0292169,
+      "duration_ms": 12464,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-toast",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005",
+        "LOOKALIKE-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0261729,
+      "duration_ms": 13941,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-toast",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005",
+        "LOOKALIKE-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-01",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.026117299999999996,
+      "duration_ms": 13496,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-toast",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005",
+        "LOOKALIKE-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.211765,
+      "duration_ms": 23001,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.21814179999999997,
+      "duration_ms": 27142,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.24022359999999998,
+      "duration_ms": 30588,
+      "turns": 11,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0279744,
+      "duration_ms": 12625,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0220412,
+      "duration_ms": 9472,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-02",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.040477,
+      "duration_ms": 17486,
+      "turns": 3,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.20346909999999999,
+      "duration_ms": 32767,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1975484,
+      "duration_ms": 30605,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2077359,
+      "duration_ms": 38300,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.043210700000000005,
+      "duration_ms": 16758,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-button-focus-ring",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "LOOKALIKE-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0352525,
+      "duration_ms": 20768,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "native-dialog",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "LOOKALIKE-009"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-03",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0397561,
+      "duration_ms": 18311,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2228119,
+      "duration_ms": 34771,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.23227989999999998,
+      "duration_ms": 35780,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2229089,
+      "duration_ms": 34814,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0503238,
+      "duration_ms": 21681,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0481557,
+      "duration_ms": 20936,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-04",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0467057,
+      "duration_ms": 19243,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-button-focus-ring"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "LOOKALIKE-001",
+        "LOOKALIKE-003"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1727892,
+      "duration_ms": 17317,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1740709,
+      "duration_ms": 21231,
+      "turns": 7,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.16997740000000003,
+      "duration_ms": 23052,
+      "turns": 7,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0261767,
+      "duration_ms": 11128,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0220508,
+      "duration_ms": 11186,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-05",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0237758,
+      "duration_ms": 11031,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2534435,
+      "duration_ms": 38827,
+      "turns": 12,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.26539759999999996,
+      "duration_ms": 39944,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2534874,
+      "duration_ms": 42460,
+      "turns": 13,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0442868,
+      "duration_ms": 15970,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.038222500000000006,
+      "duration_ms": 15578,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0330954,
+      "duration_ms": 12477,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.16197429999999996,
+      "duration_ms": 29047,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-A11Y-003",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1721823,
+      "duration_ms": 35038,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-A11Y-003",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1841843,
+      "duration_ms": 39273,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-A11Y-003",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.043745400000000004,
+      "duration_ms": 17960,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-progress"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.0416686,
+      "duration_ms": 16694,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-progress"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-SPACING-001",
+        "DS-TAILWIND-005"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-07",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.04545060000000001,
+      "duration_ms": 19399,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-progress"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "DS-MOTION-001",
+        "DS-TAILWIND-005"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1848917,
+      "duration_ms": 27283,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.18722860000000002,
+      "duration_ms": 29129,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.1834308,
+      "duration_ms": 24703,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0274929,
+      "duration_ms": 11554,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-alert",
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001",
+        "LOOKALIKE-010"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.023485699999999998,
+      "duration_ms": 11353,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-alert"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001",
+        "LOOKALIKE-010"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-08",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0238499,
+      "duration_ms": 11032,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-alert"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "LOOKALIKE-010"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.1638924,
+      "duration_ms": 23216,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.1849173,
+      "duration_ms": 25565,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.149121,
+      "duration_ms": 23789,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0258976,
+      "duration_ms": 10093,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.023042899999999998,
+      "duration_ms": 10037,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-09",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.025632699999999998,
+      "duration_ms": 12294,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2612075,
+      "duration_ms": 42798,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.24450650000000002,
+      "duration_ms": 33529,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2476348,
+      "duration_ms": 38755,
+      "turns": 8,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0383305,
+      "duration_ms": 14969,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-button-focus-ring"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "LOOKALIKE-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.033304,
+      "duration_ms": 13285,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-button-focus-ring"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "LOOKALIKE-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0376053,
+      "duration_ms": 15427,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-button-focus-ring"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "LOOKALIKE-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.4174314,
+      "duration_ms": 83298,
+      "turns": 12,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:selected-count"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.3791804000000001,
+      "duration_ms": 70731,
+      "turns": 10,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.3749329,
+      "duration_ms": 67001,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.08850939999999999,
+      "duration_ms": 33768,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:clear-filters-label"
+      ],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.09923080000000001,
+      "duration_ms": 40477,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:clear-filters-label"
+      ],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-MODAL"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-01",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0806231,
+      "duration_ms": 34960,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:clear-filters-label"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.3103476,
+      "duration_ms": 46984,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.350591,
+      "duration_ms": 68189,
+      "turns": 14,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-tabs"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.34367480000000006,
+      "duration_ms": 53087,
+      "turns": 13,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.05029929999999999,
+      "duration_ms": 19591,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.04642929999999999,
+      "duration_ms": 18776,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-02",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.05746949999999999,
+      "duration_ms": 24474,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-03",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.3412087,
+      "duration_ms": 71118,
+      "turns": 9,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-SUSTAIN-005"
+      ]
+    },
+    {
+      "task": "DT-03",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.3921064999999999,
+      "duration_ms": 82702,
+      "turns": 13,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [
+        "Write:/tmp/claude-0/-tmp-vois-eval-DT-03-on-gW6LlA/76814eb6-35f8-5ed2-ba1b-d6584290fa4d/scratchpad/note.txt"
+      ],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-03",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.3293005,
+      "duration_ms": 66413,
+      "turns": 9,
+      "served_models": [
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": [
+        "DV-SUSTAIN-005"
+      ]
+    },
+    {
+      "task": "DT-03",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.054815800000000005,
+      "duration_ms": 21590,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area",
+        "missing:channels-as-bars"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-03",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.04659169999999999,
+      "duration_ms": 18683,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area",
+        "missing:channels-as-bars"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-03",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.04915370000000001,
+      "duration_ms": 23464,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [
+        "missing:trend-as-line-or-area",
+        "missing:channels-as-bars"
+      ],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.2089237,
+      "duration_ms": 39909,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.22957709999999998,
+      "duration_ms": 40817,
+      "turns": 12,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.2512436,
+      "duration_ms": 40959,
+      "turns": 10,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0537764,
+      "duration_ms": 20610,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.048898899999999995,
+      "duration_ms": 21552,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-04",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.04945870000000001,
+      "duration_ms": 21738,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": false,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002",
+        "DS-LAYOUT-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "on",
+      "sample": 1,
+      "cost_usd": 0.30565980000000004,
+      "duration_ms": 65316,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ANIMATION-004",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "on",
+      "sample": 2,
+      "cost_usd": 0.2856678,
+      "duration_ms": 58875,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "on",
+      "sample": 3,
+      "cost_usd": 0.30648049999999993,
+      "duration_ms": 66260,
+      "turns": 11,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "off",
+      "sample": 1,
+      "cost_usd": 0.0764834,
+      "duration_ms": 31558,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-001",
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "off",
+      "sample": 2,
+      "cost_usd": 0.09687210000000002,
+      "duration_ms": 41275,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-001",
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "condition": "off",
+      "sample": 3,
+      "cost_usd": 0.0717761,
+      "duration_ms": 31278,
+      "turns": 2,
+      "served_models": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "outside_cwd_access": [],
+      "truncated": false,
+      "cost_unknown": false,
+      "model_mismatch": false,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "raw-palette-color"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-COLOR-002"
+      ],
+      "dataviz_findings": []
+    }
+  ],
+  "summary": {
+    "on": {
+      "samples": 135,
+      "errors": 0,
+      "outside_access": 1,
+      "truncated": 0,
+      "cost_unknown": 0,
+      "model_mismatch": 0,
+      "pass_rate": 0.926,
+      "decision_rate": 0.978,
+      "mean_lookalike_hits": 0.022,
+      "mean_detector_findings": 0.274,
+      "cost_usd": 28.941,
+      "mean_duration_ms": 36397
+    },
+    "off": {
+      "samples": 135,
+      "errors": 0,
+      "outside_access": 0,
+      "truncated": 0,
+      "cost_unknown": 0,
+      "model_mismatch": 0,
+      "pass_rate": 0.63,
+      "decision_rate": 0.926,
+      "mean_lookalike_hits": 0.378,
+      "mean_detector_findings": 0.733,
+      "cost_usd": 5.307,
+      "mean_duration_ms": 18406
+    }
+  }
+}
