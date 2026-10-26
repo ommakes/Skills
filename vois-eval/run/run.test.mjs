@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks, validateTask } from "./tasks.mjs";
 import { compareRuns, scoreSample, summarize } from "./score.mjs";
-import { buildPlan, extractCode, main, parseArgs, renderPrompt } from "./run.mjs";
+import { buildPlan, extractCode, main, outsideAccess, parseArgs, renderPrompt, runSample } from "./run.mjs";
 import { validateRun } from "../check-results.mjs";
 
 const REPO = fileURLToPath(new URL("../../", import.meta.url));
@@ -118,7 +118,7 @@ test("detector findings are recorded but do not decide the pass", () => {
 
 // ---------- summary and comparison ----------
 
-const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], cost_usd: 0.01, duration_ms: 1000, ...o });
+const row = (o = {}) => ({ task: "T-1", condition: "on", sample: 1, pass: true, decision: true, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], cost_usd: 0.01, duration_ms: 1000, ...o });
 
 test("an errored sample counts as an attempt that failed", () => {
   const s = summarize([row(), row({ sample: 2, pass: false, decision: false, error: "boom" })]);
@@ -148,6 +148,13 @@ test("a drop of exactly the threshold is allowed", () => {
   const next = run("m", [...Array(9).fill(true), false]);
   assert.equal(compareRuns(prev, next).status, "ok");
 });
+test("a drop of exactly the threshold is allowed even where floating point says 0.7 < 0.7000000000000001", () => {
+  const prev = run("m", [...Array(8).fill(true), false, false]);
+  const next = run("m", [...Array(7).fill(true), ...Array(3).fill(false)]);
+  assert.equal(compareRuns(prev, next).status, "ok");
+  const worse = run("m", [...Array(6).fill(true), ...Array(4).fill(false)]);
+  assert.equal(compareRuns(prev, worse).status, "regressed");
+});
 test("compareRuns does not compare across models or with too few shared tasks", () => {
   assert.equal(compareRuns(run("a", Array(10).fill(true)), run("b", Array(10).fill(false))).status, "skipped");
   assert.equal(compareRuns(run("a", [true, true]), run("a", [false, false])).status, "skipped");
@@ -163,7 +170,7 @@ test("only tasks both runs contain are compared", () => {
 
 function validRun() {
   const results = [row(), row({ sample: 2 }), row({ condition: "off", pass: false, decision: false }), row({ condition: "off", sample: 2, pass: false, decision: false })];
-  return { schema: "vois-eval-results/1", date: "2026-10-26", model: "m", smoke: false, skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
+  return { schema: "vois-eval-results/1", date: "2026-10-26", model: "m", smoke: false, git_dirty: false, skills: { "vois-tokens": "1.0.0" }, samples_per_task: 2,
     conditions: ["on", "off"], tasks: ["T-1"], results, summary: summarize(results) };
 }
 test("a well-formed run validates", () => assert.deepEqual(validateRun(validRun()), []));
@@ -188,6 +195,26 @@ test("duplicate samples, unknown tasks and unlisted conditions are rejected", ()
   r = validRun(); r.conditions = ["on"];
   assert.match(validateRun(r).join("\n"), /condition the header does not list/);
 });
+test("a flag flipped by hand cannot hide a failure", () => {
+  for (const [field, value] of [["pattern_failures", ["missing:x"]], ["forbidden_imports", ["dialog"]], ["lookalike_hits", ["fake-button"]]]) {
+    const r = validRun(); r.results[0][field] = value; r.summary = summarize(r.results);
+    assert.match(validateRun(r).join("\n"), /marked as/, field);
+  }
+  const r = validRun(); r.results[0].decision = false; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /wrong decision/);
+});
+test("a failing sample still cannot claim a correct decision while importing a forbidden component", () => {
+  const r = validRun(); Object.assign(r.results[2], { decision: true, forbidden_imports: ["dialog"] }); r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /correct decision with forbidden imports/);
+});
+test("a null result, an empty error and a missing git_dirty are rejected, not crashed on", () => {
+  let r = validRun(); r.results.push(null);
+  assert.match(validateRun(r).join("\n"), /not an object/);
+  r = validRun(); r.results[2].error = ""; r.summary = summarize(r.results);
+  assert.match(validateRun(r).join("\n"), /error must be a non-empty string/);
+  r = validRun(); delete r.git_dirty;
+  assert.match(validateRun(r).join("\n"), /git_dirty/);
+});
 test("an errored or lookalike-ridden sample cannot be marked as passing", () => {
   let r = validRun(); r.results[0].error = "x"; r.summary = summarize(r.results);
   assert.match(validateRun(r).join("\n"), /errored sample cannot be marked as passing/);
@@ -207,7 +234,7 @@ test("the checker exits non-zero for a regression in a directory of results", ()
   try {
     const mk = (date, passes) => {
       const results = passes.map((p, i) => row({ task: `T-${i + 1}`, pass: p, decision: p }));
-      return { schema: "vois-eval-results/1", date, model: "m", smoke: false, skills: { a: "1" }, samples_per_task: 1, conditions: ["on"],
+      return { schema: "vois-eval-results/1", date, model: "m", smoke: false, git_dirty: false, skills: { a: "1" }, samples_per_task: 1, conditions: ["on"],
         tasks: results.map((r) => r.task), results, summary: summarize(results) };
     };
     const w = (n, o) => writeFileSync(join(dir, n), JSON.stringify(o));
@@ -237,6 +264,35 @@ test("buildPlan expands tasks x conditions x samples and rejects unknown ids", (
   assert.equal(buildPlan(tasks, o).length, 2 * 2 * 3);
   assert.equal(buildPlan(tasks, parseArgs(["--model", "m", "--tasks", "DT-01", "--condition", "on", "--samples", "1"])).length, 1);
   assert.throws(() => buildPlan(tasks, parseArgs(["--model", "m", "--tasks", "DT-99"])), /unknown task id/);
+});
+test("a dollar sign sequence in a prompt is kept literally", () => {
+  const p = renderPrompt("off", { user_prompt: "It costs $& and $' and $$ and $`." });
+  assert.ok(p.includes("It costs $& and $' and $$ and $`."), p);
+  assert.doesNotMatch(p, /\{\{/);
+});
+test("an empty task selection is rejected instead of running nothing or everything", () => {
+  const tasks = loadTasks();
+  assert.throws(() => buildPlan(tasks, parseArgs(["--model", "m", "--tasks", ","])), /names no task/);
+  assert.throws(() => parseArgs(["--model", "m", "--tasks", ""]), /needs a value/);
+  assert.throws(() => parseArgs(["--model", "m", "--tasks", "  "]), /needs a value/);
+});
+test("outsideAccess lists file-tool paths outside the run directory and ignores the inside", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-out-"));
+  try {
+    const uses = [
+      { name: "Read", input: { file_path: join(dir, "skills/a/SKILL.md") } },
+      { name: "Read", input: { file_path: "./out.tsx" } },
+      { name: "Glob", input: { pattern: "skills/**/SKILL.md" } },
+      { name: "Grep", input: { pattern: "/etc/passwd|\\.claude", path: "." } },
+      { name: "Read", input: { file_path: "/home/u/.claude/skills/vois-tokens/SKILL.md" } },
+      { name: "Glob", input: { pattern: "/home/u/.claude/skills/**" } },
+      { name: "Read", input: { file_path: join(dir, "..", "elsewhere", "x") } },
+      { name: "Read", input: { file_path: dir + "-sibling/x" } },
+    ];
+    assert.deepEqual(outsideAccess(uses, dir), [
+      "Glob:/home/u/.claude/skills/**", "Read:/home/u/.claude/skills/vois-tokens/SKILL.md", `Read:${dir}-sibling/x`, `Read:${join(dir, "..", "elsewhere", "x")}`,
+    ].sort());
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test("the two conditions get different prompts and only 'on' points at the skills", () => {
   const t = { user_prompt: "Do X." };
@@ -289,4 +345,47 @@ test("a dry run calls nothing and writes nothing", async () => {
   const res = await main(["--dry-run", "--tasks", "DT-01"], { invoke: async () => { called = true; }, log: () => {} });
   assert.equal(called, false);
   assert.equal(res, null);
+});
+
+test("a sample that throws becomes an error row and the other samples still run", async () => {
+  const t = loadTasks().find((x) => x.id === "DT-04");
+  const o = parseArgs(["--model", "m"]);
+  const boom = await runSample({ task: t, condition: "off", sample: 1 }, o, async () => { throw new Error("disk full"); });
+  assert.equal(boom.pass, false);
+  assert.match(boom.error, /runner error: disk full/);
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-throw-"));
+  let n = 0;
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "3", "--out", join(dir, "r.json")], {
+      invoke: async () => { if (++n === 2) throw new Error("boom"); return { result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", cost_usd: 0.01, duration_ms: 1, turns: 1, models: ["m"] }; },
+      log: () => {},
+    });
+    assert.deepEqual(res.run.results.map((r) => r.pass), [true, false, true]);
+    assert.equal(res.run.summary.on.errors, 1);
+    assert.deepEqual(validateRun(res.run), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("a results file that already exists stops the run before any model call is made", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-exists-"));
+  const out = join(dir, "r.json");
+  writeFileSync(out, "{}");
+  let called = 0;
+  try {
+    await assert.rejects(main(["--model", "m", "--tasks", "DT-04", "--samples", "1", "--out", out], { invoke: async () => { called++; return {}; }, log: () => {} }), /already exists/);
+    assert.equal(called, 0);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("file access outside the run directory is recorded on the sample", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-leak-"));
+  try {
+    const res = await main(["--model", "m", "--tasks", "DT-04", "--condition", "off", "--samples", "1", "--out", join(dir, "r.json")], {
+      invoke: async () => ({ result: "```tsx\nimport { Drawer } from \"@/components/ui/drawer\";\nexport default () => <Drawer/>;\n```", tool_uses: [{ name: "Read", input: { file_path: "/root/.claude/skills/x/SKILL.md" } }], cost_usd: 0, duration_ms: 1, turns: 2, models: ["m"] }),
+      log: () => {},
+    });
+    assert.deepEqual(res.run.results[0].outside_cwd_access, ["Read:/root/.claude/skills/x/SKILL.md"]);
+    assert.equal(res.run.summary.off.outside_access, 1);
+    assert.equal(typeof res.run.git_dirty, "boolean");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

@@ -28,6 +28,7 @@ export function validateRun(run) {
   need(/^\d{4}-\d{2}-\d{2}$/.test(run.date ?? ""), "date must be YYYY-MM-DD");
   need(isStr(run.model), "model is missing");
   need(typeof run.smoke === "boolean", "smoke must be true or false");
+  need(typeof run.git_dirty === "boolean", "git_dirty must be true or false");
   need(run.skills && typeof run.skills === "object" && Object.keys(run.skills).length > 0, "skills versions are missing");
   need(Number.isInteger(run.samples_per_task) && run.samples_per_task >= 1, "samples_per_task must be a whole number of 1 or more");
   need(isList(run.tasks) && run.tasks.length > 0, "tasks must be a non-empty list of ids");
@@ -38,15 +39,21 @@ export function validateRun(run) {
   const seen = new Set();
   for (const [i, r] of run.results.entries()) {
     const at = `results[${i}]`;
+    if (!r || typeof r !== "object") { errs.push(`${at}: not an object`); continue; }
     need(run.tasks.includes(r.task), `${at}: task ${JSON.stringify(r.task)} is not in tasks`);
     need(CONDITIONS.includes(r.condition), `${at}: condition must be on or off`);
     need(Number.isInteger(r.sample) && r.sample >= 1 && r.sample <= run.samples_per_task, `${at}: sample must be 1 to ${run.samples_per_task}`);
     need(typeof r.pass === "boolean" && typeof r.decision === "boolean", `${at}: pass and decision must be true or false`);
-    for (const k of ["lookalike_hits", "forbidden_imports", "pattern_failures", "detector_findings", "dataviz_findings"]) need(isList(r[k]), `${at}: ${k} must be a list of strings`);
+    for (const k of ["lookalike_hits", "forbidden_imports", "pattern_failures", "detector_findings", "dataviz_findings", "outside_cwd_access"]) need(isList(r[k]), `${at}: ${k} must be a list of strings`);
+    need(r.error === undefined || isStr(r.error), `${at}: error must be a non-empty string when present`);
     need(typeof r.cost_usd === "number" && r.cost_usd >= 0, `${at}: cost_usd must be a number of 0 or more`);
     need(typeof r.duration_ms === "number" && r.duration_ms >= 0, `${at}: duration_ms must be a number of 0 or more`);
-    need(!(r.pass && r.error), `${at}: an errored sample cannot be marked as passing`);
-    need(!r.pass || (r.lookalike_hits ?? []).length === 0, `${at}: marked as passing with lookalike hits`);
+    need(!(r.pass && r.error !== undefined), `${at}: an errored sample cannot be marked as passing`);
+    // The flags must follow from the findings, so flipping one by hand cannot hide a failure.
+    const none = (k) => Array.isArray(r[k]) && r[k].length === 0;
+    need(!r.decision || none("forbidden_imports"), `${at}: marked as a correct decision with forbidden imports`);
+    need(!r.pass || (r.decision && none("lookalike_hits") && none("pattern_failures") && none("forbidden_imports")),
+      `${at}: marked as passing with lookalike hits, pattern failures, forbidden imports or a wrong decision`);
     const key = `${r.task}|${r.condition}|${r.sample}`;
     need(!seen.has(key), `${at}: duplicate sample ${key}`);
     seen.add(key);
@@ -68,6 +75,8 @@ function main() {
     let run;
     try { run = JSON.parse(readFileSync(join(dir, f), "utf8")); } catch (e) { console.error(`FAIL ${f}: ${e.message}`); failed = true; continue; }
     const errs = validateRun(run);
+    const leaked = errs.length ? 0 : run.results.filter((r) => r.condition === "off" && r.outside_cwd_access.length > 0).length;
+    if (leaked) console.warn(`WARN ${f}: ${leaked} skills-off sample(s) touched files outside the run directory; check they did not read installed skills before trusting the off rate`);
     if (errs.length) { failed = true; console.error(`FAIL ${f}`); for (const e of errs) console.error(`  ${e}`); } else { runs.push({ f, run }); console.log(`ok   ${f}: ${run.model}, ${run.smoke ? "smoke, " : ""}${run.tasks.length} task(s), ${run.samples_per_task} sample(s)`); }
   }
   const full = runs.filter(({ run }) => !run.smoke).sort((a, b) => a.run.date.localeCompare(b.run.date) || a.f.localeCompare(b.f));

@@ -13,9 +13,9 @@
 // Both get the same four tools (Read, Write, Glob, Grep). Nothing else is available, so the
 // agent cannot reach skills installed on the machine or the account, and cannot run code.
 import { spawn, execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadTasks } from "./tasks.mjs";
 import { CONDITIONS, scoreSample, summarize } from "./score.mjs";
@@ -28,7 +28,8 @@ const SKILLS_HINT = "\n\nThe skills are in ./skills/, one folder each, each star
 
 export function renderPrompt(condition, task) {
   const t = condition === "on" ? TEMPLATE_ON + SKILLS_HINT : TEMPLATE_OFF;
-  return t.replaceAll("{{user_prompt}}", task.user_prompt).replaceAll("{{out_path}}", "./out.tsx");
+  // Function replacements, so a "$&" or "$'" inside a task prompt is kept literally.
+  return t.replaceAll("{{user_prompt}}", () => task.user_prompt).replaceAll("{{out_path}}", () => "./out.tsx");
 }
 
 // The agent is asked to write ./out.tsx. If it answers with a code block instead, take that.
@@ -46,6 +47,7 @@ export function parseArgs(argv) {
     if (flags.has(a)) { o[a.slice(2).replace(/-/g, "")] = true; continue; }
     const v = argv[++i];
     if (v === undefined || v.startsWith("--")) throw new Error(`${a} needs a value`);
+    if (a === "--tasks" && !v.trim()) throw new Error(`--tasks needs a value`);
     const key = { "--model": "model", "--tasks": "tasks", "--condition": "condition", "--samples": "samples", "--out": "out",
       "--save-output": "saveOutput", "--max-turns": "maxTurns", "--budget": "budget", "--concurrency": "concurrency", "--limit": "limit" }[a];
     if (!key) throw new Error(`unknown option ${a}`);
@@ -63,6 +65,7 @@ export function buildPlan(tasks, o) {
   let picked = tasks;
   if (o.tasks && o.tasks !== "all") {
     const want = o.tasks.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!want.length) throw new Error(`--tasks "${o.tasks}" names no task; use ids like DT-01,LP-03a or "all"`);
     const known = new Set(tasks.map((t) => t.id));
     const unknown = want.filter((id) => !known.has(id));
     if (unknown.length) throw new Error(`unknown task id(s): ${unknown.join(", ")}`);
@@ -75,10 +78,29 @@ export function buildPlan(tasks, o) {
   return plan;
 }
 
+// Paths the agent's file tools touched outside the run directory. In the off condition any entry means
+// the agent went looking elsewhere (for example in ~/.claude/skills), so the run needs a look.
+export function outsideAccess(toolUses, dir) {
+  const roots = new Set([resolve(dir)]);
+  try { roots.add(realpathSync(dir)); } catch { /* the directory is gone; compare lexically */ }
+  const inside = (p) => [...roots].some((r) => p === r || p.startsWith(r + sep));
+  const found = new Set();
+  for (const u of toolUses ?? []) {
+    const input = u?.input ?? {};
+    for (const key of ["file_path", "path", "notebook_path", "pattern"]) {
+      const v = input[key];
+      if (typeof v !== "string" || !v) continue;
+      if (key === "pattern" && u.name !== "Glob") continue; // a Grep pattern is a regex, not a path
+      if (!inside(resolve(dir, v))) found.add(`${u.name}:${v}`);
+    }
+  }
+  return [...found].sort().slice(0, 10);
+}
+
 // One `claude -p` call. Resolves with whatever the CLI reported; never rejects.
 export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000 }) {
   return new Promise((resolveP) => {
-    const args = ["-p", prompt, "--model", model, "--output-format", "json", "--no-session-persistence",
+    const args = ["-p", prompt, "--model", model, "--output-format", "stream-json", "--verbose", "--no-session-persistence",
       "--setting-sources", "project", "--tools", "Read,Write,Glob,Grep", "--allowedTools", "Read", "Write", "Glob", "Grep",
       "--max-turns", String(maxTurns), "--max-budget-usd", String(budget)];
     const child = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
@@ -89,32 +111,39 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
     child.on("error", (e) => { clearTimeout(timer); resolveP({ error: `could not start ${bin}: ${e.message}` }); });
     child.on("close", (code) => {
       clearTimeout(timer);
-      try {
-        const j = JSON.parse(out);
-        resolveP({
-          result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0,
-          models: Object.keys(j.modelUsage ?? {}), error: j.is_error ? `claude reported an error: ${String(j.result).slice(0, 200)}` : undefined,
-        });
-      } catch {
-        resolveP({ error: `exit ${code}, no JSON: ${(err || out).slice(0, 200)}` });
-      }
+      const events = [];
+      for (const line of out.split("\n")) { try { if (line.trim()) events.push(JSON.parse(line)); } catch { /* not an event line */ } }
+      const j = events.findLast?.((e) => e.type === "result") ?? [...events].reverse().find((e) => e.type === "result");
+      if (!j) { resolveP({ error: `exit ${code}, no result event: ${(err || out).slice(0, 200)}` }); return; }
+      const tool_uses = events.filter((e) => e.type === "assistant").flatMap((e) => (e.message?.content ?? []).filter((c) => c?.type === "tool_use"));
+      resolveP({
+        result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0, tool_uses,
+        models: Object.keys(j.modelUsage ?? {}), error: j.is_error ? `claude reported an error: ${String(j.result).slice(0, 200)}` : undefined,
+      });
     });
   });
 }
 
-export async function runSample({ task, condition, sample }, o, invoke = invokeClaude) {
+const failedRow = (task, condition, sample, error, extra = {}) => ({ task: task.id, condition, sample, cost_usd: 0, duration_ms: 0, turns: 0, served_models: [],
+  pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [], outside_cwd_access: [], ...extra, error });
+
+// One bad sample (a copy that fails, a detector that throws on odd code) becomes an error row; it must not
+// take the other samples' paid results down with it.
+export async function runSample(item, o, invoke = invokeClaude) {
+  try { return await runSampleInner(item, o, invoke); }
+  catch (e) { return failedRow(item.task, item.condition, item.sample, `runner error: ${String(e?.message ?? e).slice(0, 200)}`); }
+}
+
+async function runSampleInner({ task, condition, sample }, o, invoke) {
   const dir = mkdtempSync(join(tmpdir(), `vois-eval-${task.id}-${condition}-`));
   try {
     if (condition === "on") for (const s of SKILLS_UNDER_TEST) cpSync(join(REPO, s), join(dir, "skills", s), { recursive: true, filter: (p) => !p.includes("node_modules") });
     const r = await invoke({ prompt: renderPrompt(condition, task), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget });
     const file = join(dir, "out.tsx");
     const src = r.error ? null : extractCode(existsSync(file) ? readFileSync(file, "utf8") : "", r.result);
-    const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [] };
+    const base = { task: task.id, condition, sample, cost_usd: r.cost_usd ?? 0, duration_ms: r.duration_ms ?? 0, turns: r.turns ?? 0, served_models: r.models ?? [], outside_cwd_access: outsideAccess(r.tool_uses, dir) };
     if (src && o.saveOutput) { mkdirSync(o.saveOutput, { recursive: true }); writeFileSync(join(o.saveOutput, `${task.id}-${condition}-${sample}.tsx`), src); }
-    if (!src) {
-      return { ...base, pass: false, decision: false, lookalike_hits: [], forbidden_imports: [], pattern_failures: [], detector_findings: [], dataviz_findings: [],
-        error: r.error ?? "the agent wrote no ./out.tsx and gave no code block" };
-    }
+    if (!src) return failedRow(task, condition, sample, r.error ?? "the agent wrote no ./out.tsx and gave no code block", base);
     return { ...base, ...scoreSample(src, task) };
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -131,6 +160,10 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const o = parseArgs(argv);
   const tasks = loadTasks();
   const plan = buildPlan(tasks, o);
+  const date = now().toISOString().slice(0, 10);
+  // Decide where the file goes before spending anything, so a clash cannot throw away a paid run.
+  const out = resolve(o.out ?? join(REPO, "vois-eval", "results", `${date}-${o.model}${o.smoke ? "-smoke" : ""}.json`));
+  if (!o.dryrun && existsSync(out) && !o.force) throw new Error(`${out} already exists; pass --out or --force`);
   log(`${plan.length} call(s): ${new Set(plan.map((p) => p.task.id)).size} task(s) x ${o.condition === "both" ? "2 conditions" : o.condition} x ${o.samples} sample(s)`);
   if (o.dryrun) { for (const p of plan.slice(0, 20)) log(`  ${p.task.id} ${p.condition} #${p.sample}`); if (plan.length > 20) log(`  ... and ${plan.length - 20} more`); return null; }
 
@@ -145,19 +178,18 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   };
   await Promise.all(Array.from({ length: Math.min(o.concurrency, plan.length) }, worker));
 
-  const date = now().toISOString().slice(0, 10);
+  const dirty = tryExec("git", ["status", "--porcelain"], REPO);
+  if (dirty && dirty !== "unknown") log("\nnote: the working tree has uncommitted changes; the results file records that, because git_sha alone will not reproduce this run");
   const run = {
     schema: "vois-eval-results/1", date, model: o.model, smoke: Boolean(o.smoke),
-    claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO),
+    claude_cli: tryExec("claude", ["--version"], REPO), git_sha: tryExec("git", ["rev-parse", "HEAD"], REPO), git_dirty: dirty === "unknown" || dirty.length > 0,
     skills: skillVersions(), samples_per_task: o.samples, conditions: [...new Set(plan.map((p) => p.condition))],
     tasks: [...new Set(plan.map((p) => p.task.id))], results, summary: summarize(results),
   };
-  const out = resolve(o.out ?? join(REPO, "vois-eval", "results", `${date}-${o.model}${o.smoke ? "-smoke" : ""}.json`));
-  if (existsSync(out) && !o.force) throw new Error(`${out} already exists; pass --out or --force`);
   mkdirSync(join(out, ".."), { recursive: true });
   writeFileSync(out, JSON.stringify(run, null, 2) + "\n");
   log(`\nwrote ${out}`);
-  for (const [c, s] of Object.entries(run.summary)) log(`  ${c}: ${s.pass_rate} pass over ${s.samples} sample(s), ${s.errors} error(s), $${s.cost_usd}`);
+  for (const [c, s] of Object.entries(run.summary)) log(`  ${c}: ${s.pass_rate} pass over ${s.samples} sample(s), ${s.errors} error(s), $${s.cost_usd}${s.outside_access ? `, ${s.outside_access} sample(s) touched files outside the run directory` : ""}`);
   return { out, run };
 }
 

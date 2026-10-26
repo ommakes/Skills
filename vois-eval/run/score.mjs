@@ -61,6 +61,7 @@ export function summarize(results) {
     out[c] = {
       samples: rows.length,
       errors: rows.filter((r) => r.error).length,
+      outside_access: rows.filter((r) => (r.outside_cwd_access ?? []).length > 0).length,
       pass_rate: round(rows.filter((r) => r.pass && !r.error).length / rows.length),
       decision_rate: round(rows.filter((r) => r.decision && !r.error).length / rows.length),
       mean_lookalike_hits: round(mean(rows.map((r) => r.lookalike_hits.length))),
@@ -88,7 +89,8 @@ export function compareRuns(prev, next, { threshold = 0.1, minCommonTasks = 5 } 
   const before = rateOn(prev, "on", common);
   const after = rateOn(next, "on", common);
   return {
-    status: after < before - threshold ? "regressed" : "ok",
+    // A small epsilon: 0.8 - 0.1 is 0.7000000000000001 in floating point, and a drop of exactly the threshold is allowed.
+    status: after < before - threshold - 1e-9 ? "regressed" : "ok",
     before: round(before),
     after: round(after),
     common_tasks: common.size,
