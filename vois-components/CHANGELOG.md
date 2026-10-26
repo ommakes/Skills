@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.17.0] - 2026-10-26
+
+### Changed
+
+- **Filters or sort controls for a list or table on a mobile layout go in a Drawer, not a Sheet.** `JOB-OVERLAY-INTERACTION` had a Sheet branch for a task where the user wants to see the page behind it, and `JOB-SECONDARY-CONTENT` sent "filters on mobile" to a Drawer. A filter task on a list fits both descriptions, and agents given a prompt about mobile filters chose Sheet. The overlay job now has a last branch that says Drawer and that it takes precedence over the Sheet branches, with a rationale entry for why and a line in its at-a-glance list. The branch is last so existing `tree_path` indexes do not move.
+
+### Notes
+
+- No other branch changed. `vois-patterns/references/table-list.md` still calls the right-anchored Sheet a "Drawer" in its own wording for opening a record from a row; that naming clash is not touched here.
+- `vois-eval` has a scenario for the new branch (EVAL-055, `tree_path` `[6]`), not yet run blind. The design task DT-04 notes now say the conflict is settled.
+- **Version bump:** `1.16.0` → `1.17.0`
+
+---
+
 ## [1.16.0] - 2026-10-26
 
 ### Added
