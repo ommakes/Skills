@@ -25,7 +25,7 @@
         },
         {
           "id": "filtered-empty-message",
-          "regex": "(?:[\"'`>](?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-])|^[ \\t]*(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-]))",
+          "regex": "(?:[\"'`>](?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|’|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|’|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-])|^[ \\t]*(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|’|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|’|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-]))",
           "flags": "im"
         },
         {
@@ -62,14 +62,14 @@
       ]
     },
     {
-      "id": "DT-03",
+      "id": "DT-06",
       "source_rules": [
         "vois-dataviz decision-tree: time job",
         "vois-dataviz decision-tree: compare job"
       ],
       "style": "concrete",
       "review": "unreviewed",
-      "user_prompt": "Build the top of a support team dashboard. Show how ticket volume changed over the last 12 weeks, and which of five channels (email, chat, phone, social, web form) created the most tickets this week.",
+      "user_prompt": "Build the top of a support team dashboard. Show how weekly ticket volume changed over the last year, and which of five channels (email, chat, phone, social, web form) created the most tickets this week.",
       "expected_imports": [
         "chart",
         "recharts"
@@ -89,7 +89,8 @@
           "id": "pie-for-ranking",
           "regex": "PieChart|<Pie\\b"
         }
-      ]
+      ],
+      "notes": "Replaces DT-03, which asked for 12 weeks. vois-dataviz's decision tree sends 'a few discrete periods (about 12 or fewer) where each value matters' to a column chart, so skills-on agents that followed it were scored as failures for not drawing a line (CHART-Q-TIME-ONE; the same boundary is EVAL-053). A year of weekly values is about 52 points, a continuous trend, so a line or area is the expected form. DT-03 stays in the 2026-10-26 Sonnet baseline file, where its results should be ignored."
     },
     {
       "id": "DT-04",

@@ -76,6 +76,31 @@ It calls a model, so it costs money and is run by hand, before a release or afte
 
 `node --test vois-eval/run/run.test.mjs` tests the scoring, task loading, results checks and run loop. It uses a stand-in for the `claude` CLI (`run/fake-claude.cjs`) for the parts that touch the CLI, so it costs nothing.
 
+## The first full baseline (Sonnet, 2026-10-26)
+
+`results/2026-10-26-claude-sonnet-5-5.json`: 45 tasks, both conditions, 3 samples each (270 samples), `claude-sonnet-5-5`, the skills as of `vois-components` 1.15.2, `vois-tokens` 1.23.2, `vois-dataviz` 1.1.2, `vois-patterns` 1.17.0 and `righter` 1.10.0, on a clean checkout at commit `f884f71`. No sample errored, was truncated, or was answered by another model. It cost about $34 ($28.94 with the skills on, $5.31 off).
+
+It was not one uninterrupted run. The account hit its usage limit at sample 187 and the remaining 84 samples failed at once. That output was thrown away; the 186 good samples were kept and the 84 were run again after the limit reset, through `--resume`, from the same commit with the same header. The `claude` CLI version in the file was read when it was written, so the first 186 samples may have run under an earlier CLI patch version than the one recorded.
+
+| | skills on | skills off |
+|---|---|---|
+| All 45 tasks | 125 of 135 pass (0.93) | 85 of 135 (0.63) |
+| 30 `LP-*` prompts | 88 of 90 | 71 of 90 |
+| 10 `HP-*` prompts | 30 of 30 | 10 of 30 |
+| 5 `DT-*` tasks | 7 of 15 | 4 of 15 |
+
+Per task, skills on did better on 18, the same on 26 and worse on 1 (DT-02, one sample, which the scanner flagged as `fake-tabs` on a form; the screens were not kept, so I could not look at it). Skills on cost about 5.5 times as much per sample ($0.214 against $0.039) and used about 4 times the turns (8.6 against 2.0), because the agent reads the skills first.
+
+**How far to trust it.**
+
+- **The `LP-*` and `HP-*` result is in-sample.** The lookalike table and the scanner's signals were derived from blind builds of these same 40 prompts, so the skills were taught the failures this score looks for. Of the 39 skills-off failures on these 40 prompts, 24 contain a raw palette colour such as `bg-green-100` (15 of them only that), 22 contain another known lookalike (fake avatar, hand-ringed button, toast, progress bar, alert, native dialog, `title` tooltip), and 2 did not import the expected component. A high score here says the skills prevent those known failures. It does not say they generalise.
+- **The `DT-*` tasks are the only fresh test, and there are 15 samples per condition.** Two of the five are not clean. **DT-03 was mis-specified** and should be ignored: it asked for 12 weeks, `vois-dataviz` sends "about 12 or fewer" periods to a column chart, and the check demanded a line, so skills-on agents were marked down for what the skill says to do. All three skills-on samples drew the channel bars and none drew a line or area for the trend; I infer they used columns, as the skill directs, but the screens were not kept, so I did not see them. It is replaced by **DT-06**, which asks for a year of weekly data. **DT-04** (mobile filters) failed in all six samples, but the file predates the rule that settled Drawer over Sheet (`vois-components` 1.17.0). The record says only that no sample imported a Drawer. It cannot say what they used instead, because the generated screens are not stored.
+- The remaining three (DT-01, DT-02, DT-05) went 7 of 9 with skills on and 4 of 9 off. That is a direction, not a measurement.
+- Skills on still produced a `fake-avatar` (an initials circle) in 2 of 3 samples of LP-05a, which is a gap in the skills, not noise.
+- The checks are heuristics and have not been reviewed by a designer. Passing means the obvious failure did not happen.
+
+The next full run of this model will be the first one the regression check can compare against this one. The `DT-03` results in this file should be excluded when it does.
+
 ## Using a run's results
 
 A scenario run tells you two different things, and it's worth keeping them separate:
