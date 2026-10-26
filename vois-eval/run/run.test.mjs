@@ -141,6 +141,7 @@ test("stripComments removes comments and keeps text that only looks like one", (
   gone("const x = /* c */ 1;", "const x = 1;");
   gone("const o = { /* c */ a: 1 };", "const o = { a: 1 };");
   keep("a = b /* kept: after a plain word */ ;");
+  keep("<p>\n  Press // to search</p>"); // the line closes a tag, so the // is text
   assert.equal(stripComments(""), "");
 });
 test("an import after JSX text containing /* is still found", () => {
@@ -588,16 +589,33 @@ test("any other stop or error is an error row, even if a file was written", asyn
     assert.ok(row.error);
   }
 });
-test("a timeout or a missing result event is an error with the cost marked unknown", async () => {
+test("a timeout is scored on the screen that was written, flagged, with the cost marked unknown", async () => {
   const slow = await viaFake({ sleepMs: 5000 }, { timeoutMs: 300 });
-  assert.match(slow.r.error, /timed out/);
+  assert.equal(slow.r.error, undefined);
+  assert.equal(slow.r.truncated, true);
+  assert.equal(slow.r.stop_reason, "timeout");
   assert.equal(slow.r.cost_unknown, true);
+  const done = await rowFrom({ r: slow.r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
+  assert.equal(done.pass, true, "a whole screen written before the hang is scored");
+  assert.equal(done.truncated, true);
+  assert.equal(done.cost_unknown, true);
+  assert.equal(done.stop_reason, "timeout");
+  const empty = await rowFrom({ r: slow.r }, task());
+  assert.equal(empty.pass, false);
+  assert.match(empty.error, /wrote no/);
+  assert.equal(empty.cost_unknown, true);
+  // the checker accepts both rows: a timeout counts as truncated, so stop_reason and the flag agree
+  const results = [{ ...done, condition: "on", sample: 1 }, { ...empty, condition: "on", sample: 2 }].map((r) => ({ ...r, task: "T-1" }));
+  const file = { ...validRun(), results, tasks: ["T-1"], samples_per_task: 2, conditions: ["on"], full: false, summary: summarize(results) };
+  assert.deepEqual(validateRun(file), []);
+});
+test("a missing result event without a timeout is still an error with the cost marked unknown", async () => {
   const none = await viaFake({ events: [{ type: "assistant", message: { content: [] } }] });
   assert.match(none.r.error, /no result event/);
   assert.equal(none.r.cost_unknown, true);
-  const row = await rowFrom({ r: slow.r }, task());
-  assert.equal(row.cost_unknown, true);
+  const row = await rowFrom({ r: none.r, writeFile: tsx("Drawer") }, task({ expected_imports: ["drawer"] }));
   assert.equal(row.pass, false);
+  assert.ok(row.error);
 });
 test("truncated and unknown-cost samples are counted in the summary and need valid flags in the file", () => {
   const results = [row({ truncated: true, stop_reason: "error_max_turns" }), row({ sample: 2, cost_unknown: true, pass: false, decision: false, error: "timed out" })];
@@ -882,18 +900,31 @@ test("the checker accepts a served model with a context suffix", () => {
   r.results[0].model_mismatch = true; r.summary = summarize(r.results);
   assert.match(validateRun(r).join("\n"), /model_mismatch does not match/);
 });
-test("a skipped comparison caused by a model mismatch is a warning on stderr, not a quiet note", () => {
+test("a comparison skipped because of a model mismatch fails the check, with the reason on stderr", () => {
   const dir = mkdtempSync(join(tmpdir(), "vois-eval-warn-"));
   try {
     const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
-    const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(false), { conditions: ["on"] });
+    const b = mkRun("m", "2026-10-02T10:00:00.000Z", ten(true), { conditions: ["on"] });
     b.results[0].served_models = ["other"]; b.results[0].model_mismatch = true; b.summary = summarize(b.results);
     writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
     writeFileSync(join(dir, "b.json"), JSON.stringify(withBothConditions(b)));
     const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
-    assert.equal(r.status, 0);
+    assert.equal(r.status, 1, "even though the pass rate did not drop, the run could not be compared");
     assert.match(r.stderr, /NOT COMPARED/);
+    assert.match(r.stderr, /Redo the run/);
     assert.match(r.stderr, /answered by a model other than m/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("samples that list two models, or none, are warnings the reader cannot miss", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-eval-mixed-"));
+  try {
+    const a = mkRun("m", "2026-10-01T10:00:00.000Z", ten(true), { conditions: ["on"] });
+    a.results[0].served_models = ["m", "helper"]; a.results[1].served_models = []; a.summary = summarize(a.results);
+    writeFileSync(join(dir, "a.json"), JSON.stringify(withBothConditions(a)));
+    const r = spawnSync("node", [join(REPO, "vois-eval/check-results.mjs"), dir], { encoding: "utf8" });
+    assert.equal(r.status, 0);
+    assert.match(r.stderr, /2 sample\(s\) list more than one model/, "one in each condition: the helper copies the rows");
+    assert.match(r.stderr, /2 scored sample\(s\) report no model at all/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 function withBothConditions(run) {
@@ -991,5 +1022,68 @@ test("a broken skills checkout stops the run before anything is spent, and only 
     assert.equal(off.run.results.length, 1, "skills-off does not need the skills");
     assert.equal(calls, 1);
     await main(["--dry-run", "--tasks", "DT-04"], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- fourth-round follow-ups ----------
+
+test("a trailing comment after a word, a number or an arrow is a comment, so it cannot satisfy a check", () => {
+  const dialog = task({ expected_imports: ["alert-dialog"], required_patterns: [{ id: "clear", regex: "clear filters", flags: "i" }] });
+  const withComment = (line) => scoreSample(`export default () => null\n${line}\n`, dialog);
+  for (const line of [
+    'import { x } from "y" // import { AlertDialog } from "@/components/ui/alert-dialog"',
+    "const open = isOpen // shows the Dialog, Clear filters",
+    "return // Clear filters",
+    'const f = () => // from "@/components/ui/alert-dialog"',
+    "const n = 1 // Clear filters",
+  ]) {
+    const r = withComment(line);
+    assert.equal(r.decision, false, line);
+    assert.deepEqual(r.pattern_failures, ["missing:clear"], line);
+  }
+  assert.equal(stripComments("const open = isOpen // note\nnext").trim(), "const open = isOpen \nnext");
+});
+test("a // in JSX text is kept when its line closes a tag, and a URL is never a comment", () => {
+  const keep = (src) => assert.equal(stripComments(src), src, src);
+  keep("<p>Press // to search</p>");
+  keep("<li>a // b</li> <li>c</li>");
+  keep("<Input placeholder='x' /> // hi />"); // the rest of the line closes a tag, so it is kept: a known gap, not a comment
+  keep("const u = http://example.com;");
+  keep("<a href=\"x\">http://example.com/a//b</a>");
+  keep("<p>see https://example.com for details</p>");
+  assert.equal(stripComments("const o = { k: /* c */ 1 };"), "const o = { k:   1 };", "a block comment after a colon is still a comment");
+  keep("a = b//no-space");
+});
+test("DT-01 message pattern: whole words only, entities and curly apostrophes, and bounded time", () => {
+  const dt01 = loadTasks().find((t) => t.id === "DT-01");
+  const only = (src) => scoreSample(src, { ...dt01, expected_imports: [] }).pattern_failures.filter((f) => /empty-message/.test(f));
+  // attribute values are not visible text
+  assert.deepEqual(only(`<div data-testid="no-search-results" />`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<div className="no-scroll filter-bar">x</div>`), ["missing:filtered-empty-message"]);
+  assert.deepEqual(only(`<div className="pre-no filters">x</div>`), ["missing:filtered-empty-message"], "a hyphen before the word");
+  assert.deepEqual(only(`<div className="no match">x</div>`), []); // a space-separated attribute does read as words: a known gap
+  // apostrophes as typed, as entities and as curly quotes
+  for (const apos of ["'", "&apos;", "&rsquo;", "&#39;", "\u2019"]) {
+    assert.deepEqual(only(`<p>We couldn${apos}t find anything matching your filters.</p>`), [], apos);
+    assert.deepEqual(only(`<p>\n  We didn${apos}t find anything for this search\n</p>`), [], apos);
+  }
+  // a very long line does not stall the scorer
+  const long = "<p>" + "no ".repeat(20000) + "</p>";
+  const start = Date.now();
+  only(long);
+  only("<p>" + "x ".repeat(30000));
+  assert.ok(Date.now() - start < 2000, `took ${Date.now() - start} ms`);
+});
+test("the skills repo given to main is the one every skills-on sample copies from", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-eval-repo-"));
+  try {
+    for (const n of ["vois-patterns", "vois-components", "vois-tokens", "vois-dataviz", "righter"]) {
+      mkdirSync(join(root, "repo", n), { recursive: true });
+      writeFileSync(join(root, "repo", n, "SKILL.md"), `FAKE-${n}`);
+    }
+    const seen = [];
+    const invoke = async ({ cwd }) => { seen.push(readFileSync(join(cwd, "skills", "vois-tokens", "SKILL.md"), "utf8")); return { result: "```tsx\n" + tsx("Drawer") + "\n```", models: ["m"], cost_usd: 0, duration_ms: 1, turns: 1 }; };
+    await main(["--model", "m", "--tasks", "DT-04", "--condition", "on", "--samples", "1", "--out", join(root, "r.json")], { invoke, log: () => {}, skillsRepo: join(root, "repo") });
+    assert.deepEqual(seen, ["FAKE-vois-tokens"]);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

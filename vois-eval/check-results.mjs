@@ -112,6 +112,10 @@ function main() {
     const leaked = errs.length ? 0 : run.results.filter((r) => r.condition === "off" && r.outside_cwd_access.length > 0).length;
     const cut = errs.length ? 0 : run.results.filter((r) => r.truncated).length;
     const unknown = errs.length ? 0 : run.results.filter((r) => r.cost_unknown).length;
+    const mixed = errs.length ? 0 : run.results.filter((r) => r.served_models.length > 1).length;
+    const unreported = errs.length ? 0 : run.results.filter((r) => r.served_models.length === 0 && r.error === undefined).length;
+    if (mixed) console.warn(`WARN ${f}: ${mixed} sample(s) list more than one model in served_models (a helper model, or a fallback after the named one answered); check them before trusting the rates`);
+    if (unreported) console.warn(`WARN ${f}: ${unreported} scored sample(s) report no model at all, so the model that answered is unconfirmed`);
     const swapped = errs.length ? 0 : run.results.filter((r) => r.model_mismatch).length;
     if (swapped) console.warn(`WARN ${f}: ${swapped} sample(s) were answered by a model other than ${run.model}; the pass rate mixes models and is not compared`);
     if (cut) console.warn(`WARN ${f}: ${cut} sample(s) hit the turn or budget limit and were scored as they stood; compare the on and off counts before reading the rates`);
@@ -122,7 +126,7 @@ function main() {
   const comparisons = compareLatestPerModel(runs);
   for (const { prev, next, cmp } of comparisons) {
     if (cmp.status === "regressed") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: skills-on pass rate fell from ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s) (allowed drop ${cmp.threshold}; truncated skills-on samples ${cmp.truncated_before} to ${cmp.truncated_after})`); }
-    else if (cmp.status === "skipped" && cmp.kind === "mismatch") console.warn(`WARN ${next.f} vs ${prev.f}: NOT COMPARED, ${cmp.reason}. The regression check did not run for this model.`);
+    else if (cmp.status === "skipped" && cmp.kind === "mismatch") { failed = true; console.error(`FAIL ${next.f} vs ${prev.f}: NOT COMPARED, ${cmp.reason}. Redo the run (or remove the file), because otherwise the regression check does not run for this model.`); }
     else if (cmp.status === "skipped") console.log(`note ${next.f} vs ${prev.f}: not compared, ${cmp.reason}`);
     else console.log(`ok   ${next.f} vs ${prev.f}: skills-on pass rate ${cmp.before} to ${cmp.after} over ${cmp.common_tasks} shared task(s)${cmp.truncated_before || cmp.truncated_after ? `, truncated skills-on samples ${cmp.truncated_before} to ${cmp.truncated_after}` : ""}`);
   }

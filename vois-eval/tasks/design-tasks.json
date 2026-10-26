@@ -25,7 +25,7 @@
         },
         {
           "id": "filtered-empty-message",
-          "regex": "(?:[\"'`>](?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*\\b(?:no|nothing|couldn't find|could not find|didn't find|did not find)\\b(?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*\\b(?:filters?|search|match(?:es|ing)?)\\b|^[ \\t]*(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*\\b(?:no|nothing|couldn't find|could not find|didn't find|did not find)\\b(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*\\b(?:filters?|search|match(?:es|ing)?)\\b)",
+          "regex": "(?:[\"'`>](?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-])|^[ \\t]*(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:no|nothing|couldn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|could not find|didn(?:'|\u2019|&apos;|&rsquo;|&#39;|&#x27;)t find|did not find)(?![\\w-])(?:(?!\\byet\\b)[^\"'`<>{}()=;\\n]|\\{[^{}\\n]*\\})*(?<![\\w-])(?:filters?|search|match(?:es|ing)?)(?![\\w-]))",
           "flags": "im"
         },
         {
@@ -34,7 +34,7 @@
           "flags": "i"
         }
       ],
-      "notes": "Both empty-state patterns read visible text only: a quoted string, text after a >, or a line of plain text inside JSX (no parentheses, equals signs or semicolons). {Templated} parts are allowed, and text with the word yet is not a filtered empty state. An identifier like clearFilters, a search state variable or a line of code does not satisfy them. They are heuristics: PATH-TABLE-STATE-EMPTY-FILTERED asks for a message that says filters caused the empty result, and a Clear filters control."
+      "notes": "Both empty-state patterns read visible text only: a quoted string, text after a >, or a line of plain text inside JSX (no parentheses, equals signs or semicolons). The words must stand alone, so an attribute value such as data-testid=\"no-search-results\" or className=\"no-scroll\" does not count. {Templated} parts, apostrophes written as entities and curly apostrophes are allowed, and text with the word yet is not a filtered empty state. An identifier like clearFilters or a line of code does not satisfy them. They are heuristics: PATH-TABLE-STATE-EMPTY-FILTERED asks for a message that says filters caused the empty result, and a Clear filters control."
     },
     {
       "id": "DT-02",

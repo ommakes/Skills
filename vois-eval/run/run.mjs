@@ -160,8 +160,11 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
       for (const line of out.split("\n")) { try { if (line.trim()) events.push(JSON.parse(line)); } catch { /* not an event line */ } }
       const j = events.findLast?.((e) => e.type === "result") ?? [...events].reverse().find((e) => e.type === "result");
       // No result event means the model was probably paid for but we cannot say how much: flag the cost as unknown.
-      if (!j) { resolveP({ error: timedOut ? `timed out after ${Math.round(timeoutMs / 1000)}s` : `exit ${code}, no result event: ${(err || out).slice(0, 200)}`, cost_unknown: true }); return; }
       const tool_uses = events.filter((e) => e.type === "assistant").flatMap((e) => (e.message?.content ?? []).filter((c) => c?.type === "tool_use"));
+      // A timeout is like hitting the turn limit: the agent may already have written a whole screen, so it is scored and
+      // flagged. Its cost is unknown (no result event). Any other missing result is an error.
+      if (!j && timedOut) { resolveP({ result: "", tool_uses, truncated: true, stop_reason: "timeout", cost_unknown: true }); return; }
+      if (!j) { resolveP({ error: `exit ${code}, no result event: ${(err || out).slice(0, 200)}`, cost_unknown: true, tool_uses }); return; }
       // Hitting the turn or budget limit is not a failure of the run: the agent may already have written a whole screen.
       // That sample is scored and flagged `truncated`, so a skills-on run that reads many files first is not marked down for it.
       const truncated = TRUNCATED_SUBTYPES.includes(j.subtype);
@@ -193,15 +196,15 @@ const failedRow = (task, condition, sample, error, extra = {}) => ({ task: task.
 
 // One bad sample (a copy that fails, a detector that throws on odd code) becomes an error row; it must not
 // take the other samples' paid results down with it.
-export async function runSample(item, o, invoke = invokeClaude) {
-  try { return await runSampleInner(item, o, invoke); }
+export async function runSample(item, o, invoke = invokeClaude, skillsRepo = REPO) {
+  try { return await runSampleInner(item, o, invoke, skillsRepo); }
   catch (e) { return failedRow(item.task, item.condition, item.sample, `runner error: ${String(e?.message ?? e).slice(0, 200)}`); }
 }
 
-async function runSampleInner({ task, condition, sample }, o, invoke) {
+async function runSampleInner({ task, condition, sample }, o, invoke, skillsRepo) {
   const dir = mkdtempSync(join(tmpdir(), `vois-eval-${task.id}-${condition}-`));
   try {
-    if (condition === "on") copySkills(dir);
+    if (condition === "on") copySkills(dir, skillsRepo);
     const r = await invoke({ prompt: renderPrompt(condition, task), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget });
     const file = join(dir, "out.tsx");
     const src = r.error ? null : extractCode(existsSync(file) ? readFileSync(file, "utf8") : "", r.result);
@@ -277,7 +280,7 @@ export async function main(argv, { invoke = invokeClaude, log = console.log, now
   const worker = async () => {
     while (next < plan.length) {
       const i = next++;
-      results[i] = await runSample(plan[i], o, invoke);
+      results[i] = await runSample(plan[i], o, invoke, skillsRepo);
       log(`  [${++done}/${plan.length}] ${results[i].task} ${results[i].condition} #${results[i].sample}: ${results[i].error ? "ERROR " + results[i].error : results[i].pass ? "pass" : "fail"}`);
     }
   };

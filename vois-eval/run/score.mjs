@@ -19,7 +19,8 @@ export const CONDITIONS = ["on", "off"];
 // main one. A sample is "answered by another model" only when the requested model is not among those reported.
 const baseModel = (m) => String(m).replace(/\[[^\]]*\]$/, "").replace(/-\d{8}$/, "");
 export const answeredByOtherModel = (served, model) => Array.isArray(served) && served.length > 0 && !served.some((m) => baseModel(m) === baseModel(model));
-export const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd"];
+// Why a run stopped before the agent said it was done. Each is scored on the screen it had written and flagged `truncated`.
+export const TRUNCATED_SUBTYPES = ["error_max_turns", "error_max_budget_usd", "timeout"];
 
 const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 
@@ -29,13 +30,24 @@ const compile = (p) => new RegExp(p.regex, p.flags ?? "");
 // A small scanner, not a regex, because a regex cannot tell a comment from text that looks like one:
 //   - a string is skipped whole, so "components/*" does not start a block comment;
 //   - a quote with no partner on its line is an apostrophe in JSX text ("Don't"), not a string;
-//   - "//" and "/*" start a comment only at the start of a line or right after ; { } ( ) [ ] , = : or a quote,
-//     so JSX text such as <p>Press // to search</p>, <p>See src/* for details</p> and a URL (http://x) are left alone;
+//   - "/*" starts a comment only at the start of a line or right after ; { } ( ) [ ] , = : or a quote, so JSX text
+//     such as <p>See src/* for details</p> is left alone;
+//   - "//" starts a line comment in those places too, and also after whitespace when a space follows it, unless the rest
+//     of the line closes a JSX tag. So `const open = isOpen // note` is a comment, while <p>Press // to search</p> and a
+//     URL (http://x) are not;
 //   - a block comment ends at the first "*/", and a "/*" inside a line comment does not start one.
-// The cost of that rule: a trailing comment after a plain word, a number or ">" (x = 1 // note, () => // note) is kept, so a
-// component named in such a comment could satisfy an import check. And "//" right after a closing quote starts a comment
-// even in JSX text (<p>say "x" // hi</p>), because that is how a string followed by a comment is written in code.
-const COMMENT_MAY_FOLLOW = ";{}()[],=:\"'`";
+// Known gaps: JSX text on its own line that contains " // " loses the words after it, and a comment glued to a word
+// (x = 1// note) is kept. And "//" right after a closing quote starts a comment even in JSX text (<p>say "x" // hi</p>),
+// because that is how a string followed by a comment is written in code.
+// After ":" a block comment may start (key: /* c */ 1) but a line comment may not, because "//" after ":" is a URL (http://x).
+const BLOCK_MAY_FOLLOW = ";{}()[],=:\"'`";
+const LINE_MAY_FOLLOW = ";{}()[],=\"'`";
+// Does the rest of this line close a JSX tag? Then a "//" before it is text (<p>Press // to search</p>), not a comment.
+const closesTag = (src, from) => {
+  const end = src.indexOf("\n", from);
+  const rest = src.slice(from, end === -1 ? src.length : end);
+  return rest.includes("</") || rest.includes("/>");
+};
 export function stripComments(src) {
   let out = "";
   let prev = ""; // last non-space character written on this line; "" at the start of a line
@@ -56,12 +68,13 @@ export function stripComments(src) {
       const end = Math.min(j + 1, n);
       out += src.slice(i, end); prev = "`"; i = end; continue;
     }
-    const startsComment = prev === "" || COMMENT_MAY_FOLLOW.includes(prev);
-    if (c === "/" && d === "*" && startsComment) {
+    if (c === "/" && d === "*" && (prev === "" || BLOCK_MAY_FOLLOW.includes(prev))) {
       const e = src.indexOf("*/", i + 2);
       out += " "; i = e === -1 ? n : e + 2; continue;
     }
-    if (c === "/" && d === "/" && startsComment) {
+    // A "//" with a space before and after it is also a comment, unless the line goes on to close a JSX tag.
+    const spaced = /\s/.test(src[i - 1] ?? "") && /\s/.test(src[i + 2] ?? "") && !closesTag(src, i);
+    if (c === "/" && d === "/" && (prev === "" || LINE_MAY_FOLLOW.includes(prev) || spaced)) {
       while (i < n && src[i] !== "\n") i++;
       continue;
     }
@@ -72,8 +85,13 @@ export function stripComments(src) {
   return out;
 }
 
+// Patterns run on lines cut to this length. Two of them scan a line twice, which is quadratic, and a generated screen has
+// no real line this long (a minified one would not be a screen to judge anyway).
+export const MAX_LINE = 4000;
+const boundLines = (s) => s.split("\n").map((l) => (l.length > MAX_LINE ? l.slice(0, MAX_LINE) : l)).join("\n");
+
 export function scoreSample(raw, task) {
-  const src = stripComments(raw);
+  const src = boundLines(stripComments(raw));
   const expected = task.expected_imports ?? [];
   const { hits, usedExpected } = scan(src, expected);
   const decisionOk = expected.length === 0 || usedExpected.length > 0;
