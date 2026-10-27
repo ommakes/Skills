@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.25.0] - 2026-10-27
+
+### Changed
+
+- **`DS-A11Y-002` and `DS-A11Y-004` are now `verification: "rendered"`** (were `judgment`). Whether a focus indicator shows and whether text meets contrast depend on computed CSS, so a static read of the code cannot settle them. No rule text, severity or enforcement changed. No rendered check ships in this repo, so here they are judgment calls as before, settled with the page open in a browser. Ported from `ommakes/vois-skills`, where an opt-in rendered pass reports them.
+- `references/hooks.md` says what `rendered` means and that a rendered check, like a detector, is partial.
+- **Version bump:** `1.24.0` → `1.25.0`
+
+### Notes
+
+- The Figma edition is unchanged and is marked as behind in `figma-editions/README.md`.
+
+---
+
 ## [1.24.0] - 2026-10-26
 
 ### Added

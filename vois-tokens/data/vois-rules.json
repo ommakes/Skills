@@ -40,7 +40,7 @@
       "rule": "`:focus-visible` — triggers only when the browser determines a visible focus indicator is needed. This covers keyboard navigation and assistive technology, but not mouse clicks. Use this for focus rings on buttons and links",
       "severity": "required",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "rendered"
     },
     {
       "id": "DS-A11Y-003",
@@ -61,7 +61,7 @@
       "rule": "Minimum contrast ratio: 4.5:1 for normal text (under 18px regular, under 14px bold); 3:1 for large text (18px+ regular, 14px+ bold) and for UI components and graphical objects.",
       "severity": "required",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "rendered"
     },
     {
       "id": "DS-A11Y-005",
