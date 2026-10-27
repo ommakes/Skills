@@ -44,7 +44,7 @@ function detectProposed(filePath, content) {
   for (const rule of rulesForFile(filePath)) {
     const hits = rule.check({ content, lines, filePath }) || [];
     for (const hit of hits) {
-      findings.push({ ruleId: rule.id, severity: rule.severity, file: filePath, line: hit.line, snippet: hit.snippet, message: hit.message, fixHint: rule.fixHint });
+      findings.push({ ruleId: rule.id, severity: hit.severity ?? rule.severity, file: filePath, line: hit.line, snippet: hit.snippet, message: hit.message, fixHint: rule.fixHint });
     }
   }
   return findings;

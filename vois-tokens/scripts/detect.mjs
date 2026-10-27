@@ -19,7 +19,7 @@ export function detectFile(filePath, content, { params = BASE_PARAMS } = {}) {
     for (const hit of hits) {
       findings.push({
         ruleId: rule.id,
-        severity: rule.severity,
+        severity: hit.severity ?? rule.severity, // a detector may lower one finding below the rule (DS-ANIMATION-005)
         file: filePath,
         line: hit.line,
         snippet: hit.snippet,

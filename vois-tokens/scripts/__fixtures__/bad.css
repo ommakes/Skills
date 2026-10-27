@@ -27,3 +27,12 @@
   position: sticky;
 }
 .motion-literal { transition: opacity 150ms cubic-bezier(0.2, 0, 0, 1); } /* DS-MOTION-001 */
+
+.menu {
+  /* DS-CSS-003: three levels of nesting */
+  .item {
+    .label {
+      color: inherit;
+    }
+  }
+}

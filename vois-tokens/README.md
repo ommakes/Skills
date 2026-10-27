@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.25.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.26.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
@@ -79,6 +79,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.26.0**: the hook checks four more team limits: the start scale of enter animations (`DS-ANIMATION-005`), selector nesting (`DS-CSS-003`), icon stroke width (`DS-ICON-001`) and icon size (`DS-ICON-002`). The last three rules were `judgment` and are now `detector`.
 - **1.25.0**: `DS-A11Y-002` (focus indicator) and `DS-A11Y-004` (contrast) are marked `verification: "rendered"`, because a static read of the code cannot settle them.
 - **1.24.0**: every rule in `data/vois-rules.json` now says how it can be checked (`verification`), and the rules a detector covers name it (`detector`).
 - **1.23.2**: the `animation.md` starter types `motionEase` as mutable tuples and its reduced-motion snippet reads tokens only.

@@ -59,6 +59,117 @@ function scanRegex(content, lines, pattern, message) {
   return findings;
 }
 
+
+/** Local names of everything imported from lucide-react, so `X as CloseIcon` is found as CloseIcon. */
+function lucideNames(content) {
+  const names = [];
+  const importRe = /import\s+(?:type\s+)?(?:[\w$]+\s*,\s*)?\{([^}]*)\}\s*from\s*["']lucide-react["']/g;
+  let m;
+  while ((m = importRe.exec(content)) !== null) {
+    for (const part of m[1].split(",")) {
+      const local = part.trim().split(/\s+as\s+/).pop();
+      if (/^[A-Z]\w*$/.test(local)) names.push(local);
+    }
+  }
+  // import * as L from "lucide-react" is read as <L.Check>. Deep imports (lucide-react/dist/...) are not read.
+  const nsRe = /import\s+\*\s+as\s+([A-Za-z_]\w*)\s+from\s*["']lucide-react["']/g;
+  while ((m = nsRe.exec(content)) !== null) names.push(`${m[1]}\\.[A-Z]\\w*`);
+  return [...new Set(names)];
+}
+
+/** The inside of the object literal whose "{" is at `open`, or null if it never closes. Braces in strings are skipped. */
+function objectBody(content, open) {
+  let depth = 0;
+  let quote = null;
+  const limit = Math.min(content.length, open + 2000);
+  for (let i = open; i < limit; i++) {
+    const c = content[i];
+    if (quote) { if (c === "\\") i++; else if (c === quote) quote = null; continue; }
+    if (c === '"' || c === "'" || c === "`") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}" && --depth === 0) return content.slice(open + 1, i);
+  }
+  return null;
+}
+
+/** `key: number` at the top level of an object body, ignoring nested objects, or null. */
+function topLevelNumber(body, key) {
+  let flat = "";
+  let depth = 0;
+  for (const c of body) {
+    if (c === "{" || c === "[" || c === "(") { depth++; flat += " "; }
+    else if (c === "}" || c === "]" || c === ")") { depth = Math.max(0, depth - 1); flat += " "; }
+    else flat += depth === 0 ? c : " ";
+  }
+  const m = new RegExp(`(?<![\\w$.])${key}\\s*:\\s*(\\d*\\.?\\d+)(?![\\w.])`).exec(flat);
+  return m ? Number(m[1]) : null;
+}
+
+// At-rules whose block holds style rules, so they add no nesting of their own.
+const TRANSPARENT_AT_RULES = /^@(?:media|supports|layer|container|scope|document|include|mixin|at-root|if|else|each|for|while|function)\b/i;
+// At-rules whose block is not a selector hierarchy (keyframe stops, font descriptors).
+const OPAQUE_AT_RULES = /^@(?:-\w+-)?(?:keyframes|font-face|property|page|counter-style|font-feature-values|font-palette-values|view-transition|position-try)\b/i;
+
+/**
+ * Every style rule in a CSS or SCSS file with its nesting depth: a top-level rule is 1, a rule inside
+ * it is 2. Comments and strings are skipped and SCSS #{...} interpolation is not read as a block.
+ * Blocks of @media and similar add nothing; keyframe stops and property blocks are skipped.
+ */
+function styleRuleDepths(content, scss = true) {
+  const out = [];
+  const stack = []; // "rule" | "transparent" | "opaque"
+  let depth = 0;
+  let opaque = 0;
+  let preludeStart = 0;
+  let i = 0;
+  const n = content.length;
+  const reset = (at) => { preludeStart = at; };
+  while (i < n) {
+    const c = content[i];
+    const next = content[i + 1];
+    if (c === "/" && next === "*") {
+      const e = content.indexOf("*/", i + 2);
+      const end = e === -1 ? n : e + 2;
+      if (content.slice(preludeStart, i).trim() === "") preludeStart = end; // a comment before a rule is not part of its selector
+      i = end; continue;
+    }
+    // // starts a comment in SCSS only, and not inside a URL: url(//cdn.test/a.png), https://
+    if (scss && c === "/" && next === "/" && content[i - 1] !== ":" && content[i - 1] !== "(") {
+      const e = content.indexOf("\n", i);
+      const end = e === -1 ? n : e;
+      if (content.slice(preludeStart, i).trim() === "") preludeStart = end;
+      i = end; continue;
+    }
+    if (c === '"' || c === "'") { let j = i + 1; while (j < n && content[j] !== c && content[j] !== "\n") j += content[j] === "\\" ? 2 : 1; i = j + 1; continue; }
+    if (c === "#" && next === "{") { let d = 1, j = i + 2; while (j < n && d > 0) { if (content[j] === "{") d++; else if (content[j] === "}") d--; j++; } i = j; continue; }
+    if (c === ";") { reset(i + 1); i++; continue; }
+    if (c === "{") {
+      const prelude = content.slice(preludeStart, i).replace(/\s+/g, " ").trim();
+      if (opaque > 0) { stack.push("opaque"); opaque++; }
+      else if (prelude.startsWith("@")) {
+        if (OPAQUE_AT_RULES.test(prelude)) { stack.push("opaque"); opaque++; }
+        else stack.push("transparent");
+      } else if (prelude === "" || /:$/.test(prelude)) {
+        // SCSS property nesting ("font: {") or a stray block: not a selector
+        stack.push("opaque"); opaque++;
+      } else {
+        depth++;
+        stack.push("rule");
+        out.push({ depth, index: preludeStart + (content.slice(preludeStart, i).search(/\S/) || 0), selector: prelude });
+      }
+      reset(i + 1); i++; continue;
+    }
+    if (c === "}") {
+      const closed = stack.pop();
+      if (closed === "rule") depth = Math.max(0, depth - 1);
+      else if (closed === "opaque") opaque = Math.max(0, opaque - 1);
+      reset(i + 1); i++; continue;
+    }
+    i++;
+  }
+  return out;
+}
+
 export const RULES = [
   {
     id: "DS-COLOR-001",
@@ -234,12 +345,43 @@ export const RULES = [
   },
   {
     id: "DS-ANIMATION-005",
-    title: "Animating from scale(0)",
+    title: "Animating from scale(0), or from below the start floor",
     severity: "slop", // unambiguous — safe to block in Cursor
     extensions: ALL_EXT,
-    fixHint: "Animate from scale(0.25) or similar, never from 0.",
-    check({ content, lines }) {
-      return scanRegex(content, lines, /scale\(\s*0\s*\)|scale:\s*0\b(?!\.\d)/, "Animating from scale(0) — start from a small non-zero scale instead.");
+    fixHint: "Start an enter animation at scale 0.9 or higher, never from 0.",
+    check({ content, lines, params = BASE_PARAMS }) {
+      // scale(0) stays the blocking check. The findings below it are the rest of the rule ("start at 0.9 or higher"), so they are quality only.
+      const findings = scanRegex(content, lines, /scale\(\s*0\s*\)|scale:\s*0\b(?!\.\d)/, "Animating from scale(0) — start from a small non-zero scale instead.");
+      const floor = params.get("DS-ANIMATION-005", "min_start_scale");
+      const note = limitNote(params, "DS-ANIMATION-005", "min_start_scale");
+      // scale 0 is the blocking check's job where it reads it (CSS and motion). The Tailwind spellings below it does not read, so zero counts there.
+      const low = (start, label, at, { zero = false } = {}) => {
+        if (!(start < floor && (zero ? start >= 0 : start > 0))) return;
+        const line = lineAt(content, at);
+        findings.push({ line, snippet: snippetAt(lines, line), severity: "quality", message: `${label} starts at scale ${start}, below the ${floor} floor.${note}` });
+      };
+      let match;
+      // The icon-swap recipe (DS-SURFACE-014) starts at scale 0.25 with a blur on purpose, so a start that also blurs is left alone.
+      // motion / framer-motion: initial={{ scale: 0.5 }}, or a variant object { hidden: { scale: 0.5 } }. The object is read whole, so a nested transition: { ... } before scale does not hide it.
+      const motionStart = /\b(?:initial|hidden)\s*(?:=\s*\{\{|:\s*\{)/g;
+      while ((match = motionStart.exec(content)) !== null) {
+        const body = objectBody(content, match.index + match[0].length - 1);
+        if (body === null || /blur\(/.test(body)) continue;
+        const start = topLevelNumber(body, "scale");
+        if (start !== null) low(start, "Enter animation", match.index);
+      }
+      // CSS: the first keyframe, from { transform: scale(0.5) } or 0% { scale: 0.5 }
+      const keyframeStart = /(?:\bfrom|\b0%)\s*\{([^}]*)\}/g;
+      while ((match = keyframeStart.exec(content)) !== null) {
+        const m = /\bscale(?:\(|:)\s*(\d*\.?\d+)/.exec(match[1]);
+        if (m && !/blur\(/.test(match[1])) low(Number(m[1]), "Keyframe", match.index);
+      }
+      // Tailwind: starting:scale-50, starting:scale-[0.5], and tailwindcss-animate's zoom-in-50 (a percentage)
+      const tailwindStart = /(?<![\w-])starting:(?:[\w-]+:)*scale-(?:(\d+)|\[(\d*\.?\d+)\])(?![\w.-])/g;
+      while ((match = tailwindStart.exec(content)) !== null) low(match[1] !== undefined ? Number(match[1]) / 100 : Number(match[2]), "Enter animation", match.index, { zero: true });
+      const zoomIn = /(?<![\w-])(?:[\w-]+:)*zoom-in-(\d+)(?![\w.-])/g;
+      while ((match = zoomIn.exec(content)) !== null) low(Number(match[1]) / 100, "zoom-in", match.index, { zero: true });
+      return findings;
     },
   },
   {
@@ -368,6 +510,75 @@ export const RULES = [
     fixHint: "Use em for hand-authored breakpoints, not px.",
     check({ content, lines }) {
       return scanRegex(content, lines, /@media[^{]*\d+px[^{]*\{/, "Hand-authored @media query uses px — use em.");
+    },
+  },
+  {
+    id: "DS-CSS-003",
+    title: "Selector nested more than 2 levels deep",
+    severity: "quality",
+    extensions: CSS_EXT,
+    fixHint: "Add a class instead of nesting another level of selector.",
+    check({ content, lines, filePath = "", params = BASE_PARAMS }) {
+      const limit = params.get("DS-CSS-003", "max_selector_nesting");
+      const note = limitNote(params, "DS-CSS-003", "max_selector_nesting");
+      const findings = [];
+      for (const rule of styleRuleDepths(content, filePath.toLowerCase().endsWith(".scss"))) {
+        if (rule.depth <= limit) continue;
+        const line = lineAt(content, rule.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: `Selector "${rule.selector.slice(0, 60)}" is nested ${rule.depth} levels deep, past the ${limit} allowed.${note}` });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "DS-ICON-001",
+    title: "Icon stroke width differs from the set's",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: "Use one stroke width for every icon: remove the strokeWidth prop or set it to the project's width.",
+    check({ content, lines, params = BASE_PARAMS }) {
+      const names = lucideNames(content);
+      if (names.length === 0) return [];
+      const width = params.get("DS-ICON-001", "stroke_width_px");
+      const note = limitNote(params, "DS-ICON-001", "stroke_width_px");
+      const findings = [];
+      for (const tag of openingTags(content, names)) {
+        const m = /(?<![\w-])strokeWidth\s*=\s*(?:\{\s*(\d*\.?\d+)\s*\}|["'](\d*\.?\d+)["'])/.exec(tag.attrs);
+        if (!m) continue;
+        const value = Number(m[1] ?? m[2]);
+        if (Math.abs(value - width) < 1e-9) continue;
+        const line = lineAt(content, tag.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: `<${tag.name}> sets strokeWidth ${value}, not the set's ${width}.${note}` });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "DS-ICON-002",
+    title: "Icon size outside the defined sizes",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: "Round the icon to the nearest defined size (16, 20, 24 or 32px).",
+    check({ content, lines, params = BASE_PARAMS }) {
+      const names = lucideNames(content);
+      if (names.length === 0) return [];
+      const allowed = params.get("DS-ICON-002", "icon_sizes_px");
+      const note = limitNote(params, "DS-ICON-002", "icon_sizes_px");
+      const findings = [];
+      for (const tag of openingTags(content, names)) {
+        const off = new Set();
+        const take = (px) => { if (Number.isFinite(px) && !allowed.includes(px)) off.add(px); };
+        const prop = /(?<![\w-])(?:size|width|height)\s*=\s*(?:\{\s*(\d*\.?\d+)\s*\}|["'](\d*\.?\d+)(?:px)?["'])/g;
+        let m;
+        while ((m = prop.exec(tag.attrs)) !== null) take(Number(m[1] ?? m[2]));
+        // Tailwind: size-5, h-5 w-5, size-[18px]. A step is 4px. Variants such as md: are read like the plain class.
+        const cls = /(?<![\w:\[.-])(?:[\w-]+:)*(?:size|h|w)-(?:(\d*\.?\d+)|\[(\d*\.?\d+)px\])(?![\w./%-])/g;
+        while ((m = cls.exec(tag.attrs)) !== null) take(m[1] !== undefined ? Number(m[1]) * 4 : Number(m[2]));
+        if (off.size === 0) continue;
+        const line = lineAt(content, tag.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: `<${tag.name}> is ${[...off].sort((a, b) => a - b).join("px, ")}px, not one of ${allowed.join("/")}px.${note}` });
+      }
+      return findings;
     },
   },
   {
