@@ -1,6 +1,6 @@
 {
   "repository": "ommakes/Skills",
-  "description": "Claude skills for UX and product design workflows",
+  "description": "Claude skills for UX and product design workflows, including the Vois design system skills (Vois design intelligence)",
   "license": "CC-BY 4.0",
   "url": "https://github.com/ommakes/Skills",
   "skills": [

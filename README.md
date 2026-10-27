@@ -1,6 +1,8 @@
 # Skills
 Claude skills for UX and product design workflows.
 
+The Vois design system skills here (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-dataviz`, `righter`) are part of **Vois design intelligence**, the name for the whole Vois suite. Skill and folder names do not change.
+
 ## Install
 ```bash
 npx skills add ommakes/Skills
