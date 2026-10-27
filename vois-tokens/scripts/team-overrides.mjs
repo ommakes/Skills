@@ -11,20 +11,27 @@ export const OVERRIDE_SCHEMA = "vois-team-override/1";
 
 /**
  * The limits the hook can check. Each one mirrors an entry in vois-teams/data/ranges.json, and a
- * test in detect.test.mjs fails if they drift apart. Other tunable limits (contrast ratios, widths,
- * component thresholds) are not mechanically checked by the hook, so a team can set them but the
- * hook has nothing to compare against.
+ * test in detect.test.mjs fails if they drift apart. Other tunable limits (contrast ratios, text
+ * widths, type sizes, component thresholds) are not mechanically checked by the hook, so a team can
+ * set them but the hook has nothing to compare against.
  */
 export const TUNABLES = {
   "DS-ANIMATION-001": { max_duration_ms: { type: "number", base: 300, stricter: "lower", min: 100, max: 300 } },
   "DS-ANIMATION-002": { max_duration_ms: { type: "number", base: 500, stricter: "lower", min: 200, max: 500 } },
+  "DS-ANIMATION-005": { min_start_scale: { type: "number", base: 0.9, stricter: "higher", min: 0.9, max: 1 } },
   "DS-ANIMATION-008": { min_press_scale: { type: "number", base: 0.95, stricter: "higher", min: 0.95, max: 1 } },
+  "DS-CSS-003": { max_selector_nesting: { type: "number", base: 2, stricter: "lower", min: 1, max: 2 } },
+  "DS-ICON-001": { stroke_width_px: { type: "number", base: 1.5, stricter: null, min: 1, max: 2 } },
+  "DS-ICON-002": { icon_sizes_px: { type: "set", base: [16, 20, 24, 32], stricter: "subset", allowed: [16, 20, 24, 32] } },
   "DS-SPACING-001": { spacing_divisors: { type: "set", base: [4, 8], stricter: "subset", allowed: [4, 8] } },
 };
 
-// For a set the hook uses the smallest divisor, so [4] and [4,8] check the same thing.
-const sameValue = (spec, a, b) => (spec.type === "number" ? a === b : Math.min(...a) === Math.min(...b));
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+// Spacing is checked against its smallest divisor, so [4] and [4,8] check the same thing. Any other set is
+// compared whole: [16,24] is not the same as [16,20,24,32].
+const SMALLEST_ONLY = new Set(["DS-SPACING-001"]);
+const sameValue = (rule, spec, a, b) =>
+  spec.type === "number" ? a === b : SMALLEST_ONLY.has(rule) ? Math.min(...a) === Math.min(...b) : sameSet(a, b);
 
 /** A value for a tunable limit, or undefined if it is missing, malformed, or looser than the base. */
 function acceptedValue(spec, value) {
@@ -42,7 +49,10 @@ function acceptedValue(spec, value) {
 
 /** Whether `candidate` is stricter than `current` for this spec. */
 function stricterThan(spec, candidate, current) {
-  if (spec.type === "number") return spec.stricter === "lower" ? candidate < current : candidate > current;
+  if (spec.type === "number") {
+    if (spec.stricter !== "lower" && spec.stricter !== "higher") return false; // a choice, not a tightening: the first team file keeps it
+    return spec.stricter === "lower" ? candidate < current : candidate > current;
+  }
   return candidate.length < current.length || (candidate.length === current.length && !sameSet(candidate, current) && Math.min(...candidate) > Math.min(...current));
 }
 
@@ -120,9 +130,15 @@ export function paramsFor(teams, root, filePath) {
         const spec = TUNABLES[o.rule]?.[o.param];
         if (!spec) continue;
         const value = acceptedValue(spec, o.value);
-        if (value === undefined || sameValue(spec, value, spec.base)) continue; // a value equal to the base changes nothing, so no team is credited
+        if (value === undefined || sameValue(o.rule, spec, value, spec.base)) continue; // a value equal to the base changes nothing, so no team is credited
         const key = `${o.rule}\u0000${o.param}`;
         const have = chosen.get(key);
+        if (have && spec.type === "set" && !SMALLEST_ONLY.has(o.rule)) {
+          // Two teams cover this file with different sets: only the sizes both allow stay. If they share none, the first team keeps it.
+          const shared = have.value.filter((v) => value.includes(v));
+          if (shared.length > 0 && !sameSet(shared, have.value)) chosen.set(key, { value: shared, team: have.team === team.team ? team.team : `${have.team} and ${team.team}` });
+          continue;
+        }
         if (!have || stricterThan(spec, value, have.value)) chosen.set(key, { value, team: team.team });
       }
     }
@@ -161,7 +177,7 @@ export function summarizeTeams(teams) {
       const spec = TUNABLES[o.rule]?.[o.param];
       const label = `${o.rule} ${o.param} = ${JSON.stringify(o.value)}`;
       if (!spec) lines.push(`  not checked by the hook: ${label}`);
-      else if (acceptedValue(spec, o.value) !== undefined && sameValue(spec, acceptedValue(spec, o.value), spec.base)) lines.push(`  no change from the base: ${label}`);
+      else if (acceptedValue(spec, o.value) !== undefined && sameValue(o.rule, spec, acceptedValue(spec, o.value), spec.base)) lines.push(`  no change from the base: ${label}`);
       else if (acceptedValue(spec, o.value) === undefined) lines.push(`  ignored, not on the stricter side of the base or outside its range: ${label}`);
       else lines.push(`  applied: ${label}`);
     }

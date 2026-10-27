@@ -143,7 +143,7 @@ Custom easing curves (Benjamin De Cock, used in Linear). Define these once in yo
 
 ## Scale and Origin
 
-- **Never animate from `scale(0)`.** Start at `0.9` or higher. Zero-scale animations feel mechanical. `[DS-ANIMATION-005]`
+- **Never animate from `scale(0)`.** Start at `0.9` or higher. Zero-scale animations feel mechanical. The one exception is an icon swap, which follows `[DS-SURFACE-014]`. `[DS-ANIMATION-005]`
 - **Set `transform-origin` to the trigger point.** A dropdown expands from the button that opened it. A tooltip appears from the element it describes. The default `center` is wrong in most cases. `[DS-ANIMATION-006]`
 
 ```css

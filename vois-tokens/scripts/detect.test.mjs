@@ -23,8 +23,8 @@ const badTsxFindings = findingsFor("bad.tsx");
 const badCssFindings = findingsFor("bad.css");
 const goodTsxFindings = findingsFor("good.tsx");
 
-const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-007"]);
-const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
+const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-003", "DS-CSS-007"]);
+const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
 
 for (const rule of RULES) {
   if (CSS_EXT_ONLY_RULE_IDS.has(rule.id)) {
@@ -666,4 +666,290 @@ test("DS-MOTION-001 reads exponent notation with a sign and reports the full val
   const hits = motionHits(".a { transition-duration: 1e+3ms; }", "a.css");
   assert.equal(hits.length, 1);
   assert.match(hits[0].message, /1e\+3ms/);
+});
+
+// --- DS-ANIMATION-005: the start floor ---
+
+const startHits = (src, file = "src/Card.tsx", params) => detectFile(file, src, params ? { params } : {}).filter((f) => f.ruleId === "DS-ANIMATION-005");
+const teamParams = (overrides, rel = "a.tsx") => { const root = projectWith({ t: team("t", overrides) }); return paramsFor(loadTeams(root), root, join(root, rel)); };
+
+test("DS-ANIMATION-005 still blocks scale(0) and only scale(0)", () => {
+  const zero = startHits('<motion.div initial={{ scale: 0 }} />');
+  assert.equal(zero.length, 1, "scale: 0 is one finding, not two");
+  assert.equal(zero[0].severity, "slop");
+  const low = startHits('<motion.div initial={{ scale: 0.5 }} />');
+  assert.equal(low.length, 1);
+  assert.equal(low[0].severity, "quality", "a start below the floor is never blocked");
+  assert.match(low[0].message, /0\.5, below the 0\.9 floor/);
+});
+
+test("DS-ANIMATION-005 reads the start of an enter animation in each spelling", () => {
+  assert.equal(startHits('<div className="starting:scale-50" />').length, 1);
+  assert.equal(startHits('<div className="data-[open]:starting:scale-[0.5]" />').length, 1);
+  assert.equal(startHits('<div className="animate-in zoom-in-50" />').length, 1);
+  assert.equal(startHits('<div className="md:zoom-in-75" />').length, 1);
+  assert.equal(startHits("@keyframes pop { from { transform: scale(0.5); } to { transform: scale(1); } }", "a.css").length, 1);
+  assert.equal(startHits("@keyframes pop { 0% { scale: 0.5; } 100% { scale: 1; } }", "a.css").length, 1);
+  assert.equal(startHits("const v = { hidden: { scale: 0.5 }, visible: { scale: 1 } };", "a.ts").length, 1);
+});
+
+test("DS-ANIMATION-005 leaves alone what is at or above the floor, or is not a start", () => {
+  assert.equal(startHits('<motion.div initial={{ scale: 0.9 }} />').length, 0, "the floor itself is fine");
+  assert.equal(startHits('<div className="animate-in zoom-in-95 starting:scale-95" />').length, 0);
+  assert.equal(startHits('<motion.div initial={{ opacity: 0 }} animate={{ scale: 0.5 }} exit={{ scale: 0.5 }} />').length, 0, "animate and exit are not the start");
+  assert.equal(startHits('<motion.div initial={{ y: 8 }} animate={{ scale: 0.5 }} />').length, 0, "a scale in a later prop is not the start");
+  assert.equal(startHits("@keyframes pop { from { opacity: 0; } to { transform: scale(0.5); } }", "a.css").length, 0);
+  assert.equal(startHits("const v = { hidden: { opacity: 0 }, visible: { scale: 0.5 } };", "a.ts").length, 0);
+  assert.equal(startHits('<div className="zoom-in-950 myzoom-in-50" />').length, 0, "no match inside a longer name");
+});
+
+test("DS-ANIMATION-005 uses a team's higher floor and names the team", () => {
+  const params = teamParams([restrictOverride(1, "DS-ANIMATION-005", "min_start_scale", 0.95)]);
+  const hits = startHits('<motion.div initial={{ scale: 0.92 }} />', "a.tsx", params);
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /below the 0\.95 floor/);
+  assert.match(hits[0].message, /limit set by the t team/);
+  assert.equal(startHits('<motion.div initial={{ scale: 0.95 }} />', "a.tsx", params).length, 0);
+  const lower = teamParams([restrictOverride(1, "DS-ANIMATION-005", "min_start_scale", 0.8)]);
+  assert.equal(startHits('<motion.div initial={{ scale: 0.85 }} />', "a.tsx", lower).length, 1, "a looser floor is ignored");
+});
+
+test("a quality finding on DS-ANIMATION-005 never makes the before-edit hook deny", () => {
+  const root = projectWith({});
+  const run = (content) => spawnSync(process.execPath, [join(HERE, "hook-before-edit.mjs")], { input: JSON.stringify({ tool_name: "Write", cwd: root, tool_input: { file_path: join(root, "Card.tsx"), content } }), encoding: "utf8" });
+  assert.equal(run('<motion.div initial={{ scale: 0 }} />').status, 2, "scale(0) is denied");
+  assert.equal(run('<motion.div initial={{ scale: 0.5 }} />').status, 0, "a low start is only a nudge");
+});
+
+// --- DS-CSS-003: selector nesting ---
+
+const nestHits = (src, file = "a.scss", params) => detectFile(file, src, params ? { params } : {}).filter((f) => f.ruleId === "DS-CSS-003");
+
+test("DS-CSS-003 flags the third level of nesting, not the second", () => {
+  assert.equal(nestHits(".a { .b { color: red; } }").length, 0);
+  const deep = nestHits(".a {\n  .b {\n    .c { color: red; }\n  }\n}\n");
+  assert.equal(deep.length, 1);
+  assert.equal(deep[0].line, 3);
+  assert.match(deep[0].message, /nested 3 levels deep, past the 2 allowed/);
+  assert.equal(nestHits(".a { .b { .c { .d { x: y; } } } }").length, 2, "each level past the limit is reported");
+  assert.equal(nestHits(".a, .b { &:hover { .c { x: y; } } }").length, 1);
+});
+
+test("DS-CSS-003 does not count wrappers, keyframes or property blocks", () => {
+  assert.equal(nestHits("@media (min-width: 40em) { .a { .b { x: y; } } }").length, 0, "@media adds no level");
+  assert.equal(nestHits("@media (min-width: 40em) { .a { .b { .c { x: y; } } } }").length, 1);
+  assert.equal(nestHits("@supports (display: grid) { @layer base { .a { .b { x: y; } } } }").length, 0);
+  assert.equal(nestHits("@keyframes k { from { x: y; } 50% { x: y; } to { x: y; } }").length, 0);
+  assert.equal(nestHits(".a { .b { font: { family: x; size: 1em; } } }").length, 0, "SCSS property nesting is not a selector");
+  assert.equal(nestHits(".a { @media (min-width: 40em) { .b { x: y; } } }").length, 0);
+});
+
+test("DS-CSS-003 is not fooled by braces in comments, strings or interpolation", () => {
+  assert.equal(nestHits('.a { content: "{ { {"; .b { x: y; } }').length, 0);
+  assert.equal(nestHits("/* .x { .y { .z { */ .a { .b { x: y; } }").length, 0);
+  assert.equal(nestHits(".a { // .x { .y {\n .b { x: y; } }").length, 0);
+  assert.equal(nestHits(".a-#{$i} { .b-#{$j} { x: y; } }").length, 0);
+  assert.equal(nestHits(".a { background: url(http://x.test/a.png); .b { x: y; } }").length, 0, "// inside a URL is not a comment");
+  assert.doesNotThrow(() => nestHits(".a { .b { "), "an unclosed block does not throw");
+  assert.doesNotThrow(() => nestHits("}}}} .a { x: y; }"));
+  assert.equal(nestHits(".a { .b { .c { x: y; } } }", "a.css").length, 1, "plain CSS nesting counts too");
+});
+
+test("DS-CSS-003 uses a team's lower limit and names the team", () => {
+  const params = teamParams([restrictOverride(1, "DS-CSS-003", "max_selector_nesting", 1)], "a.scss");
+  const hits = nestHits(".a { .b { x: y; } }", "a.scss", params);
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /past the 1 allowed/);
+  assert.match(hits[0].message, /limit set by the t team/);
+  const looser = teamParams([restrictOverride(1, "DS-CSS-003", "max_selector_nesting", 5)], "a.scss");
+  assert.equal(nestHits(".a { .b { .c { x: y; } } }", "a.scss", looser).length, 1, "a higher limit is ignored");
+});
+
+test("DS-CSS-003 stays quick on a very long file", () => {
+  const src = Array.from({ length: 20000 }, (_, i) => `.r${i} { .c { x: y; } }`).join("\n");
+  const t = Date.now();
+  assert.equal(nestHits(src).length, 0);
+  assert.ok(Date.now() - t < 2000, "a long file is read in linear time");
+});
+
+// --- DS-ICON-001 and DS-ICON-002: icons ---
+
+const iconHits = (id, src, params) => detectFile("src/Icons.tsx", src, params ? { params } : {}).filter((f) => f.ruleId === id);
+const LUCIDE = 'import { Check, X as CloseIcon } from "lucide-react";\n';
+
+test("DS-ICON-001 flags a stroke width that is not the set's, in each spelling", () => {
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={3} />").length, 1);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + '<Check strokeWidth="2" />').length, 1);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<CloseIcon className='x' strokeWidth={ 1 } />").length, 1, "an alias is found by its local name");
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={3} />")[0].line, 2);
+  assert.match(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={3} />")[0].message, /strokeWidth 3, not the set's 1\.5/);
+});
+
+test("DS-ICON-001 leaves alone the set's width, icons without the prop, and things that are not lucide icons", () => {
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={1.5} /><Check strokeWidth=\"1.50\" /><Check />").length, 0);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<svg strokeWidth={3} /><Chart strokeWidth={3} />").length, 0, "only lucide icons are read");
+  assert.equal(iconHits("DS-ICON-001", "<Check strokeWidth={3} />").length, 0, "no lucide import, no finding");
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check data-strokeWidth={3} />").length, 0);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={compact ? 1 : 2} />").length, 0, "a computed width is not read");
+  assert.equal(iconHits("DS-ICON-001", 'import { Check } from "other-icons";\n<Check strokeWidth={3} />').length, 0);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={count > 2 ? 1.5 : 1.5} />").length, 0, "a > inside the tag does not end it early");
+});
+
+test("DS-ICON-001 uses the width a team chose, and ignores one outside the range", () => {
+  const params = teamParams([{ id: "x-001", op: "refine", rule: "DS-ICON-001", param: "stroke_width_px", value: 2, reason: "Heavier icons suit this product." }]);
+  const hits = iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={1.5} /><Check strokeWidth={2} />", params);
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /strokeWidth 1\.5, not the set's 2/);
+  assert.match(hits[0].message, /limit set by the t team/);
+  const outside = teamParams([{ id: "x-001", op: "refine", rule: "DS-ICON-001", param: "stroke_width_px", value: 3, reason: "Too heavy for the range." }]);
+  assert.equal(iconHits("DS-ICON-001", LUCIDE + "<Check strokeWidth={1.5} />", outside).length, 0, "a value outside 1 to 2 is ignored");
+});
+
+test("DS-ICON-001: two teams that choose different widths do not flip with the order they are read", () => {
+  const refine = (v) => ({ id: "x-001", op: "refine", rule: "DS-ICON-001", param: "stroke_width_px", value: v, reason: "Our choice." });
+  const root = projectWith({ a: team("a", [refine(1)]), b: team("b", [refine(2)]) });
+  const p = paramsFor(loadTeams(root), root, join(root, "a.tsx"));
+  assert.equal(p.get("DS-ICON-001", "stroke_width_px"), 1);
+  assert.equal(p.source("DS-ICON-001", "stroke_width_px"), "a", "the first team file keeps it");
+});
+
+test("DS-ICON-002 flags a size that is not 16, 20, 24 or 32, in each spelling", () => {
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + "<Check size={18} />").length, 1);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check size="18" />').length, 1);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + "<Check width={14} height={14} />").length, 1, "width and height on one icon are one finding");
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-3" />').length, 1);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="h-3.5 w-3.5" />').length, 1);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-[18px]" />').length, 1);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-5 md:size-7" />').length, 1, "a variant is read like the plain class");
+  assert.match(iconHits("DS-ICON-002", LUCIDE + "<Check size={18} />")[0].message, /18px, not one of 16\/20\/24\/32px/);
+});
+
+test("DS-ICON-002 leaves alone the defined sizes and anything that is not a sized lucide icon", () => {
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check size={16} /><Check size={20} /><Check size={24} /><Check size={32} />').length, 0);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-4 size-5 size-6 size-8" /><Check className="h-5 w-5" /><Check className="size-[20px]" />').length, 0);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="w-full h-auto size-full h-px min-w-3 max-h-3" />').length, 0, "non-numeric and min/max classes are not sizes");
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<div className="size-3" /><Avatar size={18} />').length, 0, "only lucide icons are read");
+  assert.equal(iconHits("DS-ICON-002", "<Check size={18} />").length, 0, "no lucide import, no finding");
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-3" />\n<Check size={20} />').length, 1, "one bad icon among good ones");
+});
+
+test("DS-ICON-002 uses a team's smaller set and ignores one with a size outside the four", () => {
+  const params = teamParams([{ id: "x-001", op: "restrict", rule: "DS-ICON-002", param: "icon_sizes_px", value: [16, 24], reason: "We use two sizes." }]);
+  const hits = iconHits("DS-ICON-002", LUCIDE + "<Check size={20} /><Check size={24} />", params);
+  assert.equal(hits.length, 1);
+  assert.match(hits[0].message, /20px, not one of 16\/24px/);
+  assert.match(hits[0].message, /limit set by the t team/);
+  const bad = teamParams([{ id: "x-001", op: "restrict", rule: "DS-ICON-002", param: "icon_sizes_px", value: [16, 18], reason: "18 is not a defined size." }]);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + "<Check size={20} />", bad).length, 0, "a set with a size outside the four is ignored");
+});
+
+test("the status lines now say the new limits are applied", () => {
+  const lines = summarizeTeams([team("t", [
+    restrictOverride(1, "DS-CSS-003", "max_selector_nesting", 1),
+    restrictOverride(2, "DS-ANIMATION-005", "min_start_scale", 0.95),
+    restrictOverride(3, "DS-TYPOGRAPHY-001", "max_text_styles", 2),
+  ])]);
+  assert.ok(lines.some((l) => /applied: DS-CSS-003 max_selector_nesting = 1/.test(l)));
+  assert.ok(lines.some((l) => /applied: DS-ANIMATION-005 min_start_scale = 0\.95/.test(l)));
+  assert.ok(lines.some((l) => /not checked by the hook: DS-TYPOGRAPHY-001/.test(l)));
+});
+
+test("a set is compared whole, except spacing divisors, which are read by their smallest", () => {
+  const sizes = (value) => summarizeTeams([team("t", [{ id: "x-001", op: "restrict", rule: "DS-ICON-002", param: "icon_sizes_px", value, reason: "Fewer sizes." }])]);
+  assert.ok(sizes([16, 24]).some((l) => /applied: DS-ICON-002/.test(l)), "[16,24] shares its smallest size with the base but is still a change");
+  assert.ok(sizes([16, 20, 24, 32]).some((l) => /no change from the base/.test(l)));
+  assert.ok(sizes([32, 16, 24, 20]).some((l) => /no change from the base/.test(l)), "order does not matter");
+  const divisors = (value) => summarizeTeams([team("t", [{ id: "x-001", op: "restrict", rule: "DS-SPACING-001", param: "spacing_divisors", value, reason: "One grid." }])]);
+  assert.ok(divisors([4]).some((l) => /no change from the base/.test(l)), "[4] and [4,8] check the same thing");
+  assert.ok(divisors([8]).some((l) => /applied: DS-SPACING-001/.test(l)));
+});
+
+test("DS-CSS-003 skips keyframe stops even when the keyframes sit inside a nested rule", () => {
+  assert.equal(nestHits(".a { .b { @keyframes k { from { x: y; } to { x: y; } } } }").length, 0);
+});
+
+test("DS-CSS-003 keeps its place after SCSS interpolation in a selector", () => {
+  const hits = nestHits(".a { .b-#{$x} { .c { y: z; } } }\n.d { e: f; }");
+  assert.equal(hits.length, 1, "the third level is still found, and the next rule starts again at one");
+  assert.match(hits[0].message, /nested 3 levels deep/);
+});
+
+test("DS-CSS-003 counts the same levels with a lone brace inside a string", () => {
+  assert.equal(nestHits('.a { content: "{"; .b { .c { x: y; } } }').length, 1, "one finding, for .c; the string adds no level");
+  assert.equal(nestHits(".a { content: '{'; .b { x: y; } }").length, 0);
+});
+
+// --- fixes from review ---
+
+test("DS-CSS-003 reads an at-rule that follows a comment as an at-rule", () => {
+  assert.equal(nestHits("/* Mobile */\n@media (max-width: 40em) {\n  .a { .b { x: y; } }\n}").length, 0);
+  assert.equal(nestHits("// mobile\n@media (max-width: 40em) { .a { .b { x: y; } } }").length, 0);
+  assert.equal(nestHits("/* c */ @layer base { .a { .b { x: y; } } }", "a.css").length, 0);
+  assert.equal(nestHits("/* c */ @keyframes k { from { x: y; } to { x: y; } }").length, 0);
+  assert.equal(nestHits("/* c */ .a { /* d */ .b { /* e */ .c { x: y; } } }").length, 1, "comments between levels do not change the count");
+});
+
+test("DS-CSS-003 does not read // as a comment in .css, or inside a URL", () => {
+  assert.equal(nestHits(".d { background: url(//cdn.test/a.png); }\n.e { .f { x: y; } }", "a.css").length, 0);
+  assert.equal(nestHits("@import url(//fonts.test/x.css); .e { .f { x: y; } }", "a.css").length, 0);
+  assert.equal(nestHits(".d { background: url(//cdn.test/a.png); }\n.e { .f { x: y; } }", "a.scss").length, 0);
+  assert.equal(nestHits(".d { background: url(https://cdn.test/a.png); }\n.e { .f { x: y; } }").length, 0);
+});
+
+test("DS-ANIMATION-005 reports a start of zero written as a Tailwind class", () => {
+  const a = startHits('<div className="starting:scale-0" />');
+  assert.equal(a.length, 1);
+  assert.equal(a[0].severity, "quality");
+  assert.equal(startHits('<div className="animate-in zoom-in-0" />').length, 1);
+  assert.equal(startHits('<motion.div initial={{ scale: 0 }} />').length, 1, "scale: 0 is still one finding, from the blocking check");
+});
+
+test("DS-ANIMATION-005 sees a scale that follows a nested object, and reads only the start's own scale", () => {
+  assert.equal(startHits('<motion.div initial={{ transition: { duration: 1 }, scale: 0.5 }} />').length, 1);
+  assert.equal(startHits('<motion.div initial={{ opacity: 0, filter: "blur(0px)", scale: 0.5 }} />').length, 0, "the icon-swap recipe is exempt");
+  assert.equal(startHits('<motion.div initial={{ x: 1, nested: { scale: 0.5 } }} />').length, 0, "a scale inside a nested object is not the start's");
+  assert.equal(startHits('<motion.div initial={{ scale: 0.5 ').length, 0, "an unclosed object does not throw or match");
+  assert.equal(startHits("@keyframes k { from { filter: blur(4px); scale: 0.25; } to { scale: 1; } }", "a.css").length, 0);
+});
+
+test("the skill's own icon-swap example (DS-SURFACE-014) is not flagged by DS-ANIMATION-005", () => {
+  const md = readFileSync(join(HERE, "..", "references", "surfaces.md"), "utf8");
+  assert.match(md, /scale: 0\.25/, "the example this test guards is still there");
+  assert.equal(startHits(md, "surfaces.tsx").length, 0);
+});
+
+test("DS-ICON-002 does not read a fraction width as a size", () => {
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="w-1/2 h-3/4 size-1/3" />').length, 0);
+  assert.equal(iconHits("DS-ICON-002", LUCIDE + '<Check className="size-3" />').length, 1);
+});
+
+test("DS-ICON-001 and DS-ICON-002 read icons imported by namespace or beside a default import", () => {
+  const ns = 'import * as L from "lucide-react";\n';
+  assert.equal(iconHits("DS-ICON-001", ns + "<L.Check strokeWidth={3} />").length, 1);
+  assert.equal(iconHits("DS-ICON-002", ns + "<L.Check size={18} />").length, 1);
+  assert.equal(iconHits("DS-ICON-001", ns + "<L.Check strokeWidth={1.5} /><Other.Check strokeWidth={3} />").length, 0);
+  const mixed = 'import React, { Check } from "lucide-react";\n';
+  assert.equal(iconHits("DS-ICON-001", mixed + "<Check strokeWidth={3} />").length, 1);
+  assert.equal(iconHits("DS-ICON-001", 'import Check from "lucide-react/dist/esm/icons/check";\n<Check strokeWidth={3} />').length, 0, "deep imports are not read");
+});
+
+test("two teams with different icon sizes keep only the sizes both allow", () => {
+  const sizes = (value) => ({ id: "x-001", op: "restrict", rule: "DS-ICON-002", param: "icon_sizes_px", value, reason: "Fewer sizes." });
+  const get = (files) => { const root = projectWith(files); return paramsFor(loadTeams(root), root, join(root, "a.tsx")); };
+  const both = get({ a: team("a", [sizes([16, 20])]), b: team("b", [sizes([16, 24])]) });
+  assert.deepEqual(both.get("DS-ICON-002", "icon_sizes_px"), [16]);
+  assert.equal(both.source("DS-ICON-002", "icon_sizes_px"), "a and b");
+  const reverse = get({ a: team("a", [sizes([16, 24])]), b: team("b", [sizes([16, 20])]) });
+  assert.deepEqual(reverse.get("DS-ICON-002", "icon_sizes_px"), [16], "the order of the files does not matter");
+  const none = get({ a: team("a", [sizes([16, 20])]), b: team("b", [sizes([24, 32])]) });
+  assert.deepEqual(none.get("DS-ICON-002", "icon_sizes_px"), [16, 20], "teams that share no size leave the first team's set, never an empty one");
+  const same = get({ a: team("a", [sizes([16, 20]), { ...sizes([16, 20]), id: "x-002" }]) });
+  assert.equal(same.source("DS-ICON-002", "icon_sizes_px"), "a");
+  const wide = get({ a: team("a", [sizes([16, 20])]), b: team("b", [sizes([16, 20, 24])]) });
+  assert.deepEqual(wide.get("DS-ICON-002", "icon_sizes_px"), [16, 20], "a wider set from a second team does not loosen the first");
+});
+
+test("DS-CSS-003 treats // as ordinary text in .css, even after a space", () => {
+  assert.equal(nestHits(".d { background: url( //cdn.test/a.png ); }\n.e { .f { x: y; } }", "a.css").length, 0);
+  assert.equal(nestHits(".d { grid-area: a //b; }\n.e { .f { x: y; } }", "a.css").length, 0);
 });

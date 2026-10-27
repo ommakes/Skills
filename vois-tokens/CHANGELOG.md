@@ -4,6 +4,31 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.26.0] - 2026-10-27
+
+### Added
+
+- **Three rules now have a detector** (were `judgment`), so a team can tune their limits and the hook checks them:
+  - `DS-CSS-003`: a style rule nested deeper than `max_selector_nesting` (2 by default) in `.css` and `.scss`. Only nested style rules count. `@media`, `@supports` and `@layer` add no level, keyframe stops and SCSS property blocks are skipped, and comments, strings and `#{...}` interpolation are not read as blocks. It does not count descendant combinators (`.a .b .c`).
+  - `DS-ICON-001`: an explicit `strokeWidth` on a `lucide-react` icon that is not `stroke_width_px` (1.5 by default). Icons imported by name (including `X as CloseIcon`) or as a namespace (`<L.Check>`) are read; deep imports (`lucide-react/dist/...`) and a computed width are not. An icon with no `strokeWidth` renders at lucide's own default (2), which this does not check, so it does not find mixed weights that come from omitting the prop.
+  - `DS-ICON-002`: a `lucide-react` icon whose `size`, `width`, `height` or Tailwind `size-N`/`h-N`/`w-N`/`size-[Npx]` is not in `icon_sizes_px` (16/20/24/32 by default). One finding per icon. Fractions such as `w-1/2` are not sizes.
+- **`DS-ANIMATION-005` now also checks the rest of the rule ("start at `0.9` or higher").** It still blocks `scale(0)`. A start below `min_start_scale` (0.9 by default) is a new quality finding, never blocked, in `initial={{ scale }}` and variant `hidden`, a first keyframe (`from`, `0%`), `starting:scale-N` and `zoom-in-N`. A `scale-0` written as a Tailwind class is reported too. The icon-swap recipe is exempt: a start that also has a `blur(` is `DS-SURFACE-014`, which starts at `0.25` on purpose.
+- **`DS-ANIMATION-005` rule text** now names the exception: "The one exception is an icon swap, which follows `DS-SURFACE-014`." (`DS-SURFACE-014` has always said to start at `0.25`; the two rules disagreed.)
+- A detector may now give one finding a lower severity than its rule (`severity` on the finding). `detect.mjs` and `hook-before-edit.mjs` both read it.
+
+### Changed
+
+- **New findings on existing code.** Any enter animation that starts between 0 and 0.9 (for example `zoom-in-50`, or `initial={{ scale: 0.5 }}`) is now flagged. The fix hint no longer says to start from `scale(0.25)`, which the rule text contradicted. The `good.tsx` fixture started at `0.5` for the same reason and now starts at `0.9`.
+- A set limit is compared whole against the base. Before, any set was compared by its smallest value, so a team's `[16, 24]` would have read as "no change". Spacing divisors keep the smallest-value comparison.
+- A limit with no tightening direction (`stroke_width_px`) is a choice, so where two teams cover one file the first team file keeps it instead of the larger value winning. Where two teams cover one file with different icon-size sets, only the sizes both allow stay.
+
+### Notes
+
+- Four of the 23 tunable limits were checked before; eight are now. The rest (contrast, text width, type sizes, component thresholds) still have nothing to check in code.
+- The Figma edition is not rebuilt for this change.
+
+---
+
 ## [1.25.0] - 2026-10-27
 
 ### Changed

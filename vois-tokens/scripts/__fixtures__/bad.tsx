@@ -1,6 +1,7 @@
 // Fixture: one deliberate violation per CODE_EXT-applicable [DS-*] rule.
 import { motion } from "motion/react";
 import { useState } from "react";
+import { Check, X as CloseIcon } from "lucide-react";
 
 const legacyOverride = "color: red !important;"; // DS-TAILWIND-004
 
@@ -60,6 +61,8 @@ function BadLookalikes() {
       <div role="alert" className="border-l-4 border-red-500 p-3">Failed</div> {/* LOOKALIKE-010 */}
       <span title="More info">?</span> {/* LOOKALIKE-011 */}
       <div className="duration-[150ms] ease-[cubic-bezier(0.2,0,0,1)]" /> {/* DS-MOTION-001 */}
+      <Check strokeWidth={3} /> {/* DS-ICON-001 */}
+      <CloseIcon size={18} /> {/* DS-ICON-002 */}
     </div>
   );
 }

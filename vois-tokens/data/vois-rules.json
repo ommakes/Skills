@@ -245,7 +245,7 @@
       "category": "DS-ANIMATION",
       "category_label": "Animation",
       "source_file": "vois-tokens/references/animation.md",
-      "rule": "Never animate from `scale(0)`. Start at `0.9` or higher. Zero-scale animations feel mechanical.",
+      "rule": "Never animate from `scale(0)`. Start at `0.9` or higher. Zero-scale animations feel mechanical. The one exception is an icon swap, which follows `DS-SURFACE-014`.",
       "severity": "required",
       "enforcement": "blocking",
       "verification": "detector",
@@ -589,7 +589,8 @@
       "rule": "Keep selectors shallow. If your selector has more than 2 levels of nesting, you're coupling styles to DOM structure. Add a class instead.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-CSS-003"
     },
     {
       "id": "DS-CSS-004",
@@ -660,7 +661,8 @@
       "rule": "Use a single stroke width across the icon set — 1.5px for the default (lucide-react/Radix Icons default). Don't mix stroke weights within the same screen; it reads as a design system bug, not a deliberate choice.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-ICON-001"
     },
     {
       "id": "DS-ICON-002",
@@ -670,7 +672,8 @@
       "rule": "If an icon's surrounding text size doesn't map cleanly to one of the four defined sizes (16/20/24/32px), round to the nearest one rather than introducing an arbitrary size.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-ICON-002"
     },
     {
       "id": "DS-LAYOUT-001",

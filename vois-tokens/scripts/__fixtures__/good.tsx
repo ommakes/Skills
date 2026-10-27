@@ -1,5 +1,6 @@
 // Fixture: clean equivalent of bad.tsx — should trigger zero findings.
 import { motion } from "motion/react";
+import { Check, X as CloseIcon } from "lucide-react";
 
 export function GoodCard() {
   return (
@@ -10,7 +11,10 @@ export function GoodCard() {
       Loading…
       <div className="space-y-2" />
       <button className="active:scale-97">Press</button>
-      <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} />
+      <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} />
+      <Check size={20} strokeWidth={1.5} />
+      <CloseIcon className="size-5 md:size-6" />
+      <Check className="h-4 w-4" />
       <p className="motion-reduce:transition-none">respects prefers-reduced-motion</p>
       <div onClick={(e) => e.stopPropagation()}>
         <Button variant="link">stopPropagation wrapper and a link-variant Button are fine</Button>
