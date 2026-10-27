@@ -198,9 +198,7 @@ positive"). These need a human or a fresh model run to check, not a test
 runner — see each skill's file for the specific cases and their fail
 conditions.
 
-CI (`.github/workflows/ux-research-checks.yml`) runs all four skills'
-`evals/test_*.py` suites plus SKILL.md frontmatter validation on every
-push/PR touching `ux-research/**` or `skills.json` — the qualitative
-cases still need a human or fresh model run, CI only covers the
-deterministic half. See [`CHANGELOG.md`](./CHANGELOG.md) for version
+CI no longer runs these. Run the deterministic half yourself with
+`python3 -m unittest discover -s evals -v` inside each skill folder. The
+qualitative cases still need a human or fresh model run. See [`CHANGELOG.md`](./CHANGELOG.md) for version
 history across all four skills.
