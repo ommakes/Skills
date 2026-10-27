@@ -1,33 +1,13 @@
 name: Design System Checks
 
+# No path filter on purpose. The list kept falling behind the skill folders
+# (righter, conversion-patterns, design-ask and others were missing), so a
+# change there skipped its own checks. The job takes a couple of minutes, which
+# is cheaper than another missed check.
 on:
   push:
     branches: [main]
-    paths:
-      - "vois-tokens/**"
-      - "vois-patterns/**"
-      - "vois-components/**"
-      - "vois-eval/**"
-      - "vois-dataviz/**"
-      - "scripts/**"
-      - "vois-teams/**"
-      - "skills.json"
-      - "**/SKILL.md"
-      - "**/references/**"
-      - "**/data/**"
   pull_request:
-    paths:
-      - "vois-tokens/**"
-      - "vois-patterns/**"
-      - "vois-components/**"
-      - "vois-eval/**"
-      - "vois-dataviz/**"
-      - "scripts/**"
-      - "vois-teams/**"
-      - "skills.json"
-      - "**/SKILL.md"
-      - "**/references/**"
-      - "**/data/**"
 
 jobs:
   checks:
@@ -67,6 +47,9 @@ jobs:
 
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs
+
+      - name: Every conversion-patterns rule is referenced and consistent
+        run: node conversion-patterns/scripts/check-rule-sync.mjs
 
       - name: Every rule says how it is verified, and detectors match the code
         run: python3 scripts/check-verification.py
