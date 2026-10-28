@@ -1,0 +1,1051 @@
+{
+  "source": "vois-patterns/references/page-templates.md",
+  "description": "Full-page layout skeletons at five levels (Entry, Hub, Index, Detail, Utility) for consumer and SaaS web products. Each template says what the page is for, how people reach it, how it changes at phone, tablet and desktop widths, which overlays and states it has, and which density tier it sits in. A template is a skeleton: the routed PATH rules decide the content, and they win where the two differ. Layouts only. Spacing, row heights and hit areas are token names, never values. Built from the interactive wireframe set; the Mobbin references are the screens each layout was drawn from.",
+  "levels": [
+    {
+      "level": 0,
+      "name": "Entry",
+      "meaning": "Front door. Explains the product and gets a signup."
+    },
+    {
+      "level": 1,
+      "name": "Hub",
+      "meaning": "Where people land after signing in, or a page that sells one thing."
+    },
+    {
+      "level": 2,
+      "name": "Index",
+      "meaning": "A list of things in one section."
+    },
+    {
+      "level": 3,
+      "name": "Detail",
+      "meaning": "One thing in full."
+    },
+    {
+      "level": 4,
+      "name": "Utility",
+      "meaning": "A page people visit rarely: settings, team, invoices, contact."
+    }
+  ],
+  "breakpoints": {
+    "phone": "below md (768px)",
+    "tablet": "md to below lg (768px to 1023px)",
+    "desktop": "lg and up (1024px)",
+    "rule": "DS-RESPONSIVE-002"
+  },
+  "density": {
+    "dense": {
+      "rule": "PATH-DENSITY-DENSE",
+      "desktop": "Table rows use --table-row-h-dense. Block gaps use the tight steps.",
+      "touch": "Rows use --table-row-h-regular. Targets reach --hit-area-min. Block gaps go up one step."
+    },
+    "standard": {
+      "rule": "PATH-DENSITY-STANDARD",
+      "desktop": "Rows use --table-row-h-regular. Gaps use the mid steps.",
+      "touch": "Same rows and gaps. Side gutter drops to the phone gutter."
+    },
+    "spacious": {
+      "rule": "PATH-DENSITY-SPACIOUS",
+      "desktop": "Sections sit far apart with large type. Rows, where present, use --table-row-h-comfortable.",
+      "touch": "Gaps step down one notch but stay looser than Standard. Tap targets reach --hit-area-min."
+    },
+    "note": "Values come from vois_get_tokens. This file names the token and the direction, never a number."
+  },
+  "templates": [
+    {
+      "id": "PATH-PAGE-MARKETING-HOME",
+      "wireframe_id": "tpl-marketing",
+      "name": "Marketing home",
+      "level": 0,
+      "level_name": "Entry",
+      "product_type": "both",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "The front door. One job: explain the product and get a signup.",
+      "navigation": "Top bar with four links, a log in link, and one signup button. Under 1024px the links fold into a menu button. The signup button stays visible at every width.",
+      "responsive": {
+        "phone": "Single column. Buttons stack to full width. Logos wrap to three per row. Plans stack, so put the recommended plan first. Footer links sit in two columns.",
+        "tablet": "Hero stays stacked with the product shot under the text. Feature cards go two across. Pricing keeps three plans side by side.",
+        "desktop": "Two column hero. Features three across. Split sections put image and text side by side. Five column footer."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": "The hero heading is the biggest type on any page here, and sections sit far apart on desktop.",
+      "mobbin_references": [
+        {
+          "title": "ClickUp hero",
+          "url": "https://mobbin.com/sites/sections/8327bdfc-5c9d-4240-b4af-9431eebd0f9e",
+          "note": "Split hero with an email field and a product video."
+        },
+        {
+          "title": "Dub hero",
+          "url": "https://mobbin.com/sites/sections/81ebd011-65e4-41e6-8567-aa4e299f9088",
+          "note": "Centered hero with tabs above the product shot."
+        },
+        {
+          "title": "Better Stack closing section",
+          "url": "https://mobbin.com/sites/sections/d164cdba-6fd2-4521-9322-e02f67b7eb43",
+          "note": "Final signup button with a quieter demo link under it."
+        },
+        {
+          "title": "Airtable header",
+          "url": "https://mobbin.com/sites/sections/de1d1994-e910-42da-9f07-1076412af3d7",
+          "note": "Promo banner and breadcrumb above the hero."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-FEED",
+      "wireframe_id": "tpl-feed",
+      "name": "Feed home",
+      "level": 1,
+      "level_name": "Hub",
+      "product_type": "consumer",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [],
+      "purpose": "The home screen of a consumer app. It scrolls without end and mixes posts, media, and suggestions.",
+      "navigation": "Labeled left nav on desktop, an icon rail on tablet, and a bottom tab bar on phones. Create moves to a floating button on phones.",
+      "responsive": {
+        "phone": "Top bar plus a bottom tab bar with five items. The feed fills the width. The right rail goes away, so move trending and suggestions into a Search tab.",
+        "tablet": "Icon rail on the left with the feed centered at about 600px. The right rail is hidden.",
+        "desktop": "Three columns: labeled nav, feed, and a right rail with search, trending, and people to follow."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": "Standard, not Spacious: people scroll fast and want several posts in view.",
+      "mobbin_references": [
+        {
+          "title": "Threads feed",
+          "url": "https://mobbin.com/screens/cf183744-3220-4725-b059-78da4afc7237",
+          "note": "Labeled left nav, one centered column, composer on top."
+        },
+        {
+          "title": "Instagram explore",
+          "url": "https://mobbin.com/screens/d7ebbaf2-397d-4254-bdb3-4f7a88ecb815",
+          "note": "Icon-only rail with a centered media grid."
+        },
+        {
+          "title": "Curater feed",
+          "url": "https://mobbin.com/screens/570811a7-d458-4a3b-ae87-ecb4cdeb5fac",
+          "note": "Icon rail with a multi-column masonry of posts."
+        },
+        {
+          "title": "Buffer feeds",
+          "url": "https://mobbin.com/screens/50e507fe-b4ce-46ef-b405-a45d4f8c8c5e",
+          "note": "List feed with thumbnails next to a left nav."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-DASHBOARD",
+      "wireframe_id": "tpl-dashboard",
+      "name": "Dashboard",
+      "level": 1,
+      "level_name": "Hub",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-DENSE",
+      "routes_to": [],
+      "purpose": "The landing page inside a SaaS product. It answers what changed and what needs attention.",
+      "navigation": "Left sidebar with labels on desktop, an icon rail on tablet, a bottom tab bar on phones. Search and account sit in the top bar.",
+      "responsive": {
+        "phone": "Sidebar becomes a bottom bar with four tabs and More. Metrics go two across. Chart and activity stack. The table turns into stacked rows: name as the title, with status and the other values under it. Nothing is dropped.",
+        "tablet": "Icon rail. Metrics two across. Chart takes the full width with activity underneath. The table keeps all its columns.",
+        "desktop": "Full sidebar. Four metrics in a row. Chart takes two thirds with activity beside it. Full table."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "Metric cards open a report. Rows jump to a record. View all opens the full list."
+        },
+        {
+          "name": "Notifications panel",
+          "what": "The bell opens a right side panel. The page behind stays visible, so people keep their place."
+        },
+        {
+          "name": "Quick create modal",
+          "what": "Create opens a small modal. A few fields at most, then it closes and the new item shows up in the list."
+        }
+      ],
+      "interaction": "View all goes to the Records section, then a row goes to the record. A table row on the dashboard skips the section and jumps straight to the record. That shortcut is fine, but the breadcrumb on the record should still show where it lives. The bell opens a side panel and Create opens a modal.",
+      "density_note": "Dense on desktop for scanning many metrics. On touch widths the same screen gets regular rows and more space between blocks.",
+      "mobbin_references": [
+        {
+          "title": "Browserbase overview",
+          "url": "https://mobbin.com/screens/5999d971-3c12-4486-9f23-8ff1098139bc",
+          "note": "Shortcut cards, then recent sessions, then analytics."
+        },
+        {
+          "title": "Canny home",
+          "url": "https://mobbin.com/screens/85ad4765-0a53-48d3-830b-6c30efe3725b",
+          "note": "Icon rail with big number cards under a welcome line."
+        },
+        {
+          "title": "Mintlify home",
+          "url": "https://mobbin.com/screens/a0ef4976-474c-4d0a-9960-8ba3ab9dc956",
+          "note": "Thin icon rail and a single focus card with an activity list."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-COLLECTION",
+      "wireframe_id": "tpl-collection",
+      "name": "Collection table",
+      "level": 2,
+      "level_name": "Index",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-B",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-B-ROW-OPEN"
+      ],
+      "purpose": "A list of records people scan, filter, and act on in bulk.",
+      "navigation": "Same sidebar shell. Search and filters sit in a toolbar above the table. A row opens a preview panel on desktop and a full detail page on smaller screens.",
+      "responsive": {
+        "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filters collapse into one button that opens a full screen panel because they include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
+        "tablet": "Table has four columns on every width, so nothing is hidden. Filters collapse to one chip plus a Filters button. No preview panel, so rows open the detail page.",
+        "desktop": "Full table with checkboxes. Four filter chips in the toolbar. Preview panel on the right."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "A row goes to the record page. The icon at the end of a row opens the edit panel instead."
+        },
+        {
+          "name": "Edit panel",
+          "what": "Edit in a right panel so the list stays in view. Open full page is the way out when the edit turns out bigger than expected."
+        },
+        {
+          "name": "New record modal",
+          "what": "New record is a short modal. It has text fields, so on a phone it takes the whole screen. Only confirmations become bottom sheets."
+        },
+        {
+          "name": "Filters panel",
+          "what": "Filters sit in a right panel. The apply button shows the result count. On a phone it takes the whole screen."
+        }
+      ],
+      "interaction": "Three ways into one record. Click a row for the full page, click the end icon for a quick edit in a side panel, or use New record for a modal. Pick by size of the task: a few fields is a modal, an edit that needs the list for context is a panel, anything long or linkable is a page.",
+      "density_note": "Standard by default. A power-user version of this list can switch to Dense.",
+      "mobbin_references": [
+        {
+          "title": "Calendly contacts",
+          "url": "https://mobbin.com/screens/a633760b-536f-4387-af06-8056089fa6cc",
+          "note": "Search, saved view chips, a columns menu, a filter popover, items per page."
+        },
+        {
+          "title": "Twenty companies",
+          "url": "https://mobbin.com/screens/668f28bb-5ee6-45d3-885e-fa94cc4c3651",
+          "note": "View tab and a filter menu that lists every field."
+        },
+        {
+          "title": "Canny ideas",
+          "url": "https://mobbin.com/screens/e17459d2-05aa-429e-bd1e-8f40b5f4baf7",
+          "note": "Table with a fields panel sliding in from the right."
+        },
+        {
+          "title": "Square item library",
+          "url": "https://mobbin.com/screens/7d869088-c92f-4412-8088-6ecdb40d68fd",
+          "note": "Table with an All filters drawer on the right."
+        },
+        {
+          "title": "Sprig events",
+          "url": "https://mobbin.com/screens/0e784aaf-7036-4281-8121-9666955f5a55",
+          "note": "The simplest version: two filters, search, one button."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-BROWSE",
+      "wireframe_id": "tpl-browse",
+      "name": "Browse grid",
+      "level": 2,
+      "level_name": "Index",
+      "product_type": "consumer",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [],
+      "purpose": "A browsable grid of items. People narrow it down, then pick one.",
+      "navigation": "Top bar with category links on desktop. Links fold into a menu and search drops to its own row on phones. Filters live in a sidebar on desktop and in a drawer below that.",
+      "responsive": {
+        "phone": "Two cards per row. Filter and Sort sit in a sticky bottom bar that opens a full height sheet. The apply button shows the result count.",
+        "tablet": "Three cards per row. Filters become chips above the grid and open a right drawer.",
+        "desktop": "Filter sidebar on the left with four groups. Four cards per row."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "Filter and Sort chips sit above the grid. On a phone they are in a sticky bar at the bottom."
+        },
+        {
+          "name": "Filter drawer",
+          "what": "The drawer holds every filter. The apply button shows how many results people will get."
+        }
+      ],
+      "interaction": "Filter opens a right drawer on tablet and a full height sheet on a phone. On desktop the filters are always visible in the sidebar, so there is no drawer.",
+      "density_note": "Standard: shoppers compare several items at once.",
+      "mobbin_references": [
+        {
+          "title": "H&M filter drawer",
+          "url": "https://mobbin.com/screens/65efe5fc-054c-4684-b6e8-dc18ee88abc6",
+          "note": "Right drawer with Clear and a View count button."
+        },
+        {
+          "title": "ZARA filters",
+          "url": "https://mobbin.com/screens/25ba5144-8b06-4472-8208-0ef58d691da7",
+          "note": "Filter panel on the right with large product images."
+        },
+        {
+          "title": "Snowflake Marketplace",
+          "url": "https://mobbin.com/screens/214bef41-bef1-4f6d-9c9a-08ccf9c53949",
+          "note": "Collapsible filter groups on the left, applied chips above."
+        },
+        {
+          "title": "Square hardware picker",
+          "url": "https://mobbin.com/screens/a978272a-c55b-4330-9c76-ab35dc8009f1",
+          "note": "Three-up cards with a quantity stepper and Add to cart."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-PRODUCT",
+      "wireframe_id": "tpl-product",
+      "name": "Product detail",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "consumer",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [],
+      "purpose": "One item, with everything needed to decide and buy.",
+      "navigation": "Same top bar as the browse grid. A breadcrumb sits above the gallery on tablet and desktop. Add to bag stays reachable: in the buy box on desktop, in a sticky bar on phones.",
+      "responsive": {
+        "phone": "Gallery swipes with dots. Details sit in accordions. Price and Add to bag live in a sticky bar at the bottom.",
+        "tablet": "Gallery and buy box side by side, thumbnails under the main image. Details switch to tabs.",
+        "desktop": "Thumbnails run down the left of the main image. The buy box is about 380px wide on the right."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": "Standard, with a roomier buy box because this is the moment of decision.",
+      "mobbin_references": [
+        {
+          "title": "ZARA product",
+          "url": "https://mobbin.com/screens/96d0fec1-06f5-4f0c-9c6a-ef5f0f95bb2a",
+          "note": "Tall image left, slim info column right, thumbnail strip along the bottom."
+        },
+        {
+          "title": "GetYourGuide activity",
+          "url": "https://mobbin.com/screens/4cc2fe4d-0f0c-4689-bebd-4140f1df5c7a",
+          "note": "Photo grid with a booking card on the right and trust points below."
+        },
+        {
+          "title": "H&M product",
+          "url": "https://mobbin.com/screens/712baa47-6362-4975-a62e-0018d9d2f799",
+          "note": "Half-width image, color swatches, then a size grid."
+        },
+        {
+          "title": "Shopify product",
+          "url": "https://mobbin.com/screens/8402e675-b81a-4590-8c2b-23f064215a2d",
+          "note": "Image left, quantity stepper with Add to cart and Buy it now."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-RECORD",
+      "wireframe_id": "tpl-record",
+      "name": "Record detail",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-E",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ],
+      "purpose": "One record in a SaaS product, such as a customer, a job, or a service. It shows status and lets people act.",
+      "navigation": "Breadcrumb back to the list. Tabs split the record into views. Properties sit in a side panel on desktop and fold into a row elsewhere.",
+      "responsive": {
+        "phone": "A back link replaces the breadcrumb. The primary action sits under the title and the rest go in an overflow menu. Tabs scroll sideways. Properties fold into one row.",
+        "tablet": "Primary action and overflow in the header. Properties fold above the content. Facts go two across.",
+        "desktop": "Three actions in the header. Properties panel on the right at 300px. Facts go three across."
+      },
+      "states": [
+        {
+          "name": "View",
+          "what": "Read mode. Edit sits in the header. One field is clickable to show inline edit."
+        },
+        {
+          "name": "Inline edit",
+          "what": "One field turns into an input with its own Save and cancel. Good for a single low stakes change."
+        },
+        {
+          "name": "Edit mode",
+          "what": "Every field becomes an input. Save and Cancel replace Edit in the header, and pin to a bar above the tab bar on a phone."
+        },
+        {
+          "name": "Discard confirm",
+          "what": "Cancel with unsaved changes asks first. Keep editing is the safe default and also what the scrim does."
+        }
+      ],
+      "interaction": "Two ways to edit. Inline edit changes one field in place, with no mode change. Edit mode flips the whole page to inputs. Pick inline when the change is small and safe. Pick the mode when people edit several fields together and need one Save. Cancel with changes always asks before throwing them away.",
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Plane customer",
+          "url": "https://mobbin.com/screens/2baeae80-10a5-43cc-b18a-4db4fee5b1ff",
+          "note": "Breadcrumb, tabs, and a properties column on the right."
+        },
+        {
+          "title": "Snowflake service",
+          "url": "https://mobbin.com/screens/23f7bfb8-e8e1-4086-9a4b-45f6805f375f",
+          "note": "Back button, title, meta chips, then tabs and stacked cards."
+        },
+        {
+          "title": "Gumloop chat record",
+          "url": "https://mobbin.com/screens/bf54bbb1-692f-4dfd-91d4-536284b7990f",
+          "note": "Record opens as a right side panel with key and value rows."
+        },
+        {
+          "title": "Klaviyo skill",
+          "url": "https://mobbin.com/screens/3a4c26aa-9f6c-4190-9917-0fd7a405b426",
+          "note": "Secondary nav on the left, breadcrumb header with actions."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-SETTINGS",
+      "wireframe_id": "tpl-prefs",
+      "name": "Settings",
+      "level": 4,
+      "level_name": "Utility",
+      "product_type": "both",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-A",
+        "PATH-A-DEPTH-DEEP",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ],
+      "purpose": "Where people change how the product works for them or their team.",
+      "navigation": "Settings has its own sub navigation. It is a vertical list on desktop, tabs on tablet, and a list screen that drills into each section on phones.",
+      "responsive": {
+        "phone": "The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column and Save sits in a sticky bar.",
+        "tablet": "Sub navigation becomes tabs across the top. Fields go two across.",
+        "desktop": "Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Klaviyo settings",
+          "url": "https://mobbin.com/screens/74eecb76-2202-416c-a901-3efc129b39d8",
+          "note": "Top tabs with a left sub navigation and cards."
+        },
+        {
+          "title": "Tally settings",
+          "url": "https://mobbin.com/screens/207ac2b2-d24f-4dae-80cc-86cc183458cb",
+          "note": "Tabs, then rows with a label, a hint, and a control."
+        },
+        {
+          "title": "Buffer preferences",
+          "url": "https://mobbin.com/screens/0398e56b-5120-4055-9348-2b046ded2e97",
+          "note": "Grouped left list. Each row pairs a label with a control."
+        },
+        {
+          "title": "Devin settings",
+          "url": "https://mobbin.com/screens/f23e9fbe-ba94-4808-a7c3-36cb56fe1ef3",
+          "note": "Grouped list of links, which is the phone index screen."
+        },
+        {
+          "title": "Delphi settings",
+          "url": "https://mobbin.com/screens/cd875ea2-c870-475a-92cd-1a4b12474e02",
+          "note": "Centered grouped list with arrows."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-PRICING",
+      "wireframe_id": "tpl-pricing",
+      "name": "Pricing",
+      "level": 1,
+      "level_name": "Hub",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-F"
+      ],
+      "purpose": "Helps a visitor pick a plan and commit. It also answers the objections that stop a signup.",
+      "navigation": "Same marketing header. The plan cards carry the main actions, and the closing band repeats them. Under 1024px the header links fold into a menu button.",
+      "responsive": {
+        "phone": "Plans stack one per card. Put the recommended plan first. The comparison table shows one plan at a time, chosen with a row of plan buttons above it.",
+        "tablet": "Plans go two across. The comparison table shows all four plans in narrow columns.",
+        "desktop": "Four plan cards in a row with the recommended one outlined heavier. Full comparison table with grouped rows."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": "Pricing is a landing page that has to be compared, so it sits at Standard, not Spacious.",
+      "mobbin_references": [
+        {
+          "title": "Plain pricing",
+          "url": "https://mobbin.com/sites/sections/7e0fc745-3555-4bdf-8792-6aa8b35522ca",
+          "note": "Billing toggle with a savings tag, customer logos above the plans, middle plan highlighted."
+        },
+        {
+          "title": "Equals pricing",
+          "url": "https://mobbin.com/sites/sections/54c59322-41f7-4850-8426-73d076f881ce",
+          "note": "Colored plan headers, then price, seat line, and a check list."
+        },
+        {
+          "title": "Runner pricing",
+          "url": "https://mobbin.com/sites/sections/b1e65803-d2a9-4349-b305-07046cb2a67c",
+          "note": "Three ruled columns with bullet lists and a Teams row underneath."
+        },
+        {
+          "title": "Framer pricing",
+          "url": "https://mobbin.com/sites/sections/7506bd76-c42f-431d-8478-8f477d4ba895",
+          "note": "Plan cards with a separate add-on row for team seats."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-FEATURE",
+      "wireframe_id": "tpl-feature",
+      "name": "Feature page",
+      "level": 1,
+      "level_name": "Hub",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "Explains one part of the product in depth. It sits between the home page and the signup.",
+      "navigation": "Same marketing header. The page is one long scroll. Each section ends in a soft link, and the closing band holds the main action.",
+      "responsive": {
+        "phone": "Everything stacks. Each feature row shows its screenshot first, then the text. Integrations show four across.",
+        "tablet": "Feature rows stay stacked. Benefits go three across and integrations six across.",
+        "desktop": "Feature rows alternate screenshot and text side by side. Integrations eight across."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Mixpanel feature cards",
+          "url": "https://mobbin.com/sites/sections/ec0cf58f-84d6-4167-b5dc-c827f157dd32",
+          "note": "Two cards side by side, each with a label, heading, button, and screenshot."
+        },
+        {
+          "title": "Better Stack feature grid",
+          "url": "https://mobbin.com/sites/sections/7295b73f-1281-49d3-99dd-3701cae70072",
+          "note": "Three by two grid of cards with a screenshot above each short description."
+        },
+        {
+          "title": "Teachable features",
+          "url": "https://mobbin.com/sites/sections/a132e20d-15b7-413f-896b-f2234f488707",
+          "note": "Text beside an image, then a three column checklist and a single button."
+        },
+        {
+          "title": "Daylight product page",
+          "url": "https://mobbin.com/sites/sections/3ffb34f4-4713-4a4d-a05e-d18961771f0b",
+          "note": "One large image with three short benefits under it."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CUSTOMERS",
+      "wireframe_id": "tpl-customers",
+      "name": "Customer stories",
+      "level": 2,
+      "level_name": "Index",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "The proof page. It collects testimonials and case studies so visitors can find one that looks like them.",
+      "navigation": "Same marketing header. Filter chips narrow stories by industry. Each card links to a full case study.",
+      "responsive": {
+        "phone": "Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row.",
+        "tablet": "Story cards and quotes go two across. The featured story keeps the image above the text.",
+        "desktop": "Hero text beside a stat list. Featured story split into image and text. Story grid three across. Quote wall two across."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Readymag customer stories",
+          "url": "https://mobbin.com/sites/sections/39a87203-bad4-48e2-aae4-ddf832541bee",
+          "note": "Stat list next to a dense collage of customer logos."
+        },
+        {
+          "title": "Hashnode testimonials",
+          "url": "https://mobbin.com/sites/sections/5f82e6a3-6599-4255-99d2-6dd60e2ce5a0",
+          "note": "Quote cards, then a carousel of success stories."
+        },
+        {
+          "title": "Cursor testimonials",
+          "url": "https://mobbin.com/sites/sections/a433390e-b486-4bf1-9c7a-aa13f60dec7b",
+          "note": "Quote cards with a logo, a name, and an arrow to the full story."
+        },
+        {
+          "title": "Webflow testimonials",
+          "url": "https://mobbin.com/sites/sections/ccf0e59a-4b76-4670-922b-9dcdb4968169",
+          "note": "Mixed tiles of video, quote, and social posts."
+        },
+        {
+          "title": "Daydream testimonials",
+          "url": "https://mobbin.com/sites/sections/368f73a0-3347-4567-b2fa-7d829e4055a0",
+          "note": "Named tabs switch one large quote beside a big number."
+        },
+        {
+          "title": "Grammarly reviews",
+          "url": "https://mobbin.com/sites/sections/ec863634-2877-4704-b4af-4eff3fd21ea0",
+          "note": "Plain list of quotes with the reviewer on the right."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-BLOG-INDEX",
+      "wireframe_id": "tpl-blogindex",
+      "name": "Blog index",
+      "level": 2,
+      "level_name": "Index",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "Lists articles and helps readers find the ones they care about. Also grows the newsletter.",
+      "navigation": "Same marketing header. Category chips filter the list. Search sits beside the title on tablet and desktop and moves into the menu on phones.",
+      "responsive": {
+        "phone": "Featured post on top, then the New list, then one post per row. Chips scroll sideways. Newsletter signup stacks.",
+        "tablet": "Posts go two across. The New list sits under the featured post.",
+        "desktop": "Featured post takes two thirds with the New list beside it. Posts three across."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Mural blog",
+          "url": "https://mobbin.com/sites/sections/412935b2-603d-435a-84d0-3c390ec95021",
+          "note": "Category bar, a featured post on the left, a New list on the right."
+        },
+        {
+          "title": "Linear Now",
+          "url": "https://mobbin.com/sites/sections/32351256-278b-4627-b807-8e70534c9d39",
+          "note": "Category filters and search with a shortcut, two column cards with date and author."
+        },
+        {
+          "title": "beehiiv posts",
+          "url": "https://mobbin.com/sites/sections/4917f7e4-ff06-44d3-bd84-f50189956f23",
+          "note": "Three across dark cards with an author line."
+        },
+        {
+          "title": "AngelList articles",
+          "url": "https://mobbin.com/sites/sections/09906617-723a-4647-be7a-e994beaebb22",
+          "note": "Four across with a category tag and read time."
+        },
+        {
+          "title": "Assembly Coffee journal",
+          "url": "https://mobbin.com/sites/sections/2218a2ac-844a-42bc-b957-64ac22214a79",
+          "note": "Centered title and filters over a full width featured story."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CASE-STUDY",
+      "wireframe_id": "tpl-casestudy",
+      "name": "Case study",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "One customer story told as a problem, a fix, and a result. Numbers go first.",
+      "navigation": "Breadcrumb back to Customer stories. Company facts sit on the left on desktop. The closing band and more stories keep the visitor moving.",
+      "responsive": {
+        "phone": "Breadcrumb hides. Stats stack one per row. Company facts fold into a two by two block above the story.",
+        "tablet": "Stats three across. Company facts fold into a four across row above the story.",
+        "desktop": "Header text beside a photo. Three stats in a row. Company facts in a left column and the story capped near 680px."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Jasper case study",
+          "url": "https://mobbin.com/sites/sections/69d12cd5-407c-4fa3-a4d8-a765cadeb9b0",
+          "note": "Breadcrumb, title, byline, photo with logo, then three big result numbers."
+        },
+        {
+          "title": "Glide customer success",
+          "url": "https://mobbin.com/sites/sections/c92b5a09-5004-4086-a8ef-590943ba8d48",
+          "note": "Label and headline with two stat tiles beside a phone mockup."
+        },
+        {
+          "title": "Daydream results",
+          "url": "https://mobbin.com/sites/sections/368f73a0-3347-4567-b2fa-7d829e4055a0",
+          "note": "One large pull quote with a single big stat tile."
+        },
+        {
+          "title": "Hashnode success stories",
+          "url": "https://mobbin.com/sites/sections/5f82e6a3-6599-4255-99d2-6dd60e2ce5a0",
+          "note": "Carousel of more stories at the end."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-ARTICLE",
+      "wireframe_id": "tpl-article",
+      "name": "Blog article",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-G"
+      ],
+      "purpose": "One long read. Built for comfortable reading, then a next step.",
+      "navigation": "Same marketing header. A contents list helps readers jump around. Related posts and the closing band follow the article.",
+      "responsive": {
+        "phone": "Header and hero image full width. Contents fold into one row at the top. Share icons move under the article.",
+        "tablet": "Same as phone with a wider reading column. Contents stay folded.",
+        "desktop": "Share icons on the left, article in the middle at about 680px, contents and tags on the right."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": "Reading pages get the widest margins and the most line space.",
+      "mobbin_references": [
+        {
+          "title": "Superhuman Mail article",
+          "url": "https://mobbin.com/sites/sections/5bceff5e-892f-4e73-b474-1b738b9718ab",
+          "note": "Large title, byline with share icons on the right, full width image."
+        },
+        {
+          "title": "Canva article",
+          "url": "https://mobbin.com/sites/sections/5d8202c2-71ef-4513-8852-2569e1c6de0c",
+          "note": "Share rail on the left, contents inside the article, author and related posts on the right."
+        },
+        {
+          "title": "Sprout Social article",
+          "url": "https://mobbin.com/sites/sections/8983a579-2d68-46b4-a3fc-b53fcad1d8b3",
+          "note": "Category, title, read time, and a hero illustration, then contents beside the text."
+        },
+        {
+          "title": "Assembly Coffee journal",
+          "url": "https://mobbin.com/sites/sections/2218a2ac-844a-42bc-b957-64ac22214a79",
+          "note": "Full width cover with the date and byline over the image."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CONTACT",
+      "wireframe_id": "tpl-contact",
+      "name": "Contact sales",
+      "level": 4,
+      "level_name": "Utility",
+      "product_type": "marketing",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-G",
+        "PATH-C-SIMPLE"
+      ],
+      "purpose": "A short form for people ready to talk to a person. It should feel safe and quick.",
+      "navigation": "Same marketing header and footer. No competing links in the body. The form is the only action.",
+      "responsive": {
+        "phone": "Heading, then the form, then the reasons to trust you. Fields are one column.",
+        "tablet": "Heading and form side by side. Name and company fields go two across.",
+        "desktop": "Heading, benefits, and trust badges on the left. Form card on the right."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Notion contact sales",
+          "url": "https://mobbin.com/sites/sections/0e4208ae-5a28-41cf-9275-3f21977e394c",
+          "note": "Heading with a benefit box on the left, form on the right."
+        },
+        {
+          "title": "Framer contact sales",
+          "url": "https://mobbin.com/sites/sections/914df681-c24d-4800-bd11-9c144d0175fb",
+          "note": "Heading and compliance badges on the left, form card on the right."
+        },
+        {
+          "title": "Miro contact sales",
+          "url": "https://mobbin.com/sites/sections/270f478a-6a90-49fb-8b34-f5751d7254f9",
+          "note": "One centered form with a short lead line."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-DATAGRID",
+      "wireframe_id": "tpl-datagrid",
+      "name": "Data grid",
+      "level": 2,
+      "level_name": "Index",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-DENSE",
+      "routes_to": [
+        "PATH-B-COMPLEX",
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ],
+      "purpose": "A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks.",
+      "navigation": "Same app shell. View tabs sit above the toolbar. Selecting rows swaps in a bulk action bar. Rows open a detail page, not a panel, because the grid already uses the width.",
+      "responsive": {
+        "phone": "The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort merge into one button. Selecting rows shows a bar above the list with one Actions button.",
+        "tablet": "All columns stay and the grid scrolls sideways with the name pinned. Toolbar keeps search, one view tab row, and Filter / Sort.",
+        "desktop": "All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "Rows are checked, so the bulk bar is showing. A row click goes to the record."
+        },
+        {
+          "name": "Filter panel",
+          "what": "Filters open in a right panel so the grid stays visible while people tune them."
+        },
+        {
+          "name": "Delete confirm",
+          "what": "A destructive bulk action gets a modal that says how many rows it touches. Never delete on the first click."
+        }
+      ],
+      "interaction": "Checking rows swaps in the bulk bar. Delete asks for confirmation in a modal that names the count. Filter opens a side panel and keeps the grid on screen. A row click leaves the grid for the record page.",
+      "density_note": "The densest template here. Desktop rows use the dense height. On touch widths rows return to regular height.",
+      "mobbin_references": [
+        {
+          "title": "Base44 data table",
+          "url": "https://mobbin.com/screens/3eb19234-4d2f-4c06-b705-9b5f34ed6203",
+          "note": "Search, Filters, a Columns menu with show/hide toggles, and a checkbox column."
+        },
+        {
+          "title": "Plane work items",
+          "url": "https://mobbin.com/screens/418d01d1-95a4-4d63-98a7-fbc561af4029",
+          "note": "Tight rows with a properties popover for choosing columns."
+        },
+        {
+          "title": "AirOps grid",
+          "url": "https://mobbin.com/screens/2fa3c847-5d9c-4b58-ae6b-bb748a8d137e",
+          "note": "True spreadsheet: freeze columns, row height, undo, CSV in and out."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-TEAM",
+      "wireframe_id": "tpl-team",
+      "name": "Members table",
+      "level": 4,
+      "level_name": "Utility",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-D"
+      ],
+      "purpose": "A short table inside settings. People are here to invite someone, change a role, or remove someone.",
+      "navigation": "Settings has its own sub-nav: a column on desktop, tabs on tablet, and a drill-in list on phones where tapping Members opens this page with a back arrow.",
+      "responsive": {
+        "phone": "Each person is a stacked row: avatar and name as the title, with email, role, and status under it. Tapping the row opens the edit panel. Invite stays at the top.",
+        "tablet": "Sub-nav becomes tabs across the top. Role shows as a dropdown in the row. Status stays in the row.",
+        "desktop": "Sub-nav column on the left. Table with Role dropdown, Joined date, and Status. Active and Invited are grouped under small headers."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "The role dropdown is inline. The icon at the end of a row opens a fuller edit panel."
+        },
+        {
+          "name": "Invite modal",
+          "what": "Inviting is one short task, so it gets a modal. Email field, role, send."
+        },
+        {
+          "name": "Edit member panel",
+          "what": "A side panel for everything the row can not show. Remove lives here, not in the table."
+        },
+        {
+          "name": "Remove confirm",
+          "what": "Removing someone is a second, smaller modal on top of the panel. Cancel goes back to the panel, not the table."
+        }
+      ],
+      "interaction": "Invite is a modal. Editing a member is a side panel, because people want to see the list behind it. Remove is a confirmation on top of that panel, and Cancel returns to the panel. On a phone the panel is a full screen and the back arrow closes it.",
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Square team members",
+          "url": "https://mobbin.com/screens/061864d2-cf26-4ae7-9ef9-4a5abc7c9cf1",
+          "note": "Search, a Job filter, Export, and Add team member in one row above the table."
+        },
+        {
+          "title": "Browserbase members",
+          "url": "https://mobbin.com/screens/e928a056-33c8-4ea4-a0e4-2384e969aadc",
+          "note": "Grouped Active and Invited with counts, and a settings sub-nav."
+        },
+        {
+          "title": "AirOps team",
+          "url": "https://mobbin.com/screens/1722c6f1-6c78-48d7-b459-3dfef04cdf12",
+          "note": "Rows with a role dropdown, Resend invite, and delete."
+        },
+        {
+          "title": "Mintlify invite modal",
+          "url": "https://mobbin.com/screens/3cef1621-8ff4-49f9-9101-9352a540a5dc",
+          "note": "The invite flow: a small modal that takes several emails."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-INVOICES",
+      "wireframe_id": "tpl-invoices",
+      "name": "Invoices and billing",
+      "level": 4,
+      "level_name": "Utility",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-STANDARD",
+      "routes_to": [
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW"
+      ],
+      "purpose": "A read-mostly table. People come here to find one invoice, download it, or check what they owe.",
+      "navigation": "Lives under Settings or Billing. Summary cards sit above the table. Payment method sits under it.",
+      "responsive": {
+        "phone": "Summary cards go two across. Each invoice is a stacked row: number as the title, with date, amount, and a status badge under it. Download moves into the row menu.",
+        "tablet": "Table keeps all its columns.",
+        "desktop": "Four summary cards, then the full table with a PDF button per row and a Download all button."
+      },
+      "states": [
+        {
+          "name": "Default",
+          "what": "Click a row to preview the invoice. The PDF button downloads without opening anything."
+        },
+        {
+          "name": "Invoice modal",
+          "what": "A read-only preview in a modal. Download is the main action. There is nothing to edit, so it stays a modal and not a page."
+        }
+      ],
+      "interaction": "A row opens a read-only preview in a modal. Nothing here is editable, so a full page would be overkill. Keep a direct PDF button in the row for people who already know which invoice they want.",
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Base44 billing history",
+          "url": "https://mobbin.com/screens/909420e7-06b1-4526-9d6c-bda5f3c4dd01",
+          "note": "Plain table with a status pill, payment method, and a row menu."
+        },
+        {
+          "title": "Mercury invoices",
+          "url": "https://mobbin.com/screens/0f93b4de-70eb-45c6-ae53-d80937b6b2df",
+          "note": "Sortable headers, Filters, a Create invoice button, and a chevron to open a row."
+        },
+        {
+          "title": "Magnific billing history",
+          "url": "https://mobbin.com/screens/bef956a7-c7b0-41e5-9b0f-1d3dea4a6d07",
+          "note": "The same table inside a modal with a Download button per row."
+        },
+        {
+          "title": "Midday customer invoices",
+          "url": "https://mobbin.com/screens/20fd3ced-eedb-4938-b800-22fc391dde5d",
+          "note": "Four summary cards over a table with checkboxes."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-SPLIT",
+      "wireframe_id": "tpl-split",
+      "name": "List with detail pane",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-DENSE",
+      "routes_to": [
+        "PATH-B-ROW-OPEN"
+      ],
+      "purpose": "For triage work like an inbox, tickets, or tasks. People move down a list and need the detail without losing their place.",
+      "navigation": "Same app shell. The selected row stays highlighted. On phones, opening a row is a new screen with a back arrow, and the list keeps its scroll position.",
+      "responsive": {
+        "phone": "List only. Tapping a row pushes the detail as its own screen. Compose or Add becomes a floating button.",
+        "tablet": "List and detail split about half and half. Checkboxes and extra row text go away to make room.",
+        "desktop": "List on the left, a wider detail pane on the right, with tabs for overview, activity, and notes."
+      },
+      "states": [
+        {
+          "name": "List",
+          "what": "Phone shows the list alone. Tablet and desktop show the detail pane next to it."
+        },
+        {
+          "name": "Open item",
+          "what": "On a phone, opening a row replaces the list with the detail and a back link. On wider screens the row just highlights."
+        }
+      ],
+      "interaction": "Selecting a row opens its detail. On a phone that is a push to a new screen with a back link, and the list keeps its scroll position. On tablet and desktop nothing navigates: the detail pane updates in place.",
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Plane inbox",
+          "url": "https://mobbin.com/screens/849ec3f0-a1f0-4699-85eb-f895f7330036",
+          "note": "A narrow list on the left and a full work item on the right."
+        },
+        {
+          "title": "Gumloop chat detail",
+          "url": "https://mobbin.com/screens/bf54bbb1-692f-4dfd-91d4-536284b7990f",
+          "note": "The list dims while a detail panel slides over from the right."
+        },
+        {
+          "title": "Unify person details",
+          "url": "https://mobbin.com/screens/d67b0b3f-4f27-483a-a570-4c9a7c1962de",
+          "note": "A task table with a person panel, tabs, and a notes field."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-REPORT",
+      "wireframe_id": "tpl-report",
+      "name": "Report table",
+      "level": 3,
+      "level_name": "Detail",
+      "product_type": "saas",
+      "density": "PATH-DENSITY-DENSE",
+      "routes_to": [
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ],
+      "purpose": "A table that summarizes numbers: a date range, a chart, and rows with a totals line. Mostly read, then exported.",
+      "navigation": "Reports usually have their own sub-list in the sidebar, like Sales summary, Item sales, and Team sales. Controls for date range, grouping, and filters sit in a row above the chart.",
+      "responsive": {
+        "phone": "Controls collapse into a date chip and an Options button. The chart shrinks. The table keeps every column, scrolls sideways inside its card, and pins the first column. The page itself never scrolls sideways.",
+        "tablet": "Chart on top, table below. All columns stay and the table scrolls sideways with the first column pinned. Numbers right-aligned so they line up.",
+        "desktop": "All columns, a bold totals row at the bottom, and Export in the header."
+      },
+      "states": [],
+      "interaction": null,
+      "density_note": null,
+      "mobbin_references": [
+        {
+          "title": "Plane cycles analytics",
+          "url": "https://mobbin.com/screens/bf66cf68-6c11-473a-84ae-131c697dd581",
+          "note": "Tabs, summary numbers, a chart, then a table with Export as CSV."
+        },
+        {
+          "title": "Quo analytics export",
+          "url": "https://mobbin.com/screens/010a90eb-5a90-410f-9d5a-c5c537767c11",
+          "note": "Export opens a small dialog that asks for a time range."
+        },
+        {
+          "title": "Unify insights",
+          "url": "https://mobbin.com/screens/7771c350-9784-4b28-b37c-ad2e0c21becb",
+          "note": "Filter and pivot chips, two charts, then a table with its own filters."
+        },
+        {
+          "title": "Square category sales",
+          "url": "https://mobbin.com/screens/5cb8990c-d8b1-46dc-b30f-5b69c1602026",
+          "note": "Report sidebar, a timeframe popover, and a table with a totals row."
+        }
+      ]
+    }
+  ]
+}

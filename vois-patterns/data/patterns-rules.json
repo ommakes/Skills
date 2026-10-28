@@ -1,6 +1,6 @@
 {
   "source": "vois-patterns/references/*.md",
-  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here. pricing-pages.md adds PATH-F (top-level) with PATH-F-* sub-decisions, plus PATH-PRICE-* cross_cutting_rule nodes (U universal, T tier count, S seat, X usage, H hybrid, C consumer). table-interactions.md adds PATH-TABLE-* cross_cutting_rule nodes (selection and bulk, toolbar and view state, editing and saving, loading, empty and error states, structure). table-list.md also carries the PATH-B-SIMPLE, PATH-B-COMPLEX, PATH-B-ROW-OPEN, and PATH-B-EDIT sub_decision nodes.",
+  "description": "Every [PATH-X] and [PATH-X-Y] tagged decision node, extracted from its source file. Each node keeps its original ID so a chosen pattern traces back to source. `node_type: \"top_level_pattern\"`/`\"sub_decision\"` nodes are per-template decision-tree branches (settings-pages.md, table-list.md, forms.md, dialogs-and-action-sheets.md, detail-pages.md). `node_type: \"cross_cutting_rule\"` nodes are binary, checkable rules from permissions-and-conditional-logic.md that apply across templates rather than belonging to one decision tree — `parent` is `null` for these, same as a top-level pattern, since they don't nest under a single PATH. The remaining untagged worked examples and righter-routing call-outs stay in the reference .md files. microcopy-routing.md carries no PATH- tags (it's a routing checklist to the righter skill, not a testable requirement) and is not represented here. pricing-pages.md adds PATH-F (top-level) with PATH-F-* sub-decisions, plus PATH-PRICE-* cross_cutting_rule nodes (U universal, T tier count, S seat, X usage, H hybrid, C consumer). table-interactions.md adds PATH-TABLE-* cross_cutting_rule nodes (selection and bulk, toolbar and view state, editing and saving, loading, empty and error states, structure). table-list.md also carries the PATH-B-SIMPLE, PATH-B-COMPLEX, PATH-B-ROW-OPEN, and PATH-B-EDIT sub_decision nodes. page-templates.md adds PATH-PAGE (top-level) with one PATH-PAGE-<NAME> sub_decision per page template (full skeletons live in data/page-templates.json) and cross_cutting_rule nodes for page widths, levels, navigation, density by page and by width, overlays, button order, view to edit, and tables at narrow widths.",
   "nodes": [
     {
       "id": "PATH-A",
@@ -2444,6 +2444,577 @@
       "rule_name": "Footer at heading scale",
       "condition": "The footer of a marketing page.",
       "outcome": "Repeat the nav as large links at h2 size plus the wordmark. Small print stays small."
+    },
+    {
+      "id": "PATH-PAGE",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Page template",
+      "condition": "The task is a whole page or screen layout (what regions it has, how it changes at each width, how people get in and out of it), not one container. Examples: a landing page, a dashboard, a list page, a record page, a settings page.",
+      "outcome": "Pick the page by level and product type from data/page-templates.json, then follow the PATH rules it routes to. The template gives the skeleton. The routed rules give the content and win on any difference. Cross-cutting PATH-PAGE-* rules cover breakpoints, navigation, density at each width, overlays, button order and view to edit.",
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: templates by level for consumer and SaaS, marketing levels, tables, interactions, density by product type and breakpoint, button order. Which template sits in which density tier is Claude's proposal, not yet reviewed.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-MARKETING-HOME",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Marketing home",
+      "condition": "Level 0 (Entry), both. The front door. One job: explain the product and get a signup.",
+      "outcome": "Use the Marketing home skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Single column. Buttons stack to full width. Logos wrap to three per row. Plans stack, so put the recommended plan first. Footer links sit in two columns. Desktop: Two column hero. Features three across. Split sections put image and text side by side. Five column footer.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/8327bdfc-5c9d-4240-b4af-9431eebd0f9e",
+        "https://mobbin.com/sites/sections/81ebd011-65e4-41e6-8567-aa4e299f9088",
+        "https://mobbin.com/sites/sections/d164cdba-6fd2-4521-9322-e02f67b7eb43"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-FEED",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Feed home",
+      "condition": "Level 1 (Hub), consumer. The home screen of a consumer app. It scrolls without end and mixes posts, media, and suggestions.",
+      "outcome": "Use the Feed home skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Top bar plus a bottom tab bar with five items. The feed fills the width. The right rail goes away, so move trending and suggestions into a Search tab. Desktop: Three columns: labeled nav, feed, and a right rail with search, trending, and people to follow.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/cf183744-3220-4725-b059-78da4afc7237",
+        "https://mobbin.com/screens/d7ebbaf2-397d-4254-bdb3-4f7a88ecb815",
+        "https://mobbin.com/screens/570811a7-d458-4a3b-ae87-ecb4cdeb5fac"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-DASHBOARD",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Dashboard",
+      "condition": "Level 1 (Hub), saas. The landing page inside a SaaS product. It answers what changed and what needs attention.",
+      "outcome": "Use the Dashboard skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: Sidebar becomes a bottom bar with four tabs and More. Metrics go two across. Chart and activity stack. The table turns into stacked rows: name as the title, with status and the other values under it. Nothing is dropped. Desktop: Full sidebar. Four metrics in a row. Chart takes two thirds with activity beside it. Full table.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/5999d971-3c12-4486-9f23-8ff1098139bc",
+        "https://mobbin.com/screens/85ad4765-0a53-48d3-830b-6c30efe3725b",
+        "https://mobbin.com/screens/a0ef4976-474c-4d0a-9960-8ba3ab9dc956"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-COLLECTION",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Collection table",
+      "condition": "Level 2 (Index), saas. A list of records people scan, filter, and act on in bulk.",
+      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filters collapse into one button that opens a full screen panel because they include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Four filter chips in the toolbar. Preview panel on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/a633760b-536f-4387-af06-8056089fa6cc",
+        "https://mobbin.com/screens/668f28bb-5ee6-45d3-885e-fa94cc4c3651",
+        "https://mobbin.com/screens/e17459d2-05aa-429e-bd1e-8f40b5f4baf7"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-BROWSE",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Browse grid",
+      "condition": "Level 2 (Index), consumer. A browsable grid of items. People narrow it down, then pick one.",
+      "outcome": "Use the Browse grid skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Two cards per row. Filter and Sort sit in a sticky bottom bar that opens a full height sheet. The apply button shows the result count. Desktop: Filter sidebar on the left with four groups. Four cards per row.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/65efe5fc-054c-4684-b6e8-dc18ee88abc6",
+        "https://mobbin.com/screens/25ba5144-8b06-4472-8208-0ef58d691da7",
+        "https://mobbin.com/screens/214bef41-bef1-4f6d-9c9a-08ccf9c53949"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-PRODUCT",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Product detail",
+      "condition": "Level 3 (Detail), consumer. One item, with everything needed to decide and buy.",
+      "outcome": "Use the Product detail skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Gallery swipes with dots. Details sit in accordions. Price and Add to bag live in a sticky bar at the bottom. Desktop: Thumbnails run down the left of the main image. The buy box is about 380px wide on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/96d0fec1-06f5-4f0c-9c6a-ef5f0f95bb2a",
+        "https://mobbin.com/screens/4cc2fe4d-0f0c-4689-bebd-4140f1df5c7a",
+        "https://mobbin.com/screens/712baa47-6362-4975-a62e-0018d9d2f799"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-RECORD",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Record detail",
+      "condition": "Level 3 (Detail), saas. One record in a SaaS product, such as a customer, a job, or a service. It shows status and lets people act.",
+      "outcome": "Use the Record detail skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: A back link replaces the breadcrumb. The primary action sits under the title and the rest go in an overflow menu. Tabs scroll sideways. Properties fold into one row. Desktop: Three actions in the header. Properties panel on the right at 300px. Facts go three across.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-E",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/2baeae80-10a5-43cc-b18a-4db4fee5b1ff",
+        "https://mobbin.com/screens/23f7bfb8-e8e1-4086-9a4b-45f6805f375f",
+        "https://mobbin.com/screens/bf54bbb1-692f-4dfd-91d4-536284b7990f"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-SETTINGS",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Settings",
+      "condition": "Level 4 (Utility), both. Where people change how the product works for them or their team.",
+      "outcome": "Use the Settings skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column and Save sits in a sticky bar. Desktop: Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-A",
+        "PATH-A-DEPTH-DEEP",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/74eecb76-2202-416c-a901-3efc129b39d8",
+        "https://mobbin.com/screens/207ac2b2-d24f-4dae-80cc-86cc183458cb",
+        "https://mobbin.com/screens/0398e56b-5120-4055-9348-2b046ded2e97"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-PRICING",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Pricing",
+      "condition": "Level 1 (Hub), marketing. Helps a visitor pick a plan and commit. It also answers the objections that stop a signup.",
+      "outcome": "Use the Pricing skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Plans stack one per card. Put the recommended plan first. The comparison table shows one plan at a time, chosen with a row of plan buttons above it. Desktop: Four plan cards in a row with the recommended one outlined heavier. Full comparison table with grouped rows.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-F"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/7e0fc745-3555-4bdf-8792-6aa8b35522ca",
+        "https://mobbin.com/sites/sections/54c59322-41f7-4850-8426-73d076f881ce",
+        "https://mobbin.com/sites/sections/b1e65803-d2a9-4349-b305-07046cb2a67c"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-FEATURE",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Feature page",
+      "condition": "Level 1 (Hub), marketing. Explains one part of the product in depth. It sits between the home page and the signup.",
+      "outcome": "Use the Feature page skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Everything stacks. Each feature row shows its screenshot first, then the text. Integrations show four across. Desktop: Feature rows alternate screenshot and text side by side. Integrations eight across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/ec0cf58f-84d6-4167-b5dc-c827f157dd32",
+        "https://mobbin.com/sites/sections/7295b73f-1281-49d3-99dd-3701cae70072",
+        "https://mobbin.com/sites/sections/a132e20d-15b7-413f-896b-f2234f488707"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CUSTOMERS",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Customer stories",
+      "condition": "Level 2 (Index), marketing. The proof page. It collects testimonials and case studies so visitors can find one that looks like them.",
+      "outcome": "Use the Customer stories skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row. Desktop: Hero text beside a stat list. Featured story split into image and text. Story grid three across. Quote wall two across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/39a87203-bad4-48e2-aae4-ddf832541bee",
+        "https://mobbin.com/sites/sections/5f82e6a3-6599-4255-99d2-6dd60e2ce5a0",
+        "https://mobbin.com/sites/sections/a433390e-b486-4bf1-9c7a-aa13f60dec7b"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-BLOG-INDEX",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Blog index",
+      "condition": "Level 2 (Index), marketing. Lists articles and helps readers find the ones they care about. Also grows the newsletter.",
+      "outcome": "Use the Blog index skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Featured post on top, then the New list, then one post per row. Chips scroll sideways. Newsletter signup stacks. Desktop: Featured post takes two thirds with the New list beside it. Posts three across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/412935b2-603d-435a-84d0-3c390ec95021",
+        "https://mobbin.com/sites/sections/32351256-278b-4627-b807-8e70534c9d39",
+        "https://mobbin.com/sites/sections/4917f7e4-ff06-44d3-bd84-f50189956f23"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CASE-STUDY",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Case study",
+      "condition": "Level 3 (Detail), marketing. One customer story told as a problem, a fix, and a result. Numbers go first.",
+      "outcome": "Use the Case study skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Breadcrumb hides. Stats stack one per row. Company facts fold into a two by two block above the story. Desktop: Header text beside a photo. Three stats in a row. Company facts in a left column and the story capped near 680px.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/69d12cd5-407c-4fa3-a4d8-a765cadeb9b0",
+        "https://mobbin.com/sites/sections/c92b5a09-5004-4086-a8ef-590943ba8d48",
+        "https://mobbin.com/sites/sections/368f73a0-3347-4567-b2fa-7d829e4055a0"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-ARTICLE",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Blog article",
+      "condition": "Level 3 (Detail), marketing. One long read. Built for comfortable reading, then a next step.",
+      "outcome": "Use the Blog article skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Header and hero image full width. Contents fold into one row at the top. Share icons move under the article. Desktop: Share icons on the left, article in the middle at about 680px, contents and tags on the right.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/5bceff5e-892f-4e73-b474-1b738b9718ab",
+        "https://mobbin.com/sites/sections/5d8202c2-71ef-4513-8852-2569e1c6de0c",
+        "https://mobbin.com/sites/sections/8983a579-2d68-46b4-a3fc-b53fcad1d8b3"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-CONTACT",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Contact sales",
+      "condition": "Level 4 (Utility), marketing. A short form for people ready to talk to a person. It should feel safe and quick.",
+      "outcome": "Use the Contact sales skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Heading, then the form, then the reasons to trust you. Fields are one column. Desktop: Heading, benefits, and trust badges on the left. Form card on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-G",
+        "PATH-C-SIMPLE"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/sites/sections/0e4208ae-5a28-41cf-9275-3f21977e394c",
+        "https://mobbin.com/sites/sections/914df681-c24d-4800-bd11-9c144d0175fb",
+        "https://mobbin.com/sites/sections/270f478a-6a90-49fb-8b34-f5751d7254f9"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-DATAGRID",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Data grid",
+      "condition": "Level 2 (Index), saas. A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks.",
+      "outcome": "Use the Data grid skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort merge into one button. Selecting rows shows a bar above the list with one Actions button. Desktop: All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-COMPLEX",
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/3eb19234-4d2f-4c06-b705-9b5f34ed6203",
+        "https://mobbin.com/screens/418d01d1-95a4-4d63-98a7-fbc561af4029",
+        "https://mobbin.com/screens/2fa3c847-5d9c-4b58-ae6b-bb748a8d137e"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-TEAM",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Members table",
+      "condition": "Level 4 (Utility), saas. A short table inside settings. People are here to invite someone, change a role, or remove someone.",
+      "outcome": "Use the Members table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Each person is a stacked row: avatar and name as the title, with email, role, and status under it. Tapping the row opens the edit panel. Invite stays at the top. Desktop: Sub-nav column on the left. Table with Role dropdown, Joined date, and Status. Active and Invited are grouped under small headers.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-D"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/061864d2-cf26-4ae7-9ef9-4a5abc7c9cf1",
+        "https://mobbin.com/screens/e928a056-33c8-4ea4-a0e4-2384e969aadc",
+        "https://mobbin.com/screens/1722c6f1-6c78-48d7-b459-3dfef04cdf12"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-INVOICES",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Invoices and billing",
+      "condition": "Level 4 (Utility), saas. A read-mostly table. People come here to find one invoice, download it, or check what they owe.",
+      "outcome": "Use the Invoices and billing skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Summary cards go two across. Each invoice is a stacked row: number as the title, with date, amount, and a status badge under it. Download moves into the row menu. Desktop: Four summary cards, then the full table with a PDF button per row and a Download all button.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/909420e7-06b1-4526-9d6c-bda5f3c4dd01",
+        "https://mobbin.com/screens/0f93b4de-70eb-45c6-ae53-d80937b6b2df",
+        "https://mobbin.com/screens/bef956a7-c7b0-41e5-9b0f-1d3dea4a6d07"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-SPLIT",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "List with detail pane",
+      "condition": "Level 3 (Detail), saas. For triage work like an inbox, tickets, or tasks. People move down a list and need the detail without losing their place.",
+      "outcome": "Use the List with detail pane skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: List only. Tapping a row pushes the detail as its own screen. Compose or Add becomes a floating button. Desktop: List on the left, a wider detail pane on the right, with tabs for overview, activity, and notes.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/849ec3f0-a1f0-4699-85eb-f895f7330036",
+        "https://mobbin.com/screens/bf54bbb1-692f-4dfd-91d4-536284b7990f",
+        "https://mobbin.com/screens/d67b0b3f-4f27-483a-a570-4c9a7c1962de"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-REPORT",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Report table",
+      "condition": "Level 3 (Detail), saas. A table that summarizes numbers: a date range, a chart, and rows with a totals line. Mostly read, then exported.",
+      "outcome": "Use the Report table skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: Controls collapse into a date chip and an Options button. The chart shrinks. The table keeps every column, scrolls sideways inside its card, and pins the first column. The page itself never scrolls sideways. Desktop: All columns, a bold totals row at the bottom, and Export in the header.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/screens/bf66cf68-6c11-473a-84ae-131c697dd581",
+        "https://mobbin.com/screens/010a90eb-5a90-410f-9d5a-c5c537767c11",
+        "https://mobbin.com/screens/7771c350-9784-4b28-b37c-ad2e0c21becb"
+      ]
+    },
+    {
+      "id": "PATH-PAGE-BREAKPOINTS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Page widths",
+      "condition": "Any template is drawn or checked at a width.",
+      "outcome": "Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three.",
+      "builds_on": [
+        "DS-RESPONSIVE-002"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Reuses the Vois breakpoints so templates and components agree.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-LEVELS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Page levels and drill down",
+      "condition": "A product has a dashboard or home, then sections, then single items.",
+      "outcome": "Number the pages by level: 0 Entry, 1 Hub, 2 Index, 3 Detail, 4 Utility. Each page knows its parent. Back goes up exactly one level. Desktop shows the trail (Dashboard, Section, Item). Phone shows a back control to the parent and the page title.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN",
+        "PATH-E"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: dashboard to section to item navigation.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-NAV",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "App shell navigation by width",
+      "condition": "A signed-in SaaS or consumer app has more than one section.",
+      "outcome": "Desktop: labeled sidebar. Tablet: icon rail. Phone: bottom tab bar with at most five slots, the last being More. The settings section menu is separate and follows PATH-A. A marketing top bar shows its links at lg and up and folds them into one menu control below that. The signup button stays visible at every width.",
+      "builds_on": [
+        "PATH-A",
+        "DS-RESPONSIVE-003"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Pattern common across the Mobbin screens in the templates. Five slots is Claude's proposal.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-DENSITY-MAP",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Density tier by page",
+      "condition": "Choosing a density tier for a whole page.",
+      "outcome": "Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense on desktop.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD",
+        "PATH-DENSITY-SPACIOUS"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: SaaS is denser than consumer, consumer landing pages are less dense than SaaS apps. Pricing and contact at Standard is Claude's proposal.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-DENSITY-TOUCH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Dense is for pointers only",
+      "condition": "A Dense page is shown at phone or tablet width, or on a touch device.",
+      "outcome": "Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. A SaaS screen is tighter on desktop than on a phone, never the other way round.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "DS-TABLE-019",
+        "DS-A11Y-001",
+        "DS-RESPONSIVE-004"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: SaaS is denser on desktop, mobile needs more breathing room.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-OVERLAY",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Which overlay opens",
+      "condition": "A page action opens something on top of the page.",
+      "outcome": "A yes or no, or a pick: modal on desktop, action sheet on phone. Any text field: modal on desktop, full screen on phone, never an action sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "PATH-B-ROW-OPEN",
+        "PATH-TABLE-NARROW-OPEN"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Reuses PATH-D. Set by Om: the page can open a modal or sidebar.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-BUTTON-ORDER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Button order",
+      "condition": "Two or more buttons sit side by side.",
+      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-G-CTA"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Side by side order set by Om. Primary on top when stacked is Claude's proposal.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-VIEW-EDIT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "View to edit on the same page",
+      "condition": "A record page or settings block can be changed.",
+      "outcome": "Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (action sheet on phone). On phone Save sits in a sticky bar.",
+      "builds_on": [
+        "PATH-SET-VIEW-EDIT-BLOCK",
+        "PATH-E",
+        "PATH-D"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: view state to edit state.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-TABLE-WIDTH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Tables at narrow widths",
+      "condition": "A page template contains a table at phone or tablet width.",
+      "outcome": "Do not hide columns. Follow PATH-B-NARROW: four columns or fewer stack as list rows, more scroll sideways inside the table with the first column and header pinned. The page itself never scrolls sideways.",
+      "builds_on": [
+        "PATH-B-NARROW",
+        "PATH-TABLE-NARROW-ROW",
+        "PATH-TABLE-NARROW-SELECT"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Restates PATH-B-NARROW so the templates cannot contradict it.",
+      "evidence": []
     }
   ]
 }

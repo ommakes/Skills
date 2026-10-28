@@ -74,6 +74,10 @@ standard or spacious. Pick the tier from the job first, using the rules
 above; let the dial (if one was passed in) adjust within it. Don't use the
 dial as a substitute for picking the right tier.
 
+## Density changes with width
+
+A Dense screen is dense for a pointer. On touch widths rows return to regular height, targets reach `--hit-area-min`, and gaps between blocks go up one step (`[PATH-PAGE-DENSITY-TOUCH]`). Which tier each page template sits in is `[PATH-PAGE-DENSITY-MAP]`; see `page-templates.md`.
+
 ## Anti-pattern: uniform density regardless of context
 
 The tell that density wasn't actually decided is a whole product using one
