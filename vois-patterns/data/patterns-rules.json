@@ -1828,7 +1828,7 @@
       "source_file": "vois-patterns/references/table-interactions.md",
       "pattern_name": "Filters on a simple table",
       "condition": "A simple table has one or two filter dimensions.",
-      "outcome": "Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits beside it.",
+      "outcome": "Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits on the left of the toolbar and Filter is pinned top right (PATH-PAGE-SORT-FILTER).",
       "builds_on": [
         "PATH-B",
         "JOB-OVERLAY-INTERACTION"
@@ -2522,7 +2522,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "pattern_name": "Collection table",
       "condition": "Level 2 (Index), saas. A list of records people scan, filter, and act on in bulk.",
-      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filters collapse into one button that opens a full screen panel because they include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Four filter chips in the toolbar. Preview panel on the right.",
+      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen panel because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right.",
       "builds_on": [
         "PATH-DENSITY-STANDARD",
         "PATH-B",
@@ -2545,7 +2545,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "pattern_name": "Browse grid",
       "condition": "Level 2 (Index), consumer. A browsable grid of items. People narrow it down, then pick one.",
-      "outcome": "Use the Browse grid skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Two cards per row. Filter and Sort sit in a sticky bottom bar that opens a full height sheet. The apply button shows the result count. Desktop: Filter sidebar on the left with four groups. Four cards per row.",
+      "outcome": "Use the Browse grid skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Two cards per row. Filter and Sort stay pinned top right above the grid. Filter opens a full height sheet. The apply button shows the result count. Desktop: Filter sidebar on the left with four groups. Four cards per row.",
       "builds_on": [
         "PATH-DENSITY-STANDARD"
       ],
@@ -2724,9 +2724,9 @@
       "node_type": "sub_decision",
       "parent": "PATH-PAGE",
       "source_file": "vois-patterns/references/page-templates.md",
-      "pattern_name": "Blog article",
+      "pattern_name": "Blog post",
       "condition": "Level 3 (Detail), marketing. One long read. Built for comfortable reading, then a next step.",
-      "outcome": "Use the Blog article skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Header and hero image full width. Contents fold into one row at the top. Share icons move under the article. Desktop: Share icons on the left, article in the middle at about 680px, contents and tags on the right.",
+      "outcome": "Use the Blog post skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Header and hero image full width. Contents fold into one row at the top. Share icons move under the article. Desktop: Share icons on the left, article in the middle at about 680px, contents and tags on the right.",
       "builds_on": [
         "PATH-DENSITY-SPACIOUS",
         "PATH-G"
@@ -2767,7 +2767,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "pattern_name": "Data grid",
       "condition": "Level 2 (Index), saas. A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks.",
-      "outcome": "Use the Data grid skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort merge into one button. Selecting rows shows a bar above the list with one Actions button. Desktop: All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned.",
+      "outcome": "Use the Data grid skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort stay pinned top right as two buttons. Selecting rows shows a bar above the list with one Actions button. Desktop: All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned.",
       "builds_on": [
         "PATH-DENSITY-DENSE",
         "PATH-B-COMPLEX",
@@ -2973,7 +2973,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Button order",
       "condition": "Two or more buttons sit side by side.",
-      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group.",
+      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary).",
       "builds_on": [
         "PATH-D",
         "PATH-G-CTA"
@@ -3015,6 +3015,46 @@
       "basis": "decision",
       "basis_note": "decision. Restates PATH-B-NARROW so the templates cannot contradict it.",
       "evidence": []
+    },
+    {
+      "id": "PATH-PAGE-SORT-FILTER",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/page-templates.md",
+      "rule_name": "Sort and filter position",
+      "condition": "A table, list or card grid can be sorted or filtered.",
+      "outcome": "Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen panel on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-B-SIMPLE",
+        "PATH-TABLE-SORT",
+        "PATH-TABLE-FILTER-SIMPLE",
+        "PATH-TABLE-FILTER-BUILDER",
+        "PATH-PAGE-OVERLAY"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om: sort and filter are always pinned top right of a table, list or card layout. This widens the \"buttons anchored top right\" line in table-list.md to lists, card grids and phone, and replaces the sticky bottom Filter and Sort bar the first Browse draft used. Two compact buttons on phone and Filter showing or hiding a persistent sidebar are Claude's proposals."
+    },
+    {
+      "id": "PATH-PAGE-ONBOARDING",
+      "node_type": "sub_decision",
+      "parent": "PATH-PAGE",
+      "source_file": "vois-patterns/references/page-templates.md",
+      "pattern_name": "Onboarding steps",
+      "condition": "Level 4 (Utility), both. A short, focused setup of 2 to 5 steps with a 1-2-3 stepper, shown before or just after the first visit. One question group per step, then into the product.",
+      "outcome": "Use the Onboarding steps skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Stepper keeps its three markers but drops the labels and adds one line, Step 2 of 3: Goals. Content is one column. Back and Next sit in a sticky bottom bar with Next filling the width, and Skip is a text link above it. Desktop: Same as tablet with more air around the column. Choice cards go two across. The footer stays under the content, not pinned to the window.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-C-SIMPLE",
+        "PATH-COND-PRIMARY-BUTTON"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Drawn from Mobbin screens listed in data/page-templates.json and checked in the wireframe set. The density tier is Claude's proposal.",
+      "evidence": [
+        "https://mobbin.com/flows/1a0a53a6-d570-41f9-be28-c537ae0d5831",
+        "https://mobbin.com/screens/d40d99b7-bf8a-4e84-9bb3-a659b7b2a7b5",
+        "https://mobbin.com/screens/a33b4f74-8bbe-4fb8-8367-060abfcf25b5"
+      ]
     }
   ]
 }

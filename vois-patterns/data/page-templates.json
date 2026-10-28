@@ -204,11 +204,11 @@
         "PATH-B-ROW-OPEN"
       ],
       "purpose": "A list of records people scan, filter, and act on in bulk.",
-      "navigation": "Same sidebar shell. Search and filters sit in a toolbar above the table. A row opens a preview panel on desktop and a full detail page on smaller screens.",
+      "navigation": "Same sidebar shell. Search sits left in the toolbar above the table. Filter and Sort are pinned top right. A row opens a preview panel on desktop and a full detail page on smaller screens.",
       "responsive": {
-        "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filters collapse into one button that opens a full screen panel because they include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
-        "tablet": "Table has four columns on every width, so nothing is hidden. Filters collapse to one chip plus a Filters button. No preview panel, so rows open the detail page.",
-        "desktop": "Full table with checkboxes. Four filter chips in the toolbar. Preview panel on the right."
+        "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen panel because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
+        "tablet": "Table has four columns on every width, so nothing is hidden. Filter and Sort stay pinned top right, with applied filters as chips under the toolbar. No preview panel, so rows open the detail page.",
+        "desktop": "Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right."
       },
       "states": [
         {
@@ -268,23 +268,23 @@
       "density": "PATH-DENSITY-STANDARD",
       "routes_to": [],
       "purpose": "A browsable grid of items. People narrow it down, then pick one.",
-      "navigation": "Top bar with category links on desktop. Links fold into a menu and search drops to its own row on phones. Filters live in a sidebar on desktop and in a drawer below that.",
+      "navigation": "Top bar with category links on desktop. Links fold into a menu and search drops to its own row on phones. Filters live in a sidebar on desktop and in a drawer below that. Filter and Sort are pinned top right of the grid at every width, and on desktop Filter shows or hides the sidebar.",
       "responsive": {
-        "phone": "Two cards per row. Filter and Sort sit in a sticky bottom bar that opens a full height sheet. The apply button shows the result count.",
-        "tablet": "Three cards per row. Filters become chips above the grid and open a right drawer.",
+        "phone": "Two cards per row. Filter and Sort stay pinned top right above the grid. Filter opens a full height sheet. The apply button shows the result count.",
+        "tablet": "Three cards per row. Applied filters show as chips above the grid. Filter opens a right drawer.",
         "desktop": "Filter sidebar on the left with four groups. Four cards per row."
       },
       "states": [
         {
           "name": "Default",
-          "what": "Filter and Sort chips sit above the grid. On a phone they are in a sticky bar at the bottom."
+          "what": "Filter and Sort sit pinned top right above the grid at every width, phone included."
         },
         {
           "name": "Filter drawer",
           "what": "The drawer holds every filter. The apply button shows how many results people will get."
         }
       ],
-      "interaction": "Filter opens a right drawer on tablet and a full height sheet on a phone. On desktop the filters are always visible in the sidebar, so there is no drawer.",
+      "interaction": "Filter opens a right drawer on tablet and a full height sheet on a phone. On desktop the sidebar is open by default and Filter shows or hides it, so there is no drawer.",
       "density_note": "Standard: shoppers compare several items at once.",
       "mobbin_references": [
         {
@@ -564,7 +564,7 @@
         "PATH-G"
       ],
       "purpose": "The proof page. It collects testimonials and case studies so visitors can find one that looks like them.",
-      "navigation": "Same marketing header. Filter chips narrow stories by industry. Each card links to a full case study.",
+      "navigation": "Same marketing header. Industry chips sit on the left and Filter and Sort are pinned top right of the story grid. Each card links to a full case study.",
       "responsive": {
         "phone": "Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row.",
         "tablet": "Story cards and quotes go two across. The featured story keeps the image above the text.",
@@ -618,7 +618,7 @@
         "PATH-G"
       ],
       "purpose": "Lists articles and helps readers find the ones they care about. Also grows the newsletter.",
-      "navigation": "Same marketing header. Category chips filter the list. Search sits beside the title on tablet and desktop and moves into the menu on phones.",
+      "navigation": "Same marketing header. Category chips sit on the left and Filter and Sort are pinned top right of the post grid. Search sits beside the title on tablet and desktop and moves into the menu on phones.",
       "responsive": {
         "phone": "Featured post on top, then the New list, then one post per row. Chips scroll sideways. Newsletter signup stacks.",
         "tablet": "Posts go two across. The New list sits under the featured post.",
@@ -702,7 +702,7 @@
     {
       "id": "PATH-PAGE-ARTICLE",
       "wireframe_id": "tpl-article",
-      "name": "Blog article",
+      "name": "Blog post",
       "level": 3,
       "level_name": "Detail",
       "product_type": "marketing",
@@ -799,8 +799,8 @@
       "purpose": "A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks.",
       "navigation": "Same app shell. View tabs sit above the toolbar. Selecting rows swaps in a bulk action bar. Rows open a detail page, not a panel, because the grid already uses the width.",
       "responsive": {
-        "phone": "The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort merge into one button. Selecting rows shows a bar above the list with one Actions button.",
-        "tablet": "All columns stay and the grid scrolls sideways with the name pinned. Toolbar keeps search, one view tab row, and Filter / Sort.",
+        "phone": "The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort stay pinned top right as two buttons. Selecting rows shows a bar above the list with one Actions button.",
+        "tablet": "All columns stay and the grid scrolls sideways with the name pinned. Toolbar keeps search on the left with Filter and Sort pinned top right, under one view tab row.",
         "desktop": "All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned."
       },
       "states": [
@@ -1015,7 +1015,7 @@
         "PATH-TABLE-DENSITY"
       ],
       "purpose": "A table that summarizes numbers: a date range, a chart, and rows with a totals line. Mostly read, then exported.",
-      "navigation": "Reports usually have their own sub-list in the sidebar, like Sales summary, Item sales, and Team sales. Controls for date range, grouping, and filters sit in a row above the chart.",
+      "navigation": "Reports usually have their own sub-list in the sidebar, like Sales summary, Item sales, and Team sales. Date range and grouping sit on the left in a row above the chart. Filter and Sort are pinned top right of it.",
       "responsive": {
         "phone": "Controls collapse into a date chip and an Options button. The chart shrinks. The table keeps every column, scrolls sideways inside its card, and pins the first column. The page itself never scrolls sideways.",
         "tablet": "Chart on top, table below. All columns stay and the table scrolls sideways with the first column pinned. Numbers right-aligned so they line up.",
@@ -1044,6 +1044,83 @@
           "title": "Square category sales",
           "url": "https://mobbin.com/screens/5cb8990c-d8b1-46dc-b30f-5b69c1602026",
           "note": "Report sidebar, a timeframe popover, and a table with a totals row."
+        }
+      ]
+    },
+    {
+      "id": "PATH-PAGE-ONBOARDING",
+      "wireframe_id": "tpl-onboarding",
+      "name": "Onboarding steps",
+      "level": 4,
+      "level_name": "Utility",
+      "product_type": "both",
+      "density": "PATH-DENSITY-SPACIOUS",
+      "routes_to": [
+        "PATH-C-SIMPLE",
+        "PATH-COND-PRIMARY-BUTTON"
+      ],
+      "purpose": "A short, focused setup of 2 to 5 steps with a 1-2-3 stepper, shown before or just after the first visit. One question group per step, then into the product.",
+      "navigation": "No product navigation. A minimal header with the logo and Save and exit, so people stay in the flow. Back goes one step, Next goes forward, and the last step ends in the product. For SaaS, keep this to what the account needs to work, then drop people on the dashboard with a setup checklist.",
+      "responsive": {
+        "phone": "Stepper keeps its three markers but drops the labels and adds one line, Step 2 of 3: Goals. Content is one column. Back and Next sit in a sticky bottom bar with Next filling the width, and Skip is a text link above it.",
+        "tablet": "Stepper shows markers with labels. Content is centered in a column capped near 560px. Back sits at the far left of the footer and Skip then Next at the far right.",
+        "desktop": "Same as tablet with more air around the column. Choice cards go two across. The footer stays under the content, not pinned to the window."
+      },
+      "states": [
+        {
+          "name": "Step 1",
+          "what": "Required basics only. No Skip, because the account needs these. Back is hidden on the first step."
+        },
+        {
+          "name": "Step 2",
+          "what": "Pick one card. Skip is allowed because the answer only tunes suggestions."
+        },
+        {
+          "name": "Step 3",
+          "what": "Invite and connect are both optional. The primary button says Finish, not Next."
+        },
+        {
+          "name": "Done",
+          "what": "The stepper shows all three as complete. One primary button goes to the dashboard. This screen is not a fourth step."
+        }
+      ],
+      "interaction": "Next validates the step, then moves on. Back keeps what was typed. Skip moves on without saving that step. Finish lands on a short done screen, then the dashboard. Save and exit leaves and lets people resume at the same step. Primary is always the rightmost button, with Skip to its left, and Back sits alone at the far left.",
+      "density_note": "First-run screens get the loosest spacing: one idea per step, a narrow centered column, big gaps around the stepper.",
+      "mobbin_references": [
+        {
+          "title": "QuickBooks onboarding flow",
+          "url": "https://mobbin.com/flows/1a0a53a6-d570-41f9-be28-c537ae0d5831",
+          "note": "Progress bar across the top, a short form, then Back and Next under it."
+        },
+        {
+          "title": "Calendly role step",
+          "url": "https://mobbin.com/screens/d40d99b7-bf8a-4e84-9bb3-a659b7b2a7b5",
+          "note": "Step 2 of 5 label with a segmented bar, choice cards, Back left and Next right."
+        },
+        {
+          "title": "Navattic use case",
+          "url": "https://mobbin.com/screens/a33b4f74-8bbe-4fb8-8367-060abfcf25b5",
+          "note": "Step 2 of 3 with a segmented bar, checkbox cards, Skip and Next in the footer."
+        },
+        {
+          "title": "Typeform setup",
+          "url": "https://mobbin.com/screens/9719af67-778b-4691-90e3-d470de0ae514",
+          "note": "Numbered horizontal stepper across the top, one question at a time."
+        },
+        {
+          "title": "HubSpot tailor your experience",
+          "url": "https://mobbin.com/screens/de0a8ad6-d25f-47fb-a1b1-4ab7292751de",
+          "note": "Vertical stepper in a left rail with a time estimate, Skip and Next on the right."
+        },
+        {
+          "title": "Remote add contractor",
+          "url": "https://mobbin.com/screens/bc31c4cc-8e0e-4c31-8b94-ea6e06b39361",
+          "note": "Left rail stepper with check marks and a progress percent."
+        },
+        {
+          "title": "Pipedrive about you",
+          "url": "https://mobbin.com/screens/b9fb69b6-8655-4792-af00-cbfc5dce957e",
+          "note": "Four numbered steps with labels in a modal."
         }
       ]
     }

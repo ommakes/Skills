@@ -48,7 +48,7 @@ Extends `table-list.md`. That file says which kind of table to build and how a r
 
 ### `[PATH-TABLE-FILTER-SIMPLE]` Filters on a simple table
 **When:** A simple table has one or two filter dimensions.
-**Do:** Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits beside it.
+**Do:** Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits on the left of the toolbar and Filter is pinned top right (PATH-PAGE-SORT-FILTER).
 **Builds on:** PATH-B, JOB-OVERLAY-INTERACTION
 **Basis:** observed. Seen: [Navattic](https://mobbin.com/screens/406b9908-584c-4f05-8432-abd77533bfa4), [DoorDash Merchant](https://mobbin.com/screens/5b7f8ac3-1059-401f-a3ee-88e553391166).
 
