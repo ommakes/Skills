@@ -45,7 +45,7 @@ Each page knows its parent. Back goes up exactly one level. Desktop shows the tr
 | `[PATH-PAGE-COLLECTION]` Collection table | 2 | saas | Standard | `PATH-B`, `PATH-B-SIMPLE`, `PATH-B-NARROW`, `PATH-B-ROW-OPEN` |
 | `[PATH-PAGE-CUSTOMERS]` Customer stories | 2 | marketing | Spacious | `PATH-G` |
 | `[PATH-PAGE-DATAGRID]` Data grid | 2 | saas | Dense | `PATH-B-COMPLEX`, `PATH-B-NARROW`, `PATH-TABLE-DENSITY` |
-| `[PATH-PAGE-ARTICLE]` Blog article | 3 | marketing | Spacious | `PATH-G` |
+| `[PATH-PAGE-ARTICLE]` Blog post | 3 | marketing | Spacious | `PATH-G` |
 | `[PATH-PAGE-CASE-STUDY]` Case study | 3 | marketing | Spacious | `PATH-G` |
 | `[PATH-PAGE-PRODUCT]` Product detail | 3 | consumer | Standard | none |
 | `[PATH-PAGE-RECORD]` Record detail | 3 | saas | Standard | `PATH-E`, `PATH-SET-VIEW-EDIT-BLOCK` |
@@ -53,6 +53,7 @@ Each page knows its parent. Back goes up exactly one level. Desktop shows the tr
 | `[PATH-PAGE-SPLIT]` List with detail pane | 3 | saas | Dense | `PATH-B-ROW-OPEN` |
 | `[PATH-PAGE-CONTACT]` Contact sales | 4 | marketing | Standard | `PATH-G`, `PATH-C-SIMPLE` |
 | `[PATH-PAGE-INVOICES]` Invoices and billing | 4 | saas | Standard | `PATH-B-SIMPLE`, `PATH-B-NARROW` |
+| `[PATH-PAGE-ONBOARDING]` Onboarding steps | 4 | both | Spacious | `PATH-C-SIMPLE`, `PATH-COND-PRIMARY-BUTTON` |
 | `[PATH-PAGE-SETTINGS]` Settings | 4 | both | Standard | `PATH-A`, `PATH-A-DEPTH-DEEP`, `PATH-SET-VIEW-EDIT-BLOCK` |
 | `[PATH-PAGE-TEAM]` Members table | 4 | saas | Standard | `PATH-B-SIMPLE`, `PATH-B-NARROW`, `PATH-D` |
 
@@ -84,7 +85,7 @@ A yes or no, or a pick: modal on desktop, action sheet on phone. Any text field:
 
 ### Button order `[PATH-PAGE-BUTTON-ORDER]`
 
-Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group.
+Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary). Buttons in a footer or sticky bar are right-aligned with the 20px gap step between them (16 to 24px is the allowed range), never spread to the two edges or stretched to fill the bar.
 
 ### View to edit on the same page `[PATH-PAGE-VIEW-EDIT]`
 
@@ -93,6 +94,10 @@ Open in view state. Edit is an explicit action that swaps the same fields to inp
 ### Tables at narrow widths `[PATH-PAGE-TABLE-WIDTH]`
 
 Do not hide columns. Follow PATH-B-NARROW: four columns or fewer stack as list rows, more scroll sideways inside the table with the first column and header pinned. The page itself never scrolls sideways.
+
+### Sort and filter position `[PATH-PAGE-SORT-FILTER]`
+
+Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen panel on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.
 
 ## Density at each width
 

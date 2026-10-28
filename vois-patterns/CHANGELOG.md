@@ -6,6 +6,32 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.19.0] - 2026-10-28
+
+### Added
+
+- **Onboarding steps** template (`PATH-PAGE-ONBOARDING`, level 4, both product types, Spacious): a 2 to 5 step setup with a numbered 1-2-3 stepper, one question group per step, Back at the far left and Skip then Next at the right, a sticky Back and Next bar on phone, and a done screen that is not a counted step. Seven Mobbin references (QuickBooks, Calendly, Navattic, Typeform, HubSpot, Remote, Pipedrive).
+- **`PATH-PAGE-SORT-FILTER`**: Filter and Sort are pinned to the top right of every table, list and card grid, on the search row, at phone, tablet and desktop. Applied to Collection, Data grid, Browse, Members, Invoices, Report, Customer stories, Blog index and the split-view list.
+- Blog post template gains reading time, a newsletter signup and previous and next links.
+
+### Changed
+
+- `PATH-PAGE-ARTICLE` is now named Blog post. The ID is unchanged.
+- Browse no longer uses a sticky bottom Filter and Sort bar on phone. The buttons stay top right.
+- `PATH-PAGE-BUTTON-ORDER` adds the step-flow case: Back sits alone at the far left.
+- `PATH-PAGE-BUTTON-ORDER` also says buttons in a footer or sticky bar are right-aligned with the 20px gap step (16 to 24px allowed) between them, not spread to the edges. The Settings and Record save bars in the wireframes were fixed to match.
+- `PATH-TABLE-FILTER-SIMPLE` and `table-list.md` now point at `PATH-PAGE-SORT-FILTER` instead of saying only "beside" the search field or "anchored top right of table".
+- **Version bump:** `1.18.0` → `1.19.0`
+
+### Judgment calls to review
+
+- Two compact top-right buttons on phone, instead of a bottom bar, is a call made to keep one position everywhere. A bottom bar is easier to reach with a thumb.
+- On a layout with a persistent filter sidebar (Browse on desktop), Filter still sits top right and shows or hides the sidebar.
+- The onboarding stepper follows `vois-components/references/stepper.md` (2 to 5 steps, current label only on phone). That spec says no Mobbin evidence was checked. The references above are the first.
+- For SaaS, `onboarding-flow` says not to block the product behind a wizard unless the account cannot work without it. Use this template only for those required steps, then drop people on the dashboard with a checklist.
+
+---
+
 ## [1.18.0] - 2026-10-28
 
 ### Added

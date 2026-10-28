@@ -85,7 +85,7 @@ When edits are saved is covered by `[PATH-TABLE-COMMIT-INSTANT]` and `[PATH-TABL
 
 **Filtering & Sorting:**
 
-- Buttons anchored top right of table
+- Filter and Sort are pinned top right of the table, on the search row (PATH-PAGE-SORT-FILTER)
 - Active filters shown as dismissible chips
 - Sort indicator shows which column + direction
 - → **For filter/sort labels and chip copy, use righter skill**
