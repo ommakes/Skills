@@ -6,6 +6,27 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.18.0] - 2026-10-28
+
+### Added
+
+- **Page templates** in `references/page-templates.md` and `data/page-templates.json`: 20 whole-page skeletons in five levels (Entry, Hub, Index, Detail, Utility) for consumer and SaaS products, including marketing levels (pricing, feature, customers, blog, case study, article, contact) and app pages with tables (collection, data grid, split view, report, team, invoices). Each entry has purpose, navigation, phone, tablet and desktop behavior, overlays and states, density tier, routed paths and Mobbin references.
+- **`PATH-PAGE`** with one `PATH-PAGE-<NAME>` node per template, and nine cross-cutting rules: `PATH-PAGE-BREAKPOINTS`, `PATH-PAGE-LEVELS`, `PATH-PAGE-NAV`, `PATH-PAGE-DENSITY-MAP`, `PATH-PAGE-DENSITY-TOUCH`, `PATH-PAGE-OVERLAY`, `PATH-PAGE-BUTTON-ORDER`, `PATH-PAGE-VIEW-EDIT`, `PATH-PAGE-TABLE-WIDTH`.
+- `content-density.md`: a short section saying Dense is for pointers and what changes on touch widths.
+
+### Judgment calls to review
+
+- Which template sits in which density tier is a proposal. Pricing and contact are Standard, not Spacious.
+- Stacked buttons on phone put primary on top. Side by side order is set; stacked order is not.
+- Five slots on the phone tab bar.
+- Templates are skeletons. Where a template and a routed rule (`PATH-F`, `PATH-G`, `PATH-B-NARROW`, `PATH-D`) differ, the routed rule wins.
+
+### Changed
+
+- **Version bump:** `1.17.0` → `1.18.0`
+
+---
+
 ## [1.17.0] - 2026-10-09
 
 ### Added
