@@ -2604,7 +2604,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "pattern_name": "Settings",
       "condition": "Level 4 (Utility), both. Where people change how the product works for them or their team.",
-      "outcome": "Use the Settings skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column and Save sits in a sticky bar. Desktop: Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form.",
+      "outcome": "Use the Settings skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column. Cancel and Save sit in a sticky bar, right-aligned with 20px between them and Save rightmost. Desktop: Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form.",
       "builds_on": [
         "PATH-DENSITY-STANDARD",
         "PATH-A",
@@ -2973,13 +2973,13 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Button order",
       "condition": "Two or more buttons sit side by side.",
-      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary).",
+      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary). Buttons in a footer or sticky bar are right-aligned with the 20px gap step between them (16 to 24px is the allowed range), never spread to the two edges or stretched to fill the bar.",
       "builds_on": [
         "PATH-D",
         "PATH-G-CTA"
       ],
       "basis": "decision",
-      "basis_note": "decision. Side by side order set by Om. Primary on top when stacked is Claude's proposal.",
+      "basis_note": "decision. Side by side order set by Om. Primary on top when stacked is Claude's proposal. Right-aligned with a 16 to 24px gap set by Om.",
       "evidence": []
     },
     {

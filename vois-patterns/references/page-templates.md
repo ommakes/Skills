@@ -85,7 +85,7 @@ A yes or no, or a pick: modal on desktop, action sheet on phone. Any text field:
 
 ### Button order `[PATH-PAGE-BUTTON-ORDER]`
 
-Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary).
+Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary). Buttons in a footer or sticky bar are right-aligned with the 20px gap step between them (16 to 24px is the allowed range), never spread to the two edges or stretched to fill the bar.
 
 ### View to edit on the same page `[PATH-PAGE-VIEW-EDIT]`
 

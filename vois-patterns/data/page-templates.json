@@ -429,7 +429,7 @@
       "purpose": "Where people change how the product works for them or their team.",
       "navigation": "Settings has its own sub navigation. It is a vertical list on desktop, tabs on tablet, and a list screen that drills into each section on phones.",
       "responsive": {
-        "phone": "The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column and Save sits in a sticky bar.",
+        "phone": "The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column. Cancel and Save sit in a sticky bar, right-aligned with 20px between them and Save rightmost.",
         "tablet": "Sub navigation becomes tabs across the top. Fields go two across.",
         "desktop": "Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form."
       },
