@@ -85,12 +85,12 @@ th { border-block-end: 1px solid var(--color-border); }
 
 ```css
 .table-region { container-type: inline-size; }
-@container (width < 40em) {
+@container (width < 37.5em) {
   /* stack rows (4 or fewer columns), or switch to the scroll-owner layout */
 }
 ```
 
-`40em` is the `sm` container width from `PATH-B-NARROW`. Key table layout off the container, not the viewport (`[DS-RESPONSIVE-003]`). Put `container-type` on an element outside the scroll wrapper, so the wrapper's own overflow does not affect the query.
+`37.5em` is the `sm` container width from `PATH-B-NARROW`. Key table layout off the container, not the viewport (`[DS-RESPONSIVE-003]`). Put `container-type` on an element outside the scroll wrapper, so the wrapper's own overflow does not affect the query.
 
 ## 9. Column sizing and alignment `[DS-TABLE-009]`
 

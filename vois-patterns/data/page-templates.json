@@ -29,11 +29,11 @@
     }
   ],
   "breakpoints": {
-    "phone": "below roomy (768px)",
-    "tablet": "roomy to below wide (768px to 1023px)",
-    "desktop": "wide and up (1024px)",
+    "phone": "below md (768px)",
+    "tablet": "md to below lg (768px to 1023px)",
+    "desktop": "lg and up (1024px)",
     "rule": "DS-RESPONSIVE-002",
-    "note": "Phone, tablet and desktop are the three prose tiers. The grid splits phone in two at the snug class (600px). See vois-tokens/references/grid.md."
+    "note": "Phone, tablet and desktop are the three prose tiers. The grid splits phone in two at the sm class (600px). See vois-tokens/references/grid.md."
   },
   "density": {
     "dense": {
@@ -79,12 +79,12 @@
           {
             "name": "hero-text",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "hero-media",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -93,9 +93,9 @@
             "item_min": "--item-min-story",
             "caps": {
               "narrow": 1,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 3
+              "sm": 2,
+              "md": 2,
+              "lg": 3
             }
           },
           {
@@ -103,9 +103,9 @@
             "item_min": "--item-min-logo",
             "caps": {
               "narrow": 3,
-              "snug": 4,
-              "roomy": 6,
-              "wide": 8
+              "sm": 4,
+              "md": 6,
+              "lg": 8
             }
           },
           {
@@ -113,9 +113,9 @@
             "item_min": "--item-min-plan",
             "caps": {
               "narrow": 1,
-              "snug": 1,
-              "roomy": 3,
-              "wide": 3
+              "sm": 1,
+              "md": 3,
+              "lg": 3
             }
           }
         ],
@@ -170,12 +170,12 @@
           {
             "name": "feed",
             "track": "--measure-feed",
-            "from": "roomy"
+            "from": "md"
           },
           {
             "name": "right-rail",
             "track": "--region-right-rail",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -230,12 +230,12 @@
           {
             "name": "chart",
             "track": "2fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "activity",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -244,9 +244,9 @@
             "item_min": "--item-min-card",
             "caps": {
               "narrow": 2,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 4
+              "sm": 2,
+              "md": 2,
+              "lg": 4
             }
           }
         ],
@@ -255,7 +255,7 @@
             "name": "notifications",
             "mode": "overlay",
             "size": "--panel-overlay-sm",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen"
           }
         ]
@@ -325,21 +325,21 @@
             "name": "preview",
             "mode": "push",
             "size": "--panel-push-default",
-            "from": "wide",
+            "from": "lg",
             "below": "detail-page"
           },
           {
             "name": "quick-edit",
             "mode": "overlay",
             "size": "--panel-overlay-md",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen"
           },
           {
             "name": "filter",
             "mode": "overlay",
             "size": "--panel-overlay-sm",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen"
           }
         ]
@@ -415,7 +415,7 @@
           {
             "name": "filters",
             "track": "--region-filters",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -424,9 +424,9 @@
             "item_min": "--item-min-card",
             "caps": {
               "narrow": 2,
-              "snug": 3,
-              "roomy": 3,
-              "wide": 4
+              "sm": 3,
+              "md": 3,
+              "lg": 4
             }
           }
         ],
@@ -435,9 +435,9 @@
             "name": "filter-drawer",
             "mode": "overlay",
             "size": "--panel-overlay-sm",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen",
-            "until": "wide"
+            "until": "lg"
           }
         ],
         "note": "The product cards sit beside the filters region on wide windows, so measure the card area and pass its width as containerW (DS-GRID-006, DS-GRID-007)."
@@ -500,12 +500,12 @@
           {
             "name": "gallery",
             "track": "fluid",
-            "from": "roomy"
+            "from": "md"
           },
           {
             "name": "buy-box",
             "track": "--region-buy-box",
-            "from": "roomy"
+            "from": "md"
           }
         ],
         "collections": [],
@@ -563,7 +563,7 @@
           {
             "name": "content",
             "track": "fluid",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -572,7 +572,7 @@
             "name": "properties",
             "mode": "push",
             "size": "--panel-push-default",
-            "from": "wide",
+            "from": "lg",
             "below": "inline-row"
           }
         ],
@@ -648,12 +648,12 @@
           {
             "name": "subnav",
             "track": "--region-subnav",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "content",
             "track": "--measure-settings",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -718,9 +718,9 @@
             "item_min": "--item-min-plan",
             "caps": {
               "narrow": 1,
-              "snug": 1,
-              "roomy": 2,
-              "wide": 4
+              "sm": 1,
+              "md": 2,
+              "lg": 4
             }
           }
         ],
@@ -777,12 +777,12 @@
           {
             "name": "feature-text",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "feature-media",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -791,9 +791,9 @@
             "item_min": "--item-min-icon-tile",
             "caps": {
               "narrow": 4,
-              "snug": 6,
-              "roomy": 6,
-              "wide": 8
+              "sm": 6,
+              "md": 6,
+              "lg": 8
             }
           }
         ],
@@ -851,12 +851,12 @@
           {
             "name": "hero-text",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "hero-stats",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -865,9 +865,9 @@
             "item_min": "--item-min-story",
             "caps": {
               "narrow": 1,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 3
+              "sm": 2,
+              "md": 2,
+              "lg": 3
             }
           },
           {
@@ -875,9 +875,9 @@
             "item_min": "--item-min-story",
             "caps": {
               "narrow": 1,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 2
+              "sm": 2,
+              "md": 2,
+              "lg": 2
             }
           }
         ],
@@ -944,12 +944,12 @@
           {
             "name": "featured",
             "track": "2fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "new-list",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [
@@ -958,9 +958,9 @@
             "item_min": "--item-min-story",
             "caps": {
               "narrow": 1,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 3
+              "sm": 2,
+              "md": 2,
+              "lg": 3
             }
           }
         ],
@@ -1022,12 +1022,12 @@
           {
             "name": "company-facts",
             "track": "--region-company-facts",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "story",
             "track": "--measure-article",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -1085,17 +1085,17 @@
           {
             "name": "share",
             "track": "auto",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "article",
             "track": "--measure-article",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "contents",
             "track": "--region-contents",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -1153,12 +1153,12 @@
           {
             "name": "intro",
             "track": "1fr",
-            "from": "roomy"
+            "from": "md"
           },
           {
             "name": "form",
             "track": "1fr",
-            "from": "roomy"
+            "from": "md"
           }
         ],
         "collections": [],
@@ -1215,7 +1215,7 @@
             "name": "filter",
             "mode": "overlay",
             "size": "--panel-overlay-sm",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen"
           }
         ]
@@ -1281,12 +1281,12 @@
           {
             "name": "subnav",
             "track": "--region-subnav",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "members",
             "track": "fluid",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -1295,7 +1295,7 @@
             "name": "edit-member",
             "mode": "overlay",
             "size": "--panel-overlay-md",
-            "from": "roomy",
+            "from": "md",
             "below": "fullscreen"
           }
         ]
@@ -1372,9 +1372,9 @@
             "item_min": "--item-min-card",
             "caps": {
               "narrow": 2,
-              "snug": 2,
-              "roomy": 2,
-              "wide": 4
+              "sm": 2,
+              "md": 2,
+              "lg": 4
             }
           }
         ],
@@ -1440,12 +1440,12 @@
           {
             "name": "list",
             "track": "1fr",
-            "from": "wide"
+            "from": "lg"
           },
           {
             "name": "detail",
             "track": "2fr",
-            "from": "wide"
+            "from": "lg"
           }
         ],
         "collections": [],
@@ -1454,7 +1454,7 @@
             "name": "detail",
             "mode": "two-pane",
             "size": "--pane-min",
-            "from": "roomy",
+            "from": "md",
             "below": "push-screen"
           }
         ],
@@ -1568,7 +1568,7 @@
           {
             "name": "step",
             "track": "--measure-onboarding",
-            "from": "roomy"
+            "from": "md"
           }
         ],
         "collections": [],
@@ -1636,14 +1636,14 @@
   "layout_fields": {
     "shell": "app = bottom bar, then rail, then sidebar; site = no side nav. See DS-GRID-002.",
     "frame": "contained = content max applies (DS-GRID-003). fill = dense page, fills the region.",
-    "regions": "Side-by-side regions, left to right. track is fluid, a fraction like 2fr, auto, or a token name. from is the first WINDOW class where they sit side by side, the same tier the responsive text calls tablet (roomy) or desktop (wide). Below it they stack or fold, as the responsive text says.",
-    "collections": "Equal-track grids. item_min is a token name. caps is the most columns per window class. Column count comes from DS-GRID-007. Caps for narrow and snug refine the phone text: the phone text describes narrow, and snug (600px to 767px) may hold more columns. Only grids with an item token are listed. Caps for the marketing logos at snug, roomy and wide (4, 6, 8) are proposals: the template text only says three per row on a phone.",
+    "regions": "Side-by-side regions, left to right. track is fluid, a fraction like 2fr, auto, or a token name. from is the first WINDOW class where they sit side by side, the same tier the responsive text calls tablet (md) or desktop (lg). Below it they stack or fold, as the responsive text says.",
+    "collections": "Equal-track grids. item_min is a token name. caps is the most columns per window class. Column count comes from DS-GRID-007. Caps for narrow and sm refine the phone text: the phone text describes narrow, and sm (600px to 767px) may hold more columns. Only grids with an item token are listed. Caps for the marketing logos at sm, md and lg (4, 6, 8) are proposals: the template text only says three per row on a phone.",
     "panels": "mode is push, overlay or two-pane (DS-PANEL-001). size is a token name. from is the first window class where the panel is not full screen. until, if present, is the window class where it stops (the drawer on Browse). below says what happens under from: fullscreen, detail-page, inline-row or push-screen. A two-pane panel starts by DS-PANEL-007 and not by its from class. Overlay size tiers (sm, md) are proposals: no template text states a panel width, so treat them as the starting choice, not a finding from the Mobbin screens.",
     "classes": [
       "narrow",
-      "snug",
-      "roomy",
-      "wide"
+      "sm",
+      "md",
+      "lg"
     ],
     "note": "Each region, collection and panel has a `name`. It is a local label, not an identity, so it can repeat across templates. A `note` on a layout says what the lists cannot."
   }

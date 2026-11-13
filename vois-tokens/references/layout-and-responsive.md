@@ -39,7 +39,7 @@ Don't apply this to sections visible on initial load.
 ## Responsive Behavior `[DS-RESPONSIVE]`
 
 - **Mobile-first.** The unprefixed/base style is the mobile baseline; breakpoint-scoped styles layer on as progressive enhancements — Tailwind's `md:`/`lg:` prefixes, or a `stylex.defineConsts()` breakpoint used as a conditional key in `stylex.create()` (see `[DS-STYLEX-006]`). `[DS-RESPONSIVE-001]`
-- Test at the start of each grid class, `narrow` (360px), `snug` (600px), `roomy` (768px) and `wide` (1024px), before considering a component done. These are the values of `--width-viewport-min` and the breakpoint tokens in `references/grid.md`. `[DS-RESPONSIVE-002]`
+- Test at the start of each grid class, `narrow` (360px), `sm` (600px), `md` (768px) and `lg` (1024px), before considering a component done. These are the values of `--width-viewport-min` and the breakpoint tokens in `references/grid.md`. `[DS-RESPONSIVE-002]`
 - Use **container queries** for component-level responsiveness. Use **breakpoints** for layout-level responsiveness. `[DS-RESPONSIVE-003]`
 - Touch targets, font sizes, and contrast ratios must meet minimums at every breakpoint. `[DS-RESPONSIVE-004]`
 - Don't build desktop-first and assume it'll work on mobile. It won't. `[DS-RESPONSIVE-005]`

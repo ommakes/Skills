@@ -17,24 +17,13 @@ A UX writing skill. Review existing UI copy against a defined set of principles,
 
 Every numbered principle below and every rule in Error Message Guidelines carries a stable `id` in backticks. Cite the id, not the number, when referencing a rule from outside this file (numbers shift when principles are added or reordered).
 
----
-
 ## How to Use This Skill
 
 **If a `vois_get_microcopy` tool is available in your environment, call it first before writing or reviewing any copy.**
 
 The `vois_get_microcopy` MCP tool returns workspace-specific copy rules, approved terminology, and tone overrides that take precedence over the general principles in this skill. If the workspace has an entry for the copy type you're working on, use it. Don't improvise.
 
-```
-Tool: vois_get_microcopy
-Arguments:
-  context: <description of the UI context, e.g. "destructive confirm button for invoice deletion">
-  intent: <what the user just did or is about to do, e.g. "user clicked Delete on an invoice list row">
-  constraints: <optional object>
-    maxLength: <optional positive integer, maximum character count>
-    placement: <optional one of: button | title | description | helper | toast | error | label>
-    tone: <optional one of: neutral | warning | celebratory>
-```
+Arguments: `context` (the UI situation, such as "destructive confirm button for invoice deletion"), `intent` (what the user just did or is about to do), and optional `constraints`: `maxLength` (a positive integer), `placement` (button, title, description, helper, toast, error or label) and `tone` (neutral, warning or celebratory).
 
 **Resolution order (returned as `provenance` on the response):**
 1. `WORKSPACE_OVERRIDE`: use this verbatim, no changes
@@ -42,8 +31,6 @@ Arguments:
 3. `LLM_FALLBACK` / `NO_MATCH` / tool not available: apply the principles in this skill directly
 
 When falling back to the principles, note it at the top of your output: `Source: LLM fallback (no vois_get_microcopy tool available, or no workspace/knowledge base match for this copy type).`
-
----
 
 ## Two Modes
 
@@ -60,8 +47,6 @@ When falling back to the principles, note it at the top of your output: `Source:
 3. For labels, CTAs, and microcopy: apply the Phonaesthetics guidance below
 4. For copy that's allowed personality (marketing surfaces, taglines, empty states, and feature names; not error messages or system copy): consider one device from Rhetorical Devices below before settling for plain phrasing
 5. Output in the new copy format below
-
----
 
 ## Output Formats
 
@@ -94,31 +79,7 @@ Use this block for every piece of copy reviewed:
 ---
 
 ### New copy format
----
-**Copy:** [final copy]
-
-**Source:** [Workspace override | Knowledge base | LLM fallback]
-
-**Principles applied:**
-- [Principle name]: [one sentence on why]
-
-**Weakeners avoided:**
-- Note any weakener patterns consciously avoided, or write "None present."
-
-**Phonaesthetics:**
-- Explain the sound choices made: rhythm, stress, clusters, ease of mouth. If not applicable, say so.
-
-**Rhetorical device:**
-- Note any device applied and why. If not applicable, say so.
-
-**Reading metrics:**
-- Word count: X
-- ARI score: X.X
-- Grade level: Grade X (age X–X)
-- Target: ARI ≤ N (Grade X, <tier> tier)
----
-
----
+Use the same block with these changes. Lead with `**Copy:** [final copy]` in place of Before and After. Use "Weakeners avoided" (note any pattern consciously avoided, or "None present."). Explain the phonaesthetics choices, or say it does not apply. Reading metrics show the final copy only: word count, ARI score, grade level, and the target line.
 
 ## UX Writing Principles
 
@@ -240,8 +201,6 @@ Don't put personal data in copy that gets logged, shared, previewed, or shown ou
 - ✗ "We couldn't send the invoice to jane.doe@acme.com."
 - ✓ "We couldn't send the invoice. Check the recipient's email and try again."
 
----
-
 ## Weakener Categories
 
 Remove on sight. This is the full checklist for principle 15 above.
@@ -259,8 +218,6 @@ Remove on sight. This is the full checklist for principle 15 above.
 | Over-cautious legalese | in most cases, under certain circumstances, as needed, where appropriate, if applicable, to the extent possible | "In most cases, changes save automatically." → "Changes save automatically." |
 | Weak verb phrases | make a decision→decide, take action→act, give consideration to→consider, have an impact on→impact, play a role in→affect, provide an overview→overview, conduct an analysis→analyze | n/a |
 | Talking about talking | this article/section will…, as mentioned earlier, as stated above, below we will see | "This section discusses how billing works." → "Billing charges on the 1st of each month." |
-
----
 
 ## Error Message Guidelines
 
@@ -327,8 +284,6 @@ The tree is for errors only. Empty states and permission prompts are in Componen
 
 **Table copy.** Tables use the components above. An empty table is an Empty State. A validation message on one editable cell is Helper Text. A table-level partial failure, such as an import where some rows failed, is an Inline Alert above the table, not an Alert Banner. A bulk delete confirmation is an Alert Dialog. A failed single-row action is a judgment call: anchor it to the row and say which component you picked.
 
----
-
 ## Component Writing Rules
 
 Full writing rules per component, referenced from the decision tree above.
@@ -387,8 +342,6 @@ Full writing rules per component, referenced from the decision tree above.
 - ✓ "Get alerts when your order ships." / Allow notifications / Not now. Declined: "You won't get shipping alerts. Turn them on anytime in Settings."
 - ✗ "We need access to your notifications." "Allow all permissions to continue."
 
----
-
 ## Phonaesthetics
 
 When writing new copy, especially labels, CTAs, empty states, and microcopy, consider sound alongside meaning. Copy that sounds good is easier to remember and more pleasant to use.
@@ -406,8 +359,6 @@ When writing new copy, especially labels, CTAs, empty states, and microcopy, con
 - `sp-` → speed, energy (action, innovation)
 - `cl-` → precision, closure (tools, interactions)
 
----
-
 ## Rhetorical Devices
 
 For principle 17 only. One per surface, never in errors or system copy.
@@ -423,8 +374,6 @@ For principle 17 only. One per surface, never in errors or system copy.
 | allusion | A brief reference the audience knows | "Your Swiss Army knife for spreadsheets." |
 | paradox | Looks contradictory, resolves into an insight | "Do more by doing less." |
 | anastrophe | Inverted word order, very noticeable | "Powerful, this update is." |
-
----
 
 ## Marketing Copy
 
@@ -459,8 +408,6 @@ For marketing sites only (hero, section heads, feature cards, buttons, meta desc
 
 Sentence case everywhere. Pick one heading case and keep it. Example: "Ashburn's premier martial arts facility for all ages" (8 words) becomes "Martial arts for all ages in Ashburn" (7).
 
----
-
 ## Audience and Reading Target
 
 The reading target depends on who the copy is for. Pick a tier, then score against it.
@@ -480,8 +427,6 @@ Choose the tier in this order:
 - At `professional` and `technical`, terms the audience already knows are fine. `avoid-jargon` still applies to internal names, system terms, and acronyms the audience wouldn't use.
 - A tier changes the ARI target only. Every other principle still applies in full.
 
----
-
 ## Reading Metrics
 
 Calculate and show these for all reviewed and written copy.
@@ -498,26 +443,9 @@ Round to one decimal place. Always include grade and age range.
 
 ### Grade Level Table
 
-| ARI | Grade | Age |
-|---|---|---|
-| 1 | Kindergarten | 5–6 |
-| 2 | Grade 1 | 6–7 |
-| 3 | Grade 2 | 7–8 |
-| 4 | Grade 3 | 8–9 |
-| 5 | Grade 4 | 9–10 |
-| **6** | **Grade 5** | **10–11** |
-| 7 | Grade 6 | 11–12 |
-| 8 | Grade 7 | 12–13 |
-| 9 | Grade 8 | 13–14 |
-| 10 | Grade 9 | 14–15 |
-| 11 | Grade 10 | 15–16 |
-| 12 | Grade 11 | 16–17 |
-| 13 | Grade 12 | 17–18 |
-| 14+ | Professional | 18+ |
+The table is a straight line. ARI 1 is Kindergarten (age 5–6). Each point up is one grade and one year of age: ARI 2 is Grade 1 (6–7), **ARI 6 is Grade 5 (10–11)**, ARI 9 is Grade 8 (13–14), ARI 13 is Grade 12 (17–18). ARI 14 and above is Professional (18+).
 
 **Target: ARI ≤ 6 (Grade 5, age 10–11) for the default `consumer` tier.** Other tiers are in Audience and Reading Target above.
-
----
 
 ## Label Pairs for Motion Morphs
 
@@ -541,52 +469,24 @@ Motion pairs
 
 Gate: a component builds a label morph only from a pair marked `approved`. An unapproved or unlisted pair gets no morph code. Its label crossfades or swaps instantly, and the copy goes back to Righter.
 
----
-
 ## Review Checklist
 
 Run through this for every piece of copy before finalizing.
 
-**Before starting**
-- [ ] If available, called `vois_get_microcopy` (with `context` and `intent`) and checked the returned `provenance` for a workspace/knowledge-base match?
+**Before starting:** If available, called `vois_get_microcopy` (with `context` and `intent`) and checked the returned `provenance` for a workspace/knowledge-base match?
 
-**Voice and structure**
-- [ ] Passive voice present?
-- [ ] Complex sentence structure?
-- [ ] Double negatives?
-- [ ] Past or future tense where present tense works?
-- [ ] Missing contractions (do not → don't)?
+**Voice and structure:** Passive voice present? Complex sentence structure? Double negatives? Past or future tense where present tense works? Missing contractions (do not → don't)?
 
-**Clarity**
-- [ ] Jargon or technical terms?
-- [ ] Reading level above the target for this audience tier?
-- [ ] Interface elements named (tab, panel, section)?
-- [ ] Labels, links, or status that only make sense visually?
-- [ ] System-framing instead of user-goal framing?
-- [ ] Too much information up front (no progressive disclosure)?
+**Clarity:** Jargon or technical terms? Reading level above the target for this audience tier? Interface elements named (tab, panel, section)? Labels, links, or status that only make sense visually? System-framing instead of user-goal framing? Too much information up front (no progressive disclosure)?
 
-**Tone**
-- [ ] Unnecessary apology?
-- [ ] Overuse of exclamation marks?
-- [ ] Any weakener words? (see Weakener Categories above)
+**Tone:** Unnecessary apology? Overuse of exclamation marks? Any weakener words? (see Weakener Categories above)
 
-**Claims and data**
-- [ ] Any number, time, guarantee, price, certification, or security claim nobody supplied?
-- [ ] Any name, email, phone, address, or ID in an error, toast, title, URL, subject, or analytics label?
+**Claims and data:** Any number, time, guarantee, price, certification, or security claim nobody supplied? Any name, email, phone, address, or ID in an error, toast, title, URL, subject, or analytics label?
 
-**Mechanics**
-- [ ] Inconsistent terminology?
-- [ ] Preposition starting or ending a sentence?
-- [ ] Em dashes present?
+**Mechanics:** Inconsistent terminology? Preposition starting or ending a sentence? Em dashes present?
 
-**Personality (marketing/taglines/empty states/feature names only)**
-- [ ] Could a rhetorical device sharpen this? More than one device stacked on the same surface?
+**Personality (marketing/taglines/empty states/feature names only):** Could a rhetorical device sharpen this? More than one device stacked on the same surface?
 
-**Marketing pages (only)**
-- [ ] Every slot within its limit? Any puffery (premier, unique, world-class)?
-- [ ] A fact repeated outside the footer, or one action with two labels?
+**Marketing pages (only):** Every slot within its limit? Any puffery (premier, unique, world-class)? A fact repeated outside the footer, or one action with two labels?
 
-**Errors (if applicable)**
-- [ ] Clear next step provided?
-- [ ] Does it blame the user?
-- [ ] Right component chosen? (use decision tree above)
+**Errors (if applicable):** Clear next step provided? Does it blame the user? Right component chosen? (use decision tree above)

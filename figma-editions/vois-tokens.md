@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.28.1
+version: 1.28.2
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -24,27 +24,7 @@ If your workspace defines **VARIANCE** (layout asymmetry), **MOTION** (animation
 
 ## Topic Index
 
-| Topic | Rule prefix |
-|---|---|
-| Spacing | `[DS-SPACING]` |
-| Typography | `[DS-TYPOGRAPHY]` |
-| Color | `[DS-COLOR]` |
-| Components (variants, modals, accordions) | `[DS-COMPONENT]` `[DS-MODAL]` |
-| Surfaces (radius, alignment, shadows, motion polish) | `[DS-SURFACE]` |
-| Elevation | `[DS-ELEVATION]` |
-| Iconography | `[DS-ICON]` |
-| Layout & responsive (incl. form, field, and dialog widths, auto-growing textareas) | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
-| Grid and panels (grid classes, margins and gutters, card grid columns, side panels) | `[DS-GRID]` `[DS-PANEL]` |
-| Data tables (scroll owner, sticky header and column, scrollbars) | `[DS-TABLE]` |
-| Marketing type and spacing (marketing surfaces only) | `[DS-MKT]` |
-| Tailwind v4 | `[DS-TAILWIND]` |
-| StyleX (alternative to Tailwind) | `[DS-STYLEX]` |
-| Animation and motion tokens | `[DS-ANIMATION]` `[DS-MOTION]` |
-| Accessibility | `[DS-A11Y]` |
-| CSS architecture | `[DS-CSS]` |
-| Anti-slop (generic "AI-looking" defaults) | `[DS-SLOP]` |
-
----
+Each section below is headed by its rule prefix, from `[DS-SPACING]` to `[DS-SLOP]`. Find a rule by that prefix. Modal rules `[DS-MODAL]` sit under Components. Width rules `[DS-LAYOUT-WIDTH]` and textarea rules `[DS-LAYOUT-FIELD]` sit under Layout & Responsive.
 
 ## Pre-Submit Checklist
 
@@ -118,32 +98,17 @@ Run this before calling anything done.
 
 **Layout**
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
-- [ ] Tested at 360, 600, 768 and 1024px (narrow, snug, roomy, wide) `[DS-RESPONSIVE-002]`
+- [ ] Tested at 360, 600, 768 and 1024px (narrow, sm, md, lg) `[DS-RESPONSIVE-002]`
 - [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — not shrunk to fit `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
 - [ ] Grid class comes from the region width. Margins and gutters are `--grid-*` tokens. Card grids use the column formula, not fixed counts `[DS-GRID-001]` `[DS-GRID-004]` `[DS-GRID-007]`
-- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-roomy`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
+- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-md`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
 - [ ] Form, field, and dialog widths use width tokens `[DS-LAYOUT-WIDTH-001]` `[DS-LAYOUT-WIDTH-002]` `[DS-LAYOUT-WIDTH-003]` `[DS-LAYOUT-WIDTH-004]`
 - [ ] Auto-growing textareas use `field-sizing: content` with an explicit `inline-size`, `lh` min and max, and an `@supports` fallback `[DS-LAYOUT-FIELD-001]` `[DS-LAYOUT-FIELD-002]` `[DS-LAYOUT-FIELD-003]` `[DS-LAYOUT-FIELD-004]`
 
-**Data tables** (see Data Tables section)
-- [ ] One scroll owner per table: the page for a simple table, the wrapper for a complex one `[DS-TABLE-001]` `[DS-TABLE-002]` `[DS-TABLE-003]`
-- [ ] No `overflow: auto clip` or `overflow-y: clip` workaround. `clip` computes to `hidden` `[DS-TABLE-004]`
-- [ ] A complex table's wrapper has a bounded block size, and its flex or grid parents have `min-block-size: 0` `[DS-TABLE-002]` `[DS-TABLE-005]`
-- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and local z layers inside `isolation: isolate` `[DS-TABLE-006]` `[DS-TABLE-007]`
-- [ ] Scrollbars styled with `scrollbar-width: thin` and `scrollbar-color`, no `::-webkit-scrollbar` `[DS-TABLE-010]` `[DS-TABLE-011]`
-- [ ] A complex table that scrolls both ways uses the one-axis wheel lock `[DS-TABLE-014]`
-- [ ] The scroll region is focusable, labeled, and the table keeps real table elements `[DS-TABLE-015]`
-- [ ] Header and row heights come from the `table_sizes` tokens, and the page sets the table offset `[DS-TABLE-019]`
-
-**Marketing surfaces** (only; see Marketing Type & Spacing section)
-- [ ] Display face only for display and h2, never below 28px `[DS-MKT-002]`
-- [ ] One display headline per page, one h2 per section `[DS-MKT-003]`
-- [ ] Body text capped at `56ch` `[DS-MKT-005]`
-- [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
-- [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
+**Data tables and marketing surfaces:** every rule in the Data Tables and Marketing Type & Spacing sections is part of this checklist. Run them when the work touches a table or a marketing page.
 
 **CSS**
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
@@ -151,20 +116,7 @@ Run this before calling anything done.
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
 - [ ] StyleX projects only: build plugin wired up `[DS-STYLEX-001]`, tokens from `defineVars()` not literals `[DS-STYLEX-002]`
 
-**Anti-slop** (see Anti-Slop section — several are dial-gated)
-- [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
-- [ ] No purple/indigo→blue "AI gradient" as a default `[DS-SLOP-002]`
-- [ ] Feature groups aren't three identical cards in a row `[DS-SLOP-003]`
-- [ ] Eyebrows capped at ~1 per 3 sections `[DS-SLOP-004]`
-- [ ] No emoji standing in for real icons `[DS-SLOP-005]`
-- [ ] No more than 2 consecutive zigzag sections `[DS-SLOP-006]`
-- [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
-- [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
-- [ ] No em dashes in shipped copy `[DS-SLOP-009]`
-- [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
-- [ ] No left-border + corner-radius combo on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
-
----
+**Anti-slop:** every `[DS-SLOP-001]` to `[DS-SLOP-011]` rule in the Anti-Slop section is part of this checklist. Several are dial-gated.
 
 ## Spacing `[DS-SPACING]`
 
@@ -280,7 +232,7 @@ Stop using `vh` — mobile browser chrome changes available height as you scroll
 
 For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on sections far below the fold to skip rendering until they approach the viewport `[DS-LAYOUT-002]` — not on anything visible on initial load.
 
-**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at the start of each grid class: narrow (360px), snug (600px), roomy (768px) and wide (1024px), before calling a component done `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
+**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at the start of each grid class: narrow (360px), sm (600px), md (768px) and lg (1024px), before calling a component done `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
 
 **Judgment under constraint:** when content doesn't fit, the default move of shrinking everything proportionally is usually wrong. Preserve task hierarchy first — keep the primary content/task at a comfortable, legible size at every breakpoint, and let secondary/tertiary content (metadata, supporting stats, decorative elements) absorb the constraint `[DS-RESPONSIVE-006]`. When something doesn't fit, prefer reflow (grid to single column), then collapse (a filter bar into a "Filters" button + sheet), then hide (a column or hint that only matters at a glance on larger screens) — shrinking text or spacing to cram the same layout into less room is the last resort, and never overrides the `[DS-RESPONSIVE-004]` minimums `[DS-RESPONSIVE-007]`.
 
@@ -304,7 +256,7 @@ Widths are in `rem` so they respect the user's browser font size.
 
 ## Grid and Panels `[DS-GRID]` `[DS-PANEL]`
 
-How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android. Every size is a token name. Never write a raw value. Token values live in your token source. The proposed values are in `data/tokens.json` under `grid_and_panels` in the full version. They are proposals, not final Vois values.
+How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android. Every size is a token name. Never write a raw value. Token values live in your token source. The default Vois values are in `data/tokens.json` under `grid_and_panels` in the full version. If your token source defines different values, use those.
 
 **Two widths.** Window width is the width of the screen or app window. It picks the navigation and the most columns a collection may have. Region width is the width left for the page after the side navigation. It picks the grid class. On the site shell there is no side navigation, so the two are the same.
 
@@ -313,13 +265,13 @@ How a page is split into columns, how a grid of cards decides how many it holds,
 | Class | Starts at | Columns |
 |---|---|---|
 | `narrow` | `--width-viewport-min` (360) | 4 |
-| `snug` | `--breakpoint-snug` (600) | 8 |
-| `roomy` | `--breakpoint-roomy` (768) | 8 |
-| `wide` | `--breakpoint-wide` (1024) | 12 |
+| `sm` | `--breakpoint-sm` (600) | 8 |
+| `md` | `--breakpoint-md` (768) | 8 |
+| `lg` | `--breakpoint-lg` (1024) | 12 |
 
-`roomy` and `wide` replace the old `md` and `lg` breakpoint tokens. `snug` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class.
+`md` and `lg` start where the tablet and desktop tiers start. `sm` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class.
 
-- **Navigation shell** `[DS-GRID-002]`: for the app shell, window width picks it. Below `--breakpoint-roomy` a bottom bar. From `--breakpoint-roomy` to below `--breakpoint-wide` a rail, `--nav-rail` wide. From `--breakpoint-wide` a sidebar, `--nav-sidebar` wide. The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
+- **Navigation shell** `[DS-GRID-002]`: for the app shell, window width picks it. Below `--breakpoint-md` a bottom bar. From `--breakpoint-md` to below `--breakpoint-lg` a rail, `--nav-rail` wide. From `--breakpoint-lg` a sidebar, `--nav-sidebar` wide. The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
 - **Content max** `[DS-GRID-003]`: content stops growing at `--grid-content-max` and centers. A dense page (dashboard, data grid, report, split view) opts out with `frame: fill` and fills the region.
 - **Margin and gutter** `[DS-GRID-004]`: they come from `--grid-margin` and `--grid-gutter`, never a raw value. Each is a line between two anchor points on region width, held flat outside them. The token source stores four plain numbers for each (`-min`, `-max`, `-min-at`, `-max-at`), and `--grid-margin` and `--grid-gutter` are generated from them. On the web the output is one `clamp()`. On native it is the same line computed in code. The two end values sit on the spacing scale. The values between them do not, so `DS-SPACING-001` does not apply to these two tokens.
 - **Safe areas and direction** `[DS-GRID-005]`: the real margin is the larger of `--grid-margin` and the safe-area inset on that side. Use start and end sides (`padding-inline`, `EdgeInsetsDirectional`, leading and trailing), never left and right.
@@ -332,15 +284,15 @@ How a page is split into columns, how a grid of cards decides how many it holds,
 **Panels** (a surface that opens at the side of a page)
 
 - **Push or overlay** `[DS-PANEL-001]`: push sits inline and moves the main content over. Use it when people need to look at the page and the panel together (a preview, a properties list). Overlay floats over the page. Use it for a task that ends (an edit form, a filter set, a notification list).
-- **Phones** `[DS-PANEL-002]`: below `--breakpoint-roomy` every panel is full screen. No push, no half-width overlay.
-- **When a push panel fits** `[DS-PANEL-003]`: from `--breakpoint-roomy`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
+- **Phones** `[DS-PANEL-002]`: below `--breakpoint-md` every panel is full screen. No push, no half-width overlay.
+- **When a push panel fits** `[DS-PANEL-003]`: from `--breakpoint-md`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
 - **The sidebar gives way first** `[DS-PANEL-004]`: while a push panel is open, the app shell keeps the full sidebar only if the window width, minus `--nav-sidebar`, minus the panel width still leaves `--main-min`. If not, the sidebar shows as the rail until the panel closes. Do this before turning the panel into an overlay.
 - **Push panel width** `[DS-PANEL-005]`: `--panel-push-default` wide. If people can resize it, keep it between `--panel-push-min` and `--panel-push-max`. The main content never goes below `--main-min`.
 - **Overlay width** `[DS-PANEL-006]`: a size tier (`--panel-overlay-sm`, `--panel-overlay-md` or `--panel-overlay-lg`). Its width is the smallest of the tier, half the window width rounded down to a multiple of 4, and never under `--panel-overlay-min`. Part of the page always stays visible behind it.
 - **Two panes** `[DS-PANEL-007]`: a list with a detail pane shows both side by side only if each pane gets at least `--pane-min`. Otherwise it behaves like a phone: the list alone, and the detail opens as its own screen with a back control.
 - **Tokens only** `[DS-PANEL-008]`: panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.
 
-**Example with the proposed values** (an example, not a source): a 320 push panel fits from a window of 880 and a 400 one from 960. With a 320 panel the sidebar shows as the rail from 1024 to 1039 and as the full sidebar from 1040. At a window of 768 the `md` and `lg` overlays are both 384. The `md` overlay reaches its full width at 960 and `lg` at 1280. Two panes start at a window of 800.
+**Example with the default values** (an example, not a source): a 320 push panel fits from a window of 880 and a 400 one from 960. With a 320 panel the sidebar shows as the rail from 1024 to 1039 and as the full sidebar from 1040. At a window of 768 the `md` and `lg` overlays are both 384. The `md` overlay reaches its full width at 960 and `lg` at 1280. Two panes start at a window of 800.
 
 | Platform | Measure the parent | Safe area |
 |---|---|---|
@@ -357,7 +309,7 @@ Generate the CSS, Dart, Swift and Kotlin constants from one token source. Do not
 - **Complex table:** the wrapper owns both axes: `overflow: auto` with a bounded block size, a sticky header inside, `scrollbar-gutter: stable`, `overscroll-behavior-x: contain`, and `scroll-padding-block-start` equal to the header height `[DS-TABLE-002]`. **Simple table:** no overflow on the wrapper, so the header sticks to the page (offset by any fixed app header), and it never scrolls sideways `[DS-TABLE-003]`.
 - Don't use `overflow: auto clip`, or `overflow-x: auto` with `overflow-y: clip`, to keep a header sticky to the page: `clip` computes to `hidden` next to `auto`, which is still a scroll container `[DS-TABLE-004]`. Every flex or grid ancestor between the app shell and the wrapper has `min-inline-size: 0` and `min-block-size: 0` `[DS-TABLE-005]`.
 - **Pinned first column:** `position: sticky`, `inset-inline-start: 0`, an opaque background, and small local z-index values (column 1, header row 2, corner cell 3) inside `isolation: isolate` on the scroll owner so they never outrank an overlay; add `scroll-padding-inline-start` equal to the column width `[DS-TABLE-006]`. Tables with sticky cells use `border-collapse: separate` with `border-spacing: 0` `[DS-TABLE-007]`.
-- Layout changes key off the container, not the viewport: `container-type: inline-size` on an element outside the scroll wrapper and `@container (width < 40em)` for the narrow layout `[DS-TABLE-008]`. Use `table-layout: fixed` with explicit column widths, `text-overflow: ellipsis`, right-aligned numbers with `tabular-nums`, and left-aligned text `[DS-TABLE-009]`.
+- Layout changes key off the container, not the viewport: `container-type: inline-size` on an element outside the scroll wrapper and `@container (width < 37.5em)` for the narrow layout `[DS-TABLE-008]`. Use `table-layout: fixed` with explicit column widths, `text-overflow: ellipsis`, right-aligned numbers with `tabular-nums`, and left-aligned text `[DS-TABLE-009]`.
 - **Scrollbars:** `scrollbar-width: thin` and `scrollbar-color` from a neutral token, no `::-webkit-scrollbar`, and don't hide the scrollbar on a table that scrolls sideways `[DS-TABLE-010]`; `scrollbar-gutter: stable` so columns stay aligned `[DS-TABLE-011]`; `overscroll-behavior-x: contain`, not the vertical axis `[DS-TABLE-012]`; `scroll-padding-block-start` equal to the header height so focused rows aren't hidden `[DS-TABLE-013]`.
 - **Wheel lock:** a complex table that scrolls both ways scrolls one axis per gesture: a wheel handler (`passive: false`, `ctrlKey` passes through) that scrolls only the dominant axis, shared as one hook with an opt-out. Simple tables don't use it. Leave touch alone `[DS-TABLE-014]`.
 - **Accessibility:** the scroll owner has `tabindex="0"`, `role="region"`, and an `aria-label`; keep real table elements, a button inside a sortable `th`, and `aria-sort` on the sorted `th`; use `role="grid"` only with arrow-key cell navigation `[DS-TABLE-015]`.
@@ -489,10 +441,12 @@ No inline styles where a token equivalent exists `[DS-CSS-001]`.
 
 | Name | em | px equivalent |
 |---|---|---|
-| sm | 40em | 640px |
+| sm | 37.5em | 600px |
 | md | 48em | 768px |
 | lg | 64em | 1024px |
 | xl | 80em | 1280px |
+
+`sm`, `md` and `lg` are the grid window classes. `sm` is also the container width for narrow tables and forms. `xl` is not a grid class.
 
 ## Anti-Slop `[DS-SLOP]`
 
@@ -511,8 +465,6 @@ Several rules are dial-gated — read VARIANCE before flagging; a deliberately s
 - **`[DS-SLOP-009]` No em dashes in copy** — a well-known AI writing tell that reads as a hedge in short copy. Don't use them in UI copy, marketing copy, or any text the product or page ships; use a period, comma, or colon, and rewrite a sentence that needs a dash to hold together. Judgment-only (the detector doesn't check it); route copy through Righter (`no-em-dashes`).
 - **`[DS-SLOP-010]` Card-ifying everything** — wrapping every static section in a bordered/shadowed card is unearned structure. Reserve drop shadows for things a user picks up, hovers, or acts on.
 - **`[DS-SLOP-011]` Over-styled active states** — a colored left border plus corner radius (worse with a shadow on top) on active nav/sidebar items gets uglier as it compounds. A subtle background or text-color shift usually reads clearly enough on its own.
-
----
 
 ## Quick Reference
 

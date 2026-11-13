@@ -1,12 +1,12 @@
 {
-  "note": "Proposed token values for the grid and panel rules. NOT a source of truth: your token source holds the real values (if a `vois_get_tokens` tool is available, it serves them). This fixture lets grid.test.mjs run offline. prds/grid-token-request.md lists the same names for the token owner, and the test checks the two agree.",
+  "note": "Default token values for the grid and panel rules. NOT a source of truth: your token source holds the real values (if a `vois_get_tokens` tool is available, it serves them). This fixture lets grid.test.mjs run offline. prds/grid-token-request.md lists the same names for the token owner, and the test checks the two agree.",
   "tokens": {
     "grid": {
       "classes": [
         { "id": "narrow", "min": 360, "cols": 4 },
-        { "id": "snug", "min": 600, "cols": 8 },
-        { "id": "roomy", "min": 768, "cols": 8 },
-        { "id": "wide", "min": 1024, "cols": 12 }
+        { "id": "sm", "min": 600, "cols": 8 },
+        { "id": "md", "min": 768, "cols": 8 },
+        { "id": "lg", "min": 1024, "cols": 12 }
       ],
       "margin": { "from": { "w": 360, "v": 16 }, "to": { "w": 1024, "v": 32 } },
       "gutter": { "from": { "w": 600, "v": 16 }, "to": { "w": 768, "v": 24 } },
@@ -25,9 +25,9 @@
   },
   "named": {
     "--width-viewport-min": { "value": 360, "status": "existing, confirm" },
-    "--breakpoint-snug": { "value": 600, "status": "new" },
-    "--breakpoint-roomy": { "value": 768, "status": "existing as md, renamed" },
-    "--breakpoint-wide": { "value": 1024, "status": "existing as lg, renamed" },
+    "--breakpoint-sm": { "value": 600, "status": "existing at 640, moves to 600" },
+    "--breakpoint-md": { "value": 768, "status": "existing, no change" },
+    "--breakpoint-lg": { "value": 1024, "status": "existing, no change" },
     "--grid-margin-min": { "value": 16, "status": "new" },
     "--grid-margin-max": { "value": 32, "status": "new" },
     "--grid-margin-min-at": { "value": 360, "status": "new, window width where the margin is at its minimum" },

@@ -32,7 +32,7 @@ Extends `settings-pages.md`. That file says which sections a settings page has. 
 
 ### `[PATH-SET-ROW-LAYOUT]` Preference rows
 **When:** Laying out preference rows, each with a label and one control.
-**Do:** Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`40em`), stack the control under its label.
+**Do:** Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`37.5em`), stack the control under its label.
 **Builds on:** DS-SLOP-010, DS-SURFACE-008, DS-RESPONSIVE-003
 **Basis:** observed layout. Linear wraps its rows in a bordered container, but DS-SLOP-010 discourages card-ifying static groups, so the container is dropped. Column cap and stacking are judgment. Seen: [Linear preferences](https://mobbin.com/screens/8720abc2-c855-44ee-911d-bc15fc1707eb), [Linear profile](https://mobbin.com/screens/a4e7fb71-dd94-4c1d-a5af-f032e03a10a9).
 

@@ -4,6 +4,17 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.28.2] - 2026-11-13
+
+### Changed
+
+- **The grid classes are `narrow`, `sm`, `md` and `lg`.** They replace `narrow`, `snug`, `roomy` and `wide`. The tokens are `--breakpoint-sm` (600), `--breakpoint-md` (768) and `--breakpoint-lg` (1024). `md` and `lg` keep the names and values they always had. `sm` moves from 640 (`40em`) to 600 (`37.5em`). The class ids in the grid logic, the fixture, the page-template `layout` data and the rule text follow. Detector behavior is the same: the checks read class ids from the token data. `data/tokens.json` follows: the `breakpoints` list and the `grid_and_panels` token names and statuses match.
+- **The `sm` container width in the table and form rules is now `37.5em`, not `40em`.** This changes `PATH-B-NARROW`, the form column rule, the settings row rule and `DS-TABLE` layout. Tables and forms now stack 40px later in a narrowing container.
+- **Breakpoint table in `css-architecture.md`.** `sm` is 37.5em (600px), `md` 48em, `lg` 64em, `xl` 80em.
+- **`grid.md`, the fixture and its test call the example values "default", not "proposed".** The numbers are the same. Your token source still holds the real values, and the table is still an example.
+
+---
+
 ## [1.28.1] - 2026-11-12
 
 ### Fixed

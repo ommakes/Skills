@@ -65,7 +65,7 @@ Each page knows its parent. Back goes up exactly one level. Desktop shows the tr
 
 ### Page widths `[PATH-PAGE-BREAKPOINTS]`
 
-Phone is below roomy (768px). Tablet is roomy up to wide (768px to 1023px). Desktop is wide and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `snug` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).
+Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).
 
 ### Page levels and drill down `[PATH-PAGE-LEVELS]`
 

@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.28.1
+version: 1.28.2
 ---
 
 # Vois Tokens Skill
@@ -173,9 +173,9 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Auto-growing textareas use `field-sizing: content` with an explicit `inline-size`, `lh` min and max, and an `@supports` fallback `[DS-LAYOUT-FIELD-001]` `[DS-LAYOUT-FIELD-002]` `[DS-LAYOUT-FIELD-003]` `[DS-LAYOUT-FIELD-004]`
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
 - [ ] Long pages use `content-visibility: auto` on off-screen sections `[DS-LAYOUT-002]`
-- [ ] Tested at the start of each grid class: narrow, snug, roomy, wide `[DS-RESPONSIVE-002]`
+- [ ] Tested at the start of each grid class: narrow, sm, md, lg `[DS-RESPONSIVE-002]`
 - [ ] Grid class comes from the region width. Margins and gutters are `--grid-*` tokens. Card grids use the column formula, not fixed counts `[DS-GRID-001]` `[DS-GRID-004]` `[DS-GRID-007]`
-- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-roomy`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
+- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-md`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
 - [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — text wasn't shrunk to fit before those were tried `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] No wrapper divs that serve no layout purpose `[DS-LAYOUT-COMP-002]`

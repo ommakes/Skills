@@ -220,7 +220,7 @@
         1280,
         1536
       ],
-      "match": "narrow (360px), snug (600px), roomy (768px) and wide (1024px)",
+      "match": "narrow (360px), sm (600px), md (768px) and lg (1024px)",
       "note": "A team may test at more breakpoints."
     },
     {

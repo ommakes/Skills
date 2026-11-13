@@ -32,7 +32,7 @@ All spacing uses vois-tokens scale steps. Widths use the `widths` tokens in `voi
 
 ### `[PATH-FIELD-WRAP]` Wrapping
 **When:** The form's container gets narrow.
-**Do:** Two columns become one when the form's container is narrower than the `sm` breakpoint value (`40em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.
+**Do:** Two columns become one when the form's container is narrower than the `sm` breakpoint value (`37.5em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.
 **Builds on:** DS-RESPONSIVE-003
 **Basis:** decision for the wrap. The container-query choice follows the existing Vois rule.
 

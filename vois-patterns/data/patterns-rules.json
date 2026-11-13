@@ -868,7 +868,7 @@
       "source_file": "vois-patterns/references/settings-interactions.md",
       "pattern_name": "Preference rows",
       "condition": "Laying out preference rows, each with a label and one control.",
-      "outcome": "Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`40em`), stack the control under its label.",
+      "outcome": "Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`37.5em`), stack the control under its label.",
       "builds_on": [
         "DS-SLOP-010",
         "DS-SURFACE-008",
@@ -1347,7 +1347,7 @@
       "source_file": "vois-patterns/references/form-field-groups.md",
       "pattern_name": "Wrapping",
       "condition": "The form's container gets narrow.",
-      "outcome": "Two columns become one when the form's container is narrower than the `sm` breakpoint value (`40em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.",
+      "outcome": "Two columns become one when the form's container is narrower than the `sm` breakpoint value (`37.5em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.",
       "builds_on": [
         "DS-RESPONSIVE-003"
       ],
@@ -1634,7 +1634,7 @@
       "parent": "PATH-B",
       "source_file": "vois-patterns/references/table-list.md",
       "pattern_name": "Table narrow layout",
-      "condition": "A table's container is narrower than the sm breakpoint value (40em).",
+      "condition": "A table's container is narrower than the sm breakpoint value (37.5em).",
       "outcome": "If the table has 4 or fewer columns, not counting the actions column, rows stack as list items. If it has more, the table scrolls horizontally with the first column and header row pinned.",
       "builds_on": [
         "PATH-B",
@@ -2873,7 +2873,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Page widths",
       "condition": "Any template is drawn or checked at a width.",
-      "outcome": "Phone is below roomy (768px). Tablet is roomy up to wide (768px to 1023px). Desktop is wide and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `snug` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).",
+      "outcome": "Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).",
       "builds_on": [
         "DS-RESPONSIVE-002"
       ],

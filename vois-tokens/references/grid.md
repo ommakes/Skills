@@ -20,19 +20,19 @@ Pick the grid class from the region width. Four classes. The names mean nothing 
 | Class | Starts at | Columns |
 |---|---|---|
 | `narrow` | `--width-viewport-min` | 4 |
-| `snug` | `--breakpoint-snug` | 8 |
-| `roomy` | `--breakpoint-roomy` | 8 |
-| `wide` | `--breakpoint-wide` | 12 |
+| `sm` | `--breakpoint-sm` | 8 |
+| `md` | `--breakpoint-md` | 8 |
+| `lg` | `--breakpoint-lg` | 12 |
 
-`roomy` and `wide` start where the tablet and desktop tiers in `vois-patterns` start. `snug` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class, see `[DS-GRID-004]`.
+`md` and `lg` start where the tablet and desktop tiers in `vois-patterns` start. `sm` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class, see `[DS-GRID-004]`.
 
 ## Navigation shell `[DS-GRID-002]`
 
 Window width picks the navigation, for the app shell:
 
-- Below `--breakpoint-roomy`: a bottom bar.
-- From `--breakpoint-roomy` up to below `--breakpoint-wide`: a rail, `--nav-rail` wide.
-- From `--breakpoint-wide`: a sidebar, `--nav-sidebar` wide.
+- Below `--breakpoint-md`: a bottom bar.
+- From `--breakpoint-md` up to below `--breakpoint-lg`: a rail, `--nav-rail` wide.
+- From `--breakpoint-lg`: a sidebar, `--nav-sidebar` wide.
 
 The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
 
@@ -90,11 +90,11 @@ A panel is a surface that opens at the side of a page.
 
 ### Phones `[DS-PANEL-002]`
 
-Below `--breakpoint-roomy` every panel is full screen. No push, no half-width overlay.
+Below `--breakpoint-md` every panel is full screen. No push, no half-width overlay.
 
 ### When a push panel fits `[DS-PANEL-003]`
 
-From `--breakpoint-roomy`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
+From `--breakpoint-md`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
 
 ### The sidebar gives way first `[DS-PANEL-004]`
 
@@ -116,9 +116,9 @@ A list with a detail pane shows both side by side only if each pane gets at leas
 
 Panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.
 
-## Example with the proposed values
+## Example with the default values
 
-These numbers come from the proposed token values in `prds/grid-token-request.md`. They are an example, not a source. If the token source changes, run `scripts/grid.test.mjs` and update this table.
+These numbers come from the default token values in `prds/grid-token-request.md`. They are an example, not a source. Your token source holds the real values. If the token source changes, run `scripts/grid.test.mjs` and update this table.
 
 | Rule | Result |
 |---|---|
