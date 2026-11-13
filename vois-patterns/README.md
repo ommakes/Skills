@@ -2,6 +2,8 @@
 
 Structural decision trees and UI patterns for building consistent interfaces with Vois design tokens and components.
 
+Where it fits: this skill covers the Structure layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
+
 ## What This Is
 
 `vois-patterns` is a skill that tells you **which container type to build** and **how to structure it** before you implement it with tokens and components.
