@@ -2,8 +2,8 @@
 // Checks this public repo against the private Vois repo, which is canonical for the
 // Vois design system skills. Two checks:
 //
-//   1. Mirror: the shared detector code matches byte for byte, and every rule ID in the
-//      shared rule files matches, with the same content. Named exceptions (the premium
+//   1. Mirror: the shared detector code and every tracked file in registry/ match byte for byte, and
+//      every rule ID in the shared rule files matches, with the same content. Named exceptions (the premium
 //      wording and the vois-loop checklist) are listed in ALLOWED below and nowhere else.
 //   2. Standalone: no MCP call in a public skill is worded as required. Public skills
 //      must keep working without the MCP.
@@ -11,6 +11,7 @@
 // Usage: node scripts/check-mirror.mjs --private <path-to-private-checkout>
 
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, relative, resolve } from "node:path";
 
 const here = resolve(new URL(".", import.meta.url).pathname, "..");
@@ -162,6 +163,50 @@ const WORDING_SWAPS = {
   }
 }
 
+// ---- 1c. Mirrored folders, every tracked file byte for byte ------------------------------
+
+// The registry is canonical in private and copied here unchanged. The comparison uses the files git
+// tracks on each side, so untracked local files (node_modules, build output, .DS_Store) never count,
+// and a committed file anywhere in the folder always does. A symlink or submodule fails.
+const MIRRORED_TREES = ["registry"];
+
+// path -> git file mode, for every tracked file under `tree`. Null when git cannot list them.
+function trackedFiles(root, tree) {
+  let out;
+  try { out = execFileSync("git", ["-C", root, "ls-files", "-s", "-z", "--", tree], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
+  catch { return null; }
+  const files = new Map();
+  for (const entry of out.split("\0")) {
+    if (!entry) continue;
+    const tab = entry.indexOf("\t");
+    files.set(entry.slice(tab + 1), entry.split(" ")[0]);
+  }
+  return files;
+}
+
+const REGULAR = new Set(["100644", "100755"]);
+const trackedBySide = {};
+for (const tree of MIRRORED_TREES) {
+  const pub = trackedFiles(here, tree);
+  const priv = trackedFiles(privateRoot, tree);
+  if (!pub || !priv) { problems.push(`${tree}/: cannot list tracked files in ${pub ? "private" : "public"} (is it a git checkout?)`); continue; }
+  if (pub.size === 0 || priv.size === 0) { problems.push(`${tree}/: missing in ${pub.size ? "private" : "public"}`); continue; }
+  trackedBySide[tree] = pub;
+  for (const [side, files] of [["public", pub], ["private", priv]]) {
+    for (const [f, mode] of files) if (!REGULAR.has(mode)) problems.push(`${f}: is not a regular file in ${side} (git mode ${mode})`);
+  }
+  for (const f of priv.keys()) if (!pub.has(f)) problems.push(`${f}: is in private only`);
+  for (const [f, mode] of pub) {
+    if (!priv.has(f)) { problems.push(`${f}: is in public only`); continue; }
+    if (!REGULAR.has(mode) || !REGULAR.has(priv.get(f))) continue;
+    if (mode !== priv.get(f)) { problems.push(`${f}: file mode differs (${mode} here, ${priv.get(f)} in private)`); continue; }
+    let a, b;
+    try { a = readFileSync(join(here, f)); b = readFileSync(join(privateRoot, f)); }
+    catch { problems.push(`${f}: tracked but missing on disk`); continue; }
+    if (!a.equals(b)) problems.push(`${f}: differs from the private copy`);
+  }
+}
+
 // ---- 2. Standalone: no required MCP calls in public skills ---------------------------
 
 const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens"];
@@ -179,10 +224,13 @@ function textFiles(dir) {
   return out;
 }
 
-for (const skill of STANDALONE_SKILLS) {
-  const dir = join(here, skill);
-  if (!existsSync(dir)) continue;
-  for (const file of textFiles(dir)) {
+// The registry is not a skill, but its docs and JSON must not require the MCP either. Only its tracked
+// files are scanned, never node_modules or build output.
+const registryText = [...(trackedBySide.registry?.keys() ?? [])].filter((f) => /\.(md|json)$/.test(f)).map((f) => join(here, f));
+const scanSets = [...STANDALONE_SKILLS.map((skill) => join(here, skill)).filter((d) => existsSync(d)).map((d) => textFiles(d)), registryText];
+
+for (const files of scanSets) {
+  for (const file of files) {
     if (file.endsWith("CHANGELOG.md")) continue;
     const lines = readFileSync(file, "utf8").split("\n");
     lines.forEach((line, i) => {

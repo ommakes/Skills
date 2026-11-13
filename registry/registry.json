@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "vois",
+  "homepage": "https://github.com/ommakes/Skills/tree/main/registry",
+  "items": [
+    {
+      "name": "vois-theme",
+      "type": "registry:theme",
+      "title": "Vois theme",
+      "description": "Points shadcn/ui variables that Vois names differently at the Vois tokens. Ships no color values. Import it after Tailwind.",
+      "files": [
+        {
+          "path": "vois/theme/vois-theme.css",
+          "type": "registry:file",
+          "target": "src/styles/vois-theme.css"
+        }
+      ]
+    }
+  ]
+}

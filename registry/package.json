@@ -1,0 +1,16 @@
+{
+  "name": "vois-registry",
+  "version": "0.1.0",
+  "private": true,
+  "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "check": "node scripts/check-registry.mjs",
+    "test": "node scripts/check-registry.test.mjs",
+    "build": "shadcn build registry.json -o public/r"
+  },
+  "devDependencies": {
+    "shadcn": "4.23.0"
+  }
+}
