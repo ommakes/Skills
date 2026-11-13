@@ -375,15 +375,32 @@ export const RULES = [
         if (start !== null) low(start, "Enter animation", match.index);
       }
       // CSS: the first keyframe, from { transform: scale(0.5) } or 0% { scale: 0.5 }
-      const keyframeStart = /(?:\bfrom|\b0%)\s*\{([^}]*)\}/g;
+      // The block is bounded: an unbounded [^}]* rescans to the end of the file from every unclosed "from {", which is quadratic. A block over 1000 characters is not read.
+      const keyframeStart = /(?:\bfrom|\b0%)\s*\{([^}]{0,1000})\}/g;
       while ((match = keyframeStart.exec(content)) !== null) {
         const m = /\bscale(?:\(|:)\s*(\d*\.?\d+)/.exec(match[1]);
         if (m && !/blur\(/.test(match[1])) low(Number(m[1]), "Keyframe", match.index);
       }
-      // Tailwind: starting:scale-50, starting:scale-[0.5], and tailwindcss-animate's zoom-in-50 (a percentage)
-      const tailwindStart = /(?<![\w-])starting:(?:[\w-]+:)*scale-(?:(\d+)|\[(\d*\.?\d+)\])(?![\w.-])/g;
-      while ((match = tailwindStart.exec(content)) !== null) low(match[1] !== undefined ? Number(match[1]) / 100 : Number(match[2]), "Enter animation", match.index, { zero: true });
-      const zoomIn = /(?<![\w-])(?:[\w-]+:)*zoom-in-(\d+)(?![\w.-])/g;
+      // Tailwind: starting:scale-50, starting:scale-[0.5], and tailwindcss-animate's zoom-in-50 (a percentage).
+      // Both match only the last piece. A (?:[\w-]+:)* chain in front of it is quadratic on "a:a:a:...", so for starting: the variants in front are read backwards from the match, at most MAX_VARIANTS pieces.
+      const MAX_VARIANTS = 32; // pieces walked back from scale, starting: included, so 31 variants sit between them
+      const startingBefore = (at) => {
+        let pos = at;
+        for (let n = 0; n < MAX_VARIANTS && pos > 0 && content[pos - 1] === ":"; n++) {
+          let from = pos - 1;
+          while (from > 0 && /[\w-]/.test(content[from - 1])) from--;
+          if (content.slice(from, pos - 1) === "starting") return from;
+          if (from === pos - 1) return -1;
+          pos = from;
+        }
+        return -1;
+      };
+      const tailwindStart = /(?<=:)scale-(?:(\d+)|\[(\d*\.?\d+)\])(?![\w.-])/g;
+      while ((match = tailwindStart.exec(content)) !== null) {
+        const from = startingBefore(match.index);
+        if (from >= 0) low(match[1] !== undefined ? Number(match[1]) / 100 : Number(match[2]), "Enter animation", from, { zero: true });
+      }
+      const zoomIn = /(?<![\w-])zoom-in-(\d+)(?![\w.-])/g;
       while ((match = zoomIn.exec(content)) !== null) low(Number(match[1]) / 100, "zoom-in", match.index, { zero: true });
       return findings;
     },

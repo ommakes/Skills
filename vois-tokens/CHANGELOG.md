@@ -4,6 +4,12 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.28.1] - 2026-11-12
+
+### Fixed
+
+- **`DS-ANIMATION-005` was quadratic on a long one-line input.** Four patterns rescanned the rest of the input from every start: the first-keyframe block (`from { ... }` and `0% { ... }`), the `starting:` variant chain, and the `zoom-in-` variant chain. A file of 40,000 repeats of `starting:` took 36 s. Each now takes under 100 ms. The rule flags the same things as before for every class written normally (a fuzz of 300,000 mixed inputs found no difference), with two limits it did not have: it does not read a keyframe block over 1000 characters, and it does not read a `starting:` class with more than 31 variants between `starting:` and `scale`. A made-up class that runs two `scale-` pieces together, such as `starting:scale-50:scale-30`, now gives a finding for each piece. Both are listed in `references/hooks.md`, and `detect.test.mjs` has a timing test that fails on the old code.
+
 ## [1.28.0] - 2026-11-12
 
 ### Added

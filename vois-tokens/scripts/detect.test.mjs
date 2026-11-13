@@ -1111,6 +1111,57 @@ test("the grid detectors stay fast on large and hostile input", () => {
   }
 });
 
+const animHits = (code, file = "a.tsx") => RULES.find((r) => r.id === "DS-ANIMATION-005").check({ content: code, lines: code.split("\n"), filePath: file, params: undefined });
+
+test("DS-ANIMATION-005 stays fast on hostile input (it was quadratic)", () => {
+  const big = [
+    "from{".repeat(40000), // an unbounded [^}]* rescanned to the end from every start: 3s
+    "0%{".repeat(40000),
+    "a:".repeat(40000) + "zoom-in-", // the variant chain: 3s
+    "starting:".repeat(40000), // 36s
+    "scale:".repeat(40000), // 12s
+    "initial={{ a:{".repeat(40000),
+    "x".repeat(300000),
+  ];
+  for (const text of big) {
+    const t = Date.now();
+    animHits(text);
+    assert.ok(Date.now() - t < 2000, `DS-ANIMATION-005 on ${text.slice(0, 12)}… took ${Date.now() - t}ms`);
+  }
+});
+
+test("DS-ANIMATION-005 still reads Tailwind variants, in any order and with any prefix", () => {
+  for (const code of [
+    '<div className="starting:scale-50" />',
+    '<div className="md:starting:scale-50" />',
+    '<div className="starting:md:scale-[0.5]" />',
+    '<div className="dark:starting:hover:scale-0" />',
+    '<div className="zoom-in-50" />',
+    '<div className="md:zoom-in-0" />',
+  ]) assert.equal(animHits(code).length, 1, code);
+  for (const code of [
+    '<div className="md:scale-50" />',
+    '<div className="starting:scale-95" />',
+    '<div className="starting:opacity-0 scale-50" />',
+    '<div className="startingx:scale-50" />',
+    '<div className="x-starting:scale-50" />',
+    '<div className="::scale-50" />',
+    '<div className="foo-zoom-in-50" />',
+  ]) assert.equal(animHits(code).length, 0, code);
+  assert.equal(animHits('<div className="starting:scale-50" />')[0].line, 1);
+  assert.equal(animHits('a\n<div className="b\n starting:scale-50" />')[0].line, 3);
+});
+
+test("KNOWN GAPS: DS-ANIMATION-005 does not read a keyframe block over 1000 characters or more than 31 variants between starting: and scale", () => {
+  assert.equal(animHits("@keyframes a { from { " + "x:1;".repeat(300) + " transform: scale(0.5); } }", "a.css").length, 0);
+  assert.equal(animHits('<div className="starting:' + "a:".repeat(40) + 'scale-50" />').length, 0);
+  assert.equal(animHits('<div className="starting:' + "a:".repeat(5) + 'scale-50" />').length, 1);
+  // the cap is 31 variants between starting: and scale
+  assert.equal(animHits('<div className="starting:' + "a:".repeat(31) + 'scale-50" />').length, 1);
+  assert.equal(animHits('<div className="starting:' + "a:".repeat(32) + 'scale-50" />').length, 0);
+  assert.equal(animHits("@keyframes a { from { " + "x".repeat(960) + " transform: scale(0.5); } }", "a.css").length, 1);
+});
+
 test("KNOWN GAPS: the grid detectors do not read a page-grid count, a theme gap step or CSS in a template string", () => {
   const found = adversarialTsxFindings.filter((f) => ["DS-GRID-007", "DS-GRID-004"].includes(f.ruleId));
   assert.deepEqual(found, [], "if this now fires, a gap in hooks.md was closed: update the test to assert a finding");
