@@ -85,3 +85,15 @@ spacing rhythm everywhere — the same padding on a data table row as on an
 onboarding empty-state message. If every screen in a build has identical
 information density, that's a sign the tiers above weren't consulted, not
 evidence of consistency.
+
+## Product setting `[PATH-DENSITY-PRODUCT]`
+
+A product sets `workbench` or `relaxed`, and a page already has its tier from PATH-PAGE-DENSITY-MAP. The setting moves a page's tier by one step. Workbench: Standard becomes Dense. Relaxed: Dense becomes Standard. Spacious never moves. A product that sets nothing keeps the tier the template gives. Then PATH-PAGE-DENSITY-TOUCH applies: when the primary input is not a fine pointer, Dense becomes Standard. So the setting only changes a page when a fine pointer is present. Grid, margins, gutters, columns and panel widths ignore the setting.
+
+| Setting | Dense page | Standard page | Spacious page |
+|---|---|---|---|
+| unset | Dense | Standard | Spacious |
+| `workbench` | Dense | Dense | Spacious |
+| `relaxed` | Standard | Standard | Spacious |
+
+After the setting, a primary input that is not a fine pointer turns Dense into Standard. Relaxed with a mouse and workbench with touch therefore look the same. The setting matters only for products whose users work with a mouse.

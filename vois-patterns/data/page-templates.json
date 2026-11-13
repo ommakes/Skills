@@ -33,7 +33,7 @@
     "tablet": "md to below lg (768px to 1023px)",
     "desktop": "lg and up (1024px)",
     "rule": "DS-RESPONSIVE-002",
-    "note": "Phone, tablet and desktop are the three prose tiers. The grid splits phone in two at the sm class (600px). See vois-tokens/references/grid.md."
+    "note": "Phone, tablet and desktop are the three prose tiers. The grid splits phone in two at the sm class (600px). A native Android layout is also checked at expanded (840px), which is a breakpoint token and not a grid class. See vois-tokens/references/grid.md."
   },
   "density": {
     "dense": {
@@ -51,7 +51,7 @@
       "desktop": "Sections sit far apart with large type. Rows, where present, use --table-row-h-comfortable.",
       "touch": "Gaps step down one notch but stay looser than Standard. Tap targets reach --hit-area-min."
     },
-    "note": "Values come from vois_get_tokens. This file names the token and the direction, never a number."
+    "note": "Values come from vois_get_tokens. This file names the token and the direction, never a number. In the desktop and touch lines, desktop means a fine pointer is the primary input and touch means anything else, at any width (PATH-PAGE-DENSITY-TOUCH). A product setting can move the tier first (PATH-DENSITY-PRODUCT)."
   },
   "templates": [
     {
@@ -275,7 +275,7 @@
         }
       ],
       "interaction": "View all goes to the Records section, then a row goes to the record. A table row on the dashboard skips the section and jumps straight to the record. That shortcut is fine, but the breadcrumb on the record should still show where it lives. The bell opens a side panel and Create opens a modal.",
-      "density_note": "Dense on desktop for scanning many metrics. On touch widths the same screen gets regular rows and more space between blocks.",
+      "density_note": "Dense with a fine pointer for scanning many metrics. With touch as the primary input the same screen gets regular rows and more space between blocks.",
       "mobbin_references": [
         {
           "title": "Browserbase overview",

@@ -65,7 +65,7 @@ Each page knows its parent. Back goes up exactly one level. Desktop shows the tr
 
 ### Page widths `[PATH-PAGE-BREAKPOINTS]`
 
-Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).
+Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`). A native Android layout is also checked at `expanded` (840px). It is a breakpoint token, not a grid class.
 
 ### Page levels and drill down `[PATH-PAGE-LEVELS]`
 
@@ -77,11 +77,11 @@ Desktop: labeled sidebar. Tablet: icon rail. Phone: bottom tab bar with at most 
 
 ### Density tier by page `[PATH-PAGE-DENSITY-MAP]`
 
-Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense on desktop.
+Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense with a fine pointer.
 
 ### Dense is for pointers only `[PATH-PAGE-DENSITY-TOUCH]`
 
-Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. A SaaS screen is tighter on desktop than on a phone, never the other way round.
+A Dense page is shown while the primary input is not a fine pointer (CSS `(pointer: fine)` does not match), at any width. Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. Unknown input counts as touch. A phone-width window with a mouse can stay Dense, and its layout still follows width (PATH-B-NARROW). An iPad with a trackpad still reports a touch primary input, so it stays at regular rows.
 
 ### Which overlay opens `[PATH-PAGE-OVERLAY]`
 

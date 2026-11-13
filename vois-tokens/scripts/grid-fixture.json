@@ -27,6 +27,7 @@
     "--width-viewport-min": { "value": 360, "status": "existing, confirm" },
     "--breakpoint-sm": { "value": 600, "status": "existing at 640, moves to 600" },
     "--breakpoint-md": { "value": 768, "status": "existing, no change" },
+    "--breakpoint-expanded": { "value": 840, "status": "new, not a grid class" },
     "--breakpoint-lg": { "value": 1024, "status": "existing, no change" },
     "--grid-margin-min": { "value": 16, "status": "new" },
     "--grid-margin-max": { "value": 32, "status": "new" },

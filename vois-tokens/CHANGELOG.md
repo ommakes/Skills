@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.1] - 2026-11-13
+
+### Added
+- `--breakpoint-expanded`, 840px (`52.5em`), in the breakpoint table of `references/css-architecture.md`, with a pointer in `references/grid.md`. It is the Android expanded window class, named for it on purpose. It is a breakpoint token and not a grid class. The four grid classes do not change.
+
 ## [1.31.0] - 2026-11-13
 
 ### Added
