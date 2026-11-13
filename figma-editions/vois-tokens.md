@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.21.1
+version: 1.28.1
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -34,11 +34,12 @@ If your workspace defines **VARIANCE** (layout asymmetry), **MOTION** (animation
 | Elevation | `[DS-ELEVATION]` |
 | Iconography | `[DS-ICON]` |
 | Layout & responsive (incl. form, field, and dialog widths, auto-growing textareas) | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
+| Grid and panels (grid classes, margins and gutters, card grid columns, side panels) | `[DS-GRID]` `[DS-PANEL]` |
 | Data tables (scroll owner, sticky header and column, scrollbars) | `[DS-TABLE]` |
 | Marketing type and spacing (marketing surfaces only) | `[DS-MKT]` |
 | Tailwind v4 | `[DS-TAILWIND]` |
 | StyleX (alternative to Tailwind) | `[DS-STYLEX]` |
-| Animation | `[DS-ANIMATION]` |
+| Animation and motion tokens | `[DS-ANIMATION]` `[DS-MOTION]` |
 | Accessibility | `[DS-A11Y]` |
 | CSS architecture | `[DS-CSS]` |
 | Anti-slop (generic "AI-looking" defaults) | `[DS-SLOP]` |
@@ -93,7 +94,13 @@ Run this before calling anything done.
 - [ ] UI animations under 300ms (large elements under 500ms) `[DS-ANIMATION-001]` `[DS-ANIMATION-002]`
 - [ ] No keyboard-triggered animations `[DS-ANIMATION-003]`
 - [ ] `transform-origin` set to trigger point, not center `[DS-ANIMATION-006]`
-- [ ] No animations from `scale(0)` `[DS-ANIMATION-005]`
+- [ ] Timing and easing from motion tokens, no literal durations or curves `[DS-MOTION-001]`
+- [ ] A morph runs inside one duration token: old out and new in overlap, never in sequence `[DS-MOTION-003]`
+- [ ] A multi-step tray is one container that stays mounted between steps `[DS-MOTION-004]`
+- [ ] Content left behind by a travelling element blurs at most the `[DS-SURFACE-014]` value, and the traveller is never blurred `[DS-MOTION-005]`
+- [ ] Springs use `motionSpring` with `bounce: 0`, and a retargeted transition continues from its current velocity `[DS-MOTION-006]`
+- [ ] Delight never gates the task, loops pause under reduced motion, one-off effects play once `[DS-MOTION-007]`
+- [ ] No animations from `scale(0)`, and enter animations start at 0.9 or higher (icon swaps follow `[DS-SURFACE-014]`) `[DS-ANIMATION-005]`
 - [ ] `prefers-reduced-motion` handled `[DS-ANIMATION-004]`
 - [ ] No `transition: all` `[DS-TAILWIND-005]`
 - [ ] Hover effects guarded on touch devices `[DS-ANIMATION-007]`
@@ -111,8 +118,10 @@ Run this before calling anything done.
 
 **Layout**
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
-- [ ] Tested at sm, md, lg breakpoints `[DS-RESPONSIVE-002]`
+- [ ] Tested at 360, 600, 768 and 1024px (narrow, snug, roomy, wide) `[DS-RESPONSIVE-002]`
 - [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — not shrunk to fit `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
+- [ ] Grid class comes from the region width. Margins and gutters are `--grid-*` tokens. Card grids use the column formula, not fixed counts `[DS-GRID-001]` `[DS-GRID-004]` `[DS-GRID-007]`
+- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-roomy`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
@@ -159,7 +168,7 @@ Run this before calling anything done.
 
 ## Spacing `[DS-SPACING]`
 
-All spacing must be divisible by **4 or 8**. No exceptions. `[DS-SPACING-001]`
+All spacing must be divisible by **4 or 8**. The only exception is `--grid-margin` and `--grid-gutter` between their end values (see Grid and Panels). The end values stay on the scale. `[DS-SPACING-001]`
 
 **Allowed values:** 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96px. Use `gap` for layout spacing between elements; padding for internal component spacing; avoid margin for layout. `[DS-SPACING-002]` Tailwind v4's dynamic spacing utilities accept any value without arbitrary syntax — stay on the scale anyway. `[DS-SPACING-003]` Verify spacing holds at every responsive breakpoint. `[DS-SPACING-004]`
 
@@ -239,7 +248,7 @@ Detail-level rules for nested surfaces, optical alignment, image treatment, and 
 
 **Exit animations** should be softer/shorter than enters `[DS-SURFACE-013]`: small fixed `translateY` (e.g. -12px) not full container height; ~150ms vs ~300ms enter; keep a little directional movement so it doesn't just vanish; full slide-out only when spatial context matters (a card returning to a list).
 
-**Icon state transitions** (play→pause, like→liked): animate `opacity` + `scale` + `blur`, not visibility toggling `[DS-SURFACE-014]`. Exact values: scale `0.25`→`1` (never 0.5/0.6), opacity `0`→`1`, blur `4px`→`0px`, transition `{ type: "spring", duration: 0.3, bounce: 0 }` — bounce always 0. Without a Motion dependency, keep both icons in the DOM (one absolutely positioned) and cross-fade with CSS `cubic-bezier(0.2, 0, 0, 1)`. Animate icons appearing on hover, state-change icons, and contextual toolbar icons — not static navigation or decorative icons.
+**Icon state transitions** (play→pause, like→liked): animate `opacity` + `scale` + `blur`, not visibility toggling `[DS-SURFACE-014]`. Exact values: scale `0.25`→`1` (never 0.5/0.6), opacity `0`→`1`, blur `4px`→`0px`, transition `motionSpring.standard` (`bounce` is always 0 and the duration is the base motion token, `[DS-MOTION-006]`). Without a Motion dependency, keep both icons in the DOM (one absolutely positioned) and cross-fade with CSS over `var(--motion-duration-base)` using `var(--motion-ease-standard)`. Animate icons appearing on hover, state-change icons, and contextual toolbar icons — not static navigation or decorative icons.
 
 ## Elevation `[DS-ELEVATION]`
 
@@ -271,7 +280,7 @@ Stop using `vh` — mobile browser chrome changes available height as you scroll
 
 For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on sections far below the fold to skip rendering until they approach the viewport `[DS-LAYOUT-002]` — not on anything visible on initial load.
 
-**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at sm (640px), md (768px), lg (1024px) `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
+**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at the start of each grid class: narrow (360px), snug (600px), roomy (768px) and wide (1024px), before calling a component done `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
 
 **Judgment under constraint:** when content doesn't fit, the default move of shrinking everything proportionally is usually wrong. Preserve task hierarchy first — keep the primary content/task at a comfortable, legible size at every breakpoint, and let secondary/tertiary content (metadata, supporting stats, decorative elements) absorb the constraint `[DS-RESPONSIVE-006]`. When something doesn't fit, prefer reflow (grid to single column), then collapse (a filter bar into a "Filters" button + sheet), then hide (a column or hint that only matters at a glance on larger screens) — shrinking text or spacing to cram the same layout into less room is the last resort, and never overrides the `[DS-RESPONSIVE-004]` minimums `[DS-RESPONSIVE-007]`.
 
@@ -292,6 +301,55 @@ For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on 
 Widths are in `rem` so they respect the user's browser font size.
 
 **Auto-growing textareas** — use `field-sizing: content` (Tailwind v4: `field-sizing-content`), never JavaScript autosizing (no `scrollHeight` measuring, `ResizeObserver`, or autosize libraries) `[DS-LAYOUT-FIELD-001]`. Always set an explicit `inline-size`, because content sizing also shrinks the width and an unset width collapses to a sliver `[DS-LAYOUT-FIELD-002]`. Set `min-block-size` and `max-block-size` from the line-count tokens using the `lh` unit plus the field's block padding; don't rely on `rows` for the minimum, because browsers ignore it under `field-sizing: content`; scroll inside with `overflow-y: auto` at the maximum `[DS-LAYOUT-FIELD-003]`. Wrap the styles in `@supports (field-sizing: content)` and keep `rows` and `resize: vertical` as the fallback `[DS-LAYOUT-FIELD-004]`. Line tokens (unitless, multiplied by `1lh`): `--textarea-min-lines` 3, `--textarea-max-lines` 12, `--chat-input-min-lines` 1, `--chat-input-max-lines` 8.
+
+## Grid and Panels `[DS-GRID]` `[DS-PANEL]`
+
+How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android. Every size is a token name. Never write a raw value. Token values live in your token source. The proposed values are in `data/tokens.json` under `grid_and_panels` in the full version. They are proposals, not final Vois values.
+
+**Two widths.** Window width is the width of the screen or app window. It picks the navigation and the most columns a collection may have. Region width is the width left for the page after the side navigation. It picks the grid class. On the site shell there is no side navigation, so the two are the same.
+
+**Grid classes** `[DS-GRID-001]`: pick the class from the region width. The names mean nothing on other platforms on purpose, so they never get mixed up with Tailwind's `sm` or Android's `medium`.
+
+| Class | Starts at | Columns |
+|---|---|---|
+| `narrow` | `--width-viewport-min` (360) | 4 |
+| `snug` | `--breakpoint-snug` (600) | 8 |
+| `roomy` | `--breakpoint-roomy` (768) | 8 |
+| `wide` | `--breakpoint-wide` (1024) | 12 |
+
+`roomy` and `wide` replace the old `md` and `lg` breakpoint tokens. `snug` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class.
+
+- **Navigation shell** `[DS-GRID-002]`: for the app shell, window width picks it. Below `--breakpoint-roomy` a bottom bar. From `--breakpoint-roomy` to below `--breakpoint-wide` a rail, `--nav-rail` wide. From `--breakpoint-wide` a sidebar, `--nav-sidebar` wide. The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
+- **Content max** `[DS-GRID-003]`: content stops growing at `--grid-content-max` and centers. A dense page (dashboard, data grid, report, split view) opts out with `frame: fill` and fills the region.
+- **Margin and gutter** `[DS-GRID-004]`: they come from `--grid-margin` and `--grid-gutter`, never a raw value. Each is a line between two anchor points on region width, held flat outside them. The token source stores four plain numbers for each (`-min`, `-max`, `-min-at`, `-max-at`), and `--grid-margin` and `--grid-gutter` are generated from them. On the web the output is one `clamp()`. On native it is the same line computed in code. The two end values sit on the spacing scale. The values between them do not, so `DS-SPACING-001` does not apply to these two tokens.
+- **Safe areas and direction** `[DS-GRID-005]`: the real margin is the larger of `--grid-margin` and the safe-area inset on that side. Use start and end sides (`padding-inline`, `EdgeInsetsDirectional`, leading and trailing), never left and right.
+- **Measure the parent** `[DS-GRID-006]`: a component measures the space it is given, not the screen. On the web use a container query on the region. On native use `LayoutBuilder` (Flutter), `BoxWithConstraints` (Compose) or `GeometryReader` (SwiftUI). Never branch on device type, model or orientation: an iPad in a split window is narrow and a phone in landscape is wide.
+- **Collections** `[DS-GRID-007]`: a collection is a grid of equal cards, tiles or logos. `count = max(1, min(cap[windowClass], floor((inner + gutter) / (itemMin + gutter))))`. `cap` is the most columns for the window class, from the page template's `collections` entry. `inner` is the region width minus both margins, held at `--grid-content-max` (a `fill` page has no hold, and a container narrower than the region uses its own width with no page margins). `gutter` is `--grid-gutter` at the region width. `itemMin` is the item token the template names: `--item-min-icon-tile`, `--item-min-logo`, `--item-min-card`, `--item-min-plan` or `--item-min-story`. The cap sets how the page looks at each class. The fit stops cards from getting too small. A tile never drops below `itemMin` unless the count is already 1. Do not hard-code a column count (`grid-cols-3`).
+- **Text size** `[DS-GRID-008]`: larger text raises `itemMin`, so the count drops. It never changes the grid, margins or gutters.
+- **Regions** `[DS-GRID-009]`: a region is a track: `fluid`, a fraction such as `2fr`, `auto`, or a token name. Splits must fit the columns of the current class. An 8 column class splits 4 and 4, or 5 and 3, never 6 and 6. A region that is not side by side at a class stacks or folds.
+- **Units** `[DS-GRID-010]`: one token unit is one CSS pixel, one dp on Android and one point on iOS.
+
+**Panels** (a surface that opens at the side of a page)
+
+- **Push or overlay** `[DS-PANEL-001]`: push sits inline and moves the main content over. Use it when people need to look at the page and the panel together (a preview, a properties list). Overlay floats over the page. Use it for a task that ends (an edit form, a filter set, a notification list).
+- **Phones** `[DS-PANEL-002]`: below `--breakpoint-roomy` every panel is full screen. No push, no half-width overlay.
+- **When a push panel fits** `[DS-PANEL-003]`: from `--breakpoint-roomy`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
+- **The sidebar gives way first** `[DS-PANEL-004]`: while a push panel is open, the app shell keeps the full sidebar only if the window width, minus `--nav-sidebar`, minus the panel width still leaves `--main-min`. If not, the sidebar shows as the rail until the panel closes. Do this before turning the panel into an overlay.
+- **Push panel width** `[DS-PANEL-005]`: `--panel-push-default` wide. If people can resize it, keep it between `--panel-push-min` and `--panel-push-max`. The main content never goes below `--main-min`.
+- **Overlay width** `[DS-PANEL-006]`: a size tier (`--panel-overlay-sm`, `--panel-overlay-md` or `--panel-overlay-lg`). Its width is the smallest of the tier, half the window width rounded down to a multiple of 4, and never under `--panel-overlay-min`. Part of the page always stays visible behind it.
+- **Two panes** `[DS-PANEL-007]`: a list with a detail pane shows both side by side only if each pane gets at least `--pane-min`. Otherwise it behaves like a phone: the list alone, and the detail opens as its own screen with a back control.
+- **Tokens only** `[DS-PANEL-008]`: panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.
+
+**Example with the proposed values** (an example, not a source): a 320 push panel fits from a window of 880 and a 400 one from 960. With a 320 panel the sidebar shows as the rail from 1024 to 1039 and as the full sidebar from 1040. At a window of 768 the `md` and `lg` overlays are both 384. The `md` overlay reaches its full width at 960 and `lg` at 1280. Two panes start at a window of 800.
+
+| Platform | Measure the parent | Safe area |
+|---|---|---|
+| Web | Container query on the region | `env(safe-area-inset-*)` |
+| Flutter | `LayoutBuilder`, or `MediaQuery.sizeOf` for the window | `MediaQuery` padding |
+| SwiftUI | `GeometryReader` | Safe area insets |
+| Compose | `BoxWithConstraints` | Window insets |
+
+Generate the CSS, Dart, Swift and Kotlin constants from one token source. Do not copy numbers by hand into any of them.
 
 ## Data Tables `[DS-TABLE]`
 
@@ -345,13 +403,60 @@ Always respect `prefers-reduced-motion` `[DS-ANIMATION-004]` — real reasons in
 
 **Easing:** `ease-out` for clicks/taps/interactions. `ease-in-out` for on-screen state changes (progress bars, toggles). `linear` for constant-speed loops only (marquees, spinners). `ease` for subtle ambient animation (toasts). Custom curves (Benjamin De Cock / Linear): `--ease-out-quart: cubic-bezier(.165,.84,.44,1)`, `--ease-out-quint: cubic-bezier(.23,1,.32,1)`, `--ease-out-expo: cubic-bezier(.19,1,.22,1)`, `--ease-in-out-quart: cubic-bezier(.77,0,.175,1)`, `--ease-in-out-quint: cubic-bezier(.86,0,.07,1)`, `--ease-in-out-expo: cubic-bezier(1,0,0,1)`.
 
-Never animate from `scale(0)` — start at 0.9 or higher `[DS-ANIMATION-005]`. Set `transform-origin` to the trigger point (a dropdown expands from its button), not `center` `[DS-ANIMATION-006]`. Guard hover with `@media (hover: hover) and (pointer: fine)` in raw CSS `[DS-ANIMATION-007]`.
+Never animate from `scale(0)` — start at 0.9 or higher `[DS-ANIMATION-005]`. The one exception is an icon swap, which follows `DS-SURFACE-014` (start at 0.25 with a blur). Set `transform-origin` to the trigger point (a dropdown expands from its button), not `center` `[DS-ANIMATION-006]`. Guard hover with `@media (hover: hover) and (pointer: fine)` in raw CSS `[DS-ANIMATION-007]`.
 
 **Button press:** `scale(0.96)` on `:active`, never below 0.95 or it reads exaggerated `[DS-ANIMATION-008]`; not every button needs this — add a `static` prop to disable it where distracting (lists with frequent clicks).
 
 **GPU hints:** `will-change` only helps `transform`, `opacity`, `filter`, `clip-path` — it does nothing for `width`/`height`/`top`/`left`/`background`/`border`/`color`. Add it only when you actually observe first-frame stutter, not preemptively `[DS-ANIMATION-009]`.
 
-No bounce by default in Motion — spring animations are a native-iOS pattern, not standard web UI.
+Springs are allowed in Motion only at `bounce: 0` with a token duration `[DS-MOTION-006]`. No bounce, ever.
+
+## Motion Tokens `[DS-MOTION]`
+
+Timing and easing come from motion tokens. Component code never holds a literal duration, `cubic-bezier(...)` curve or numeric easing array `[DS-MOTION-001]`.
+
+- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-ease-standard`, `--motion-ease-emphasized`, `--motion-distance-short`. Values live in your project's token file. If the project has none, start from the file below.
+- **CSS:** `transition-duration: var(--motion-duration-fast);`. **Tailwind:** `duration-[var(--motion-duration-fast)]`. **StyleX:** `transitionDuration: "var(--motion-duration-fast)"`. **Motion (JS):** import durations and easings from `motion-tokens.ts`.
+- **The token file is the only place literal values may be defined:** `motion-tokens.css`, `.scss`, `.ts` or `.js`. Named keywords (`ease-out`, `linear`) follow the Easing rules above.
+
+Starter token file (starting points to tune in your own product):
+
+```css
+:root {
+  --motion-duration-instant: 100ms; /* micro feedback */
+  --motion-duration-fast: 150ms;    /* icon morph, number ticker, small crossfades */
+  --motion-duration-base: 250ms;    /* label morph, directional, grow-from-trigger */
+  --motion-duration-slow: 400ms;    /* large elements only */
+  --motion-ease-standard: cubic-bezier(.165, .84, .44, 1);  /* ease-out-quart */
+  --motion-ease-emphasized: cubic-bezier(.23, 1, .32, 1);   /* ease-out-quint */
+  --motion-distance-short: 12px;    /* label rise and directional slide */
+}
+```
+
+```ts
+// motion-tokens.ts (seconds, to match Motion's API). Keep values identical to the CSS file.
+export const motionDuration = { instant: 0.1, fast: 0.15, base: 0.25, slow: 0.4 } as const;
+type Bezier = [number, number, number, number]; // mutable, so every version of Motion accepts it as `ease`
+export const motionEase: { standard: Bezier; emphasized: Bezier } = {
+  standard: [0.165, 0.84, 0.44, 1],
+  emphasized: [0.23, 1, 0.32, 1],
+};
+export const motionDistance = { short: 12 } as const; // px, same as --motion-distance-short
+export const motionSpring = {
+  standard: { type: "spring", bounce: 0, duration: motionDuration.base },
+} as const;
+```
+
+`--motion-distance-short` is how far a morph travels. Use one value across the project (8px to 16px suits most UIs) and keep it small next to the element that moves. If the token is missing, the element does not travel.
+
+**Tailwind v4:** `--ease-*`, `--default-transition-duration` and `--default-transition-timing-function` are theme variables, so set them in `@theme`. There is no `--duration-*` namespace: a class such as `duration-fast` generates no CSS and raises no error. Write `duration-[var(--motion-duration-fast)]` and check the computed `transition-duration` after a build.
+
+- **Slow duration** is for large elements only (drawers, sheets, modals entering) and can run up to 500ms. Every other UI animation stays under 300ms, whichever token it uses `[DS-MOTION-002]`.
+- **A morph runs inside one duration token.** Old content leaves while new content arrives, so the morph takes one token, never two added together. Out then in doubles the time and breaks `[DS-ANIMATION-001]` `[DS-MOTION-003]`.
+- **A tray** (a persistent bottom container that shows one step at a time) is one element. Steps swap inside it and its height follows the new step. It never unmounts between steps `[DS-MOTION-004]`.
+- **Context treatment:** when a shared element travels between views, the content it leaves behind may dim and blur. The blur never exceeds the `[DS-SURFACE-014]` value, and the travelling element is never blurred. Under reduced motion there is no blur and no dim ramp `[DS-MOTION-005]`.
+- **Springs** are allowed on the web when `bounce` is `0` and the duration comes from a motion token (`motionSpring.standard`). The CSS side keeps `--motion-ease-standard`. A transition retargeted while it runs, such as a tray dismissed halfway through opening, continues from its current position and velocity, not from the start `[DS-MOTION-006]`.
+- **Delight** (an easter egg, a particle burst, a looping shimmer) never gates the task and never carries meaning alone. A loop pauses under `prefers-reduced-motion` and while the page is hidden. Nothing flashes more than three times a second. A one-off occasion effect plays once and can be skipped. Text inside an easter egg goes through Righter, and humor never appears in an error `[DS-MOTION-007]`.
 
 ## Accessibility `[DS-A11Y]`
 

@@ -1,12 +1,12 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.12.0
+version: 1.18.0
 ---
 
 # Vois Component Selection Skill
 
-> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`) and the Stepper spec as its own file.
+> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`), the Stepper spec as its own file, and the motion specs (`references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`, `motion-logic.md`: label and text morph, shared element transfer, number ticker, icon morph, status button, chart range change and more). This edition inlines the Stepper and the Tray, and leaves the other motion specs out.
 
 You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-tokens`).
 
@@ -123,11 +123,15 @@ Why not skip the empty state? A blank area with no explanation looks broken. Why
 - Short, self-contained, destructive/consequential → AlertDialog (see Job 1)
 - Task touches a handful of fields or more, needs more screen space, or otherwise relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap)
 - Longer task needing full attention → Drawer (full-height, slides from bottom on mobile)
-- Simple contextual input on mobile (quick select, number entry) → Drawer (action sheet pattern)
+- Simple contextual input on mobile (quick select, number entry, confirmation) → Drawer (action sheet pattern)
+- A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it → Drawer used as a tray: one container that stays mounted while the steps swap inside it (see Tray Spec below)
+- Filters or sort controls for a list or table on a mobile layout → Drawer (slides from the bottom, closes when done). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone
 - The user opens a record from a table row: 8 or fewer fields and no related records → Sheet (right-anchored, table stays visible), view first with an Edit action or edit directly; tabs, a timeline, related records, or a long form → full page, reached from an Open action in the Sheet; only a confirmation, not a record → AlertDialog or Dialog
 
-Why not Dialog for table row detail? A centered Dialog hides the table and breaks the sense that the record belongs to the row; a right-anchored Sheet keeps the list visible, lets users step to the next row, and can escalate to a full page. Why not Dialog for longer tasks? Centered dialogs feel disconnected from the data they relate to — Sheet keeps spatial proximity. Why not Drawer on desktop for simple tasks? Takes up too much screen real estate; Dialog is faster to close. Why not Sheet for a single-field inline edit (e.g. one row's status)? Sheet's own header/footer chrome is more than one field needs and visually detaches the edit from the exact cell it changes — anchor it as a Popover instead. Why not Popover once more than one field is involved? Labels, inputs, and validation for multiple fields don't fit a small anchored panel — move to Sheet.
-*At a glance:* Popover = exactly one field, anchored to the trigger. Dialog = task is self-contained (1-4 fields). Sheet = a handful of fields or more, contextual, user may want to reference the triggering item.
+Why not Sheet for filters on mobile, when the user wants to see the list? On a phone a right-anchored Sheet leaves little of the list showing, so the reason to prefer it over a Drawer does not hold. Filters are a temporary task that opens and closes, which is what the Drawer is for. On wider layouts the Sheet branch still applies. Why not Dialog for table row detail? A centered Dialog hides the table and breaks the sense that the record belongs to the row; a right-anchored Sheet keeps the list visible, lets users step to the next row, and can escalate to a full page. Why not Dialog for longer tasks? Centered dialogs feel disconnected from the data they relate to — Sheet keeps spatial proximity. Why not Drawer on desktop for simple tasks? Takes up too much screen real estate; Dialog is faster to close. Why not Sheet for a single-field inline edit (e.g. one row's status)? Sheet's own header/footer chrome is more than one field needs and visually detaches the edit from the exact cell it changes — anchor it as a Popover instead. Why not Popover once more than one field is involved? Labels, inputs, and validation for multiple fields don't fit a small anchored panel — move to Sheet.
+*At a glance:* Popover = exactly one field, anchored to the trigger. Dialog = task is self-contained (1-4 fields). Sheet = a handful of fields or more, contextual, user may want to reference the triggering item. Drawer = a task on mobile, or filters and sort on a narrow screen. A tray is a Drawer used as a sequence of steps.
+
+*Panel roles* (full rules in `vois-tokens`, `DS-PANEL-*`): Sheet is an `overlay-panel`, right-anchored, and becomes a push-panel only if the page template says so and `DS-PANEL-003` passes. Drawer is an `overlay-panel`, full-height, and full screen below `--breakpoint-roomy` (`DS-PANEL-002`). Drawer here means the shadcn Drawer, not a side panel.
 
 **Job 4 — Contain a unit of content** `JOB-CONTAIN-CONTENT`
 *You need a surface to group related content into a discrete visual block.*
@@ -147,6 +151,8 @@ Why not wrap everything in a Card? It implies a discrete, interactive item — u
 
 Why not Drawer for persistent navigation? Drawer is temporary; navigation the user returns to shouldn't require reopening — use Sidebar. Why not Sidebar for contextual tools? Sidebar is structural/layout; Sheet or Panel is contextual to a selection.
 *At a glance:* Sheet slides from the right edge with partial overlap; Drawer typically comes from the bottom on mobile and conveys a distinct task mode.
+
+*Panel roles:* Sheet and Drawer are `overlay-panel` (widths and phone behavior follow `DS-PANEL-006` and `DS-PANEL-002`). Panel is a `push-panel`: a persistent secondary pane that pushes the main content when `DS-PANEL-003` passes, and is an overlay-panel otherwise.
 
 ### Navigation & Switching
 
@@ -297,6 +303,25 @@ shadcn/ui ships no Stepper. Build it once per workspace and reuse it; don't rebu
 - **Behavior:** Back and Next move between steps; the indicator is not in the tab order. A completed step is clickable only when going back loses nothing the user typed. Each step validates before the next opens. Back keeps what the user typed. On a step change, move focus to the new step's heading. The last step is a result ("Done") with no Next.
 - **Layout:** top of the form container, above the step content. One Stepper per flow. Below the `sm` breakpoint, show only the current label and a line such as "Step 2 of 3: Team", and keep the markers. Markers are 32px; connectors are 1px lines.
 - **Motion and contrast:** color changes take 200ms or less and respect `prefers-reduced-motion`. Label on its background is normal text (4.5:1); the marker border against the page is a UI component (3:1).
+
+---
+
+## Tray Spec
+
+A tray is a transient bottom surface that walks the user through steps, one job at a time, over the screen they came from. It is a Drawer used as a sequence of steps (`JOB-OVERLAY-INTERACTION`). It keeps the screen behind it visible, which is its reason to exist. Long content, content with its own URL, or a task the user will stay in belongs on a full screen. Every timing and easing value comes from a motion token (`vois-tokens`).
+
+- **One container, one identity.** A step change never unmounts the container (`DS-MOTION-004`).
+- **Bottom edge pinned.** The top edge moves to fit the new step. The old step fades out and the new step fades in during the same move, inside one duration token (`--motion-duration-base`, easing `--motion-ease-standard`).
+- **Adjacent steps differ visibly in height.** That is a content rule. If two steps would be the same height, change the content. Do not fake it with motion.
+- **One job per step:** one piece of content, or one primary action. A header icon does two jobs: close on the first step, back on later steps.
+- **Newest wins.** A tap, keypress or back action during a swap is honoured at once and the swap continues from where it is (`DS-MOTION-006`).
+- **Focus** moves to the new step's heading or first control after the swap ends, never during it. The tray is a dialog. Focus returns to the trigger when it closes.
+- **Theme** follows the context. Inside a dark flow the tray is dark.
+- **How the height changes**, in order of preference: (1) `clip-path` with the larger height held and the top edge animated by `inset()` (put any shadow on a wrapper outside the clipped element); (2) a transform that lays out at the final height and animates `scaleY`, if the project already uses Motion layout; (3) instant resize with a crossfade, always acceptable and the choice for reduced motion; (4) animating `height`, for content that cannot be measured before the swap. Test the chosen approach on a real iPhone and a mid-range Android before shipping.
+- **Open:** the backdrop dims first, then the tray rises from the trigger's edge, in `--motion-duration-base`. **Dismiss:** a close control, a tap on the backdrop, and Escape. Never make a swipe the only way out.
+- **Expand to a full screen** when the flow grows: rounded corners flatten, the container grows to full height, the step content crossfades, and back reverses it. This may use `--motion-duration-slow` (`DS-MOTION-002`).
+- **Button relocation.** When a screen's primary action opens a tray whose step has the same primary action, the button persists: it narrows to the tray's width and a secondary action fades in beside it.
+- **Reduced motion:** the tray fades in, the button swaps in place, the expand is an instant swap, and a resize happens at once with the content crossfaded.
 
 ---
 
