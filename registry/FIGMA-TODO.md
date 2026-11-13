@@ -71,6 +71,8 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
   - Components: the Hero CTA label binds Line height/Medium (26). The button stays 48 tall and the label stays centered.
   - Text bindings are not exported variables, so the checksum is unchanged.
 
+- **Tabs, same day:** the four `Component/Tab/Tab-*` variables got Web code syntax (`--tab-resting`, `--tab-hover`, `--tab-selected`, `--tab-disabled`), so the export carries them. Re-export checksum `c53f1c05` (767 tokens).
+
 ## Still open
 
 1. **Type that needs a design decision.** Each of these changes the layout, so none was forced:
@@ -80,3 +82,4 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
 2. **`size-40` outside fields.** Menu items (218 on Selectors), Icon Buttons (237 on Molecules) and example layouts (345 on Inputs) still bind raw `size-40`. That's fine as a size, but menu items might want a semantic token such as `--size-menu-item`.
 3. **Pre-existing overlap.** In Dropdown Field, the Disabled and Read-only variants overlap, at Default and Native.
 4. **Switch details.** The knob's drop shadow is unbound (the registry uses `--shadow-small`). The Web Switch focus ring binds `--border-state-focus`, and `--switch-focus` is unused. The Android Switch off track has no outline.
+5. **Values with no token, used by Radio and Tabs.** The Radio circle is 22 (no `--size-22`), and its focus ring sits 3px out. The Regular Tab pill has 10px sides (unbound); the registry uses `--space-padding-small` (12). The Segment variables have no Web code syntax yet: add it when the Segmented Control is built.

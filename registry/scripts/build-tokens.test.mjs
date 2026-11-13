@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { build, buildFiles, applyPending, pendingDuplicates, readPending, cssValue, hexToOklch, oklchToSrgb, parseHex, shadowCss, fnv1a } from "./build-tokens.mjs";
+import { build, buildFiles, buildShape, applyPending, pendingDuplicates, readPending, cssValue, hexToOklch, oklchToSrgb, parseHex, shadowCss, fnv1a } from "./build-tokens.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const read = (p) => readFileSync(join(registryDir, p), "utf8");
@@ -135,6 +135,52 @@ test("the default brand is blue, and its fonts are generic system families", () 
   }
   assert.deepEqual(Object.keys(realBrand.tokens).sort(), [...realExport.brandSlots].sort());
   for (const s of ["--font-family-brand", "--font-family-system", "--font-family-written", "--font-family-mono"]) assert.equal(realExport.tokens[s], null, `${s} must be null in the export`);
+});
+
+test("shape roles: the committed shape-tokens.css is what the generator writes, from shape.json", () => {
+  const css = buildShape(JSON.parse(read("source/shape.json")), realExport.tokens);
+  assert.equal(read("vois/tokens/shape-tokens.css"), css);
+  for (const r of ["--shape-subtle: var(--radius-buttons-and-controls);", "--shape-pill: 9999px;", "--shape-circle: 50%;", "--shape-responsive-soft: clamp(var(--radii-16), 4cqi, var(--radii-40));", "--shape-responsive-elliptical: 4% / 6%;"]) assert.ok(css.includes(r), r);
+});
+
+test("shape roles fail closed on anything odd", () => {
+  const t = { "--radii-16": 16, "--radii-40": 40, "--radius-card": "=--radii-16", "--blue-9": "#1d88ff", "--size-24": 24 };
+  const sh = (roles) => ({ format: 1, roles });
+  const ok = { type: "proportional", min: "=--radii-16", scale: "4cqi", max: "=--radii-40" };
+  assert.match(buildShape(sh({ "--shape-a": ok }), t), /--shape-a: clamp\(var\(--radii-16\), 4cqi, var\(--radii-40\)\);/);
+  assert.match(buildShape(sh({ "--shape-a": { type: "fixed", value: "=--radius-card" } }), t), /--shape-a: var\(--radius-card\);/, "an alias chain to a number is fine");
+  const bad = [
+    [{ format: 2, roles: { "--shape-a": ok } }, /format must be 1/],
+    [sh({}), /non-empty/],
+    [sh([]), /non-empty/],
+    [sh({ "--radius-a": ok }), /not a --shape-\* name/],
+    [sh({ "--shape-A": ok }), /not a --shape-\* name/],
+    [sh({ "--shape-a": null }), /must be an object/],
+    [sh({ "--shape-a": { type: "squircle" } }), /unknown type/],
+    [sh({ "--shape-a": { type: "capsule", value: "9999px" } }), /value is not a key/],
+    [sh({ "--shape-a": { type: "fixed" } }), /needs value/],
+    [sh({ "--shape-a": { type: "fixed", value: "19px" } }), /alias to a radius token/],
+    [sh({ "--shape-a": { type: "fixed", value: "=--blue-9" } }), /alias to a radius token/],
+    [sh({ "--shape-a": { type: "fixed", value: "=--size-24" } }), /alias to a radius token/],
+    [sh({ "--shape-a": { type: "fixed", value: "=--radii-99" } }), /not a token/],
+    [sh({ "--shape-a": { ...ok, scale: "4vw" } }), /scale must be/],
+    [sh({ "--shape-a": { ...ok, scale: "0cqi" } }), /scale must be/],
+    [sh({ "--shape-a": { ...ok, scale: "21cqi" } }), /scale must be/],
+    [sh({ "--shape-a": { ...ok, scale: "4cqi; color: red" } }), /scale must be/],
+    [sh({ "--shape-a": { ...ok, min: "=--radii-40", max: "=--radii-16" } }), /min must be below max/],
+    [sh({ "--shape-a": { ...ok, max: "=--radii-16" } }), /min must be below max/],
+    [sh({ "--shape-a": { type: "elliptical", horizontal: "4%", vertical: "60%" } }), /percentages above 0 and at most 50/],
+    [sh({ "--shape-a": { type: "elliptical", horizontal: "4px", vertical: "6%" } }), /percentages/],
+    [sh({ "--shape-a": { type: "elliptical", horizontal: "0%", vertical: "6%" } }), /percentages/],
+    [sh({ "--shape-a": { type: "capsule", note: 3 } }), /note must be text/],
+  ];
+  for (const [input, re] of bad) assert.throws(() => buildShape(input, t), re, JSON.stringify(input));
+  assert.throws(() => buildShape(sh({ "--shape-a": ok }), { ...t, "--shape-a": 4 }), /already has a token/);
+  // A radius token added in figma-pending.json counts, as it does for vois-tokens.css.
+  const withPending = applyPending(t, [], { format: 1, add: { "--radii-20": 20 }, change: {} });
+  assert.match(buildShape(sh({ "--shape-a": { type: "fixed", value: "=--radii-20" } }), withPending), /var\(--radii-20\)/);
+  // A radius-named token that is not a number (a color, by mistake) is caught, not written as var().
+  assert.throws(() => buildShape(sh({ "--shape-a": { type: "fixed", value: "=--radius-oops" } }), { ...t, "--radius-oops": "#ffffff" }), /does not resolve to a number/);
 });
 
 test("z-index layers are unitless whole numbers; only --z-<name> counts", () => {

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.21.0] - 2026-11-13
+
+### Changed
+- Switch views (`JOB-SWITCH-VIEWS`) points to the registry's `vois-tabs`: pill by default, underline with `variant="underline"`. The "Tabs styled as pills" branch says the item is pill by default.
+- Choose from a list (`JOB-CHOOSE-FROM-LIST`, only 2 options), Capture a binary preference (`JOB-BINARY-PREFERENCE`, mutually exclusive) and `LOOKALIKE-003` point to the registry's `vois-radio-group` when a project has no RadioGroup.
+
 ## [1.20.0] - 2026-11-13
 
 ### Changed

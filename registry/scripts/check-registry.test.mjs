@@ -534,6 +534,19 @@ test("whole registry: a stale or hand-edited motion-tokens.css fails", () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("whole registry: a stale shape-tokens.css, a bad shape.json, or a missing shape item file fails", () => {
+  const run = (edit) => {
+    const dir = mkdtempSync(join(tmpdir(), "vois-reg-"));
+    try { cpSync(registryDir, dir, { recursive: true, filter: (p) => !p.includes("node_modules") }); edit(dir); return checkRegistry(dir); } finally { rmSync(dir, { recursive: true, force: true }); }
+  };
+  const stale = run((dir) => { const f = join(dir, "vois/tokens/shape-tokens.css"); writeFileSync(f, readFileSync(f, "utf8").replace("4cqi", "5cqi")); });
+  assert.ok(stale.some((p) => /shape-tokens\.css: not what build-tokens\.mjs writes/.test(p)), stale.join("\n"));
+  const badSource = run((dir) => { const f = join(dir, "source/shape.json"); writeFileSync(f, readFileSync(f, "utf8").replace('"type": "capsule"', '"type": "blob"')); });
+  assert.ok(badSource.some((p) => /shape build: .*unknown type/.test(p)), badSource.join("\n"));
+  const unlisted = run((dir) => { const f = join(dir, "registry.json"); const j = JSON.parse(readFileSync(f, "utf8")); const it = j.items.find((i) => i.name === "vois-tokens"); it.files = it.files.filter((x) => !x.path.endsWith("shape-tokens.css")); writeFileSync(f, JSON.stringify(j, null, 2)); });
+  assert.ok(unlisted.some((p) => /shape-tokens\.css/.test(p)), "a shape-tokens.css that no item lists is a problem: " + unlisted.join("\n"));
+});
+
 test("token reads: a definition inside a comment does not vouch for a read", () => {
   assert.equal(refs('h-[var(--fake)]\n// --fake: 1px').length, 1, "line comment");
   assert.equal(refs('h-[var(--fake)]\n/* --fake: 1px */').length, 1, "block comment");

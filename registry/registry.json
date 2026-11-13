@@ -7,7 +7,7 @@
       "name": "vois-tokens",
       "type": "registry:theme",
       "title": "Vois tokens",
-      "description": "Default values for every Vois token, generated from the Vois Figma variables, with a generic blue brand, plus the motion tokens in their own file. Use it when the Vois MCP isn't serving your workspace's live values.",
+      "description": "Default values for every Vois token, generated from the Vois Figma variables, with a generic blue brand, plus the motion tokens and the shape roles in their own files. Use it when the Vois MCP isn't serving your workspace's live values.",
       "files": [
         {
           "path": "vois/tokens/vois-tokens.css",
@@ -18,6 +18,11 @@
           "path": "vois/tokens/motion-tokens.css",
           "type": "registry:file",
           "target": "src/styles/motion-tokens.css"
+        },
+        {
+          "path": "vois/tokens/shape-tokens.css",
+          "type": "registry:file",
+          "target": "src/styles/shape-tokens.css"
         }
       ]
     },
@@ -149,6 +154,46 @@
           "path": "vois/switch/switch.tsx",
           "type": "registry:ui",
           "target": "components/ui/switch.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-radio-group",
+      "type": "registry:ui",
+      "title": "Vois Radio Group",
+      "description": "shadcn/ui's RadioGroup (Radix) on Vois tokens, from the Figma Radio set: a 22 circle with a 3px --control-border ring that grows to an 8px --control-on ring when selected (a 6px hole), disabled, an aux variant, the --border-state-focus ring, arrow keys with one tab stop, and a 44 hit area.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/radio-group/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radio-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-tabs",
+      "type": "registry:ui",
+      "title": "Vois Tabs",
+      "description": "shadcn/ui's Tabs (Radix) on Vois tokens, in two styles from Figma: pill (the default, the Tab set: 28 or 40 tall, --tab-* fills) and underline (the Tab Nav set: 48 tall, a 2px --border-accent edge when active). Disabled wins over active, and arrow keys move between tabs.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/tabs/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs.tsx"
         }
       ]
     }

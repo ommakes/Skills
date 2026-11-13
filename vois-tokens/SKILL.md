@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.30.1
+version: 1.31.0
 ---
 
 # Vois Tokens Skill
@@ -77,6 +77,7 @@ building fresh, not just the bare rule text:**
 | `references/typography.md` | Headings, body text, type scale, fonts, copy punctuation | `[DS-TYPOGRAPHY]` |
 | `references/color.md` | Color tokens, OKLCH, dark mode, light-dark() | `[DS-COLOR]` |
 | `references/components.md` | Component variants, cva, modals/dialogs, accordions | `[DS-COMPONENT]` `[DS-MODAL]` |
+| `references/shape.md` | Choosing corner shape: shape roles before numbers, fixed vs proportional vs elliptical vs capsule, large visual surfaces, continuous corners | `[DS-SHAPE]` |
 | `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
 | `references/elevation.md` | Shadow/elevation tiers, modal scrim, z-index pairing | `[DS-ELEVATION]` |
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
@@ -118,6 +119,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Quotes are curly, not straight `[DS-TYPOGRAPHY-010]`
 
 **Color**
+- [ ] Every corner uses a shape role chosen for the component, not a one-off radius: controls fixed, tags and chips pill, and only visual surfaces that resize with the layout responsive (structural UI stays fixed) `[DS-SHAPE-001]` `[DS-SHAPE-002]` `[DS-SHAPE-003]` `[DS-SHAPE-005]`
 - [ ] No hardcoded hex values `[DS-COLOR-001]`
 - [ ] Status uses the `info`/`positive`/`negative`/`notice` role tokens, never a palette class or stock variant `[DS-COLOR-008]`
 - [ ] No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]`
