@@ -137,6 +137,20 @@ test("the default brand is blue, and its fonts are generic system families", () 
   for (const s of ["--font-family-brand", "--font-family-system", "--font-family-written", "--font-family-mono"]) assert.equal(realExport.tokens[s], null, `${s} must be null in the export`);
 });
 
+test("z-index layers are unitless whole numbers; only --z-<name> counts", () => {
+  const n = new Set();
+  assert.equal(cssValue(1000, n, "--z-dropdown"), "1000");
+  assert.equal(cssValue(0, n, "--z-base"), "0");
+  assert.equal(cssValue(-1, n, "--z-behind"), "-1", "a negative z-index is valid");
+  for (const bad of [1000.5, 0.1]) assert.throws(() => cssValue(bad, n, "--z-modal"), /a z-index is a whole number/, String(bad));
+  // Lookalikes stay px: no dash after z, nothing after the dash, or z later in the name.
+  for (const name of ["--zoom-level", "--z", "--z-", "--size-z-8", "--Z-modal"]) assert.equal(cssValue(8, n, name), "8px", name);
+  // Through the whole build: the generated CSS has no unit on a z layer.
+  const css = build(mini({ tokens: { "--z-dropdown": 1000, "--zoom": 4 } }), brand());
+  assert.match(css, /--z-dropdown: 1000;/);
+  assert.match(css, /--zoom: 4px;/);
+});
+
 test("fonts: weights are unitless whole numbers, families are validated lists", () => {
   const n = new Set();
   assert.equal(cssValue(600, n, "--font-weight-semi-bold"), "600");

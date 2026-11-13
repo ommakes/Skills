@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.30.1] - 2026-11-13
+
+### Changed
+- `references/figma-variables.md`: a new row for the z-index layers. `--z-dropdown`, `--z-overlay` and `--z-modal` are now Figma variables in the `Values` collection, written as whole numbers with no unit, and paired with the elevation tiers (`DS-ELEVATION-002`).
+
 ## [1.30.0] - 2026-11-13
 
 ### Added

@@ -424,9 +424,9 @@
       "source_file": "vois-components/SKILL.md",
       "framing": "The user needs to turn something on or off, or agree or disagree.",
       "decision_tree": [
-        { "condition": "Setting takes effect immediately (no save button required)", "recommendation": "Switch (or Toggle — same semantic, check your manifest)" },
+        { "condition": "Setting takes effect immediately (no save button required)", "recommendation": "Switch (or Toggle — same semantic, check your manifest). If the project has none, the registry's vois-switch item: 32 x 20 on web, 52 x 32 native" },
         { "condition": "Setting is part of a form submitted later", "sub_branches": [
-          { "condition": "One option in a group of related options", "recommendation": "Checkbox" },
+          { "condition": "One option in a group of related options", "recommendation": "Checkbox. If the project has none, the registry's vois-checkbox item" },
           { "condition": "Single standalone agree/consent", "recommendation": "Checkbox (not Switch — Switch implies immediate effect)" }
         ] },
         { "condition": "Mutually exclusive choice between two options in a form", "recommendation": "Radio buttons (not Checkbox — Checkbox implies multi-select is possible)" }

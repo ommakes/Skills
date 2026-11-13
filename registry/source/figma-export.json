@@ -168,6 +168,7 @@
   "--breakpoint-md": 768,
   "--breakpoint-sm": 600,
   "--control-aux": ["=--black","=--white"],
+  "--control-border": "=--gray-6",
   "--control-disabled": ["=--black-a2","=--white-a2"],
   "--control-focus": "=--blue-7",
   "--control-off": ["=--gray-2","=--gray-8"],
@@ -645,6 +646,7 @@
   "--switch-off": ["=--gray-2","=--gray-8"],
   "--switch-on": "=--base-accent-solid",
   "--switch-oncolor": ["=--white","=--black"],
+  "--switch-outline": "=--gray-6",
   "--text-accent": null,
   "--text-auxiliary": ["=--white","=--black"],
   "--text-hint": ["=--gray-8","=--gray-7"],
@@ -759,7 +761,10 @@
   "--yellow-a6": "#dff10b66",
   "--yellow-a7": "#dff10b80",
   "--yellow-a8": "#dff10b99",
-  "--yellow-a9": "#dff10bb2"
+  "--yellow-a9": "#dff10bb2",
+  "--z-dropdown": 1000,
+  "--z-modal": 1300,
+  "--z-overlay": 1200
  },
  "shadows": {
   "--shadow-base": [[0,0,1,1,"#0000000a"],[0,0,2,0,"#00000014"],[0,1,4,1,"#0000000a"]],

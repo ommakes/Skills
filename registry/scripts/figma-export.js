@@ -4,7 +4,7 @@
 // `node registry/scripts/build-tokens.mjs --verify-export <checksum>`.
 //
 // What it exports: every variable that has Web code syntax (its CSS name). A value is a color
-// (#rrggbb or #rrggbbaa), a number (px) or an alias ("=--name"). When Light and Dark differ the value is
+// (#rrggbb or #rrggbbaa), a number (no unit: build-tokens.mjs adds px, or ms, or none) or an alias ("=--name"). When Light and Dark differ the value is
 // [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers.
 // The seventeen brand slots (DS-TOKEN-004: thirteen colors, four font families) are written as null: a product's brand never leaves Figma here.
 

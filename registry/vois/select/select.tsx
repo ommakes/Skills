@@ -5,7 +5,8 @@
 // Figma Dropdown Field. The list follows the Figma Dropdown Menu and Menu Item: --bg-card, a
 // --border-pretty border, --radius-small-container, --shadow-medium; items at least 40 tall with
 // --select-* states, and the selected item in --select-soft-active with --text-accent.
-// z-50 is shadcn's layer: the Vois file has no z-index variables yet (registry/FIGMA-TODO.md).
+// The list sits on the --z-dropdown layer, with the --shadow-medium tier that goes with it
+// (vois-tokens elevation.md).
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Select as SelectPrimitive } from "radix-ui"
@@ -83,7 +84,7 @@ function SelectContent({ className, children, position = "popper", ...props }: R
         data-slot="select-content"
         position={position}
         className={cn(
-          "relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) min-w-[8rem] overflow-x-hidden overflow-y-auto",
+          "relative z-[var(--z-dropdown)] max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) min-w-[8rem] overflow-x-hidden overflow-y-auto",
           "rounded-[var(--radius-small-container)] border border-[color:var(--border-pretty)] bg-[color:var(--bg-card)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
           position === "popper" && "w-full min-w-(--radix-select-trigger-width) data-[side=bottom]:translate-y-[var(--space-4)] data-[side=top]:-translate-y-[var(--space-4)]",
           className

@@ -111,6 +111,46 @@
           "target": "components/ui/select.tsx"
         }
       ]
+    },
+    {
+      "name": "vois-checkbox",
+      "type": "registry:ui",
+      "title": "Vois Checkbox",
+      "description": "shadcn/ui's Checkbox (Radix) on Vois tokens, from the Figma Checkbox set: a 24 box with a 2px inside border, checked and indeterminate marks, disabled, the --control-focus ring, an aux variant for strong backgrounds, and a 44 hit area.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/checkbox/checkbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/checkbox.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-switch",
+      "type": "registry:ui",
+      "title": "Vois Switch",
+      "description": "shadcn/ui's Switch (Radix) on Vois tokens, from the Figma Web and iOS Switch sets: 32 x 20 on web and 52 x 32 native, a knob that slides in --motion-duration-fast (still under reduced motion), disabled, the --border-state-focus ring and a 44 hit area. For a setting that takes effect at once.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/switch/switch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/switch.tsx"
+        }
+      ]
     }
   ]
 }

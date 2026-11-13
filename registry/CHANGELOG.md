@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.4.0] - 2026-11-13
+
+- **New item `vois-checkbox`** (`vois/checkbox/checkbox.tsx`), shadcn's Checkbox (Radix) with the same API plus `variant`. From the Figma Checkbox set:
+  - A 24 box with a 2px `--border-default` inside border and `--radii-4`.
+  - Checked and indeterminate: `--control-on` with the mark in `--icon-on-dark`.
+  - Disabled: `--control-disabled`, mark `--icon-state-disabled`. Disabled wins over checked.
+  - Focus: a 2px `--control-focus` ring 2px outside the box.
+  - `variant="aux"`: the Figma Aux set, for a checkbox on a strong color.
+  - The hit area is at least `--hit-area-min`.
+- **New item `vois-switch`** (`vois/switch/switch.tsx`), shadcn's Switch (Radix) with the same API plus `size`. From the Figma Web Switch and iOS Switch sets:
+  - `default` (web) 32 x 20 with a 14 knob; `native` 52 x 32 with a 28 knob (the iOS Switch).
+  - Off `--switch-off`, on `--switch-on`, knob `--switch-knob`. Disabled: `--switch-disabled` and an `--icon-state-disabled` knob. Disabled wins over on.
+  - Focus: a 2px `--border-state-focus` ring 2px outside the track.
+  - The knob slides in `--motion-duration-fast` and stays still under reduced motion.
+  - The hit area is at least `--hit-area-min`.
+- **Contrast for the control edges** (WCAG 1.4.11, 3:1). Two new Figma tokens, both gray-6:
+  - `--control-border`: the unchecked Checkbox and Radio outline. Inputs and Selects keep `--border-default`.
+  - `--switch-outline`: a 1px edge on the off Switch track, whose fill is about 1.1:1 on white.
+- **Z-index layers** from Figma: `--z-dropdown` 1000, `--z-overlay` 1200, `--z-modal` 1300. `build-tokens.mjs` writes `--z-*` as a whole number with no unit (it wrote px before). The Select list moves from shadcn's `z-50` to `--z-dropdown`.
+- **The Figma brand slots show the generic blue default**, the same as `brand-default.json`, not a product's colors. The export writes brand slots as null, so the checksum doesn't change for this.
+- **Type audit, second round in Figma:** 198 more text layers bound to exact type tokens, and no mixed-style layers left in component sets. The rest are listed in `FIGMA-TODO.md` as design decisions.
+- Re-export checksum `954d63b5` (763 tokens).
+- Both components were checked in Chromium, in light, dark and under reduced motion.
+
 ## [0.3.1] - 2026-11-13
 
 - **The blues are calmer.** Every Global blue step (`--blue-1` to `--blue-12`) has about 15% less chroma, with the same OKLCH lightness and hue, so contrast barely moves. The blue alpha steps (`--blue-a1` to `--blue-a12`) use the new `blue-8` with their old alpha. The change was made in Figma first. Re-export checksum `48eab083` (758 tokens).

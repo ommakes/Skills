@@ -8,6 +8,7 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-theme`: shadcn's variables pointed at those tokens.
 - `vois-spinner`: the loading arc.
 - `vois-input` and `vois-select`: fields at 36 (web), 48 (native) and 32 (compact, inline in tables).
+- `vois-checkbox` and `vois-switch`: the Figma Checkbox and the Web and iOS Switch.
 - `vois-button`: the first component, with icons and a loading state.
 
 Next come the components blind builds hand-built most (`vois-components` lookalike rows `LOOKALIKE-003` and `004`, plus Avatar): RadioGroup or ToggleGroup, Stepper and Avatar.
@@ -20,7 +21,7 @@ The built files are not committed. Build them, then add the items from the build
 
 ```bash
 cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
-cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json
+cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json
 ```
 
 Where the built registry is hosted (so you can install by URL) is not decided yet.
@@ -92,6 +93,10 @@ So the file empties as Figma catches up. The checker fails if a pending token is
 
 The file is empty today. The Button's tokens were made this way on 2026-11-13 and moved into Figma the same day.
 
+### Z-index layers
+
+`--z-dropdown` (1000), `--z-overlay` (1200) and `--z-modal` (1300) come from the Figma `Values` collection, written without a unit. The gaps leave room for a sticky layer (1100) and toasts (1400) later. Each layer goes with an elevation tier (vois-tokens `elevation.md`): a menu at `--shadow-medium` on `--z-dropdown`, a popover at `--shadow-large` on `--z-overlay`, a dialog at `--shadow-xlarge` on `--z-modal`.
+
 ### Motion tokens (`motion-tokens.css`)
 
 The `--motion-*` tokens go to their own generated file, because the vois-tokens detector allows literal durations and curves only in a file named `motion-tokens.css` (`DS-MOTION-001`).
@@ -153,7 +158,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 
 **Checked against Figma (2026-11-13).** Fills, borders, focus rings and disabled text come from the Figma button sets. Notes:
 
-- **Primary text** is the brand slot `--action-primary-text`: white on the blue default, black in Figma on Goldie.
+- **Primary text** is the brand slot `--action-primary-text`: white on the blue default. The Figma file uses the same blue default, so it shows no product brand.
 - **`destructive-soft` disabled** uses `--soft-negative-disabled` and `--soft-negative-disabled-text` (Global red alpha), from the Figma Soft Negative Disabled state.
 
 ### `vois-input` and `vois-select`
@@ -188,9 +193,28 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 - A disabled trigger dims its chevron to `--icon-state-disabled`.
 
 **Not covered here:**
-- The list's layer is shadcn's `z-50`, because the Vois file has no z-index variables yet.
+- The list sits on the `--z-dropdown` layer (1000).
 - Open and close are not animated.
 - The field's label, description and helper text are separate: use your form layout.
+
+### `vois-checkbox` and `vois-switch`
+
+`vois/checkbox/checkbox.tsx` and `vois/switch/switch.tsx` are shadcn's Checkbox and Switch (Radix) on Vois tokens, from the Figma Selectors page.
+
+**Which one:** a Switch for a setting that takes effect at once, a Checkbox for a choice that a form submits later (`vois-components` `JOB-BINARY-PREFERENCE`).
+
+| | Checkbox | Switch |
+|---|---|---|
+| Size | 24 box, 2px inside border | `default` 32 x 20, knob 14; `native` 52 x 32, knob 28 |
+| Off | `--control-border` border | `--switch-off` track with a 1px `--switch-outline` edge |
+| On | `--control-on`, mark `--icon-on-dark` (also indeterminate) | `--switch-on` track, `--switch-knob` knob |
+| Disabled | `--control-disabled`, mark `--icon-state-disabled` | `--switch-disabled`, knob `--icon-state-disabled` |
+| Focus | 2px `--control-focus`, 2px out | 2px `--border-state-focus`, 2px out |
+| Other | `variant="aux"` for a strong background | The knob slides in `--motion-duration-fast` |
+
+Both have a hit area of at least `--hit-area-min`, and disabled wins over on. Labels are separate, as in shadcn: pair each one with a `<label>`.
+
+**Contrast.** The unchecked checkbox border (`--control-border`) and the off Switch edge (`--switch-outline`) are gray-6, about 4.1:1 on the light page and 4.4:1 on dark, so the control boundary meets the 3:1 of WCAG 1.4.11. The Switch fill alone (`--switch-off`) is about 1.1:1, which is why the edge is there. Inputs and Selects keep `--border-default`.
 
 ### `vois-spinner`
 
