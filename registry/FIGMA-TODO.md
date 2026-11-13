@@ -65,12 +65,15 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
 
   - Re-export checksum `954d63b5` (763 tokens).
 
+- **Type decisions, same day:**
+  - Selectors: the 10px text on a 14px line height now binds Line height/Micro (12): 9 main layers in Date Picker, Native Horizontal Tabs and Bottom Nav, and the 109 layers that use them.
+  - Calendar Picker: the weekday labels are 10px (Size/Micro, line height 12) and two letters (Su Mo Tu We Th Fr Sa), so they fit the 19px day columns. At 10px, three letters overlapped.
+  - Components: the Hero CTA label binds Line height/Medium (26). The button stays 48 tall and the label stays centered.
+  - Text bindings are not exported variables, so the checksum is unchanged.
+
 ## Still open
 
 1. **Type that needs a design decision.** Each of these changes the layout, so none was forced:
-   - Selectors: 20 layers at 10px with line height 14 (Date Picker, Native Horizontal Tabs, Bottom Nav). Take Line height/Micro (12), or add a 14 token.
-   - Selectors: Calendar weekday labels at 8px, below the scale. The nearest is 10/12.
-   - Components: Hero CTA at 18px with an AUTO line height. Line height/Medium (26) is the pair, but the box grows.
    - Components: one page-layout text at 12/15. Line height/Tiny is 16.
    - Molecules: the Story "Ambivalent" emoji is 24px on line height 40 (bound to 3XL, the pair for 32px). 24/32 may be meant.
    - Leave as is: the CVC card drawing (5.03 and 7.54px, a scaled illustration), the Apple and Facebook SSO buttons (their own type), and the Google Sans layers (mock-ups of Google's location dialogs, not SSO buttons).
