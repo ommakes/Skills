@@ -9,8 +9,8 @@ echo ""
 failed=0
 success=0
 
-# Find all SKILL.md files
-for skill_file in */SKILL.md; do
+# Find all SKILL.md files, including nested ones (ux-research/*)
+for skill_file in */SKILL.md */*/SKILL.md; do
   if [ ! -f "$skill_file" ]; then
     continue
   fi

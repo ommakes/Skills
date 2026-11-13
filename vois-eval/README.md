@@ -101,7 +101,7 @@ Per task, skills on did better on 18, the same on 26 and worse on 1 (DT-02, one 
 - Skills on still produced a `fake-avatar` (an initials circle) in 2 of 3 samples of LP-05a, which is a gap in the skills, not noise.
 - The checks are heuristics and have not been reviewed by a designer. Passing means the obvious failure did not happen.
 
-The next full run of this model will be the first one the regression check can compare against this one. The `DT-03` results in this file should be excluded when it does.
+The next full run of this model will be the first one the regression check can compare against this one. `DT-03` is no longer a task (DT-06 replaced it), and the check compares only the tasks both runs contain, so DT-03 drops out of that comparison on its own.
 
 ## Using a run's results
 
