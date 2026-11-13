@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.28.2] - 2026-11-13
+
+### Changed
+
+- **Breakpoint table in `css-architecture.md` follows the grid names.** `md` (48em, 768px) is now `roomy` and `lg` (64em, 1024px) is now `wide`, with no aliases. `snug` (37.5em, 600px) is added. `sm` (40em) and `xl` (80em) stay: they are not grid classes, and `sm` is still the container width in `PATH-B-NARROW`. The StyleX example uses `roomy` and `wide` as constant names. No rule ID or detector changed. `data/tokens.json` follows: the `breakpoints` list has the same names, and the `grid_and_panels` status reads DEFAULT, not PROPOSED.
+- **`grid.md`, the grid fixture and its test call the example values "default", not "proposed".** The numbers are the same. Your token source still holds the real values, and the table is still an example.
+
+---
+
 ## [1.28.1] - 2026-11-12
 
 ### Fixed

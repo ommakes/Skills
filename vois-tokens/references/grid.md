@@ -116,9 +116,9 @@ A list with a detail pane shows both side by side only if each pane gets at leas
 
 Panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.
 
-## Example with the proposed values
+## Example with the default values
 
-These numbers come from the proposed token values in `prds/grid-token-request.md`. They are an example, not a source. If the token source changes, run `scripts/grid.test.mjs` and update this table.
+These numbers come from the default token values in `prds/grid-token-request.md`. They are an example, not a source. Your token source holds the real values. If the token source changes, run `scripts/grid.test.mjs` and update this table.
 
 | Rule | Result |
 |---|---|

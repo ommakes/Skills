@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.28.1
+version: 1.28.2
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -24,27 +24,7 @@ If your workspace defines **VARIANCE** (layout asymmetry), **MOTION** (animation
 
 ## Topic Index
 
-| Topic | Rule prefix |
-|---|---|
-| Spacing | `[DS-SPACING]` |
-| Typography | `[DS-TYPOGRAPHY]` |
-| Color | `[DS-COLOR]` |
-| Components (variants, modals, accordions) | `[DS-COMPONENT]` `[DS-MODAL]` |
-| Surfaces (radius, alignment, shadows, motion polish) | `[DS-SURFACE]` |
-| Elevation | `[DS-ELEVATION]` |
-| Iconography | `[DS-ICON]` |
-| Layout & responsive (incl. form, field, and dialog widths, auto-growing textareas) | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
-| Grid and panels (grid classes, margins and gutters, card grid columns, side panels) | `[DS-GRID]` `[DS-PANEL]` |
-| Data tables (scroll owner, sticky header and column, scrollbars) | `[DS-TABLE]` |
-| Marketing type and spacing (marketing surfaces only) | `[DS-MKT]` |
-| Tailwind v4 | `[DS-TAILWIND]` |
-| StyleX (alternative to Tailwind) | `[DS-STYLEX]` |
-| Animation and motion tokens | `[DS-ANIMATION]` `[DS-MOTION]` |
-| Accessibility | `[DS-A11Y]` |
-| CSS architecture | `[DS-CSS]` |
-| Anti-slop (generic "AI-looking" defaults) | `[DS-SLOP]` |
-
----
+Each section below is headed by its rule prefix, from `[DS-SPACING]` to `[DS-SLOP]`. Find a rule by that prefix. Modal rules `[DS-MODAL]` sit under Components. Width rules `[DS-LAYOUT-WIDTH]` and textarea rules `[DS-LAYOUT-FIELD]` sit under Layout & Responsive.
 
 ## Pre-Submit Checklist
 
@@ -128,22 +108,7 @@ Run this before calling anything done.
 - [ ] Form, field, and dialog widths use width tokens `[DS-LAYOUT-WIDTH-001]` `[DS-LAYOUT-WIDTH-002]` `[DS-LAYOUT-WIDTH-003]` `[DS-LAYOUT-WIDTH-004]`
 - [ ] Auto-growing textareas use `field-sizing: content` with an explicit `inline-size`, `lh` min and max, and an `@supports` fallback `[DS-LAYOUT-FIELD-001]` `[DS-LAYOUT-FIELD-002]` `[DS-LAYOUT-FIELD-003]` `[DS-LAYOUT-FIELD-004]`
 
-**Data tables** (see Data Tables section)
-- [ ] One scroll owner per table: the page for a simple table, the wrapper for a complex one `[DS-TABLE-001]` `[DS-TABLE-002]` `[DS-TABLE-003]`
-- [ ] No `overflow: auto clip` or `overflow-y: clip` workaround. `clip` computes to `hidden` `[DS-TABLE-004]`
-- [ ] A complex table's wrapper has a bounded block size, and its flex or grid parents have `min-block-size: 0` `[DS-TABLE-002]` `[DS-TABLE-005]`
-- [ ] Sticky cells use `border-collapse: separate`, opaque backgrounds, and local z layers inside `isolation: isolate` `[DS-TABLE-006]` `[DS-TABLE-007]`
-- [ ] Scrollbars styled with `scrollbar-width: thin` and `scrollbar-color`, no `::-webkit-scrollbar` `[DS-TABLE-010]` `[DS-TABLE-011]`
-- [ ] A complex table that scrolls both ways uses the one-axis wheel lock `[DS-TABLE-014]`
-- [ ] The scroll region is focusable, labeled, and the table keeps real table elements `[DS-TABLE-015]`
-- [ ] Header and row heights come from the `table_sizes` tokens, and the page sets the table offset `[DS-TABLE-019]`
-
-**Marketing surfaces** (only; see Marketing Type & Spacing section)
-- [ ] Display face only for display and h2, never below 28px `[DS-MKT-002]`
-- [ ] One display headline per page, one h2 per section `[DS-MKT-003]`
-- [ ] Body text capped at `56ch` `[DS-MKT-005]`
-- [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
-- [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
+**Data tables and marketing surfaces:** every rule in the Data Tables and Marketing Type & Spacing sections is part of this checklist. Run them when the work touches a table or a marketing page.
 
 **CSS**
 - [ ] No `#id` selectors used for styling `[DS-CSS-002]`
@@ -151,20 +116,7 @@ Run this before calling anything done.
 - [ ] Hand-authored `@media` queries use `em` not `px` `[DS-CSS-007]`
 - [ ] StyleX projects only: build plugin wired up `[DS-STYLEX-001]`, tokens from `defineVars()` not literals `[DS-STYLEX-002]`
 
-**Anti-slop** (see Anti-Slop section — several are dial-gated)
-- [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`
-- [ ] No purple/indigo→blue "AI gradient" as a default `[DS-SLOP-002]`
-- [ ] Feature groups aren't three identical cards in a row `[DS-SLOP-003]`
-- [ ] Eyebrows capped at ~1 per 3 sections `[DS-SLOP-004]`
-- [ ] No emoji standing in for real icons `[DS-SLOP-005]`
-- [ ] No more than 2 consecutive zigzag sections `[DS-SLOP-006]`
-- [ ] No spec-sheet table on a marketing surface `[DS-SLOP-007]`
-- [ ] Page has some change in pace, not uniform top to bottom `[DS-SLOP-008]`
-- [ ] No em dashes in shipped copy `[DS-SLOP-009]`
-- [ ] No default card-ifying of static sections; drop shadow reserved for interactive elements `[DS-SLOP-010]`
-- [ ] No left-border + corner-radius combo on active nav/sidebar items; use a subtle color shift instead `[DS-SLOP-011]`
-
----
+**Anti-slop:** every `[DS-SLOP-001]` to `[DS-SLOP-011]` rule in the Anti-Slop section is part of this checklist. Several are dial-gated.
 
 ## Spacing `[DS-SPACING]`
 
@@ -304,7 +256,7 @@ Widths are in `rem` so they respect the user's browser font size.
 
 ## Grid and Panels `[DS-GRID]` `[DS-PANEL]`
 
-How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android. Every size is a token name. Never write a raw value. Token values live in your token source. The proposed values are in `data/tokens.json` under `grid_and_panels` in the full version. They are proposals, not final Vois values.
+How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android. Every size is a token name. Never write a raw value. Token values live in your token source. The default Vois values are in `data/tokens.json` under `grid_and_panels` in the full version. If your token source defines different values, use those.
 
 **Two widths.** Window width is the width of the screen or app window. It picks the navigation and the most columns a collection may have. Region width is the width left for the page after the side navigation. It picks the grid class. On the site shell there is no side navigation, so the two are the same.
 
@@ -340,7 +292,7 @@ How a page is split into columns, how a grid of cards decides how many it holds,
 - **Two panes** `[DS-PANEL-007]`: a list with a detail pane shows both side by side only if each pane gets at least `--pane-min`. Otherwise it behaves like a phone: the list alone, and the detail opens as its own screen with a back control.
 - **Tokens only** `[DS-PANEL-008]`: panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.
 
-**Example with the proposed values** (an example, not a source): a 320 push panel fits from a window of 880 and a 400 one from 960. With a 320 panel the sidebar shows as the rail from 1024 to 1039 and as the full sidebar from 1040. At a window of 768 the `md` and `lg` overlays are both 384. The `md` overlay reaches its full width at 960 and `lg` at 1280. Two panes start at a window of 800.
+**Example with the default values** (an example, not a source): a 320 push panel fits from a window of 880 and a 400 one from 960. With a 320 panel the sidebar shows as the rail from 1024 to 1039 and as the full sidebar from 1040. At a window of 768 the `md` and `lg` overlays are both 384. The `md` overlay reaches its full width at 960 and `lg` at 1280. Two panes start at a window of 800.
 
 | Platform | Measure the parent | Safe area |
 |---|---|---|
@@ -489,10 +441,13 @@ No inline styles where a token equivalent exists `[DS-CSS-001]`.
 
 | Name | em | px equivalent |
 |---|---|---|
+| snug | 37.5em | 600px |
 | sm | 40em | 640px |
-| md | 48em | 768px |
-| lg | 64em | 1024px |
+| roomy | 48em | 768px |
+| wide | 64em | 1024px |
 | xl | 80em | 1280px |
+
+`snug`, `roomy` and `wide` are the grid window classes. `roomy` and `wide` replace the old `md` and `lg`, with no aliases. `sm` and `xl` are not grid classes. `sm` stays as the container width for narrow tables and forms.
 
 ## Anti-Slop `[DS-SLOP]`
 
@@ -511,8 +466,6 @@ Several rules are dial-gated — read VARIANCE before flagging; a deliberately s
 - **`[DS-SLOP-009]` No em dashes in copy** — a well-known AI writing tell that reads as a hedge in short copy. Don't use them in UI copy, marketing copy, or any text the product or page ships; use a period, comma, or colon, and rewrite a sentence that needs a dash to hold together. Judgment-only (the detector doesn't check it); route copy through Righter (`no-em-dashes`).
 - **`[DS-SLOP-010]` Card-ifying everything** — wrapping every static section in a bordered/shadowed card is unearned structure. Reserve drop shadows for things a user picks up, hovers, or acts on.
 - **`[DS-SLOP-011]` Over-styled active states** — a colored left border plus corner radius (worse with a shadow on top) on active nav/sidebar items gets uglier as it compounds. A subtle background or text-color shift usually reads clearly enough on its own.
-
----
 
 ## Quick Reference
 

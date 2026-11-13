@@ -142,8 +142,8 @@ Use `stylex.defineConsts()` for breakpoints and other compile-time constants ins
 import * as stylex from "@stylexjs/stylex";
 
 export const breakpoints = stylex.defineConsts({
-  md: "@media (min-width: 48em)",
-  lg: "@media (min-width: 64em)",
+  roomy: "@media (min-width: 48em)",
+  wide: "@media (min-width: 64em)",
 });
 ```
 
@@ -151,7 +151,7 @@ export const breakpoints = stylex.defineConsts({
 const styles = stylex.create({
   container: {
     padding: 16,
-    [breakpoints.md]: { padding: 24 },
+    [breakpoints.roomy]: { padding: 24 },
   },
 });
 ```

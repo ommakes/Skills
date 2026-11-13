@@ -1,5 +1,5 @@
 {
-  "note": "Proposed token values for the grid and panel rules. NOT a source of truth: your token source holds the real values (if a `vois_get_tokens` tool is available, it serves them). This fixture lets grid.test.mjs run offline. prds/grid-token-request.md lists the same names for the token owner, and the test checks the two agree.",
+  "note": "Default token values for the grid and panel rules. NOT a source of truth: your token source holds the real values (if a `vois_get_tokens` tool is available, it serves them). This fixture lets grid.test.mjs run offline. prds/grid-token-request.md lists the same names for the token owner, and the test checks the two agree.",
   "tokens": {
     "grid": {
       "classes": [

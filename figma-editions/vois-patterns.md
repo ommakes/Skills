@@ -18,8 +18,6 @@ Every piece of UI text — labels, helper text, error messages, button labels, s
 
 **If Righter isn't available**, apply these fallback conventions directly instead of guessing: active voice, no jargon, sentence case, shortest phrasing that's still clear, no unnecessary punctuation, specific action words instead of generic ones ("Delete invoice" not "Confirm", "Save changes" not "OK"). Note in your output that Righter wasn't available and these fallback conventions were used instead.
 
----
-
 ## Before You Write Anything
 
 1. **What is the user trying to accomplish?** (Dashboard overview? Edit a record? Confirm an action?)
@@ -27,8 +25,6 @@ Every piece of UI text — labels, helper text, error messages, button labels, s
 3. **Read the matching Container Type Details section** for full template rules.
 4. **Write all UI copy with Righter** (or the fallback conventions above).
 5. Then apply `vois-components` and `vois-tokens` for implementation.
-
----
 
 ## Decision Tree: What Container Type Should I Build?
 
@@ -66,8 +62,6 @@ PAGE: The task is a whole page or screen layout, not one container (regions, ord
 MOTION: A state change should move (button, label, icon, number, panel, list, chart)
    └─ → see Motion below
 ```
-
----
 
 ## Container Type Details
 
@@ -228,8 +222,6 @@ MOTION: A state change should move (button, label, icon, number, panel, list, ch
 
 **Before shipping:** each section has one heading, one block, and one link; no row has more than three blocks; no dividers; section gaps are at least 4x the heading-to-content gap; no more than two primary calls to action; left-aligned except the closing call to action; long lists show a taste and link out.
 
----
-
 ## Permissions, Visibility, and Conditional Logic
 
 Cross-cutting rules that apply across every container type above.
@@ -250,8 +242,6 @@ Cross-cutting rules that apply across every container type above.
 
 **Simple calculation tables** `[PATH-COND-CALC-TABLE-ROWS]` — inline inputs and dropdowns in a table that dynamically updates a total (e.g. quantity input + product dropdown → calculated line total). Header row acts as the field label. Never stack more than 4 rows.
 
----
-
 ## Composing Existing Primitives
 
 Before designing new structure for a brief that names its own feature ("approval queue," "impersonate a user," "bulk edit") instead of one of the container types above:
@@ -269,8 +259,6 @@ How much breathing room a screen should have is a decision, not a default — pi
 - **Spacious** — low-frequency, high-stakes, or attention-focusing moments: onboarding/first-run, empty states, a destructive-confirmation dialog, marketing/landing surfaces (see PATH G). Looser spacing, fewer things visible at once, more whitespace around the one thing that matters — optimizing for focus, not efficiency.
 
 This is a different decision from the card-ification anti-pattern (wrapping every static section in an unearned bordered card, see `vois-tokens`) — density is about spacing and information-per-screen, independent of which container is used.
-
----
 
 ## Page Templates `[PATH-PAGE]`
 
@@ -296,7 +284,7 @@ Whole-page skeletons for consumer and SaaS web products, in five levels. This is
 
 ### The layout field
 
-Each template below ends with its layout. `shell` is `app` (bottom bar, then rail, then sidebar) or `site` (no side nav). `frame` is `contained` (the content max applies) or `fill` (a dense page that fills the region). `regions` sit side by side from the named window class (`narrow` 360, `snug` 600, `roomy` 768, `wide` 1024) and stack below it. `grids` are equal-track grids with the most columns per class, as narrow/snug/roomy/wide. `panels` have a mode (push, overlay or two-pane), a size token, the class they start at, and what happens below it (fullscreen, detail-page, inline-row or push-screen). Caps at narrow and snug refine the phone text: phone text describes narrow, and snug may hold more columns. Overlay panel size tiers and the marketing logo caps above the phone are proposals, not findings from the references. A two-pane panel starts by `DS-PANEL-007`, not by its `from` class.
+Each template below ends with its layout. `shell` is `app` (bottom bar, then rail, then sidebar) or `site` (no side nav). `frame` is `contained` (the content max applies) or `fill` (a dense page that fills the region). `regions` sit side by side from the named window class (`narrow` 360, `snug` 600, `roomy` 768, `wide` 1024) and stack below it. `grids` are equal-track grids with the most columns per class, as narrow/snug/roomy/wide. `panels` have a mode (push, overlay or two-pane), a size token, the class they start at, and what happens below it (fullscreen, detail-page, inline-row or push-screen). Caps at narrow and snug refine the phone text: phone text describes narrow, and snug may hold more columns. Overlay panel size tiers and the marketing logo caps above the phone are Vois defaults, not findings from the references. A two-pane panel starts by `DS-PANEL-007`, not by its `from` class.
 
 ### Template index
 
@@ -420,8 +408,6 @@ Each template below ends with its layout. `shell` is `app` (bottom bar, then rai
 - Layout: shell site, frame contained; regions step --measure-onboarding from roomy.
 - Next validates the step, then moves on. Back keeps what was typed. Skip moves on without saving that step. Finish lands on a short done screen, then the dashboard. Save and exit leaves and lets people resume at the same step. Primary is always the rightmost button, with Skip to its left, and Back sits alone at the far left. First-run screens get the loosest spacing: one idea per step, a narrow centered column, big gaps around the stepper.
 
----
-
 ## Motion: When State Changes Should Move
 
 Read this when a button, label or icon changes meaning after the user acts, an element appears in two consecutive states, a number changes or is typed, a panel or tray opens from something the user just tapped, a list reorders, a chart changes range, or a request says "smooth", "animation", "delight" or "polish". Skip motion that does no job. If you cannot say what the user learns from it, leave it out. Timing and easing come from motion tokens (`vois-tokens`, animation rules). This section decides what moves and why. The exact specs for each morph are in the full version (`vois-components/references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`).
@@ -467,8 +453,6 @@ Every tier never gates the task, carries the same meaning in a still frame, paus
 
 **Remove the motion.** Take the animation out of a flow and see what is lost. If the user still knows what changed, where it went and what to do next, the motion is decoration: cut it or move it down a tier. If not, name its job: orientation, continuity, confirmation or causality. On a payment, delete or send, a missing motion that hides what happened is a finding.
 
----
-
 ## Spacing Quick Reference
 
 Implemented via `vois-tokens`; listed here for context.
@@ -481,8 +465,6 @@ Implemented via `vois-tokens`; listed here for context.
 
 For exact class names and token values, see `vois-tokens`.
 
----
-
 ## Quick Checklist Before Implementation
 
 - [ ] Container type selected (settings / table / form / dialog / detail / pricing / marketing) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
@@ -494,8 +476,6 @@ For exact class names and token values, see `vois-tokens`.
 - [ ] Ready to apply `vois-components` then `vois-tokens` for components, tokens, and spacing
 - [ ] Mobile breakpoint behavior defined (action sheets vs. dialogs, sidebar vs. hamburger, etc.)
 - [ ] If a state change moves: the decision test run, a reduced-motion fallback defined, and the remove-the-motion check done
-
----
 
 ## Relationship to Other Skills
 

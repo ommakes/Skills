@@ -233,7 +233,7 @@ test("DS-PANEL-006: overlay width", () => {
 });
 
 test("DS-PANEL-006: --panel-overlay-min holds when half the window is smaller than it", () => {
-  // With the proposed values the min never binds (half of 768 is already 384), so change the token to try the guard.
+  // With the default values the min never binds (half of 768 is already 384), so change the token to try the guard.
   const t2 = structuredClone(T);
   t2.panel.overlayMin = 400;
   assert.equal(g.overlayWidth(t2, 768, "lg"), 400);
