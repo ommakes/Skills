@@ -4,6 +4,32 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.29.0] - 2026-11-13
+
+### Added
+
+- **`references/figma-variables.md`, with `DS-TOKEN-001` to `005`.** The Vois tokens are Figma variables, and each one's CSS name is its Web code syntax in Figma (`System/Surface/Bg-Card` is `--bg-card`). Covers the four layers (Global palettes, Base, System, Component) and which to use, the naming rules, where tokens live (`:root` and `.dark`, not `@theme`, because Tailwind reads `--text-*` there as font sizes), the twelve brand slots a brand theme overrides, and the shadcn/ui variable mapping.
+
+### Changed
+
+- **Status tokens use the Figma names (`DS-COLOR-008`, `DS-COLOR-009`).** Each role has a token per System layer: `--base-{role}`, `--bg-{role}`, `--text-{role}`, `--border-{role}`, `--icon-{role}`. `warning` is now `notice`. `--color-{role}`, `--color-{role}-surface`, `-border` and `-foreground` are retired.
+- **Elevation has Figma's five tiers (`DS-ELEVATION-002`).** `--shadow-base`, `-small`, `-medium`, `-large`, `-xlarge`, each with what Figma says it is for. They replace the four tiers `--shadow-flat`, `-raised`, `-overlay`, `-modal`.
+- **The modal scrim is a token (`DS-ELEVATION-001`).** `--bg-overlay-dark`, not a literal color.
+- **`DS-TAILWIND-001`.** `@theme` is for the names Tailwind makes utilities from. The Vois tokens live in `:root` and `.dark`, exposed through `@theme inline` aliases.
+- **Spacing scale matches Figma.** Adds 28, 36, 56, 88, 120 and 128, and drops 96, which Figma doesn't have. All values are still divisible by 4 (`DS-SPACING-001` is unchanged). Adds the semantic spacing tokens (`--space-padding-*`, `--space-v-*`, `--space-h-*`).
+- **Examples follow the new names** in `color.md`, `accessibility.md`, `css-architecture.md`, `stylex.md` and `tailwind-v4.md`. The focus ring is `--border-state-focus`.
+- **Base sets the brand (`DS-TOKEN-004`).** `--base-brand` is the primary, `--base-accent-solid` and `--base-accent-soft` the accent. Because today's Figma file points the primary action states and the accent System tokens at palettes directly, a brand theme overrides all twelve brand slots.
+- **Defaults when the MCP isn't used.** `SKILL.md`, `figma-variables.md` and `grid.md` say the MCP serves live values, and the registry's `vois-tokens` item seeds defaults generated from Figma (generic blue brand).
+- **Grid tokens are in Figma.** The Breakpoints collection now has the skill's four classes as modes and every grid and panel token, each with its CSS name as code syntax.
+- **File count.** `SKILL.md` said the rules come from 15 reference files; the rules file said 16. With `figma-variables.md` it is 17, and both say so.
+
+- **`DS-MKT-008` and `marketing-type-and-spacing.md`.** The product spacing scale now tops out at 128px, so marketing section gaps are the exception above 128px (up to 240px), not above 96px.
+- **`light-dark()` example** sets a token in the token file instead of naming palette steps in component code (`DS-TOKEN-001`).
+- **Elevation** no longer points at a z-index scale in `css-architecture.md` that does not exist.
+- **The `SKILL.md` checklist** says `notice`, not `warning`.
+
+Detector behavior did not change: no detector reads the renamed tokens. `LOOKALIKE-010`'s fix hint now names the `notice` role.
+
 ## [1.28.2] - 2026-11-13
 
 ### Changed

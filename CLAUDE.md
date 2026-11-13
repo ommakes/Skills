@@ -23,6 +23,7 @@ node vois-eval/check-results.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-components/scripts/motion-logic.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
+node registry/scripts/build-tokens.test.mjs
 node registry/scripts/check-registry.test.mjs
 node registry/scripts/check-registry.mjs
 (cd registry && npm ci --ignore-scripts && npm run build)

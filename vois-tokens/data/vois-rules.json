@@ -1,5 +1,5 @@
 {
-  "source": "vois-tokens/references/*.md (16 files; excludes anti-slop.md and hooks.md — see note)",
+  "source": "vois-tokens/references/*.md (17 files; excludes anti-slop.md and hooks.md — see note)",
   "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either. Every rule also has `verification`: `detector` (a check in scripts/registry.mjs catches some or all violations of it, named in `detector`; passing the check does not prove the rule is met, and gaps are listed in references/hooks.md), `spec` (a chart-spec check), `rendered` (needs the page rendered) or `judgment` (an agent reads the code). It says how a rule can be checked, which is a different question from `enforcement` (whether a hook may deny the edit) and `severity` (how much the rule weighs).",
   "categories": {
     "DS-A11Y": "Accessibility",
@@ -21,7 +21,8 @@
     "DS-TAILWIND": "Tailwind v4",
     "DS-TYPOGRAPHY": "Typography",
     "DS-TABLE": "Data Tables",
-    "DS-MKT": "Marketing Type and Spacing"
+    "DS-MKT": "Marketing Type and Spacing",
+    "DS-TOKEN": "Token Layers and Names"
   },
   "rules": [
     {
@@ -452,7 +453,7 @@
       "category": "DS-COLOR",
       "category_label": "Color",
       "source_file": "vois-tokens/references/color.md",
-      "rule": "Status color comes from four semantic roles: `info`, `positive`, `negative`, `warning`. Each role has four tokens: `--color-{role}`, `--color-{role}-foreground`, `--color-{role}-surface`, `--color-{role}-border`. Components that show status (Alert, Badge, Toast, inline validation, banners) use these tokens. Never a palette class or a literal color for status, and never a one-off token invented for a single component.",
+      "rule": "Status color comes from four semantic roles: `info`, `positive`, `negative`, `notice`. Each role has a token in the Base layer and in every System layer, named after the Figma variables: `--base-{role}`, `--bg-{role}`, `--text-{role}`, `--border-{role}`, `--icon-{role}`. Components that show status (Alert, Badge, Toast, inline validation, banners) use these tokens. Never a palette class or a literal color for status, and never a one-off token invented for it.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -462,7 +463,7 @@
       "category": "DS-COLOR",
       "category_label": "Color",
       "source_file": "vois-tokens/references/color.md",
-      "rule": "Pick the status role by meaning, not by hue. `info` is neutral context. `positive` is success or completion. `negative` is an error, a failure, or a destructive action. `warning` is caution or something that needs attention before it becomes an error. There is no separate `destructive` token: a destructive Button reads `--color-negative`, and `destructive` is only the shadcn variant name. Don't keep `--color-destructive` or `--color-success`; use `negative` and `positive`. If the workspace token set is missing a role, propose it. Don't fall back to stock component variants or a palette color.",
+      "rule": "Pick the status role by meaning, not by hue. `info` is neutral context. `positive` is success or completion. `negative` is an error, a failure, or a destructive action. `notice` is caution or something that needs attention before it becomes an error. There is no separate `destructive` token: a destructive Button reads `--base-negative`, and `destructive` is only the shadcn variant name. Older names (`--color-destructive`, `--color-success`, `--color-warning`, `--color-{role}-surface`) become the Figma tokens: `warning` is `notice`, a surface is `--bg-{role}`.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -640,7 +641,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "The backdrop behind a modal is a separate concern from the modal's own shadow — use a scrim color (`oklch(0 0 0 / 0.4)`), not a darker shadow.",
+      "rule": "The backdrop behind a modal is a separate concern from the modal's own shadow. Use the scrim token `--bg-overlay-dark`, not a darker shadow and not a literal color.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -650,7 +651,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "Match the elevation tier to the z-index layer it occupies — overlay elevation pairs with the dropdown/overlay z-index, modal elevation pairs with the modal z-index. Don't put a heavier shadow on a lower-stacked element than a lighter one above it.",
+      "rule": "Use the five elevation tiers from Figma, `--shadow-base` to `--shadow-xlarge`, for what each describes, and match the tier to the z-index layer it occupies: `--shadow-medium` pairs with the dropdown z-index when it is a menu (a raised card at Medium stays in the page), `--shadow-large` with the overlay z-index, `--shadow-xlarge` with the modal z-index. Don't put a heavier shadow on a lower-stacked element than a lighter one above it.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1071,7 +1072,7 @@
       "category": "DS-TAILWIND",
       "category_label": "Tailwind v4",
       "source_file": "vois-tokens/references/tailwind-v4.md",
-      "rule": "Replace `@layer base` with `@theme` for token definitions.",
+      "rule": "Replace `@layer base` with `@theme` for the names Tailwind generates utilities from. The Vois tokens themselves live in `:root` and `.dark` (DS-TOKEN-003), and `@theme inline` aliases expose the ones a utility or component library needs.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment",
@@ -1793,10 +1794,60 @@
       "category": "DS-MKT",
       "category_label": "Marketing Type and Spacing",
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
-      "rule": "On marketing surfaces, section-to-section gaps may exceed 96px, up to 240px, in steps of 8, using a spacing token. This is an exception to the allowed-values list in spacing.md. DS-SPACING-001 (divisible by 4 or 8) still holds.",
+      "rule": "On marketing surfaces, section-to-section gaps may exceed 128px, up to 240px, in steps of 8, using a spacing token. This is an exception to the allowed-values list in spacing.md. DS-SPACING-001 (divisible by 4 or 8) still holds.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
+    },
+    {
+      "id": "DS-TOKEN-001",
+      "category": "DS-TOKEN",
+      "category_label": "Token Layers and Names",
+      "source_file": "vois-tokens/references/figma-variables.md",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "rule": "Tokens come in four layers: Global palettes, Base, System and Component. Use the most specific layer that fits: a component's own Component tokens, then System tokens. Component code never names a Global palette step directly."
+    },
+    {
+      "id": "DS-TOKEN-002",
+      "category": "DS-TOKEN",
+      "category_label": "Token Layers and Names",
+      "source_file": "vois-tokens/references/figma-variables.md",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "rule": "A token's CSS name is its Web code syntax in Figma. Don't invent a name or derive one by hand from the Figma path. If a variable has no code syntax, flag it."
+    },
+    {
+      "id": "DS-TOKEN-003",
+      "category": "DS-TOKEN",
+      "category_label": "Token Layers and Names",
+      "source_file": "vois-tokens/references/figma-variables.md",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "rule": "Define the tokens in `:root` (light) and `.dark` (dark), not in `@theme`: Tailwind v4 reads `--text-*` in `@theme` as font sizes. Expose the names Tailwind or a component library needs through `@theme inline` aliases."
+    },
+    {
+      "id": "DS-TOKEN-004",
+      "category": "DS-TOKEN",
+      "category_label": "Token Layers and Names",
+      "source_file": "vois-tokens/references/figma-variables.md",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "rule": "The Base layer sets the brand (`--base-brand` primary, `--base-accent-solid` and `--base-accent-soft` accent). Because the primary action states and the accent System tokens point at palette steps directly in the current Figma file, twelve tokens carry the brand: `--base-brand`, `--base-accent-solid`, `--base-accent-soft`, `--action-primary-resting`, `--action-primary-hover`, `--action-primary-focus`, `--action-primary-pressed`, `--action-primary-disabled`, `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`. A brand theme overrides these and nothing else. A product's own brand stays in that product, not in this skill."
+    },
+    {
+      "id": "DS-TOKEN-005",
+      "category": "DS-TOKEN",
+      "category_label": "Token Layers and Names",
+      "source_file": "vois-tokens/references/figma-variables.md",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--text-on-dark`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--border-default`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
     }
   ]
 }

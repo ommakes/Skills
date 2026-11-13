@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.2.1] - 2026-11-13
+
+### Changed
+
+- `chart-status-warning` maps to the system `notice` role, not `warning`, following `vois-tokens` 1.29.0. The chart token keeps its name.
+
 ## [1.2.0] - 2026-10-26
 
 ### Added

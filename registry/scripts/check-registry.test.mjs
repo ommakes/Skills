@@ -6,13 +6,13 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, sy
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, MAPPINGS, SHADCN_VARS } from "./check-registry.mjs";
+import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, token005Table, tableProblems, definedTokens, MAPPINGS, SHADCN_VARS, TOKENS_FILE } from "./check-registry.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const repo = resolve(registryDir, "..");
 const block = (body) => `:root:root,\n.dark.dark {\n${body}\n}\n`;
 const css = (text, seen) => cssProblems(text, { seen });
-const good = "--destructive: var(--color-negative);\n--ring: var(--color-focus-ring);";
+const good = "--destructive: var(--base-negative);\n--ring: var(--border-state-focus);";
 
 test("the committed registry passes", () => {
   assert.deepEqual(checkRegistry(registryDir), []);
@@ -114,38 +114,39 @@ test("registry.json: only safe paths are accepted for the later checks", () => {
 // ---- CSS ----
 
 test("css: the two mapped variables pass, with comments and line breaks anywhere", () => {
-  const text = `/* top { ; } */\n:root:root,\n  .dark.dark {\n  /* why */ --destructive: var(--color-negative);\n  --ring:var(--color-focus-ring)\n}\n`;
+  const text = `/* top { ; } */\n:root:root,\n  .dark.dark {\n  /* why */ --destructive: var(--base-negative);\n  --ring:var(--border-state-focus)\n}\n`;
   assert.deepEqual(css(text), []);
 });
 
 test("css: each variable must point at exactly the token its rule names", () => {
   assert.equal(SHADCN_VARS.size, 32);
-  assert.match(css(block("--ring: var(--color-negative);")).join(), /must be exactly var\(--color-focus-ring\) \(DS-A11Y-002\)/);
-  assert.match(css(block("--destructive: var(--color-positive);")).join(), /must be exactly var\(--color-negative\) \(DS-COLOR-009\)/);
-  for (const value of ["oklch(0.58 0.22 27)", "#ff0000", "var(--color-negative, red)", "var( --color-negative )", "calc(var(--color-negative))", "var(--color-negative) var(--color-border)", "var(--Color-Negative)", ""]) {
+  assert.match(css(block("--ring: var(--base-negative);")).join(), /must be exactly var\(--border-state-focus\) \(DS-TOKEN-005\)/);
+  assert.match(css(block("--destructive: var(--base-positive);")).join(), /must be exactly var\(--base-negative\) \(DS-TOKEN-005\)/);
+  for (const value of ["oklch(0.58 0.22 27)", "#ff0000", "var(--base-negative, red)", "var( --base-negative )", "calc(var(--base-negative))", "var(--base-negative) var(--border-default)", "var(--Base-Negative)", ""]) {
     assert.ok(css(block(`--destructive: ${value};`)).length, value);
   }
 });
 
-test("css: a shadcn variable with no Vois rule cannot be mapped yet", () => {
-  assert.match(css(block("--card: var(--color-surface);")).join(), /no Vois rule names a token for it yet/);
-  assert.match(css(block("--radius: var(--radius-md);")).join(), /no Vois rule names a token/);
+test("css: a shadcn variable not in MAPPINGS yet cannot be mapped", () => {
+  assert.match(css(block("--sidebar: var(--bg-subtle);")).join(), /--sidebar: not in MAPPINGS yet/);
+  assert.match(css(block("--chart-1: var(--blue-9);")).join(), /--chart-1: not in MAPPINGS yet/);
+  assert.match(css(block("--radius: var(--radii-6);")).join(), /must be exactly var\(--radii-8\)/, "a mapped variable pointed at the wrong token");
   // An object built-in name is not a shadcn variable, so it never reaches the MAPPINGS lookup.
-  assert.match(css(block("--constructor: var(--color-negative);")).join(), /not one of shadcn's theme variables/);
+  assert.match(css(block("--constructor: var(--base-negative);")).join(), /not one of shadcn's theme variables/);
 });
 
 test("css: the left side must be one of shadcn's theme variables", () => {
-  assert.match(css(block("--destrutive: var(--color-negative);")).join(), /not one of shadcn's theme variables/);
-  assert.match(css(block("--color-destructive: var(--color-negative);")).join(), /not one of shadcn's theme variables/);
-  assert.match(css(block("--destructive-foreground: var(--color-negative);")).join(), /not one of shadcn's/, "not a v4 variable");
+  assert.match(css(block("--destrutive: var(--base-negative);")).join(), /not one of shadcn's theme variables/);
+  assert.match(css(block("--color-destructive: var(--base-negative);")).join(), /not one of shadcn's theme variables/);
+  assert.match(css(block("--destructive-foreground: var(--base-negative);")).join(), /not one of shadcn's/, "not a v4 variable");
 });
 
 test("css: a variable is mapped once, in one block, across blocks and across files", () => {
-  assert.match(css(block("--destructive: var(--color-negative);\n--destructive: var(--color-negative);")).join(), /mapped more than once/);
-  assert.match(css(block("--ring: var(--color-focus-ring);") + block("--ring: var(--color-focus-ring);")).join(), /mapped more than once/);
+  assert.match(css(block("--destructive: var(--base-negative);\n--destructive: var(--base-negative);")).join(), /mapped more than once/);
+  assert.match(css(block("--ring: var(--border-state-focus);") + block("--ring: var(--border-state-focus);")).join(), /mapped more than once/);
   const seen = new Set();
-  assert.deepEqual(css(block("--ring: var(--color-focus-ring);"), seen), []);
-  assert.match(css(block("--ring: var(--color-focus-ring);"), seen).join(), /mapped more than once/);
+  assert.deepEqual(css(block("--ring: var(--border-state-focus);"), seen), []);
+  assert.match(css(block("--ring: var(--border-state-focus);"), seen).join(), /mapped more than once/);
 });
 
 test("css: only the mapping block, no nesting, no stray text", () => {
@@ -159,13 +160,13 @@ test("css: only the mapping block, no nesting, no stray text", () => {
   assert.ok(css(block(good) + "@import 'x.css';").length);
   assert.ok(css(`:root:root, .dark.dark { ${good}`).length, "unclosed");
   assert.ok(css(block("color: red;")).length, "not a custom property");
-  assert.ok(css(block("--Destructive: var(--color-negative);")).length, "uppercase name");
+  assert.ok(css(block("--Destructive: var(--base-negative);")).length, "uppercase name");
   assert.ok(css("").length, "empty file");
   assert.ok(css("/* only a comment */").length);
 });
 
 test("css: a very long line is still checked, not skipped", () => {
-  const long = `--destructive: ${"var(--color-negative)".repeat(5000)};`;
+  const long = `--destructive: ${"var(--base-negative)".repeat(5000)};`;
   assert.ok(css(block(long)).length);
 });
 
@@ -176,15 +177,16 @@ test("each mapping's rule still names its token", () => {
 });
 
 test("a mapping whose rule does not name the token, or does not exist, fails", () => {
-  assert.match(mappingProblems(repo, { ring: { token: "--color-negative", rule: "DS-A11Y-002" } }).join(), /no longer names --color-negative/);
-  assert.match(mappingProblems(repo, { ring: { token: "--color-focus-ring", rule: "DS-COLOR-009" } }).join(), /no longer names --color-focus-ring/);
-  assert.match(mappingProblems(repo, { ring: { token: "--color-focus-ring", rule: "DS-NOPE-001" } }).join(), /not in vois-rules\.json/);
+  assert.match(mappingProblems(repo, { ring: { token: "--base-negative", rule: "DS-A11Y-002" } }).join(), /no longer names --base-negative/);
+  assert.match(mappingProblems(repo, { ring: { token: "--border-state-focus", rule: "DS-COLOR-009" } }).join(), /no longer names --border-state-focus/);
+  assert.match(mappingProblems(repo, { ring: { token: "--border-state-focus", rule: "DS-NOPE-001" } }).join(), /not in vois-rules\.json/);
   // A longer token that starts with the same text does not count.
-  assert.match(mappingProblems(repo, { destructive: { token: "--color-negative-x", rule: "DS-COLOR-009" } }).join(), /no longer names/);
-  assert.match(mappingProblems(repo, { destructive: { token: "--color-neg", rule: "DS-COLOR-009" } }).join(), /no longer names/);
+  assert.match(mappingProblems(repo, { destructive: { token: "--base-negative-x", rule: "DS-COLOR-009" } }).join(), /no longer names/);
+  assert.match(mappingProblems(repo, { destructive: { token: "--base-neg", rule: "DS-COLOR-009" } }).join(), /no longer names/);
   assert.match(mappingProblems("/nonexistent").join(), /vois-rules\.json/);
-  // --color-border-focus is in accessibility.md, but in the :focus-within example, not DS-A11Y-002's own section.
-  assert.match(mappingProblems(repo, { ring: { token: "--color-border-focus", rule: "DS-A11Y-002" } }).join(), /no longer names --color-border-focus/);
+  // --hit-area-min is in accessibility.md, but in DS-A11Y-001's section, not DS-A11Y-002's. The near
+  // boundary (the paragraph right after a rule's code block) is covered by the ruleSection test below.
+  assert.match(mappingProblems(repo, { ring: { token: "--hit-area-min", rule: "DS-A11Y-002" } }).join(), /no longer names --hit-area-min/);
 });
 
 test("ruleSection is the tag's paragraph plus the code block right under it", () => {
@@ -262,7 +264,7 @@ test("whole registry: CSS in any item, with any case of extension, gets the CSS 
   const out = withCopy((r) => {
     addItem(r, { name: "sneaky", type: "registry:file", files: [file("vois/sneaky/values.CSS", "src/styles/values.css")] });
     mkdirSync(join(r, "vois/sneaky"), { recursive: true });
-    writeFileSync(join(r, "vois/sneaky/values.CSS"), ":root { --color-negative: oklch(0.58 0.22 27); }\n");
+    writeFileSync(join(r, "vois/sneaky/values.CSS"), ":root { --base-negative: oklch(0.58 0.22 27); }\n");
   });
   assert.match(out.join("\n"), /vois\/sneaky\/values\.CSS: only ":root:root, \.dark\.dark \{ \}" blocks/);
 });
@@ -271,7 +273,7 @@ test("whole registry: two files mapping the same variable fail", () => {
   const out = withCopy((r) => {
     addItem(r, { name: "second-theme", type: "registry:theme", files: [file("vois/second/t.css", "src/styles/t.css")] });
     mkdirSync(join(r, "vois/second"), { recursive: true });
-    writeFileSync(join(r, "vois/second/t.css"), block("--destructive: var(--color-negative);"));
+    writeFileSync(join(r, "vois/second/t.css"), block("--destructive: var(--base-negative);"));
   });
   assert.match(out.join("\n"), /--destructive: mapped more than once/);
 });
@@ -279,7 +281,7 @@ test("whole registry: two files mapping the same variable fail", () => {
 test("whole registry: symlinks are reported, not followed", { skip: process.platform === "win32" }, () => {
   const out = withCopy((r, root) => {
     symlinkSync("..", join(r, "vois/loop")); // a loop that would recurse forever if followed
-    writeFileSync(join(root, "outside.css"), block("--destructive: var(--color-negative);"));
+    writeFileSync(join(root, "outside.css"), block("--destructive: var(--base-negative);"));
     mkdirSync(join(r, "vois/linked"), { recursive: true });
     symlinkSync(join(root, "outside.css"), join(r, "vois/linked/a.css"));
     addItem(r, { name: "linked", type: "registry:file", files: [file("vois/linked/a.css", "src/styles/linked.css")] });
@@ -304,10 +306,10 @@ test("whole registry: a mapping whose rule is gone fails", () => {
     const p = join(root, "vois-tokens/data/vois-rules.json");
     const data = JSON.parse(readFileSync(p, "utf8"));
     const list = Array.isArray(data) ? data : data.rules;
-    list.splice(list.findIndex((x) => x.id === "DS-A11Y-002"), 1);
+    list.splice(list.findIndex((x) => x.id === "DS-TOKEN-005"), 1);
     writeFileSync(p, JSON.stringify(data));
   });
-  assert.match(out.join("\n"), /MAPPINGS\.ring: rule DS-A11Y-002 is not in vois-rules\.json/);
+  assert.match(out.join("\n"), /MAPPINGS\.ring: rule DS-TOKEN-005 is not in vois-rules\.json/);
 });
 
 test("whole registry: a broken registry.json fails", () => {
@@ -331,9 +333,74 @@ test("version: package.json matches the newest CHANGELOG entry", () => {
 test("whole registry: a version that does not match the CHANGELOG fails", () => {
   const out = withCopy((r) => {
     const p = join(r, "package.json");
-    writeFileSync(p, readFileSync(p, "utf8").replace('"version": "0.1.0"', '"version": "0.9.0"'));
+    const before = readFileSync(p, "utf8");
+    const after = before.replace(/"version": "\d+\.\d+\.\d+"/, '"version": "0.9.0"');
+    assert.notEqual(after, before, "the test must actually change the version");
+    writeFileSync(p, after);
   });
   assert.match(out.join("\n"), /package\.json version 0\.9\.0 is not the newest/);
+});
+
+// ---- DS-TOKEN-005 table and generated tokens ----
+
+const md5 = (rows) => `# x\n\n## shadcn/ui variables \`[DS-TOKEN-005]\`\n\n| shadcn | Vois token |\n|---|---|\n${rows.map(([a, b]) => `| \`${a}\` | \`${b}\` |`).join("\n")}\n\nAfter the table.\n\n## Next section\n\n| \`ring\` | \`--outside\` |\n`;
+
+test("the DS-TOKEN-005 table in figma-variables.md equals MAPPINGS", () => {
+  const { problems, table } = token005Table(readFileSync(join(repo, "vois-tokens/references/figma-variables.md"), "utf8"));
+  assert.deepEqual(problems, []);
+  assert.deepEqual(tableProblems(table), []);
+  assert.equal(Object.keys(table).length, Object.keys(MAPPINGS).length);
+});
+
+test("token005Table reads only its own section, and fails closed", () => {
+  const { table } = token005Table(md5([["ring", "--border-state-focus"]]));
+  assert.deepEqual(table, { ring: "--border-state-focus" }, "a row in the next section is not part of the table");
+  assert.match(token005Table("# nothing here").problems.join(), /no \[DS-TOKEN-005\] section/);
+  assert.match(token005Table(md5([])).problems.join(), /has no rows/);
+  assert.match(token005Table(md5([["ring", "--a"], ["ring", "--b"]])).problems.join(), /lists ring twice/);
+  assert.deepEqual(token005Table(md5([["ring", "--border-state-focus"]]).replace(/\n/g, "\r\n")).table, { ring: "--border-state-focus" }, "CRLF line endings");
+});
+
+test("tableProblems: MAPPINGS and the table must agree both ways", () => {
+  const m = { ring: { token: "--border-state-focus" } };
+  assert.deepEqual(tableProblems({ ring: "--border-state-focus" }, m), []);
+  assert.match(tableProblems({ ring: "--other" }, m).join(), /MAPPINGS\.ring: --border-state-focus, but the DS-TOKEN-005 table says --other/);
+  assert.match(tableProblems({}, m).join(), /MAPPINGS\.ring: not in the DS-TOKEN-005 table/);
+  assert.match(tableProblems({ ring: "--border-state-focus", card: "--bg-card" }, m).join(), /DS-TOKEN-005 maps card, but MAPPINGS does not/);
+});
+
+test("definedTokens reads declarations, not uses", () => {
+  assert.deepEqual([...definedTokens(":root {\n  --a: 1px;\n  --b: var(--c);\n}\n")].sort(), ["--a", "--b"]);
+});
+
+test("whole registry: a theme that drops a mapping fails", () => {
+  const out = withCopy((r) => { const p = join(r, "vois/theme/vois-theme.css"); writeFileSync(p, readFileSync(p, "utf8").replace("  --ring: var(--border-state-focus);\n", "")); });
+  assert.match(out.join("\n"), /MAPPINGS\.ring: no theme file maps --ring/);
+});
+
+test("whole registry: a stale token file fails", () => {
+  const out = withCopy((r) => { const p = join(r, TOKENS_FILE); writeFileSync(p, readFileSync(p, "utf8").replace("--bg-card: var(--white);", "--bg-card: var(--black);")); });
+  assert.match(out.join("\n"), /vois\/tokens\/vois-tokens\.css: not what build-tokens\.mjs writes/);
+});
+
+test("whole registry: missing or broken token sources fail, they never skip the check", () => {
+  const gone = withCopy((r) => rmSync(join(r, "source/brand-default.json")));
+  assert.match(gone.join("\n"), /token build:/);
+  const leak = withCopy((r) => {
+    const p = join(r, "source/figma-export.json");
+    writeFileSync(p, readFileSync(p, "utf8").replace('"--base-brand": null', '"--base-brand": "=--goldie-7"'));
+  });
+  assert.match(leak.join("\n"), /token build: brand slot --base-brand has a value in the export/);
+});
+
+test("whole registry: a mapping to a token that is not generated fails", () => {
+  const out = withCopy((r) => {
+    const p = join(r, "source/figma-export.json");
+    writeFileSync(p, readFileSync(p, "utf8").replace('  "--bg-subtle": ["=--warm-gray-1","=--warm-gray-11"],\n', ""));
+    const css = join(r, TOKENS_FILE);
+    writeFileSync(css, readFileSync(css, "utf8"));
+  });
+  assert.match(out.join("\n"), /MAPPINGS\.muted: --bg-subtle is not a generated token/);
 });
 
 test("MAPPINGS only names shadcn variables", () => {

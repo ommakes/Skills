@@ -31,7 +31,7 @@ Three focus pseudo-classes. Know when to use each one.
 
 ```css
 :focus-visible {
-  outline: 2px solid var(--color-focus-ring);
+  outline: 2px solid var(--border-state-focus);
   outline-offset: 2px;
 }
 ```
@@ -40,7 +40,7 @@ Three focus pseudo-classes. Know when to use each one.
 
 ```css
 .form-field:focus-within {
-  border-color: var(--color-border-focus);
+  border-color: var(--border-state-focus);
 }
 ```
 

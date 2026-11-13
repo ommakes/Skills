@@ -11,18 +11,34 @@
   section. Dark values come from the workspace's dark Vois tokens on `.dark`.
   Not covered: components inside a shadow root.
 
-  Vois fixes token names, not values (vois-tokens, color.md). This file ships
+  Token names come from Figma (vois-tokens, figma-variables.md). This file ships
   no colors. Your workspace sets a light and a dark value for every Vois token
   it uses (DS-COLOR-006).
 
-  It maps only names that differ, and only where a Vois rule says which token
-  to use. registry/README.md covers the names both systems share and the
-  shadcn names Vois does not name yet.
+  It maps every shadcn variable in vois-tokens DS-TOKEN-005. The token values
+  come from the Vois MCP, or from the vois-tokens item when the MCP isn't used.
+  Charts (chart-*) and the sidebar (sidebar-*) are not mapped yet.
 */
 :root:root,
 .dark.dark {
-  /* DS-COLOR-009: there is no destructive token; a destructive action reads negative. */
-  --destructive: var(--color-negative);
-  /* DS-A11Y-002: focus rings read the focus ring token. */
-  --ring: var(--color-focus-ring);
+  /* vois-tokens DS-TOKEN-005. destructive reads negative (DS-COLOR-009); radius 8 puts shadcn's md/lg/xl on 6/8/12. */
+  --background: var(--bg-background);
+  --foreground: var(--text-primary);
+  --card: var(--bg-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--action-primary-resting);
+  --primary-foreground: var(--text-on-dark);
+  --secondary: var(--action-secondary-resting);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--bg-hover);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--base-negative);
+  --border: var(--border-pretty);
+  --input: var(--border-default);
+  --ring: var(--border-state-focus);
+  --radius: var(--radii-8);
 }

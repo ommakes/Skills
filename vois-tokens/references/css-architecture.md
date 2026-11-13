@@ -8,12 +8,19 @@ How token definitions and global setup are structured depends on the project's s
 /* Import */
 @import "tailwindcss";
 
-/* Token definitions */
-@theme {
-  --color-primary: oklch(...);
-  --color-background: oklch(...);
-  --radius-md: 0.5rem;
-  --space-component-sm: 0.5rem;
+/* Token definitions: the Vois tokens, in :root and .dark (see [DS-TOKEN-003]) */
+:root {
+  --bg-card: var(--white);
+  --radius-input: var(--radii-6);
+  --space-padding-small: var(--space-12);
+}
+.dark {
+  --bg-card: var(--warm-gray-11);
+}
+
+/* Names Tailwind makes utilities from */
+@theme inline {
+  --color-card: var(--bg-card);
 }
 
 /* Global base */
@@ -70,12 +77,12 @@ These rules govern hand-authored CSS selectors. Under StyleX, most conditional s
 .card .header h2,
 .card .header h3,
 .card .header h4 {
-  color: var(--color-heading);
+  color: var(--text-primary);
 }
 
 /* good — :is() takes the specificity of its most specific argument, but written once */
 .card .header :is(h2, h3, h4) {
-  color: var(--color-heading);
+  color: var(--text-primary);
 }
 ```
 
@@ -97,9 +104,9 @@ Don't mix sizing/positioning properties with visual/brand properties in the same
 .alert {
   padding: 1rem;
   margin-bottom: 1rem;
-  background: var(--color-warning-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-warning-border);
+  background: var(--bg-notice);
+  border-radius: var(--radius-small-container);
+  border: 1px solid var(--border-notice);
 }
 
 /* good — keep them together when using utility classes (Tailwind handles this),

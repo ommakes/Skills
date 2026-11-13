@@ -87,6 +87,7 @@ jobs:
 
       - name: Registry items, paths, theme mappings and detector (no install)
         run: |
+          node scripts/build-tokens.test.mjs
           node scripts/check-registry.test.mjs
           node scripts/check-registry.mjs
 

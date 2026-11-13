@@ -16,6 +16,8 @@ Every value in `_shared/tokens.css` is commented as either:
 
 Treat the invented values as illustrative placeholders, not canonical spec. If `vois-tokens` later ships a real palette or radius scale, update `tokens.css` to match rather than the other way around.
 
+**Behind since `vois-tokens` 1.29.0.** The skill now uses the Figma token names (`--bg-card`, `--action-primary-resting`, `--shadow-small`, and so on), and `registry/vois/tokens/vois-tokens.css` ships defaults for the ones that are Figma variables (colors, radius, spacing, size, grid, shadows). Type, motion and z-index still come from `vois-tokens/data/tokens.json`. `_shared/tokens.css` still uses the older `--color-*` and `--shadow-flat`/`raised`/`overlay`/`modal` names. Moving it to the registry file is a separate change.
+
 ## Structure
 
 ```

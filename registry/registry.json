@@ -4,10 +4,23 @@
   "homepage": "https://github.com/ommakes/Skills/tree/main/registry",
   "items": [
     {
+      "name": "vois-tokens",
+      "type": "registry:theme",
+      "title": "Vois tokens",
+      "description": "Default values for every Vois token, generated from the Vois Figma variables, with a generic blue brand. Use it when the Vois MCP isn't serving your workspace's live values.",
+      "files": [
+        {
+          "path": "vois/tokens/vois-tokens.css",
+          "type": "registry:file",
+          "target": "src/styles/vois-tokens.css"
+        }
+      ]
+    },
+    {
       "name": "vois-theme",
       "type": "registry:theme",
       "title": "Vois theme",
-      "description": "Points shadcn/ui variables that Vois names differently at the Vois tokens. Ships no color values. Import it after Tailwind.",
+      "description": "Points every shadcn/ui variable at its Vois token (vois-tokens DS-TOKEN-005). Ships no color values. Import it after Tailwind.",
       "files": [
         {
           "path": "vois/theme/vois-theme.css",
