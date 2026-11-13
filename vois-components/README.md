@@ -2,6 +2,8 @@
 
 Component selection rubrics for agents building UI with shadcn/ui and design system components.
 
+Where it fits: this skill covers the Behavior layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
+
 ## What This Is
 
 After `vois-patterns` determines the container type (settings page, form, table, dialog, etc.), agents read this skill to pick the right specific component for each job-to-be-done.
