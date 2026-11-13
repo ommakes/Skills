@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.19.0] - 2026-11-13
+
+### Changed
+- `LOOKALIKE-001` and Job 8 (`JOB-TRIGGER-ACTION`) point to the registry's `vois-button` item when a project has no Button yet. Job 8 states the 36px web and 48px native default (`vois-tokens` `DS-COMPONENT-007`).
+- The Lookalikes section says to check the registry for a Vois version before reaching for stock shadcn.
+- Choose from a list (`JOB-CHOOSE-FROM-LIST`) and Accept text (`JOB-ACCEPT-TEXT`) point to the registry's `vois-select` and `vois-input` and their heights.
+- `LOOKALIKE-002` and the loading job (`JOB-LOADING-STATE`) point to the registry's `vois-spinner`. Inside a Button, they point to its `loading` prop.
+
 ## [1.18.1] - 2026-11-13
 
 ### Changed

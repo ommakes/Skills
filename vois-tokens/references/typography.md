@@ -23,13 +23,13 @@
 
 ## Fonts
 
-Font choice is workspace-specific, defined via typography tokens. Check the token reference for the actual values before assuming a particular font applies.
+Font choice is workspace-specific, defined via typography tokens. Check the token reference for the actual values before assuming a particular font applies. The roles below alias the Figma font families (`--font-family-brand`, `--font-family-system`, `--font-family-mono`), which are brand slots (`references/figma-variables.md` `[DS-TOKEN-004]`). Sizes, line heights and weights are `--font-size-*`, `--line-height-*` and `--font-weight-*`.
 
 | Role | Token |
 |------|-------|
-| Headings and display | `--font-heading` |
-| Body and labels | `--font-body` |
-| Numeric and monospace | `--font-mono` |
+| Headings and display | `--font-heading` (→ `--font-family-brand`) |
+| Body and labels | `--font-body` (→ `--font-family-system`) |
+| Numeric and monospace | `--font-mono` (→ `--font-family-mono`) |
 
 Always reference the token (`font-[var(--font-heading)]`) rather than a font name directly. If the workspace swaps the font, components update automatically without code changes. `[DS-TYPOGRAPHY-005]`
 

@@ -21,7 +21,7 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 | `DS-TAILWIND-004` | Yes — blockable | `!important`. High-confidence enough to deny in Cursor. |
 | `DS-TAILWIND-005` | Yes | `transition: all` / `transition-all`, including StyleX's `transitionProperty: "all"`. Filed under `DS-TAILWIND` for historical reasons but checked across both engines' syntax — see `references/stylex.md`. |
 | `DS-ANIMATION-001` | Yes | Duration over 300ms (500ms ceiling), including StyleX's `transitionDuration: "Nms"`/`"Ns"`. |
-| `DS-ANIMATION-004` | Yes | Animation/transition present with no `prefers-reduced-motion` anywhere in the file. |
+| `DS-ANIMATION-004` | Yes | Animation/transition present (including an arbitrary `animate-[...]`; `animate-none` alone doesn't count) with no `prefers-reduced-motion` anywhere in the file. Tailwind's `motion-reduce:` and `motion-safe:` variants count as handling. |
 | `DS-ANIMATION-005` | Yes — blockable for `scale(0)` only | Animating from `scale(0)`. High-confidence enough to deny in Cursor. A start below the `0.9` floor (`initial={{ scale: 0.5 }}`, a first keyframe, `starting:scale-50`, `zoom-in-50`, and `scale-0` written as a Tailwind class) is a separate finding that never blocks. A start that also blurs is the icon-swap recipe (`DS-SURFACE-014`) and is left alone. Not read: a keyframe block over 1000 characters, and a `starting:` class with more than 31 variants between `starting:` and `scale`. |
 | `DS-ANIMATION-008` | Yes | Press/active scale below `0.95`, including a StyleX `":active": { scale: N }` key. |
 | `DS-ANIMATION-009` | Yes | `will-change` on a disallowed property, including StyleX's `willChange: "..."`. |

@@ -529,6 +529,16 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-COMPONENT-007",
+      "category": "DS-COMPONENT",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/components.md",
+      "rule": "Control heights come from the size tokens. Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`), and 36 is the default on web, 48 on native. The circular action is 56 (`--size-action-circular`) and no other action or control is 56 (an avatar can be). Input and Select are `--size-field-web` (36) on web and `--size-field-native` (48) on native. `--size-field-compact` (32) is only for an inline field nested in a table or a dense row. A Button next to a field matches the field's height.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-MODAL-001",
       "category": "DS-MODAL",
       "category_label": "Components",
@@ -1837,7 +1847,7 @@
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment",
-      "rule": "The Base layer sets the brand (`--base-brand` primary, `--base-accent-solid` and `--base-accent-soft` accent). Because the primary action states and the accent System tokens point at palette steps directly in the current Figma file, twelve tokens carry the brand: `--base-brand`, `--base-accent-solid`, `--base-accent-soft`, `--action-primary-resting`, `--action-primary-hover`, `--action-primary-focus`, `--action-primary-pressed`, `--action-primary-disabled`, `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`. A brand theme overrides these and nothing else. A product's own brand stays in that product, not in this skill."
+      "rule": "The Base layer sets the brand (`--base-brand` primary, `--base-accent-solid` and `--base-accent-soft` accent). Because the primary action states and the accent System tokens point at palette steps directly in the current Figma file, thirteen color tokens carry the brand: `--base-brand`, `--base-accent-solid`, `--base-accent-soft`, `--action-primary-resting`, `--action-primary-hover`, `--action-primary-focus`, `--action-primary-pressed`, `--action-primary-disabled`, `--action-primary-text`, `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`. So do the four font families (`--font-family-brand`, `--font-family-system`, `--font-family-written`, `--font-family-mono`). A brand theme overrides these seventeen and nothing else. A product's own brand stays in that product, not in this skill."
     },
     {
       "id": "DS-TOKEN-005",
@@ -1847,7 +1857,7 @@
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment",
-      "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--text-on-dark`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--border-default`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
+      "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--action-primary-text`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--border-default`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
     }
   ]
 }

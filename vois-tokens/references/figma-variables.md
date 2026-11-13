@@ -25,7 +25,9 @@ The names follow these rules, so you can predict them:
 | Base | `base-` + leaf | `Base/Accent Solid` → `--base-accent-solid` |
 | Radius | `radii-{px}` for the scale, `radius-` + name for the roles | `--radii-6`, `--radius-input` |
 | Spacing | `space-{px}`, `space-padding-*`, `space-v-*` (vertical), `space-h-*` (horizontal) | `--space-16`, `--space-v-between-inputs` |
-| Size | `size-{px}`, `size-avatar-*`, `size-icon-*`, `size-action-*` | `--size-icon-small` |
+| Size | `size-{px}`, `size-avatar-*`, `size-icon-*`, `size-action-*`, `size-field-web` and `size-field-native` (`[DS-COMPONENT-007]`), and `hit-area-min` (`[DS-A11Y-001]`) | `--size-icon-small`, `--size-field-web` |
+| Motion | `motion-duration-*` (ms), `motion-ease-*` (a string variable holding a `cubic-bezier`), `motion-distance-*` | `--motion-duration-fast` |
+| Typography | `font-size-*` and `line-height-*` (px), `font-weight-*` (unitless), `font-family-*` (brand slots), and the roles `font-heading`, `font-body`, `font-mono`. Leaf in kebab case: `Font/Size/XSmall` → `--font-size-xsmall`, `Font/Weight/Semi Bold` → `--font-weight-semi-bold`. Not `--text-*`, which Tailwind reads as font sizes and Vois uses for text colors | `--font-size-small` |
 | Elevation (effect styles, which have no code syntax) | `shadow-` + tier | `--shadow-medium` |
 
 Two Figma spellings are corrected in CSS: `Golide-10` to `-12` are `--goldie-10` to `--goldie-12`, and `Auxilary` is `auxiliary` (`--text-auxiliary`).
@@ -33,6 +35,8 @@ Two Figma spellings are corrected in CSS: `Golide-10` to `-12` are `--goldie-10`
 ## Where the values come from
 
 The Vois MCP serves a workspace's live values (`vois_get_tokens`). When a project doesn't use the MCP, the registry's `vois-tokens` item seeds a default for every token, generated from the Figma variables with a generic blue brand. Use the MCP values when you have them; the defaults are the fallback.
+
+The item ships two files: `vois-tokens.css` and `motion-tokens.css`, because the motion tokens may hold literal durations and curves only in a file with that name (`[DS-MOTION-001]`). The tokens decided while Figma was unreachable (`--size-36`, the field heights, `--hit-area-min`, the motion tokens, and `--size-action-large` at 36) are now Figma variables. `registry/FIGMA-TODO.md` lists what Figma still needs.
 
 ## Where they live `[DS-TOKEN-003]`
 
@@ -48,11 +52,12 @@ Define the tokens in `:root` (light values) and `.dark` (dark values), **not in 
 
 The Base layer sets the brand: `--base-brand` is the primary color, and `--base-accent-solid` and `--base-accent-soft` are the accent. Everything else is shared structure.
 
-In the current Figma file, the primary action states and the accent System tokens point at palette steps directly rather than at Base. So a brand theme overrides these twelve tokens, and nothing else:
+In the current Figma file, the primary action states and the accent System tokens point at palette steps directly rather than at Base. So a brand theme overrides these thirteen color tokens, plus the four font families, and nothing else:
 
-`--base-brand`, `--base-accent-solid`, `--base-accent-soft`, `--action-primary-resting`, `--action-primary-hover`, `--action-primary-focus`, `--action-primary-pressed`, `--action-primary-disabled`, `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`.
+- Colors: `--base-brand`, `--base-accent-solid`, `--base-accent-soft`, `--action-primary-resting`, `--action-primary-hover`, `--action-primary-focus`, `--action-primary-pressed`, `--action-primary-disabled`, `--action-primary-text` (text and icons on a primary button, which depends on the brand: black on a light brand, white on a dark one), `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`.
+- Fonts: `--font-family-brand`, `--font-family-system`, `--font-family-written`, `--font-family-mono`. The role tokens `--font-heading`, `--font-body` and `--font-mono` alias them, so they follow.
 
-Checked controls, switches and solid selected options alias `--base-accent-solid`, so they follow the brand on their own. The generic default makes the primary and the accent both blue. A product's own brand (its colors and palette choices) stays in that product, not in this skill.
+Checked controls, switches and solid selected options alias `--base-accent-solid`, so they follow the brand on their own. The generic default makes the primary and the accent both blue, and uses generic system font stacks. A product's own brand (its colors, palette choices and fonts) stays in that product, not in this skill.
 
 ## shadcn/ui variables `[DS-TOKEN-005]`
 
@@ -67,7 +72,7 @@ When a project uses shadcn/ui, point each shadcn variable at the Vois token belo
 | `popover` | `--bg-card` |
 | `popover-foreground` | `--text-primary` |
 | `primary` | `--action-primary-resting` |
-| `primary-foreground` | `--text-on-dark` |
+| `primary-foreground` | `--action-primary-text` |
 | `secondary` | `--action-secondary-resting` |
 | `secondary-foreground` | `--text-primary` |
 | `muted` | `--bg-subtle` |

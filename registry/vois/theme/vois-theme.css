@@ -29,7 +29,7 @@
   --popover: var(--bg-card);
   --popover-foreground: var(--text-primary);
   --primary: var(--action-primary-resting);
-  --primary-foreground: var(--text-on-dark);
+  --primary-foreground: var(--action-primary-text);
   --secondary: var(--action-secondary-resting);
   --secondary-foreground: var(--text-primary);
   --muted: var(--bg-subtle);

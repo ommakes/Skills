@@ -7,12 +7,17 @@
       "name": "vois-tokens",
       "type": "registry:theme",
       "title": "Vois tokens",
-      "description": "Default values for every Vois token, generated from the Vois Figma variables, with a generic blue brand. Use it when the Vois MCP isn't serving your workspace's live values.",
+      "description": "Default values for every Vois token, generated from the Vois Figma variables, with a generic blue brand, plus the motion tokens in their own file. Use it when the Vois MCP isn't serving your workspace's live values.",
       "files": [
         {
           "path": "vois/tokens/vois-tokens.css",
           "type": "registry:file",
           "target": "src/styles/vois-tokens.css"
+        },
+        {
+          "path": "vois/tokens/motion-tokens.css",
+          "type": "registry:file",
+          "target": "src/styles/motion-tokens.css"
         }
       ]
     },
@@ -26,6 +31,84 @@
           "path": "vois/theme/vois-theme.css",
           "type": "registry:file",
           "target": "src/styles/vois-theme.css"
+        }
+      ]
+    },
+    {
+      "name": "vois-spinner",
+      "type": "registry:ui",
+      "title": "Vois Spinner",
+      "description": "One open arc turning in a circle (the loading.dev arc, MIT), timed by --motion-duration-spin, still under reduced motion, currentColor, sizes 16/20/24. The Button's loading state uses it.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/spinner/spinner.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/spinner.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-button",
+      "type": "registry:ui",
+      "title": "Vois Button",
+      "description": "shadcn/ui's Button on Vois tokens: the same variant and size names, heights 28/36/48 (36 is the web default, 48 the native default) and 56 circular, a centered label with 4px sides, leading and trailing icons, a loading state with the Vois spinner, the Vois focus ring and hit area, and a pointer-only press scale timed by the motion tokens. Install vois-spinner with it.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/button/button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-input",
+      "type": "registry:ui",
+      "title": "Vois Input",
+      "description": "shadcn/ui's Input on Vois tokens: 36 (web default), 48 (native) and 32 (compact, inline in tables), with the Figma Input Field states (hover, 2px focus, error via aria-invalid, disabled, read-only, prefill).",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/input/input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-select",
+      "type": "registry:ui",
+      "title": "Vois Select",
+      "description": "shadcn/ui's Select (Radix) on Vois tokens: a trigger with the Vois Input heights and states, and a list built like the Figma Dropdown Menu and Menu Item. Install vois-input with it: the trigger imports its field classes.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/select/select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/select.tsx"
         }
       ]
     }

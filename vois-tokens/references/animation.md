@@ -10,7 +10,7 @@
 
 Timing and easing come from motion tokens. Component code never holds a literal duration, `cubic-bezier(...)` curve, or numeric easing array. `[DS-MOTION-001]`
 
-- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-ease-standard`, `--motion-ease-emphasized`, `--motion-distance-short`. Values live in your project's token file. If the project has none, start from the file below.
+- **Token names:** `--motion-duration-instant`, `--motion-duration-fast`, `--motion-duration-base`, `--motion-duration-slow`, `--motion-duration-spin`, `--motion-ease-standard`, `--motion-ease-emphasized`, `--motion-distance-short`. Values live in your project's token file. If the project has none, start from the file below. The registry's `vois-tokens` item ships these exact values as `motion-tokens.css`, and its check fails if the two differ.
 - **CSS:** `transition-duration: var(--motion-duration-fast);`
 - **Tailwind:** `duration-[var(--motion-duration-fast)]`
 - **StyleX:** `transitionDuration: "var(--motion-duration-fast)"`
@@ -28,6 +28,7 @@ Starting points, to tune side by side in your own product. Token files are the o
   --motion-duration-fast: 150ms;    /* icon morph, number ticker, small crossfades */
   --motion-duration-base: 250ms;    /* label morph, directional, grow-from-trigger */
   --motion-duration-slow: 400ms;    /* large elements only */
+  --motion-duration-spin: 800ms;    /* one turn of a looping spinner */
   --motion-ease-standard: cubic-bezier(.165, .84, .44, 1);  /* ease-out-quart */
   --motion-ease-emphasized: cubic-bezier(.23, 1, .32, 1);   /* ease-out-quint */
   --motion-distance-short: 12px;    /* label rise and directional slide */
@@ -38,7 +39,7 @@ The TypeScript side of the same tokens, for Motion. Keep the values identical to
 
 ```ts
 // motion-tokens.ts (seconds, to match Motion's API)
-export const motionDuration = { instant: 0.1, fast: 0.15, base: 0.25, slow: 0.4 } as const;
+export const motionDuration = { instant: 0.1, fast: 0.15, base: 0.25, slow: 0.4, spin: 0.8 } as const;
 type Bezier = [number, number, number, number]; // mutable, so every version of Motion accepts it as `ease`
 export const motionEase: { standard: Bezier; emphasized: Bezier } = {
   standard: [0.165, 0.84, 0.44, 1],
@@ -49,6 +50,8 @@ export const motionSpring = {
   standard: { type: "spring", bounce: 0, duration: motionDuration.base },
 } as const;
 ```
+
+`--motion-duration-spin` is one full turn of a looping spinner, such as the registry's `vois-spinner`. It times a loop, not a transition, so the 300ms limit (`[DS-ANIMATION-001]`) does not apply to it. Never use it for anything that moves from one state to another.
 
 `--motion-distance-short` is how far a morph travels. Use one value across the project so travel feels the same everywhere. Start at 12px; 8px to 16px suits most UIs. It stays small next to the element that moves, never the full width. If the token is missing, the element does not travel.
 

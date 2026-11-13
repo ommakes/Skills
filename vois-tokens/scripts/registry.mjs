@@ -339,8 +339,11 @@ export const RULES = [
     extensions: ALL_EXT,
     fixHint: "Add a prefers-reduced-motion fallback anywhere animation/transition is used.",
     check({ content }) {
-      const hasAnimation = /@keyframes|\banimate-[\w-]+|\bmotion\.[A-Za-z]+|from\s+["']motion\/react["']|from\s+["']framer-motion["']|transition(?:-[\w]+)?:/.test(content);
-      const hasReducedMotion = /prefers-reduced-motion/.test(content);
+      // `animate-[spin_1s_linear_infinite]` (an arbitrary animation) counts as animation; `animate-none`
+      // switches animation off, so on its own it does not.
+      const hasAnimation = /@keyframes|\banimate-(?!none\b)(?:\[|[\w-])|\bmotion\.[A-Za-z]+|from\s+["']motion\/react["']|from\s+["']framer-motion["']|transition(?:-[\w]+)?:/.test(content);
+      // Tailwind's motion-reduce: and motion-safe: variants compile to the prefers-reduced-motion query.
+      const hasReducedMotion = /prefers-reduced-motion|\bmotion-(?:reduce|safe):/.test(content);
       if (hasAnimation && !hasReducedMotion) {
         return [{ line: 1, snippet: "(file-level)", message: "File uses animation/transitions but has no prefers-reduced-motion handling anywhere in it." }];
       }

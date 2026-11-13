@@ -8,7 +8,8 @@
 //   2. CSS, in any item: only the mapping block, and each line points one shadcn variable at the one
 //      Vois token a Vois rule names for it (MAPPINGS). Each mapping's rule must still name that token,
 //      MAPPINGS must equal the DS-TOKEN-005 table, and every target must be a generated token.
-//      The one exception is the generated token file, which must equal what build-tokens.mjs writes.
+//      The exceptions are the generated token files (vois-tokens.css, motion-tokens.css), which must equal
+//      what build-tokens.mjs writes. The motion values must also equal animation.md's starter block.
 //   3. Every registry file is a type the vois-tokens detector reads, and it has no findings.
 //   4. package.json's version is the newest version in CHANGELOG.md.
 //
@@ -22,7 +23,7 @@ import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "../../vois-tokens/scripts/detect.mjs";
 import { rulesForFile } from "../../vois-tokens/scripts/registry.mjs";
-import { build } from "./build-tokens.mjs";
+import { buildFiles, readPending } from "./build-tokens.mjs";
 
 export const REGISTRY_NAME = "vois";
 // Item types this registry may use. Others fail until someone adds them here on purpose.
@@ -50,7 +51,7 @@ export const MAPPINGS = {
   popover: { token: "--bg-card", rule: T5 },
   "popover-foreground": { token: "--text-primary", rule: T5 },
   primary: { token: "--action-primary-resting", rule: T5 },
-  "primary-foreground": { token: "--text-on-dark", rule: T5 },
+  "primary-foreground": { token: "--action-primary-text", rule: T5 },
   secondary: { token: "--action-secondary-resting", rule: T5 },
   "secondary-foreground": { token: "--text-primary", rule: T5 },
   muted: { token: "--bg-subtle", rule: T5 },
@@ -63,8 +64,9 @@ export const MAPPINGS = {
   ring: { token: "--border-state-focus", rule: T5 },
   radius: { token: "--radii-8", rule: T5 },
 };
-// The generated token file. It holds values on purpose, so the mapping-only CSS rule does not apply to it.
+// The generated token files. They hold values on purpose, so the mapping-only CSS rule does not apply.
 export const TOKENS_FILE = "vois/tokens/vois-tokens.css";
+export const MOTION_FILE = "vois/tokens/motion-tokens.css";
 
 // ---- Paths ---------------------------------------------------------------------------
 
@@ -255,7 +257,77 @@ export function tableProblems(table, mappings = MAPPINGS) {
 }
 
 // Token names a generated CSS file defines.
-export const definedTokens = (css) => new Set([...css.matchAll(/^\s*(--[a-z0-9-]+):/gm)].map((m) => m[1]));
+// Name to value for each custom property a CSS file declares (comments stripped, spaces normalized).
+const declarations = (css) => new Map([...stripComments(css).matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim().replace(/\s+/g, " ")]));
+export const definedTokens = (css) => new Set(declarations(css).keys());
+
+// The motion tokens must equal the starter block in vois-tokens/references/animation.md, the one place the
+// skill states them. Names and values compare exactly (spaces in a value are normalized), and the two
+// sets must be the same: a token in one and not the other fails.
+export function starterBlock(md) {
+  const at = md.indexOf("### Starter token file");
+  if (at === -1) return null;
+  // Only this section: up to the next heading, so a css block further down never counts.
+  const rest = md.slice(at + 1);
+  const next = rest.search(/\n#{1,6} /);
+  const section = next === -1 ? rest : rest.slice(0, next);
+  const m = /```css\n([\s\S]*?)```/.exec(section);
+  return m ? m[1] : null;
+}
+export function motionProblems(motionCss, animationMd) {
+  const block = starterBlock(animationMd);
+  if (block === null) return ["vois-tokens/references/animation.md: no css block under \"### Starter token file\""];
+  const want = declarations(block);
+  const got = declarations(motionCss);
+  if (want.size === 0) return ["vois-tokens/references/animation.md: the starter block declares no tokens"];
+  const out = [];
+  for (const [k, v] of want) {
+    if (!got.has(k)) out.push(`${MOTION_FILE}: ${k} is in the animation.md starter block but not generated`);
+    else if (got.get(k) !== v) out.push(`${MOTION_FILE}: ${k} is ${got.get(k)}, but animation.md says ${v}`);
+  }
+  for (const k of got.keys()) if (!want.has(k)) out.push(`${MOTION_FILE}: ${k} is not in the animation.md starter block`);
+  return out;
+}
+
+// Every token in figma-pending.json is listed in FIGMA-TODO.md, as `--name`, so the log of what Figma
+// still needs stays complete.
+export function pendingLogProblems(pending, todoMd) {
+  const names = [...Object.keys(pending?.add ?? {}), ...Object.keys(pending?.change ?? {})];
+  return names.filter((n) => !todoMd.includes("`" + n + "`")).map((n) => `FIGMA-TODO.md: does not list ${n}, which is in source/figma-pending.json`);
+}
+
+// Every custom property a component file reads must exist: a generated token, or one the file defines
+// itself (a Tailwind `[--name:...]` class or a `--name:` style key). A read is `var(--x` or Tailwind's
+// `(--x)` shorthand, so `h-(--size-36)` counts too. Comments and strings are not skipped: a name in a
+// comment that points at nothing is drift as well. Names are compared exactly, so `--Size-36` fails.
+// Custom properties a primitive sets on its own elements at runtime. They are not design tokens, so they
+// are allowed by exact name, as Radix documents them, and a misspelled one still fails. Add a primitive's
+// names here when a component starts using it.
+export const RUNTIME = new Set([
+  // Radix Select (Content, popper position)
+  "--radix-select-content-transform-origin",
+  "--radix-select-content-available-width",
+  "--radix-select-content-available-height",
+  "--radix-select-trigger-width",
+  "--radix-select-trigger-height",
+]);
+
+export function tokenRefProblems(text, known) {
+  // Definitions count only outside comments, so a comment cannot vouch for a token (reads in comments
+  // still count: that keeps the check strict from both sides).
+  const code = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+  const local = new Set([...code.matchAll(/(?:\[|["'\s{,])(--[A-Za-z0-9_-]+)["']?\s*:/g)].map((m) => m[1]));
+  const out = [];
+  const seen = new Set();
+  for (const m of text.matchAll(/\(\s*(--[A-Za-z0-9_-]+)/g)) {
+    const name = m[1];
+    if (known.has(name) || local.has(name) || seen.has(name) || RUNTIME.has(name)) continue;
+    seen.add(name);
+    const line = text.slice(0, m.index).split("\n").length;
+    out.push(`${line}: reads ${name}, which is not a generated token and is not defined in this file`);
+  }
+  return out;
+}
 
 // ---- Whole registry ------------------------------------------------------------------
 
@@ -309,14 +381,29 @@ export function checkRegistry(registryDir) {
   try { md = readFileSync(join(repo, "vois-tokens/references/figma-variables.md"), "utf8"); } catch { problems.push("vois-tokens/references/figma-variables.md: missing"); }
   if (md) { const t = token005Table(md); problems.push(...t.problems, ...tableProblems(t.table)); }
   let generated = null;
+  let generatedMotion = null;
+  let pending = null;
+  const src = (f) => JSON.parse(readFileSync(join(registryDir, "source", f), "utf8"));
   try {
-    generated = build(JSON.parse(readFileSync(join(registryDir, "source/figma-export.json"), "utf8")), JSON.parse(readFileSync(join(registryDir, "source/brand-default.json"), "utf8")));
+    pending = readPending(readFileSync(join(registryDir, "source/figma-pending.json"), "utf8"));
+    ({ tokens: generated, motion: generatedMotion } = buildFiles(src("figma-export.json"), src("brand-default.json"), { pending }));
   } catch (e) { problems.push(`token build: ${e.message}`); }
+  let names = null;
   if (generated) {
-    const names = definedTokens(generated);
+    names = new Set([...definedTokens(generated), ...definedTokens(generatedMotion)]);
     for (const [name, { token }] of Object.entries(MAPPINGS)) if (!names.has(token)) problems.push(`MAPPINGS.${name}: ${token} is not a generated token`);
   }
   const readOrNull = (f) => { try { return readFileSync(join(registryDir, f), "utf8"); } catch { return null; } };
+  if (generatedMotion !== null) {
+    let anim = null;
+    try { anim = readFileSync(join(repo, "vois-tokens/references/animation.md"), "utf8"); } catch { problems.push("vois-tokens/references/animation.md: missing"); }
+    if (anim !== null) problems.push(...motionProblems(generatedMotion, anim));
+  }
+  if (pending !== null) {
+    const todo = readOrNull("FIGMA-TODO.md");
+    if (todo === null) problems.push("FIGMA-TODO.md: missing; it lists what source/figma-pending.json still needs in Figma");
+    else problems.push(...pendingLogProblems(pending, todo));
+  }
   problems.push(...versionProblems(readOrNull("package.json") ?? "", readOrNull("CHANGELOG.md")));
   const seen = new Set();
   for (const { file } of accepted) {
@@ -324,9 +411,11 @@ export function checkRegistry(registryDir) {
     const full = join(registryDir, file.path);
     if (rulesForFile(full).length === 0) { problems.push(`${file.path}: the vois-tokens detector does not read this file type`); continue; }
     const text = readFileSync(full, "utf8");
-    if (file.path === TOKENS_FILE) {
-      if (generated !== null && text !== generated) problems.push(`${file.path}: not what build-tokens.mjs writes; run node registry/scripts/build-tokens.mjs`);
+    if (file.path === TOKENS_FILE || file.path === MOTION_FILE) {
+      const want = file.path === TOKENS_FILE ? generated : generatedMotion;
+      if (want !== null && text !== want) problems.push(`${file.path}: not what build-tokens.mjs writes; run node registry/scripts/build-tokens.mjs`);
     } else if (/\.css$/i.test(file.path)) for (const p of cssProblems(text, { seen })) problems.push(`${file.path}: ${p}`);
+    else if (names !== null) for (const p of tokenRefProblems(text, names)) problems.push(`${file.path}:${p}`);
     for (const d of detectFile(full, text)) problems.push(`${file.path}:${d.line} ${d.ruleId} ${d.message}`);
   }
   // Every mapping must actually be in a theme file, so "maps every DS-TOKEN-005 variable" stays true.
