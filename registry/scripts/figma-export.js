@@ -6,12 +6,14 @@
 // What it exports: every variable that has Web code syntax (its CSS name). A value is a color
 // (#rrggbb or #rrggbbaa), a number (px) or an alias ("=--name"). When Light and Dark differ the value is
 // [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers.
-// The twelve brand slots (DS-TOKEN-004) are written as null: a product's brand never leaves Figma here.
+// The seventeen brand slots (DS-TOKEN-004: thirteen colors, four font families) are written as null: a product's brand never leaves Figma here.
 
 const BRAND_SLOTS = [
   "--base-brand", "--base-accent-solid", "--base-accent-soft",
-  "--action-primary-resting", "--action-primary-hover", "--action-primary-focus", "--action-primary-pressed", "--action-primary-disabled",
+  "--action-primary-resting", "--action-primary-hover", "--action-primary-focus", "--action-primary-pressed", "--action-primary-disabled", "--action-primary-text",
   "--bg-accent", "--text-accent", "--icon-accent", "--border-accent",
+  // The font families carry the brand too (DS-TOKEN-004).
+  "--font-family-brand", "--font-family-system", "--font-family-written", "--font-family-mono",
 ];
 const SHADOW_NAMES = { "Elevation/Base": "--shadow-base", "Elevation/Small": "--shadow-small", "Elevation/Medium": "--shadow-medium", "Elevation/Large": "--shadow-large", "Elevation/XLarge": "--shadow-xlarge" };
 
@@ -38,6 +40,9 @@ const enc = (val, v, key) => {
   }
   if (val && typeof val === "object" && "r" in val) return hex(val);
   if (typeof val === "number") return val;
+  // A string variable (an easing curve) goes out as { css }. build-tokens.mjs accepts it only for a
+  // --motion-ease-* token holding a cubic-bezier, so anything else fails there.
+  if (typeof val === "string") return { css: val };
   throw new Error(`${v.name} (${key}): unsupported value ${JSON.stringify(val)}`);
 };
 for (const col of collections) {
@@ -61,7 +66,8 @@ for (const col of collections) {
     if (col.modes.length === 1) { tokens[css] = enc(v.valuesByMode[col.modes[0].modeId], v, "all"); continue; }
     const l = enc(v.valuesByMode[light.modeId], v, "light");
     const d = enc(v.valuesByMode[dark.modeId], v, "dark");
-    tokens[css] = l === d ? l : [l, d];
+    // Compare by value: two equal { css } objects are one value, not [light, dark].
+    tokens[css] = JSON.stringify(l) === JSON.stringify(d) ? l : [l, d];
   }
 }
 for (const s of BRAND_SLOTS) if (!Object.hasOwn(tokens, s)) throw new Error(`brand slot ${s} has no variable`);

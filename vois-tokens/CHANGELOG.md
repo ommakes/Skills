@@ -4,6 +4,24 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.30.0] - 2026-11-13
+
+### Added
+- `DS-COMPONENT-007` (`references/components.md`): control heights come from the size tokens. Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`). 36 is the web default and 48 the native default. The circular action is 56 (`--size-action-circular`), and no other action or control is 56 (an avatar can be). Input and Select use `--size-field-web` (36) on web and `--size-field-native` (48) on native. A Button next to a field matches its height.
+- `references/figma-variables.md`: the Size row lists `size-field-*` and `hit-area-min`, and a new Motion row. The tokens decided before they reached Figma are named, with a pointer to `registry/FIGMA-TODO.md`.
+
+### Changed
+- `references/components.md`: the `buttonVariants` example uses Vois tokens and the 28, 36 and 48 sizes. `text-` and `border-` colors carry a `color:` type hint, because `tailwind-merge` in shadcn's `cn()` otherwise drops `text-sm` or the color. The example points to the registry `vois-button` item for the full component.
+- `references/animation.md`: the registry's `vois-tokens` item ships the starter values as `motion-tokens.css`. New token `--motion-duration-spin` (800ms), one turn of a looping spinner. It times a loop, not a transition, so the 300ms limit doesn't apply.
+
+- `DS-TOKEN-004`: the four font families (`--font-family-brand`, `-system`, `-written`, `-mono`) are brand slots too, so 16 in all. The default brand uses generic system stacks.
+- `references/figma-variables.md`: a Typography naming row. Sizes and line heights are `--font-size-*` and `--line-height-*`, not `--text-*`, which Tailwind reads as font sizes. The size, field, hit-area and motion tokens are Figma variables now, not pending.
+- `references/typography.md`: the role tokens alias the Figma font families.
+
+### Fixed
+- `DS-ANIMATION-004` (detector) counts an arbitrary Tailwind animation (`animate-[spin_1s_linear_infinite]`) as animation. It no longer counts `animate-none` on its own, and it accepts Tailwind's `motion-reduce:` and `motion-safe:` as reduced-motion handling. Before, a spinner written as an arbitrary `animate-[...]` class passed even when it never stopped, and one that stopped through `motion-reduce:` was flagged. `references/hooks.md` says so.
+- `--size-action-large` is 36, not 40. That is a pending Figma change: see `registry/FIGMA-TODO.md`.
+
 ## [1.29.1] - 2026-11-13
 
 ### Fixed

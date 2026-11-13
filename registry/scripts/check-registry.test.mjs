@@ -6,7 +6,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, sy
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, token005Table, tableProblems, definedTokens, MAPPINGS, SHADCN_VARS, TOKENS_FILE } from "./check-registry.mjs";
+import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, token005Table, tableProblems, definedTokens, tokenRefProblems, motionProblems, pendingLogProblems, starterBlock, MAPPINGS, SHADCN_VARS, TOKENS_FILE } from "./check-registry.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const repo = resolve(registryDir, "..");
@@ -405,4 +405,142 @@ test("whole registry: a mapping to a token that is not generated fails", () => {
 
 test("MAPPINGS only names shadcn variables", () => {
   for (const name of Object.keys(MAPPINGS)) assert.ok(SHADCN_VARS.has(name), name);
+});
+
+// ---- Token reads in component files ----
+
+const known = new Set(["--size-36", "--border-state-focus", "--action-primary-resting"]);
+const refs = (t) => tokenRefProblems(t, known);
+
+test("token reads: generated tokens pass in every read form", () => {
+  assert.deepEqual(refs('h-[var(--size-36)] outline-[var(--border-state-focus)]'), []);
+  assert.deepEqual(refs('h-(--size-36) bg-(--action-primary-resting)'), [], "Tailwind (--x) shorthand");
+  assert.deepEqual(refs('style={{ height: "var( --size-36 )" }}'), [], "space inside var(");
+  assert.deepEqual(refs('calc(var(--size-36) + 4px)'), [], "inside calc");
+  assert.deepEqual(refs('no tokens here'), []);
+});
+
+test("token reads: a token that is not generated fails, whatever the read form", () => {
+  for (const t of ['h-[var(--hit-area-min)]', 'min-h-(--hit-area-min)', 'duration-[var(--motion-duration-fast)]', 'style={{ minHeight: "var(--hit-area-min)" }}']) {
+    assert.equal(refs(t).length, 1, t);
+  }
+  assert.match(refs('h-[var(--hit-area-min)]')[0], /--hit-area-min/);
+});
+
+test("token reads: names compare exactly, never by prefix or case", () => {
+  assert.equal(refs('h-[var(--Size-36)]').length, 1, "case");
+  assert.equal(refs('h-[var(--size-3)]').length, 1, "a prefix of a real token");
+  assert.equal(refs('h-[var(--size-360)]').length, 1, "a real token as a prefix");
+});
+
+test("token reads: a fallback does not excuse a missing token", () => {
+  assert.equal(refs('duration-[var(--motion-duration-fast,150ms)]').length, 1);
+});
+
+test("token reads: a name the file defines itself passes; a definition elsewhere in a value does not", () => {
+  assert.deepEqual(refs('[--btn-h:var(--size-36)] h-(--btn-h)'), [], "Tailwind arbitrary property");
+  assert.deepEqual(refs('style={{ "--btn-h": "var(--size-36)", height: "var(--btn-h)" }}'), [], "style key");
+  assert.equal(refs('h-(--btn-h)').length, 1, "read with no definition");
+  assert.equal(refs('h-[var(--a)] [x:var(--a)]').length, 1, "var(--a) inside a value is a read, not a definition");
+});
+
+test("token reads: comments count, so a stale name in a comment fails too", () => {
+  assert.equal(refs('// uses var(--hit-area-min)\nconst a = 1').length, 1);
+});
+
+test("token reads: each missing name is reported once, with the line of its first read", () => {
+  const out = refs('a\nh-[var(--x-y)]\nw-[var(--x-y)]');
+  assert.equal(out.length, 1);
+  assert.match(out[0], /^2: /);
+});
+
+test("whole registry: a component file that reads a missing token fails", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-reg-"));
+  try {
+    cpSync(registryDir, dir, { recursive: true, filter: (p) => !p.includes("node_modules") });
+    mkdirSync(join(dir, "vois/probe"), { recursive: true });
+    writeFileSync(join(dir, "vois/probe/probe.tsx"), 'export const c = "min-h-[var(--not-a-vois-token)]";\n');
+    const reg = JSON.parse(readFileSync(join(dir, "registry.json"), "utf8"));
+    reg.items.push({ name: "probe", type: "registry:ui", title: "Probe", description: "test", files: [{ path: "vois/probe/probe.tsx", type: "registry:ui" }] });
+    writeFileSync(join(dir, "registry.json"), JSON.stringify(reg, null, 2));
+    // checkRegistry reads the skill folders from the copy's parent (the temp dir), so checks that need them
+    // report "missing" here. Only the probe's own message is asserted.
+    const out = checkRegistry(dir);
+    assert.ok(out.some((p) => /probe\.tsx:1: reads --not-a-vois-token/.test(p)), out.join("\n"));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---- Motion tokens equal the animation.md starter block ----
+
+const anim = (body) => `# Animation\n\n### Starter token file\n\nText.\n\n\`\`\`css\n:root {\n${body}\n}\n\`\`\`\n\n\`\`\`ts\nconst x = 1;\n\`\`\`\n`;
+const motionCss = (body) => `/* generated */\n:root {\n${body}\n}\n`;
+
+test("motion: equal names and values pass, with comments and spacing ignored", () => {
+  const md = anim("  --motion-duration-fast: 150ms; /* small */\n  --motion-ease-standard: cubic-bezier(.165, .84, .44, 1);");
+  assert.deepEqual(motionProblems(motionCss("  --motion-ease-standard: cubic-bezier(.165,  .84, .44, 1);\n  --motion-duration-fast: 150ms;"), md), []);
+});
+
+test("motion: a value, a missing token or an extra token fails, from both sides", () => {
+  const md = anim("  --motion-duration-fast: 150ms;\n  --motion-duration-base: 250ms;");
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 160ms;\n  --motion-duration-base: 250ms;"), md).length, 1, "value differs");
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 150ms;"), md).length, 1, "generated is missing one");
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 150ms;\n  --motion-duration-base: 250ms;\n  --motion-x: 1px;"), md).length, 1, "generated has an extra");
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 150ms;\n  --motion-duration-base: 250ms;"), md.replace("150ms", "15ms")).length, 1, "the doc changed");
+});
+
+test("motion: a missing or empty starter block fails, it never passes by default", () => {
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 150ms;"), "# no block here").length, 1);
+  assert.equal(motionProblems(motionCss("  --motion-duration-fast: 150ms;"), anim("")).length, 1);
+  assert.equal(starterBlock("### Starter token file\n\n```ts\nx\n```"), null, "only a css block counts");
+  assert.equal(starterBlock("### Starter token file\n\nNo block.\n\n## Other\n\n```css\n:root { --motion-x: 1ms; }\n```"), null, "a css block in a later section does not count");
+  assert.match(starterBlock("### Starter token file\n\n```css\n:root { --motion-x: 1ms; }\n```\n"), /--motion-x/);
+});
+
+test("motion: the real animation.md starter block is what motion-tokens.css holds", () => {
+  const md = readFileSync(join(repo, "vois-tokens/references/animation.md"), "utf8");
+  assert.deepEqual(motionProblems(readFileSync(join(registryDir, "vois/tokens/motion-tokens.css"), "utf8"), md), []);
+});
+
+// ---- FIGMA-TODO.md lists every pending token ----
+
+test("pending log: every add and change name must be listed as `--name`", () => {
+  const pending = { format: 1, add: { "--size-36": 36 }, change: { "--size-action-large": { from: 1, to: 2 } } };
+  assert.deepEqual(pendingLogProblems(pending, "| `--size-36` | x |\n| `--size-action-large` | y |"), []);
+  assert.equal(pendingLogProblems(pending, "| `--size-36` | x |").length, 1, "change not listed");
+  assert.equal(pendingLogProblems(pending, "--size-36 and --size-action-large in plain text").length, 2, "must be in backticks");
+  assert.equal(pendingLogProblems(pending, "`--size-360` `--size-action-large`").length, 1, "a longer name does not count");
+  assert.deepEqual(pendingLogProblems({ format: 1 }, ""), [], "nothing pending, nothing to list");
+});
+
+test("whole registry: a pending token missing from FIGMA-TODO.md fails, and a missing log fails", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-reg-"));
+  try {
+    cpSync(registryDir, dir, { recursive: true, filter: (p) => !p.includes("node_modules") });
+    // A token Figma doesn't have yet, pending but not listed in the log.
+    writeFileSync(join(dir, "source/figma-pending.json"), JSON.stringify({ format: 1, add: { "--size-probe-999": 999 }, change: {} }));
+    assert.ok(checkRegistry(dir).some((p) => /does not list --size-probe-999/.test(p)));
+    rmSync(join(dir, "FIGMA-TODO.md"));
+    assert.ok(checkRegistry(dir).some((p) => /FIGMA-TODO\.md: missing/.test(p)));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("whole registry: a stale or hand-edited motion-tokens.css fails", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vois-reg-"));
+  try {
+    cpSync(registryDir, dir, { recursive: true, filter: (p) => !p.includes("node_modules") });
+    const f = join(dir, "vois/tokens/motion-tokens.css");
+    writeFileSync(f, readFileSync(f, "utf8").replace("150ms", "151ms"));
+    assert.ok(checkRegistry(dir).some((p) => /motion-tokens\.css: not what build-tokens\.mjs writes/.test(p)));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("token reads: a definition inside a comment does not vouch for a read", () => {
+  assert.equal(refs('h-[var(--fake)]\n// --fake: 1px').length, 1, "line comment");
+  assert.equal(refs('h-[var(--fake)]\n/* --fake: 1px */').length, 1, "block comment");
+  assert.deepEqual(refs('[--fake:var(--size-36)] h-[var(--fake)]'), [], "a real definition still counts");
+});
+
+test("token reads: Radix runtime properties pass by exact prefix, lookalikes fail", () => {
+  assert.deepEqual(refs("max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width)"), []);
+  for (const t of ["w-(--radixselect-width)", "w-(--Radix-select-width)", "w-(--x-radix-select)", "w-(--radix_select)", "w-(--radix-select-trigger-widht)", "w-(--radix-select-trigger-width-x)", "w-(--radix-popover-trigger-width)"]) assert.equal(refs(t).length, 1, t);
 });

@@ -1226,3 +1226,19 @@ test("DS-PANEL-008 reads a typed constant", () => {
   for (const code of ["const PANEL_WIDTH: number = tokens.panel;", "const tableWidth: number = 320;", "const PANEL_COUNT: number = 3;", "type P = { panelWidth: number };"])
     assert.equal(gridHits("DS-PANEL-008", code).length, 0, code);
 });
+
+test("DS-ANIMATION-004: an arbitrary Tailwind animation counts as animation, animate-none does not", () => {
+  const has = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "DS-ANIMATION-004");
+  assert.equal(has('<svg className="animate-[spin_var(--motion-duration-spin)_linear_infinite]" />'), true, "arbitrary animation, no handling");
+  assert.equal(has('<div className="animate-spin" />'), true, "named animation, no handling");
+  assert.equal(has('<div className="animate-none" />'), false, "animate-none alone is not animation");
+  assert.equal(has('<div className="animate-nonexistent" />'), true, "a name that starts with none is still an animation");
+});
+
+test("DS-ANIMATION-004: Tailwind motion-reduce: and motion-safe: count as reduced-motion handling", () => {
+  const has = (src) => detectFile("a.tsx", src).some((x) => x.ruleId === "DS-ANIMATION-004");
+  assert.equal(has('<svg className="animate-[spin_1s_linear_infinite] motion-reduce:animate-none" />'), false);
+  assert.equal(has('<svg className="motion-safe:animate-spin" />'), false);
+  assert.equal(has('<svg className="animate-spin" data-x="motion-reducer" />'), true, "motion-reducer is not the variant");
+  assert.equal(has('<svg className="animate-spin" />\n/* prefers-reduced-motion */'), false, "the literal query still counts");
+});

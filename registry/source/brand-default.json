@@ -1,19 +1,24 @@
 {
  "name": "generic default, blue",
  "file": "brand-default.json",
- "note": "The twelve brand slots (vois-tokens DS-TOKEN-004) for the generic default theme. Primary and accent are both blue. A product's own brand goes in its own brand file, built with build-tokens.mjs --brand, never here.",
+ "note": "The seventeen brand slots (vois-tokens DS-TOKEN-004) for the generic default theme: thirteen colors, primary and accent both blue, with white text on a primary fill from blue-10 so the 14 and 16px labels meet 4.5:1 (white on blue-9 is about 3.5:1), and four font families as generic system stacks (the written font inherits, because a generic cursive renders as Comic Sans on Windows). A product's own brand goes in its own brand file, built with build-tokens.mjs --brand, never here.",
  "tokens": {
   "--base-brand": "=--blue-9",
   "--base-accent-solid": "=--blue-9",
   "--base-accent-soft": ["=--blue-4", "=--blue-a6"],
-  "--action-primary-resting": "=--blue-9",
-  "--action-primary-hover": "=--blue-10",
-  "--action-primary-focus": "=--blue-9",
-  "--action-primary-pressed": "=--blue-11",
+  "--action-primary-resting": "=--blue-10",
+  "--action-primary-hover": "=--blue-11",
+  "--action-primary-focus": "=--blue-10",
+  "--action-primary-pressed": "=--blue-12",
   "--action-primary-disabled": "=--blue-a4",
+  "--action-primary-text": "=--white",
   "--bg-accent": ["=--blue-2", "=--blue-a5"],
   "--text-accent": ["=--blue-10", "=--blue-7"],
   "--icon-accent": ["=--blue-10", "=--blue-7"],
-  "--border-accent": ["=--blue-8", "=--blue-7"]
+  "--border-accent": ["=--blue-8", "=--blue-7"],
+  "--font-family-brand": {"css": "system-ui, sans-serif"},
+  "--font-family-system": {"css": "system-ui, sans-serif"},
+  "--font-family-written": {"css": "inherit"},
+  "--font-family-mono": {"css": "ui-monospace, monospace"}
  }
 }
