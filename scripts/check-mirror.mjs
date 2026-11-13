@@ -2,15 +2,15 @@
 // Checks this public repo against the private Vois repo, which is canonical for the
 // Vois design system skills. Two checks:
 //
-//   1. Mirror: the shared detector code matches byte for byte, and every rule ID in the
-//      shared rule files matches, with the same content. Named exceptions (the premium
+//   1. Mirror: the shared detector code and every file in registry/ match byte for byte, and
+//      every rule ID in the shared rule files matches, with the same content. Named exceptions (the premium
 //      wording and the vois-loop checklist) are listed in ALLOWED below and nowhere else.
 //   2. Standalone: no MCP call in a public skill is worded as required. Public skills
 //      must keep working without the MCP.
 //
 // Usage: node scripts/check-mirror.mjs --private <path-to-private-checkout>
 
-import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync, lstatSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 const here = resolve(new URL(".", import.meta.url).pathname, "..");
@@ -162,9 +162,55 @@ const WORDING_SWAPS = {
   }
 }
 
+// ---- 1c. Mirrored folders, every file byte for byte ------------------------------------
+
+// The registry is canonical in private and copied here unchanged. Installed and built folders at
+// its top level are not part of it. A file on one side only, a different byte, or a symlink fails.
+const MIRRORED_TREES = { registry: new Set(["node_modules", "public"]) };
+
+function treeFiles(root, skipTop) {
+  const files = new Map(); // relative path -> "file" | "symlink"
+  const walk = (dir, rel) => {
+    for (const name of readdirSync(dir)) {
+      if (rel === "" && skipTop.has(name)) continue;
+      const p = join(dir, name);
+      const r = rel ? `${rel}/${name}` : name;
+      const st = lstatSync(p);
+      if (st.isSymbolicLink()) files.set(r, "symlink");
+      else if (st.isDirectory()) walk(p, r);
+      else files.set(r, "file");
+    }
+  };
+  walk(root, "");
+  return files;
+}
+
+for (const [tree, skipTop] of Object.entries(MIRRORED_TREES)) {
+  const pubRoot = join(here, tree);
+  const privRoot = join(privateRoot, tree);
+  if (!existsSync(pubRoot) || !existsSync(privRoot)) {
+    problems.push(`${tree}/: missing in ${existsSync(pubRoot) ? "private" : "public"}`);
+    continue;
+  }
+  const pub = treeFiles(pubRoot, skipTop);
+  const priv = treeFiles(privRoot, skipTop);
+  for (const [r, kind] of priv) {
+    if (kind === "symlink") problems.push(`${tree}/${r}: is a symlink in private`);
+    else if (!pub.has(r)) problems.push(`${tree}/${r}: is in private only`);
+  }
+  for (const [r, kind] of pub) {
+    if (kind === "symlink") problems.push(`${tree}/${r}: is a symlink in public`);
+    else if (!priv.has(r)) problems.push(`${tree}/${r}: is in public only`);
+    else if (priv.get(r) === "file" && !readFileSync(join(pubRoot, r)).equals(readFileSync(join(privRoot, r)))) {
+      problems.push(`${tree}/${r}: differs from the private copy`);
+    }
+  }
+}
+
 // ---- 2. Standalone: no required MCP calls in public skills ---------------------------
 
-const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens"];
+// The registry is not a skill, but its docs and JSON must not require the MCP either.
+const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens", "registry"];
 const CALL = /\b(call|calls|always call|must call)\b[^.\n]*\b`?vois_[a-z_]+`?/i;
 const CONDITIONAL = /\b(if|when|unless|optional|available|only)\b/i;
 
