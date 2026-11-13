@@ -2,7 +2,7 @@
 
 How a page is split into columns, how a grid of cards decides how many it holds, and how side panels behave. It works the same on web (React), Flutter and native iOS and Android.
 
-Token values live in your token source. This skill stores token names and formulas. The proposed values are in `data/tokens.json` under `grid_and_panels`. If a `vois_get_tokens` tool is available, it serves the real values. Every size below is a token name. Never write a raw value. The maths is in `scripts/grid-logic.mjs`, and `scripts/grid.test.mjs` runs it with a fixture. If a rule here and that file disagree, fix the file or the rule, never only one.
+Token values live in your token source. This skill stores token names and formulas. The default values are in `data/tokens.json` under `grid_and_panels`. The same tokens are Figma variables (the Breakpoints collection, with each token's CSS name as its code syntax), and the registry's `vois-tokens` item ships them as CSS. If a `vois_get_tokens` tool is available, it serves your workspace's real values, and those win. Every size below is a token name. Never write a raw value. The maths is in `scripts/grid-logic.mjs`, and `scripts/grid.test.mjs` runs it with a fixture. If a rule here and that file disagree, fix the file or the rule, never only one.
 
 ## Two widths
 

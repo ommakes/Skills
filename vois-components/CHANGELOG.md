@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.18.1] - 2026-11-13
+
+### Changed
+
+- `LOOKALIKE-010` says to use Alert with the `notice` role, not `warning`, following `vois-tokens` 1.29.0, where the status token names come from Figma.
+
 ## [1.18.0] - 2026-11-12
 
 ### Added

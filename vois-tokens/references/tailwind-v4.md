@@ -4,7 +4,7 @@ Tailwind-specific implementation rules. If this project uses StyleX instead, see
 
 ## Key Changes from v3
 
-Replace `@layer base` with `@theme`: `[DS-TAILWIND-001]`
+Replace `@layer base` with `@theme` for the names Tailwind makes utilities from. The Vois tokens themselves live in `:root` and `.dark` (`[DS-TOKEN-003]`), and `@theme inline` aliases expose the ones a utility needs: `[DS-TAILWIND-001]`
 
 ```css
 /* v3 — don't do this */
@@ -13,8 +13,10 @@ Replace `@layer base` with `@theme`: `[DS-TAILWIND-001]`
 }
 
 /* v4 — do this */
-@theme {
-  --color-background: oklch(1 0 0);
+:root { --bg-background: var(--warm-gray-2); }
+.dark { --bg-background: var(--warm-gray-12); }
+@theme inline {
+  --color-background: var(--bg-background);
 }
 ```
 

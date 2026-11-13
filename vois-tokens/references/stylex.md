@@ -94,8 +94,8 @@ import * as stylex from "@stylexjs/stylex";
 
 const styles = stylex.create({
   base: { borderRadius: 6, fontWeight: 500 },
-  variantDefault: { backgroundColor: "var(--color-primary)" },
-  variantDestructive: { backgroundColor: "var(--color-negative)" },
+  variantDefault: { backgroundColor: "var(--action-primary-resting)" },
+  variantDestructive: { backgroundColor: "var(--solid-negative-resting)" },
   variantOutline: { borderWidth: 1, borderStyle: "solid" },
   sizeDefault: { height: 36, paddingInline: 16 },
   sizeSm: { height: 32, paddingInline: 12 },

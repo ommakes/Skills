@@ -980,7 +980,7 @@ const LOOKALIKE_RULES = [
   {
     id: "LOOKALIKE-010",
     title: "Hand-built alert box",
-    fixHint: "Use Alert with a status role (info, positive, negative, warning).",
+    fixHint: "Use Alert with a status role (info, positive, negative, notice).",
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || importsFrom(content, ["alert"])) return [];
       return tagFindings(content, lines, ["div", "p", "section", "span"], (a) => /\brole=["']alert["']/.test(a) && /border-l-4|\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d|(?<![:\w-])bg-destructive\/\d/.test(a), "A colored box with role=alert. Use Alert with a status role.");

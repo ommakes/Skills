@@ -1,0 +1,19 @@
+{
+ "name": "generic default, blue",
+ "file": "brand-default.json",
+ "note": "The twelve brand slots (vois-tokens DS-TOKEN-004) for the generic default theme. Primary and accent are both blue. A product's own brand goes in its own brand file, built with build-tokens.mjs --brand, never here.",
+ "tokens": {
+  "--base-brand": "=--blue-9",
+  "--base-accent-solid": "=--blue-9",
+  "--base-accent-soft": ["=--blue-4", "=--blue-a6"],
+  "--action-primary-resting": "=--blue-9",
+  "--action-primary-hover": "=--blue-10",
+  "--action-primary-focus": "=--blue-9",
+  "--action-primary-pressed": "=--blue-11",
+  "--action-primary-disabled": "=--blue-a4",
+  "--bg-accent": ["=--blue-2", "=--blue-a5"],
+  "--text-accent": ["=--blue-10", "=--blue-7"],
+  "--icon-accent": ["=--blue-10", "=--blue-7"],
+  "--border-accent": ["=--blue-8", "=--blue-7"]
+ }
+}

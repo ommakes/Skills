@@ -6,7 +6,9 @@
 //      share a path or an install target (ignoring case), and every registry:file names its target.
 //      Every file under registry/vois/ belongs to an item.
 //   2. CSS, in any item: only the mapping block, and each line points one shadcn variable at the one
-//      Vois token a Vois rule names for it (MAPPINGS). Each mapping's rule must still name that token.
+//      Vois token a Vois rule names for it (MAPPINGS). Each mapping's rule must still name that token,
+//      MAPPINGS must equal the DS-TOKEN-005 table, and every target must be a generated token.
+//      The one exception is the generated token file, which must equal what build-tokens.mjs writes.
 //   3. Every registry file is a type the vois-tokens detector reads, and it has no findings.
 //   4. package.json's version is the newest version in CHANGELOG.md.
 //
@@ -20,6 +22,7 @@ import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "../../vois-tokens/scripts/detect.mjs";
 import { rulesForFile } from "../../vois-tokens/scripts/registry.mjs";
+import { build } from "./build-tokens.mjs";
 
 export const REGISTRY_NAME = "vois";
 // Item types this registry may use. Others fail until someone adds them here on purpose.
@@ -37,11 +40,31 @@ export const SHADCN_VARS = new Set([
   "sidebar-accent", "sidebar-accent-foreground", "sidebar-border", "sidebar-ring", "radius",
 ]);
 // The only mappings allowed: each shadcn variable, the one Vois token for it, and the rule that names it.
-// A new mapping needs a Vois rule first (in vois-tokens), then a line here.
+// DS-TOKEN-005 (vois-tokens/references/figma-variables.md) is the full table; add a line here to map one more.
+const T5 = "DS-TOKEN-005";
 export const MAPPINGS = {
-  destructive: { token: "--color-negative", rule: "DS-COLOR-009" },
-  ring: { token: "--color-focus-ring", rule: "DS-A11Y-002" },
+  background: { token: "--bg-background", rule: T5 },
+  foreground: { token: "--text-primary", rule: T5 },
+  card: { token: "--bg-card", rule: T5 },
+  "card-foreground": { token: "--text-primary", rule: T5 },
+  popover: { token: "--bg-card", rule: T5 },
+  "popover-foreground": { token: "--text-primary", rule: T5 },
+  primary: { token: "--action-primary-resting", rule: T5 },
+  "primary-foreground": { token: "--text-on-dark", rule: T5 },
+  secondary: { token: "--action-secondary-resting", rule: T5 },
+  "secondary-foreground": { token: "--text-primary", rule: T5 },
+  muted: { token: "--bg-subtle", rule: T5 },
+  "muted-foreground": { token: "--text-secondary", rule: T5 },
+  accent: { token: "--bg-hover", rule: T5 },
+  "accent-foreground": { token: "--text-primary", rule: T5 },
+  destructive: { token: "--base-negative", rule: T5 },
+  border: { token: "--border-pretty", rule: T5 },
+  input: { token: "--border-default", rule: T5 },
+  ring: { token: "--border-state-focus", rule: T5 },
+  radius: { token: "--radii-8", rule: T5 },
 };
+// The generated token file. It holds values on purpose, so the mapping-only CSS rule does not apply to it.
+export const TOKENS_FILE = "vois/tokens/vois-tokens.css";
 
 // ---- Paths ---------------------------------------------------------------------------
 
@@ -138,7 +161,7 @@ export function cssProblems(css, { seen = new Set() } = {}) {
       if (seen.has(name)) out.push(`--${name}: mapped more than once`);
       seen.add(name);
       const allowed = Object.hasOwn(MAPPINGS, name) ? MAPPINGS[name] : null;
-      if (!allowed) { out.push(`--${name}: no Vois rule names a token for it yet; add the rule in vois-tokens, then a line to MAPPINGS`); continue; }
+      if (!allowed) { out.push(`--${name}: not in MAPPINGS yet; add it with the token DS-TOKEN-005 names for it`); continue; }
       if (value.trim() !== `var(${allowed.token})`) out.push(`--${name}: must be exactly var(${allowed.token}) (${allowed.rule}), found "${value.trim().slice(0, 60)}"`);
     }
     i = close + 1;
@@ -199,6 +222,41 @@ export function versionProblems(pkgText, changelogText) {
   return [];
 }
 
+// ---- DS-TOKEN-005 table and generated tokens ------------------------------------------------
+
+// The shadcn table in figma-variables.md, as { shadcnName: token }. Fails closed: no section, no rows,
+// or a variable listed twice is a problem, never an empty table.
+// CRLF files need no special case: with the m flag, JavaScript's $ also matches before \r (a test checks).
+export function token005Table(md) {
+  const start = md.indexOf("[DS-TOKEN-005]");
+  if (start === -1) return { problems: ["figma-variables.md: no [DS-TOKEN-005] section"], table: {} };
+  const rest = md.slice(start);
+  const end = rest.search(/\n## /);
+  const section = end === -1 ? rest : rest.slice(0, end);
+  const table = {};
+  const problems = [];
+  for (const m of section.matchAll(/^\| `([a-z0-9-]+)` \| `(--[a-z0-9-]+)` \|$/gm)) {
+    if (Object.hasOwn(table, m[1])) problems.push(`figma-variables.md: DS-TOKEN-005 lists ${m[1]} twice`);
+    table[m[1]] = m[2];
+  }
+  if (Object.keys(table).length === 0) problems.push("figma-variables.md: the DS-TOKEN-005 table has no rows");
+  return { problems, table };
+}
+
+// MAPPINGS and the table must say the same thing, both ways.
+export function tableProblems(table, mappings = MAPPINGS) {
+  const out = [];
+  for (const [name, { token }] of Object.entries(mappings)) {
+    if (!Object.hasOwn(table, name)) out.push(`MAPPINGS.${name}: not in the DS-TOKEN-005 table`);
+    else if (table[name] !== token) out.push(`MAPPINGS.${name}: ${token}, but the DS-TOKEN-005 table says ${table[name]}`);
+  }
+  for (const name of Object.keys(table)) if (!Object.hasOwn(mappings, name)) out.push(`DS-TOKEN-005 maps ${name}, but MAPPINGS does not`);
+  return out;
+}
+
+// Token names a generated CSS file defines.
+export const definedTokens = (css) => new Set([...css.matchAll(/^\s*(--[a-z0-9-]+):/gm)].map((m) => m[1]));
+
 // ---- Whole registry ------------------------------------------------------------------
 
 // Lists a folder without following symlinks; a symlink is reported, never entered.
@@ -247,6 +305,17 @@ export function checkRegistry(registryDir) {
   }
 
   problems.push(...mappingProblems(repo));
+  let md = "";
+  try { md = readFileSync(join(repo, "vois-tokens/references/figma-variables.md"), "utf8"); } catch { problems.push("vois-tokens/references/figma-variables.md: missing"); }
+  if (md) { const t = token005Table(md); problems.push(...t.problems, ...tableProblems(t.table)); }
+  let generated = null;
+  try {
+    generated = build(JSON.parse(readFileSync(join(registryDir, "source/figma-export.json"), "utf8")), JSON.parse(readFileSync(join(registryDir, "source/brand-default.json"), "utf8")));
+  } catch (e) { problems.push(`token build: ${e.message}`); }
+  if (generated) {
+    const names = definedTokens(generated);
+    for (const [name, { token }] of Object.entries(MAPPINGS)) if (!names.has(token)) problems.push(`MAPPINGS.${name}: ${token} is not a generated token`);
+  }
   const readOrNull = (f) => { try { return readFileSync(join(registryDir, f), "utf8"); } catch { return null; } };
   problems.push(...versionProblems(readOrNull("package.json") ?? "", readOrNull("CHANGELOG.md")));
   const seen = new Set();
@@ -255,9 +324,13 @@ export function checkRegistry(registryDir) {
     const full = join(registryDir, file.path);
     if (rulesForFile(full).length === 0) { problems.push(`${file.path}: the vois-tokens detector does not read this file type`); continue; }
     const text = readFileSync(full, "utf8");
-    if (/\.css$/i.test(file.path)) for (const p of cssProblems(text, { seen })) problems.push(`${file.path}: ${p}`);
+    if (file.path === TOKENS_FILE) {
+      if (generated !== null && text !== generated) problems.push(`${file.path}: not what build-tokens.mjs writes; run node registry/scripts/build-tokens.mjs`);
+    } else if (/\.css$/i.test(file.path)) for (const p of cssProblems(text, { seen })) problems.push(`${file.path}: ${p}`);
     for (const d of detectFile(full, text)) problems.push(`${file.path}:${d.line} ${d.ruleId} ${d.message}`);
   }
+  // Every mapping must actually be in a theme file, so "maps every DS-TOKEN-005 variable" stays true.
+  for (const name of Object.keys(MAPPINGS)) if (!seen.has(name)) problems.push(`MAPPINGS.${name}: no theme file maps --${name}`);
   return problems;
 }
 

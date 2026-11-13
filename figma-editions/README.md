@@ -10,6 +10,8 @@ Flattened, single-file `.md` builds of select skills for upload to Figma's custo
 
 Rebuilt 2026-10-06 from the sources on `main`. The four Vois and Righter editions were rebuilt again on 2026-11-12 (`righter` 1.10.0, `vois-components` 1.18.0, `vois-patterns` 1.20.0, `vois-tokens` 1.28.2). Each edition's frontmatter `version` is the source version it was built from.
 
+**Behind now:** `vois-tokens.md` (source 1.29.0) and `vois-components.md` (source 1.18.1). The editions still teach the `--color-{role}` status tokens and `warning`. The sources now use the Figma token names (`DS-TOKEN-001` to `005`), `notice`, the five Figma elevation tiers and the 4 to 128 spacing scale.
+
 | Edition | Built from | Before this rebuild |
 |---|---|---|
 | `gtm-positioning.md` | 1.0.0 | In sync, apart from one added sentence about page-fitting copy |

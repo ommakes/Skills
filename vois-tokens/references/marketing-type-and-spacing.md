@@ -8,7 +8,7 @@ Structure rules for these pages (one idea per section, three blocks max, no divi
 
 ## Scope `[DS-MKT-001]`
 
-Apply this file only to marketing surfaces. Everywhere else, the product type scale and the 4 to 96px spacing scale win.
+Apply this file only to marketing surfaces. Everywhere else, the product type scale and the 4 to 128px spacing scale win.
 
 ## Where the numbers come from
 
@@ -64,7 +64,7 @@ Section gap ratio `[DS-MKT-006]`: the gap between sections is about 4x the gap b
 
 Tight text, loose sections `[DS-MKT-007]`: the gap inside a block is smaller than the gap between blocks. If they match, the page reads as one pile.
 
-Above the product ceiling `[DS-MKT-008]`: on marketing surfaces, section-to-section gaps may go above 96px, up to 240px, in steps of 8. This is an exception to the allowed-values list in `spacing.md`. The divisible-by-4-or-8 rule in `[DS-SPACING-001]` still holds. Use a spacing token, not a bare number (`[DS-SPACING-003]`).
+Above the product ceiling `[DS-MKT-008]`: on marketing surfaces, section-to-section gaps may go above 128px, up to 240px, in steps of 8. This is an exception to the allowed-values list in `spacing.md`. The divisible-by-4-or-8 rule in `[DS-SPACING-001]` still holds. Use a spacing token, not a bare number (`[DS-SPACING-003]`).
 
 ## Pre-submit (marketing surfaces only)
 

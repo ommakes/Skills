@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.28.2
+version: 1.29.0
 ---
 
 # Vois Tokens Skill
@@ -41,7 +41,7 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 ## Before You Write Anything
 
 1. Check the component manifest. If a component exists for what you need, use it. Do not build a new one.
-2. Check `data/tokens.json` for the value you need (spacing, type scale, color, elevation, icon size, breakpoints). If a token exists, use it. Do not hardcode anything.
+2. Use the Vois token's name from Figma: its Web code syntax, in four layers (Global, Base, System, Component). The naming rules and the shadcn/ui mapping are in `references/figma-variables.md` `[DS-TOKEN-002]`. Check `data/tokens.json` for the value you need (spacing, type scale, color, elevation, icon size, breakpoints). If a token exists, use it. Do not hardcode anything. For a project that installs it, the registry's `vois-tokens` item (in the `ommakes/Skills` repo at `registry/vois/tokens/vois-tokens.css`) seeds defaults for the tokens that are Figma variables: colors in light and dark, radius, spacing, size, the grid and panel widths, and the five shadows. It does not hold type, motion, z-index or the other `data/tokens.json` values. If a `vois_get_tokens` tool is available, it serves your workspace's live values: prefer those.
 3. If neither exists, flag it — don't invent values or components.
 4. If a `vois_record_rule_usage` tool is available, call it after completing any UI work with the rule IDs you applied — this feeds the self-improving design system. If you violated a rule or found a rule unclear, include it with `violated: true` or `ambiguous: true`. If the tool isn't available, this step is optional telemetry — skip it and move on.
 
@@ -51,11 +51,12 @@ If no dials were passed, assume the mid defaults (V/M/D = 5/4/5).
 
 **Structured lookups — query these instead of scanning a whole reference file
 when you already know the rule ID, category, or token you need:**
-- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 15 files
+- `data/vois-rules.json` — every numbered `[DS-XXX-NNN]` rule from the 17 files
   below, keyed by `id`, with `category` for filtering. Covers spacing,
   typography, color, components/modals, css-architecture, elevation,
-  iconography, layout/responsive, surfaces, tailwind-v4, stylex, accessibility, and
-  animation. Query by `id` for a specific rule or by `category` for a whole
+  iconography, layout/responsive, surfaces, tailwind-v4, stylex, accessibility,
+  animation, grid and panels, data tables, marketing type and spacing, and
+  token layers and names. Query by `id` for a specific rule or by `category` for a whole
   topic — don't read a references/*.md file just to re-derive a rule statement
   that's already indexed here. Rules scoped to one styling engine carry an
   `engines` field (`["tailwind"]` or `["stylex"]`); no field means the rule
@@ -71,6 +72,7 @@ building fresh, not just the bare rule text:**
 
 | File | Read this when you're working on... | Rule prefix |
 |---|---|---|
+| `references/figma-variables.md` | Token names and layers (Global, Base, System, Component), where tokens live in CSS, brand slots, shadcn/ui variable mapping | `[DS-TOKEN]` |
 | `references/spacing.md` | Any padding, margin, or gap value | `[DS-SPACING]` |
 | `references/typography.md` | Headings, body text, type scale, fonts, copy punctuation | `[DS-TYPOGRAPHY]` |
 | `references/color.md` | Color tokens, OKLCH, dark mode, light-dark() | `[DS-COLOR]` |
@@ -86,7 +88,7 @@ building fresh, not just the bare rule text:**
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]` `[DS-MOTION-003]` `[DS-MOTION-004]` `[DS-MOTION-005]` `[DS-MOTION-006]` `[DS-MOTION-007]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
-| `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 96px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
+| `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 128px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
 | `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse, em dashes) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |
 | `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
@@ -117,7 +119,7 @@ Run this regardless of which reference files you read — it's the universal gat
 
 **Color**
 - [ ] No hardcoded hex values `[DS-COLOR-001]`
-- [ ] Status uses the `info`/`positive`/`negative`/`warning` role tokens, never a palette class or stock variant `[DS-COLOR-008]`
+- [ ] Status uses the `info`/`positive`/`negative`/`notice` role tokens, never a palette class or stock variant `[DS-COLOR-008]`
 - [ ] No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]`
 - [ ] Both light and dark mode verified manually `[DS-COLOR-007]`
 - [ ] Color is not the only signal for error/success/warning `[DS-COLOR-003]`
