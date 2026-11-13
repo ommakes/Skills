@@ -713,7 +713,7 @@
       "category": "DS-RESPONSIVE",
       "category_label": "Layout, Viewport, and Responsive Behavior",
       "source_file": "vois-tokens/references/layout-and-responsive.md",
-      "rule": "Test at the start of each grid class, narrow (360px), snug (600px), roomy (768px) and wide (1024px), before considering a component done. These are the values of --width-viewport-min and the breakpoint tokens in DS-GRID-001.",
+      "rule": "Test at the start of each grid class, narrow (360px), sm (600px), md (768px) and lg (1024px), before considering a component done. These are the values of --width-viewport-min and the breakpoint tokens in DS-GRID-001.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1349,7 +1349,7 @@
       "category": "DS-GRID",
       "category_label": "Grid",
       "source_file": "vois-tokens/references/grid.md",
-      "rule": "Pick the grid class from the region width, not the window width. Four classes: narrow (4 columns), snug (8), roomy (8) and wide (12), starting at --width-viewport-min, --breakpoint-snug, --breakpoint-roomy and --breakpoint-wide.",
+      "rule": "Pick the grid class from the region width, not the window width. Four classes: narrow (4 columns), sm (8), md (8) and lg (12), starting at --width-viewport-min, --breakpoint-sm, --breakpoint-md and --breakpoint-lg.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1359,7 +1359,7 @@
       "category": "DS-GRID",
       "category_label": "Grid",
       "source_file": "vois-tokens/references/grid.md",
-      "rule": "Window width picks the navigation: bottom bar below --breakpoint-roomy, a --nav-rail rail from there, a --nav-sidebar sidebar from --breakpoint-wide. The site shell has a top bar and no side navigation. Region width is window width minus navigation width.",
+      "rule": "Window width picks the navigation: bottom bar below --breakpoint-md, a --nav-rail rail from there, a --nav-sidebar sidebar from --breakpoint-lg. The site shell has a top bar and no side navigation. Region width is window width minus navigation width.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1461,7 +1461,7 @@
       "category": "DS-PANEL",
       "category_label": "Panels",
       "source_file": "vois-tokens/references/grid.md",
-      "rule": "Below --breakpoint-roomy every panel is full screen. No push, no half-width overlay.",
+      "rule": "Below --breakpoint-md every panel is full screen. No push, no half-width overlay.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1471,7 +1471,7 @@
       "category": "DS-PANEL",
       "category_label": "Panels",
       "source_file": "vois-tokens/references/grid.md",
-      "rule": "From --breakpoint-roomy a panel pushes only if window width minus --nav-rail minus the panel width leaves at least --main-min. Otherwise it is an overlay.",
+      "rule": "From --breakpoint-md a panel pushes only if window width minus --nav-rail minus the panel width leaves at least --main-min. Otherwise it is an overlay.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -1603,7 +1603,7 @@
       "category": "DS-TABLE",
       "category_label": "Data Tables",
       "source_file": "vois-tokens/references/data-tables.md",
-      "rule": "Table layout changes key off the container, not the viewport: container-type: inline-size on an element outside the scroll wrapper, and @container (width < 40em) for the narrow layout.",
+      "rule": "Table layout changes key off the container, not the viewport: container-type: inline-size on an element outside the scroll wrapper, and @container (width < 37.5em) for the narrow layout.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"

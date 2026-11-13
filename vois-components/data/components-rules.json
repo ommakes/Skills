@@ -281,7 +281,7 @@
         },
         "Drawer": {
           "role": "overlay-panel",
-          "note": "Full-height. Full screen below --breakpoint-roomy (DS-PANEL-002). Means the shadcn Drawer here, not a side panel."
+          "note": "Full-height. Full screen below --breakpoint-md (DS-PANEL-002). Means the shadcn Drawer here, not a side panel."
         }
       },
       "decision_tree": [
@@ -352,7 +352,7 @@
         },
         "Drawer": {
           "role": "overlay-panel",
-          "note": "Full-height. Full screen below --breakpoint-roomy (DS-PANEL-002). Means the shadcn Drawer here, not a side panel."
+          "note": "Full-height. Full screen below --breakpoint-md (DS-PANEL-002). Means the shadcn Drawer here, not a side panel."
         },
         "Panel": {
           "role": "push-panel",

@@ -98,10 +98,10 @@ Run this before calling anything done.
 
 **Layout**
 - [ ] Using `svh`/`lvh`/`dvh` not `vh` for viewport-height layouts `[DS-LAYOUT-001]`
-- [ ] Tested at 360, 600, 768 and 1024px (narrow, snug, roomy, wide) `[DS-RESPONSIVE-002]`
+- [ ] Tested at 360, 600, 768 and 1024px (narrow, sm, md, lg) `[DS-RESPONSIVE-002]`
 - [ ] At the tightest breakpoint, primary content stayed full-size and secondary content reflowed/collapsed/hid first — not shrunk to fit `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`
 - [ ] Grid class comes from the region width. Margins and gutters are `--grid-*` tokens. Card grids use the column formula, not fixed counts `[DS-GRID-001]` `[DS-GRID-004]` `[DS-GRID-007]`
-- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-roomy`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
+- [ ] Side panels push or overlay by the width rules, and are full screen below `--breakpoint-md`. Panel widths are tokens `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`
 - [ ] No `padding-bottom`/`margin-top` used to space siblings — use `gap` on parent `[DS-LAYOUT-COMP-001]`
 - [ ] `min-width: 0` on flex children containing text or overflow-prone content `[DS-LAYOUT-COMP-003]`
 - [ ] `aspect-ratio` used instead of padding-top percentage hack `[DS-LAYOUT-COMP-005]`
@@ -232,7 +232,7 @@ Stop using `vh` — mobile browser chrome changes available height as you scroll
 
 For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on sections far below the fold to skip rendering until they approach the viewport `[DS-LAYOUT-002]` — not on anything visible on initial load.
 
-**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at the start of each grid class: narrow (360px), snug (600px), roomy (768px) and wide (1024px), before calling a component done `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
+**Responsive:** mobile-first, no prefix = baseline, `md:`/`lg:` are enhancements `[DS-RESPONSIVE-001]`. Test at the start of each grid class: narrow (360px), sm (600px), md (768px) and lg (1024px), before calling a component done `[DS-RESPONSIVE-002]`. Container queries for component-level responsiveness, breakpoints for layout-level `[DS-RESPONSIVE-003]`. Touch targets, font sizes, contrast must meet minimums at every breakpoint `[DS-RESPONSIVE-004]`. Don't build desktop-first and assume mobile will work `[DS-RESPONSIVE-005]`.
 
 **Judgment under constraint:** when content doesn't fit, the default move of shrinking everything proportionally is usually wrong. Preserve task hierarchy first — keep the primary content/task at a comfortable, legible size at every breakpoint, and let secondary/tertiary content (metadata, supporting stats, decorative elements) absorb the constraint `[DS-RESPONSIVE-006]`. When something doesn't fit, prefer reflow (grid to single column), then collapse (a filter bar into a "Filters" button + sheet), then hide (a column or hint that only matters at a glance on larger screens) — shrinking text or spacing to cram the same layout into less room is the last resort, and never overrides the `[DS-RESPONSIVE-004]` minimums `[DS-RESPONSIVE-007]`.
 
@@ -265,13 +265,13 @@ How a page is split into columns, how a grid of cards decides how many it holds,
 | Class | Starts at | Columns |
 |---|---|---|
 | `narrow` | `--width-viewport-min` (360) | 4 |
-| `snug` | `--breakpoint-snug` (600) | 8 |
-| `roomy` | `--breakpoint-roomy` (768) | 8 |
-| `wide` | `--breakpoint-wide` (1024) | 12 |
+| `sm` | `--breakpoint-sm` (600) | 8 |
+| `md` | `--breakpoint-md` (768) | 8 |
+| `lg` | `--breakpoint-lg` (1024) | 12 |
 
-`roomy` and `wide` replace the old `md` and `lg` breakpoint tokens. `snug` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class.
+`md` and `lg` start where the tablet and desktop tiers start. `sm` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class.
 
-- **Navigation shell** `[DS-GRID-002]`: for the app shell, window width picks it. Below `--breakpoint-roomy` a bottom bar. From `--breakpoint-roomy` to below `--breakpoint-wide` a rail, `--nav-rail` wide. From `--breakpoint-wide` a sidebar, `--nav-sidebar` wide. The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
+- **Navigation shell** `[DS-GRID-002]`: for the app shell, window width picks it. Below `--breakpoint-md` a bottom bar. From `--breakpoint-md` to below `--breakpoint-lg` a rail, `--nav-rail` wide. From `--breakpoint-lg` a sidebar, `--nav-sidebar` wide. The site shell has a top bar and no side navigation. Region width is the window width minus the navigation width.
 - **Content max** `[DS-GRID-003]`: content stops growing at `--grid-content-max` and centers. A dense page (dashboard, data grid, report, split view) opts out with `frame: fill` and fills the region.
 - **Margin and gutter** `[DS-GRID-004]`: they come from `--grid-margin` and `--grid-gutter`, never a raw value. Each is a line between two anchor points on region width, held flat outside them. The token source stores four plain numbers for each (`-min`, `-max`, `-min-at`, `-max-at`), and `--grid-margin` and `--grid-gutter` are generated from them. On the web the output is one `clamp()`. On native it is the same line computed in code. The two end values sit on the spacing scale. The values between them do not, so `DS-SPACING-001` does not apply to these two tokens.
 - **Safe areas and direction** `[DS-GRID-005]`: the real margin is the larger of `--grid-margin` and the safe-area inset on that side. Use start and end sides (`padding-inline`, `EdgeInsetsDirectional`, leading and trailing), never left and right.
@@ -284,8 +284,8 @@ How a page is split into columns, how a grid of cards decides how many it holds,
 **Panels** (a surface that opens at the side of a page)
 
 - **Push or overlay** `[DS-PANEL-001]`: push sits inline and moves the main content over. Use it when people need to look at the page and the panel together (a preview, a properties list). Overlay floats over the page. Use it for a task that ends (an edit form, a filter set, a notification list).
-- **Phones** `[DS-PANEL-002]`: below `--breakpoint-roomy` every panel is full screen. No push, no half-width overlay.
-- **When a push panel fits** `[DS-PANEL-003]`: from `--breakpoint-roomy`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
+- **Phones** `[DS-PANEL-002]`: below `--breakpoint-md` every panel is full screen. No push, no half-width overlay.
+- **When a push panel fits** `[DS-PANEL-003]`: from `--breakpoint-md`, a panel pushes only if the window width, minus `--nav-rail`, minus the panel width leaves at least `--main-min`. The rail is assumed so the answer never flips back when the window grows. If it does not fit, the panel is an overlay.
 - **The sidebar gives way first** `[DS-PANEL-004]`: while a push panel is open, the app shell keeps the full sidebar only if the window width, minus `--nav-sidebar`, minus the panel width still leaves `--main-min`. If not, the sidebar shows as the rail until the panel closes. Do this before turning the panel into an overlay.
 - **Push panel width** `[DS-PANEL-005]`: `--panel-push-default` wide. If people can resize it, keep it between `--panel-push-min` and `--panel-push-max`. The main content never goes below `--main-min`.
 - **Overlay width** `[DS-PANEL-006]`: a size tier (`--panel-overlay-sm`, `--panel-overlay-md` or `--panel-overlay-lg`). Its width is the smallest of the tier, half the window width rounded down to a multiple of 4, and never under `--panel-overlay-min`. Part of the page always stays visible behind it.
@@ -309,7 +309,7 @@ Generate the CSS, Dart, Swift and Kotlin constants from one token source. Do not
 - **Complex table:** the wrapper owns both axes: `overflow: auto` with a bounded block size, a sticky header inside, `scrollbar-gutter: stable`, `overscroll-behavior-x: contain`, and `scroll-padding-block-start` equal to the header height `[DS-TABLE-002]`. **Simple table:** no overflow on the wrapper, so the header sticks to the page (offset by any fixed app header), and it never scrolls sideways `[DS-TABLE-003]`.
 - Don't use `overflow: auto clip`, or `overflow-x: auto` with `overflow-y: clip`, to keep a header sticky to the page: `clip` computes to `hidden` next to `auto`, which is still a scroll container `[DS-TABLE-004]`. Every flex or grid ancestor between the app shell and the wrapper has `min-inline-size: 0` and `min-block-size: 0` `[DS-TABLE-005]`.
 - **Pinned first column:** `position: sticky`, `inset-inline-start: 0`, an opaque background, and small local z-index values (column 1, header row 2, corner cell 3) inside `isolation: isolate` on the scroll owner so they never outrank an overlay; add `scroll-padding-inline-start` equal to the column width `[DS-TABLE-006]`. Tables with sticky cells use `border-collapse: separate` with `border-spacing: 0` `[DS-TABLE-007]`.
-- Layout changes key off the container, not the viewport: `container-type: inline-size` on an element outside the scroll wrapper and `@container (width < 40em)` for the narrow layout `[DS-TABLE-008]`. Use `table-layout: fixed` with explicit column widths, `text-overflow: ellipsis`, right-aligned numbers with `tabular-nums`, and left-aligned text `[DS-TABLE-009]`.
+- Layout changes key off the container, not the viewport: `container-type: inline-size` on an element outside the scroll wrapper and `@container (width < 37.5em)` for the narrow layout `[DS-TABLE-008]`. Use `table-layout: fixed` with explicit column widths, `text-overflow: ellipsis`, right-aligned numbers with `tabular-nums`, and left-aligned text `[DS-TABLE-009]`.
 - **Scrollbars:** `scrollbar-width: thin` and `scrollbar-color` from a neutral token, no `::-webkit-scrollbar`, and don't hide the scrollbar on a table that scrolls sideways `[DS-TABLE-010]`; `scrollbar-gutter: stable` so columns stay aligned `[DS-TABLE-011]`; `overscroll-behavior-x: contain`, not the vertical axis `[DS-TABLE-012]`; `scroll-padding-block-start` equal to the header height so focused rows aren't hidden `[DS-TABLE-013]`.
 - **Wheel lock:** a complex table that scrolls both ways scrolls one axis per gesture: a wheel handler (`passive: false`, `ctrlKey` passes through) that scrolls only the dominant axis, shared as one hook with an opt-out. Simple tables don't use it. Leave touch alone `[DS-TABLE-014]`.
 - **Accessibility:** the scroll owner has `tabindex="0"`, `role="region"`, and an `aria-label`; keep real table elements, a button inside a sortable `th`, and `aria-sort` on the sorted `th`; use `role="grid"` only with arrow-key cell navigation `[DS-TABLE-015]`.
@@ -441,13 +441,12 @@ No inline styles where a token equivalent exists `[DS-CSS-001]`.
 
 | Name | em | px equivalent |
 |---|---|---|
-| snug | 37.5em | 600px |
-| sm | 40em | 640px |
-| roomy | 48em | 768px |
-| wide | 64em | 1024px |
+| sm | 37.5em | 600px |
+| md | 48em | 768px |
+| lg | 64em | 1024px |
 | xl | 80em | 1280px |
 
-`snug`, `roomy` and `wide` are the grid window classes. `roomy` and `wide` replace the old `md` and `lg`, with no aliases. `sm` and `xl` are not grid classes. `sm` stays as the container width for narrow tables and forms.
+`sm`, `md` and `lg` are the grid window classes. `sm` is also the container width for narrow tables and forms. `xl` is not a grid class.
 
 ## Anti-Slop `[DS-SLOP]`
 

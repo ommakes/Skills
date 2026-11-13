@@ -975,7 +975,7 @@ test("DS-GRID-007 flags a hard-coded count in every syntax it reads", () => {
 test("DS-GRID-007 stays quiet on counts it cannot call hard-coded", () => {
   for (const code of [
     '<div className="grid grid-cols-1" />',
-    '<div className="grid grid-cols-4 snug:grid-cols-8 wide:grid-cols-12" />', // the page grid
+    '<div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-12" />', // the page grid
     '<div className="grid-cols-subgrid" />',
     '<div className="data-grid-cols-3" />',
     '<div className="my-grid-cols-3" />',

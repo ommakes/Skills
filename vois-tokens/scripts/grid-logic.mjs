@@ -12,7 +12,7 @@
 //   nav            { rail, sidebar }
 //   panel          { pushMin, pushDefault, pushMax, mainMin, overlayMin, overlay: {sm, md, lg}, paneMin }
 
-const CLASS_IDS = ['narrow', 'snug', 'roomy', 'wide'];
+const CLASS_IDS = ['narrow', 'sm', 'md', 'lg'];
 const SHELLS = ['app', 'site'];
 const TIERS = ['sm', 'md', 'lg'];
 const fail = (msg) => { throw new Error(`grid-logic: ${msg}`); };
@@ -69,8 +69,8 @@ export function frame(tokens, regionW, { fill = false } = {}) {
 
 const classes = (t) => t.grid.classes;
 const minOf = (t, id) => classes(t).find((c) => c.id === id).min;
-const roomyMin = (t) => minOf(t, 'roomy'); // first class with a rail
-const wideMin = (t) => minOf(t, 'wide'); // first class with a sidebar
+const mdMin = (t) => minOf(t, 'md'); // first class with a rail
+const lgMin = (t) => minOf(t, 'lg'); // first class with a sidebar
 
 /** DS-GRID-002: nav width for the window. The app shell has a bottom bar, a rail, then a sidebar. */
 export function navFor(tokens, windowW, shell) {
@@ -78,8 +78,8 @@ export function navFor(tokens, windowW, shell) {
   num(windowW, 'windowW');
   if (!SHELLS.includes(shell)) fail(`shell must be app or site, got ${shell}`);
   if (shell !== 'app') return 0;
-  if (windowW < roomyMin(tokens)) return 0;
-  if (windowW < wideMin(tokens)) return tokens.nav.rail;
+  if (windowW < mdMin(tokens)) return 0;
+  if (windowW < lgMin(tokens)) return tokens.nav.rail;
   return tokens.nav.sidebar;
 }
 
@@ -109,16 +109,16 @@ export function collectionCols(tokens, windowW, shell, cap, itemMin, containerW,
 /** DS-PANEL-002 and DS-PANEL-003. The rail is assumed, so the answer never flips back as the window grows. */
 export function pushFits(tokens, windowW, panel = tokens.panel.pushDefault) {
   checkTokens(tokens); num(windowW, 'windowW'); num(panel, 'panel');
-  if (windowW < roomyMin(tokens)) return false;
+  if (windowW < mdMin(tokens)) return false;
   return windowW - tokens.nav.rail - panel >= tokens.panel.mainMin;
 }
 
 /** DS-PANEL-004: the sidebar stays only if the main area still holds mainMin. Otherwise the rail. */
 export function navWhilePushOpen(tokens, windowW, panel = tokens.panel.pushDefault) {
   checkTokens(tokens); num(windowW, 'windowW'); num(panel, 'panel');
-  if (windowW < roomyMin(tokens)) return 0;
+  if (windowW < mdMin(tokens)) return 0;
   const full = tokens.nav.sidebar;
-  if (windowW >= wideMin(tokens) && windowW - full - panel >= tokens.panel.mainMin) return full;
+  if (windowW >= lgMin(tokens) && windowW - full - panel >= tokens.panel.mainMin) return full;
   return tokens.nav.rail;
 }
 
@@ -126,7 +126,7 @@ export function navWhilePushOpen(tokens, windowW, panel = tokens.panel.pushDefau
 export function overlayWidth(tokens, windowW, tier) {
   checkTokens(tokens); num(windowW, 'windowW');
   if (!TIERS.includes(tier)) fail(`tier must be sm, md or lg, got ${tier}`);
-  if (windowW < roomyMin(tokens)) return windowW;
+  if (windowW < mdMin(tokens)) return windowW;
   const half = Math.floor(windowW / 2 / 4) * 4;
   return Math.max(tokens.panel.overlayMin, Math.min(tokens.panel.overlay[tier], half));
 }
@@ -134,6 +134,6 @@ export function overlayWidth(tokens, windowW, tier) {
 /** DS-PANEL-007: two panes of at least paneMin each, next to the nav. */
 export function twoPaneFits(tokens, windowW) {
   checkTokens(tokens); num(windowW, 'windowW');
-  if (windowW < roomyMin(tokens)) return false;
+  if (windowW < mdMin(tokens)) return false;
   return windowW - navFor(tokens, windowW, 'app') >= 2 * tokens.panel.paneMin;
 }

@@ -83,7 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
-- **1.28.2**: The breakpoint table in `css-architecture.md` now uses the grid names: `md` is `roomy`, `lg` is `wide`, and `snug` (600px) is new. `sm` and `xl` stay. The grid example values are called default, not proposed. No rule or detector changed.
+- **1.28.2**: The grid classes are `narrow`, `sm`, `md` and `lg`, with `--breakpoint-sm` at 600. `md` and `lg` keep their names. The `sm` container width in the table and form rules is now `37.5em`. The grid example values are called default, not proposed. Detector behavior did not change.
 - **1.28.1**: `DS-ANIMATION-005` no longer slows down on very long one-line input. It matched the same things before. It now skips a keyframe block over 1000 characters and a `starting:` class with more than 31 variants between `starting:` and `scale`.
 - **1.28.0**: the hook checks three grid and panel rules: `DS-GRID-007` (a hard-coded column count), `DS-GRID-004` (a raw gutter on a grid container) and `DS-PANEL-008` (a hard-coded panel or pane width). All three are advisory and marked `verification: "detector"`.
 - **1.27.0**: new `references/grid.md` with `DS-GRID-001` to `010` and `DS-PANEL-001` to `008` (grid classes, margins and gutters, card grid column counts, push and overlay side panels). `DS-RESPONSIVE-002` now tests at the four grid classes. `DS-SPACING-001` has one exception, the two grid tokens.

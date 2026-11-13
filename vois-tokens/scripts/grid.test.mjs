@@ -21,8 +21,8 @@ const WIDTHS = Array.from({ length: 2560 - 360 + 1 }, (_, i) => 360 + i);
 
 test("fixture: names, logic tokens and the grid.md class order agree", () => {
   const n = (k) => FIX.named[k].value;
-  assert.deepEqual(T.grid.classes.map((c) => c.id), ["narrow", "snug", "roomy", "wide"]);
-  assert.deepEqual(T.grid.classes.map((c) => c.min), [n("--width-viewport-min"), n("--breakpoint-snug"), n("--breakpoint-roomy"), n("--breakpoint-wide")]);
+  assert.deepEqual(T.grid.classes.map((c) => c.id), ["narrow", "sm", "md", "lg"]);
+  assert.deepEqual(T.grid.classes.map((c) => c.min), [n("--width-viewport-min"), n("--breakpoint-sm"), n("--breakpoint-md"), n("--breakpoint-lg")]);
   assert.equal(T.grid.contentMax, n("--grid-content-max"));
   assert.equal(T.nav.rail, n("--nav-rail"));
   assert.equal(T.nav.sidebar, n("--nav-sidebar"));
@@ -60,12 +60,12 @@ test("DS-GRID-001: class edges", () => {
   assert.equal(id(100), "narrow"); // below the lowest min still gets the lowest class
   assert.equal(id(360), "narrow");
   assert.equal(id(599), "narrow");
-  assert.equal(id(600), "snug");
-  assert.equal(id(767), "snug");
-  assert.equal(id(768), "roomy");
-  assert.equal(id(1023), "roomy");
-  assert.equal(id(1024), "wide");
-  assert.equal(id(5000), "wide");
+  assert.equal(id(600), "sm");
+  assert.equal(id(767), "sm");
+  assert.equal(id(768), "md");
+  assert.equal(id(1023), "md");
+  assert.equal(id(1024), "lg");
+  assert.equal(id(5000), "lg");
 });
 
 test("DS-GRID-002: navigation by window width, and the region is what is left", () => {
@@ -79,9 +79,9 @@ test("DS-GRID-002: navigation by window width, and the region is what is left", 
 });
 
 test("DS-GRID-001: the app shell picks the class from the region, not the window", () => {
-  // A 768 window has an 80 rail, so the region is 688 and that is `snug`, though the window is `roomy`.
-  assert.equal(g.classOf(T, g.regionWidth(T, 768, "app")).id, "snug");
-  assert.equal(g.classOf(T, 768).id, "roomy");
+  // A 768 window has an 80 rail, so the region is 688 and that is `sm`, though the window is `md`.
+  assert.equal(g.classOf(T, g.regionWidth(T, 768, "app")).id, "sm");
+  assert.equal(g.classOf(T, 768).id, "md");
 });
 
 test("DS-GRID-003: content never passes the content max", () => {
@@ -93,15 +93,15 @@ test("DS-GRID-003: content never passes the content max", () => {
 // ---- collections
 
 const ROWS = {
-  "Metric cards (app)": ["app", { narrow: 2, snug: 2, roomy: 2, wide: 4 }, 152],
-  "Browse cards": ["site", { narrow: 2, snug: 3, roomy: 3, wide: 4 }, 152],
-  "Feature and story cards": ["site", { narrow: 1, snug: 2, roomy: 2, wide: 3 }, 264],
-  "Plans x4": ["site", { narrow: 1, snug: 1, roomy: 2, wide: 4 }, 216],
-  "Plans x3": ["site", { narrow: 1, snug: 1, roomy: 3, wide: 3 }, 216],
-  Logos: ["site", { narrow: 3, snug: 4, roomy: 6, wide: 8 }, 96],
-  Integrations: ["site", { narrow: 4, snug: 6, roomy: 6, wide: 8 }, 64],
+  "Metric cards (app)": ["app", { narrow: 2, sm: 2, md: 2, lg: 4 }, 152],
+  "Browse cards": ["site", { narrow: 2, sm: 3, md: 3, lg: 4 }, 152],
+  "Feature and story cards": ["site", { narrow: 1, sm: 2, md: 2, lg: 3 }, 264],
+  "Plans x4": ["site", { narrow: 1, sm: 1, md: 2, lg: 4 }, 216],
+  "Plans x3": ["site", { narrow: 1, sm: 1, md: 3, lg: 3 }, 216],
+  Logos: ["site", { narrow: 3, sm: 4, md: 6, lg: 8 }, 96],
+  Integrations: ["site", { narrow: 4, sm: 6, md: 6, lg: 8 }, 64],
 };
-const PROBES = { narrow: [360, 599], snug: [600, 767], roomy: [768, 1023], wide: [1024, 1100, 1264, 1920] };
+const PROBES = { narrow: [360, 599], sm: [600, 767], md: [768, 1023], lg: [1024, 1100, 1264, 1920] };
 
 test("DS-GRID-007: each collection reaches its cap at the start and end of every class", () => {
   for (const [name, [shell, cap, min]] of Object.entries(ROWS))
@@ -121,10 +121,10 @@ test("DS-GRID-007: a count is never above the cap, never below 1, and an item is
 });
 
 test("DS-GRID-007: a narrower container than the region gives fewer columns", () => {
-  const wide = g.collectionCols(T, 1440, "site", { wide: 8 }, 96);
-  const inCard = g.collectionCols(T, 1440, "site", { wide: 8 }, 96, 400);
+  const wide = g.collectionCols(T, 1440, "site", { lg: 8 }, 96);
+  const inCard = g.collectionCols(T, 1440, "site", { lg: 8 }, 96, 400);
   assert.ok(inCard < wide);
-  assert.equal(g.collectionCols(T, 1440, "site", { wide: 8 }, 96, 50), 1); // too small still gives one column
+  assert.equal(g.collectionCols(T, 1440, "site", { lg: 8 }, 96, 50), 1); // too small still gives one column
 });
 
 test("DS-GRID-007: the site shell never loses columns as the window grows", () => {
@@ -142,21 +142,21 @@ test("DS-GRID-007: the site shell never loses columns as the window grows", () =
 test("DS-GRID-003 and DS-GRID-007: a fill page is not capped at the content max", () => {
   assert.equal(g.frame(T, 1920).inner, 1200);
   assert.equal(g.frame(T, 1920, { fill: true }).inner, 1920 - 2 * 32);
-  const cap = { wide: 12 };
+  const cap = { lg: 12 };
   assert.ok(g.collectionCols(T, 1920, "site", cap, 96, undefined, { fill: true }) > g.collectionCols(T, 1920, "site", cap, 96));
 });
 
 test("DS-GRID-007: a container uses its own width, without the page margins", () => {
   // 400 wide, items 96, gutter 24: floor((400 + 24) / 120) = 3. With margins taken off again it would be 2.
-  assert.equal(g.collectionCols(T, 1440, "site", { wide: 8 }, 96, 400), 3);
+  assert.equal(g.collectionCols(T, 1440, "site", { lg: 8 }, 96, 400), 3);
 });
 
 test("fails closed: bad tokens, shells, tiers, caps and numbers throw and never return NaN", () => {
   const bad = (fn) => assert.throws(fn, /grid-logic:/);
   bad(() => g.collectionCols(T, 1440, "site", { narrow: 2 }, 96)); // no cap for the window class
-  bad(() => g.collectionCols(T, 1440, "site", { wide: 0 }, 96));
-  bad(() => g.collectionCols(T, 1440, "site", { wide: 2.5 }, 96));
-  bad(() => g.collectionCols(T, 1440, "site", { wide: 8 }, 96, NaN));
+  bad(() => g.collectionCols(T, 1440, "site", { lg: 0 }, 96));
+  bad(() => g.collectionCols(T, 1440, "site", { lg: 2.5 }, 96));
+  bad(() => g.collectionCols(T, 1440, "site", { lg: 8 }, 96, NaN));
   bad(() => g.overlayWidth(T, 1000, "xl"));
   bad(() => g.navFor(T, 1200, "App")); // a typo'd shell is an error, not the site shell
   bad(() => g.regionWidth(T, NaN, "app"));
@@ -179,7 +179,7 @@ test("fails closed: bad tokens, shells, tiers, caps and numbers throw and never 
 
 // ---- panels
 
-test("DS-PANEL-002 and DS-PANEL-003: push needs a roomy window and room for the main area", () => {
+test("DS-PANEL-002 and DS-PANEL-003: push needs a md window and room for the main area", () => {
   assert.equal(g.pushFits(T, 767), false);
   assert.equal(g.pushFits(T, 879), false);
   assert.equal(g.pushFits(T, 880), true); // 880 - 80 - 320 = 480
@@ -322,25 +322,25 @@ test("page templates: layout checks catch bad input from the other side", () => 
   const bad = (patch) => layoutProblems({ ...good, layout: { ...good.layout, ...patch } });
   assert.ok(layoutProblems({ id: "x" }).length, "missing layout");
   assert.ok(bad({ shell: "tablet" }).length);
-  assert.ok(bad({ frame: "wide" }).length);
-  assert.ok(bad({ panels: [{ name: "p", mode: "push", size: "--panel-push-max", from: "wide" }] }).length, "push must use the default");
-  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "320px", from: "wide" }] }).length, "raw size");
-  assert.ok(bad({ panels: [{ name: "p", mode: "drawer", size: "--panel-overlay-md", from: "wide" }] }).length, "unknown mode");
-  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-card", caps: { narrow: 2, snug: 3, roomy: 3, wide: 4, huge: 5 } }] }).length, "extra class");
-  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-card", caps: { narrow: 4, snug: 3, roomy: 3, wide: 4 } }] }).length, "shrinking caps");
-  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-nope", caps: { narrow: 1, snug: 1, roomy: 1, wide: 1 } }] }).length, "unknown token");
-  assert.ok(bad({ regions: [{ name: "r", track: "6/12", from: "wide" }] }).length, "bad track");
+  assert.ok(bad({ frame: "lg" }).length);
+  assert.ok(bad({ panels: [{ name: "p", mode: "push", size: "--panel-push-max", from: "lg" }] }).length, "push must use the default");
+  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "320px", from: "lg" }] }).length, "raw size");
+  assert.ok(bad({ panels: [{ name: "p", mode: "drawer", size: "--panel-overlay-md", from: "lg" }] }).length, "unknown mode");
+  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-card", caps: { narrow: 2, sm: 3, md: 3, lg: 4, huge: 5 } }] }).length, "extra class");
+  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-card", caps: { narrow: 4, sm: 3, md: 3, lg: 4 } }] }).length, "shrinking caps");
+  assert.ok(bad({ collections: [{ name: "c", item_min: "--item-min-nope", caps: { narrow: 1, sm: 1, md: 1, lg: 1 } }] }).length, "unknown token");
+  assert.ok(bad({ regions: [{ name: "r", track: "6/12", from: "lg" }] }).length, "bad track");
   assert.ok(bad({ regions: [{ name: "r", track: "fluid", from: "xl" }] }).length, "unknown class");
-  assert.ok(bad({ regions: [{ name: "r", track: ["--region-filters"], from: "wide" }] }).length, "array track");
-  assert.ok(bad({ regions: [{ name: "r", track: "0fr", from: "wide" }] }).length, "zero fr");
-  assert.ok(bad({ regions: [{ name: "r", track: "01fr", from: "wide" }] }).length, "leading zero fr");
+  assert.ok(bad({ regions: [{ name: "r", track: ["--region-filters"], from: "lg" }] }).length, "array track");
+  assert.ok(bad({ regions: [{ name: "r", track: "0fr", from: "lg" }] }).length, "zero fr");
+  assert.ok(bad({ regions: [{ name: "r", track: "01fr", from: "lg" }] }).length, "leading zero fr");
   assert.ok(bad({ regions: [null] }).length, "null entry reports, not throws");
-  assert.ok(bad({ collections: [{ name: "c", item_min: "toString", caps: { narrow: 1, snug: 1, roomy: 1, wide: 1 } }] }).length, "inherited property is not a token");
-  assert.ok(bad({ collections: [{ name: "c", item_min: "constructor", caps: { narrow: 1, snug: 1, roomy: 1, wide: 1 } }] }).length, "inherited property is not a token");
-  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "wide", below: "sideways" }] }).length, "unknown below");
-  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "wide" }] }).length, "missing below");
-  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "wide", below: "fullscreen", until: "roomy" }] }).length, "until must be above from");
-  assert.ok(bad({ panels: [{ name: "p", mode: "two-pane", size: "--panel-push-default", from: "roomy", below: "push-screen" }] }).length, "two-pane must use --pane-min");
+  assert.ok(bad({ collections: [{ name: "c", item_min: "toString", caps: { narrow: 1, sm: 1, md: 1, lg: 1 } }] }).length, "inherited property is not a token");
+  assert.ok(bad({ collections: [{ name: "c", item_min: "constructor", caps: { narrow: 1, sm: 1, md: 1, lg: 1 } }] }).length, "inherited property is not a token");
+  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "lg", below: "sideways" }] }).length, "unknown below");
+  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "lg" }] }).length, "missing below");
+  assert.ok(bad({ panels: [{ name: "p", mode: "overlay", size: "--panel-overlay-md", from: "lg", below: "fullscreen", until: "md" }] }).length, "until must be above from");
+  assert.ok(bad({ panels: [{ name: "p", mode: "two-pane", size: "--panel-push-default", from: "md", below: "push-screen" }] }).length, "two-pane must use --pane-min");
 });
 
 test("page templates: dense pages fill the region and the rest are contained (DS-GRID-003)", () => {

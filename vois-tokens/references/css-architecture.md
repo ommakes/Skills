@@ -124,12 +124,11 @@ Common breakpoint values in `em`:
 
 | Name | em | Equivalent px |
 |------|----|---------------|
-| snug | 37.5em | 600px |
-| sm | 40em | 640px |
-| roomy | 48em | 768px |
-| wide | 64em | 1024px |
+| sm | 37.5em | 600px |
+| md | 48em | 768px |
+| lg | 64em | 1024px |
 | xl | 80em | 1280px |
 
-`snug`, `roomy` and `wide` are the grid window classes from `references/grid.md` (`--breakpoint-snug`, `--breakpoint-roomy`, `--breakpoint-wide`). `roomy` and `wide` replace the old `md` and `lg`, with no aliases. `sm` and `xl` are not grid classes. `sm` stays as the container width in `PATH-B-NARROW`.
+`sm`, `md` and `lg` are the grid window classes from `references/grid.md` (`--breakpoint-sm`, `--breakpoint-md`, `--breakpoint-lg`). `sm` is also the container width in `PATH-B-NARROW` and the form rules. `xl` is not a grid class.
 
 Note: Tailwind's built-in breakpoints use `px` internally, so this rule applies primarily to any hand-authored `@media` queries outside Tailwind utilities. Under StyleX, define breakpoints once with `stylex.defineConsts()` in `em` and reference the constant — see `[DS-STYLEX-006]` in `references/stylex.md`.

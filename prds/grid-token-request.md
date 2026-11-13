@@ -11,9 +11,9 @@ Values are plain numbers: one unit is one CSS pixel, one dp, one point (`DS-GRID
 | Token | Proposed value | Status |
 |---|---|---|
 | `--width-viewport-min` | 360 | existing, confirm |
-| `--breakpoint-snug` | 600 | new |
-| `--breakpoint-roomy` | 768 | existing as md, renamed |
-| `--breakpoint-wide` | 1024 | existing as lg, renamed |
+| `--breakpoint-sm` | 600 | existing at 640, moves to 600 |
+| `--breakpoint-md` | 768 | existing, no change |
+| `--breakpoint-lg` | 1024 | existing, no change |
 | `--grid-margin-min` | 16 | new |
 | `--grid-margin-max` | 32 | new |
 | `--grid-margin-min-at` | 360 | new, window width where the margin is at its minimum |
@@ -54,7 +54,7 @@ Values are plain numbers: one unit is one CSS pixel, one dp, one point (`DS-GRID
 
 ## Notes for the token owner
 
-- **Renames.** `--width-viewport-min` exists. The proposal assumes 360. The existing `md` (768) and `lg` (1024) breakpoint tokens are renamed outright to `--breakpoint-roomy` and `--breakpoint-wide`, with no aliases. Sweep code and Figma for the old names. If Tailwind generates `md:` and `lg:` utilities from these, that sweep covers the utility prefixes too. `--breakpoint-snug` (600) is new.
+- **Breakpoint names.** `--width-viewport-min` exists. The proposal assumes 360. The existing `--breakpoint-md` (768) and `--breakpoint-lg` (1024) keep their names and values. `--breakpoint-sm` moves from 640 to 600, so it is also the edge of the `sm` grid class. If Tailwind generates `sm:` utilities from it, `sm:` changes from 640px to 600px. Sweep code and Figma for the old 640 value. The `sm` container width in the table and form rules is now `37.5em`, not `40em`.
 - **Margin and gutter are lines, stored as four plain numbers each.** Each line has a minimum, a maximum, and the width where each is reached. The value is held flat outside those two widths. `--grid-margin` and `--grid-gutter` are generated outputs, so do not store them. On the web the generator writes one `clamp()`. On native it writes code that computes the same line. No custom token type is needed, and the numbers sync to Figma variables. The end values are on the spacing scale (`DS-SPACING-001`).
 - **Side column widths are one token per role.** The page templates use a right rail (feed), a filter sidebar (browse), a company facts column (case study) and a contents column (article), and never gave a width. The four values here are my proposals, not template text. Check them with design.
 - **Values marked "from the template text"** come from raw numbers that were in the page template prose (`about 380px`, `at 200px`, `capped near 640px`). Keep them as proposed unless design says otherwise.

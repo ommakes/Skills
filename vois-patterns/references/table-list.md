@@ -104,7 +104,7 @@ When edits are saved is covered by `[PATH-TABLE-COMMIT-INSTANT]` and `[PATH-TABL
 
 ## Narrow Layout `[PATH-B-NARROW]`
 
-Below the `sm` container width (`40em`):
+Below the `sm` container width (`37.5em`):
 
 - **4 or fewer columns** (not counting the actions column): rows stack as list items, with the first column as the title and the remaining values beneath it
 - **More than 4 columns:** the table scrolls horizontally with the first column and header row pinned, as above. A table in this state is a scroll owner, so it follows the complex-table scroll rules whether or not it counts as complex otherwise.
