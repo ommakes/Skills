@@ -80,8 +80,8 @@ test("set limits: a subset tightens, a superset widens the checks, dropping part
   assert.deepEqual(check(file([restrict("DS-SPACING-001", "spacing_divisors", [8])])).errors, []);
   assert.match(errorsOf(file([restrict("DS-SPACING-001", "spacing_divisors", [4, 8, 12])])), /outside the allowed/);
   assert.match(errorsOf(file([restrict("DS-SPACING-001", "spacing_divisors", [])])), /non-empty list/);
-  assert.deepEqual(check(file([restrict("DS-RESPONSIVE-002", "test_breakpoints_px", [640, 768, 1024, 1280])])).errors, []);
-  assert.match(errorsOf(file([restrict("DS-RESPONSIVE-002", "test_breakpoints_px", [768, 1024, 1280])])), /drops part of the base/);
+  assert.deepEqual(check(file([restrict("DS-RESPONSIVE-002", "test_breakpoints_px", [360, 600, 768, 1024, 1280])])).errors, []);
+  assert.match(errorsOf(file([restrict("DS-RESPONSIVE-002", "test_breakpoints_px", [600, 768, 1024, 1280])])), /drops part of the base/);
 });
 
 test("add: id, text, severity and extends are checked", () => {

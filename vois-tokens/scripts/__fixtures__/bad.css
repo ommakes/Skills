@@ -36,3 +36,12 @@
     }
   }
 }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* DS-GRID-007 */
+  gap: 24px; /* DS-GRID-004 */
+}
+.side-panel {
+  width: 320px; /* DS-PANEL-008 */
+}

@@ -49,3 +49,15 @@ function GoodComplexTable() {
     </div>
   );
 }
+
+function GoodGridAndPanel() {
+  // A page grid (12), a single column, a gutter from the token, panel widths from tokens, and a name that only looks like a panel.
+  return (
+    <div className="grid grid-cols-1 gap-[var(--grid-gutter)] md:grid-cols-12">
+      <Sheet className="w-(--panel-push-default) max-w-full" />
+      <Drawer className="w-[var(--panel-overlay-md)]" />
+      <Spreadsheet className="w-80" />
+      <div style={{ display: "grid", gap: "var(--grid-gutter)" }} />
+    </div>
+  );
+}

@@ -29,10 +29,11 @@
     }
   ],
   "breakpoints": {
-    "phone": "below md (768px)",
-    "tablet": "md to below lg (768px to 1023px)",
-    "desktop": "lg and up (1024px)",
-    "rule": "DS-RESPONSIVE-002"
+    "phone": "below roomy (768px)",
+    "tablet": "roomy to below wide (768px to 1023px)",
+    "desktop": "wide and up (1024px)",
+    "rule": "DS-RESPONSIVE-002",
+    "note": "Phone, tablet and desktop are the three prose tiers. The grid splits phone in two at the snug class (600px). See vois-tokens/references/grid.md."
   },
   "density": {
     "dense": {
@@ -70,6 +71,55 @@
         "phone": "Single column. Buttons stack to full width. Logos wrap to three per row. Plans stack, so put the recommended plan first. Footer links sit in two columns.",
         "tablet": "Hero stays stacked with the product shot under the text. Feature cards go two across. Pricing keeps three plans side by side.",
         "desktop": "Two column hero. Features three across. Split sections put image and text side by side. Five column footer."
+      },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "hero-text",
+            "track": "1fr",
+            "from": "wide"
+          },
+          {
+            "name": "hero-media",
+            "track": "1fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "features",
+            "item_min": "--item-min-story",
+            "caps": {
+              "narrow": 1,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 3
+            }
+          },
+          {
+            "name": "logos",
+            "item_min": "--item-min-logo",
+            "caps": {
+              "narrow": 3,
+              "snug": 4,
+              "roomy": 6,
+              "wide": 8
+            }
+          },
+          {
+            "name": "plans",
+            "item_min": "--item-min-plan",
+            "caps": {
+              "narrow": 1,
+              "snug": 1,
+              "roomy": 3,
+              "wide": 3
+            }
+          }
+        ],
+        "panels": []
       },
       "states": [],
       "interaction": null,
@@ -113,6 +163,24 @@
         "tablet": "Icon rail on the left with the feed centered at about 600px. The right rail is hidden.",
         "desktop": "Three columns: labeled nav, feed, and a right rail with search, trending, and people to follow."
       },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "feed",
+            "track": "--measure-feed",
+            "from": "roomy"
+          },
+          {
+            "name": "right-rail",
+            "track": "--region-right-rail",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": "Standard, not Spacious: people scroll fast and want several posts in view.",
@@ -154,6 +222,43 @@
         "phone": "Sidebar becomes a bottom bar with four tabs and More. Metrics go two across. Chart and activity stack. The table turns into stacked rows: name as the title, with status and the other values under it. Nothing is dropped.",
         "tablet": "Icon rail. Metrics two across. Chart takes the full width with activity underneath. The table keeps all its columns.",
         "desktop": "Full sidebar. Four metrics in a row. Chart takes two thirds with activity beside it. Full table."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "fill",
+        "regions": [
+          {
+            "name": "chart",
+            "track": "2fr",
+            "from": "wide"
+          },
+          {
+            "name": "activity",
+            "track": "1fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "metrics",
+            "item_min": "--item-min-card",
+            "caps": {
+              "narrow": 2,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 4
+            }
+          }
+        ],
+        "panels": [
+          {
+            "name": "notifications",
+            "mode": "overlay",
+            "size": "--panel-overlay-sm",
+            "from": "roomy",
+            "below": "fullscreen"
+          }
+        ]
       },
       "states": [
         {
@@ -209,6 +314,35 @@
         "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen panel because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
         "tablet": "Table has four columns on every width, so nothing is hidden. Filter and Sort stay pinned top right, with applied filters as chips under the toolbar. No preview panel, so rows open the detail page.",
         "desktop": "Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [],
+        "collections": [],
+        "panels": [
+          {
+            "name": "preview",
+            "mode": "push",
+            "size": "--panel-push-default",
+            "from": "wide",
+            "below": "detail-page"
+          },
+          {
+            "name": "quick-edit",
+            "mode": "overlay",
+            "size": "--panel-overlay-md",
+            "from": "roomy",
+            "below": "fullscreen"
+          },
+          {
+            "name": "filter",
+            "mode": "overlay",
+            "size": "--panel-overlay-sm",
+            "from": "roomy",
+            "below": "fullscreen"
+          }
+        ]
       },
       "states": [
         {
@@ -274,6 +408,40 @@
         "tablet": "Three cards per row. Applied filters show as chips above the grid. Filter opens a right drawer.",
         "desktop": "Filter sidebar on the left with four groups. Four cards per row."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "filters",
+            "track": "--region-filters",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "products",
+            "item_min": "--item-min-card",
+            "caps": {
+              "narrow": 2,
+              "snug": 3,
+              "roomy": 3,
+              "wide": 4
+            }
+          }
+        ],
+        "panels": [
+          {
+            "name": "filter-drawer",
+            "mode": "overlay",
+            "size": "--panel-overlay-sm",
+            "from": "roomy",
+            "below": "fullscreen",
+            "until": "wide"
+          }
+        ],
+        "note": "The product cards sit beside the filters region on wide windows, so measure the card area and pass its width as containerW (DS-GRID-006, DS-GRID-007)."
+      },
       "states": [
         {
           "name": "Default",
@@ -325,6 +493,24 @@
         "tablet": "Gallery and buy box side by side, thumbnails under the main image. Details switch to tabs.",
         "desktop": "Thumbnails run down the left of the main image. The buy box is about 380px wide on the right."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "gallery",
+            "track": "fluid",
+            "from": "roomy"
+          },
+          {
+            "name": "buy-box",
+            "track": "--region-buy-box",
+            "from": "roomy"
+          }
+        ],
+        "collections": [],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": "Standard, with a roomier buy box because this is the moment of decision.",
@@ -368,7 +554,29 @@
       "responsive": {
         "phone": "A back link replaces the breadcrumb. The primary action sits under the title and the rest go in an overflow menu. Tabs scroll sideways. Properties fold into one row.",
         "tablet": "Primary action and overflow in the header. Properties fold above the content. Facts go two across.",
-        "desktop": "Three actions in the header. Properties panel on the right at 300px. Facts go three across."
+        "desktop": "Three actions in the header. Properties panel on the right, at the default push panel width. Facts go three across."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "content",
+            "track": "fluid",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": [
+          {
+            "name": "properties",
+            "mode": "push",
+            "size": "--panel-push-default",
+            "from": "wide",
+            "below": "inline-row"
+          }
+        ],
+        "note": "Facts go two across on tablet and three on desktop. Not listed in collections because no item token is set for them yet."
       },
       "states": [
         {
@@ -433,6 +641,24 @@
         "tablet": "Sub navigation becomes tabs across the top. Fields go two across.",
         "desktop": "Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form."
       },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "subnav",
+            "track": "--region-subnav",
+            "from": "wide"
+          },
+          {
+            "name": "content",
+            "track": "--measure-settings",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -482,6 +708,24 @@
         "tablet": "Plans go two across. The comparison table shows all four plans in narrow columns.",
         "desktop": "Four plan cards in a row with the recommended one outlined heavier. Full comparison table with grouped rows."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [],
+        "collections": [
+          {
+            "name": "plans",
+            "item_min": "--item-min-plan",
+            "caps": {
+              "narrow": 1,
+              "snug": 1,
+              "roomy": 2,
+              "wide": 4
+            }
+          }
+        ],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": "Pricing is a landing page that has to be compared, so it sits at Standard, not Spacious.",
@@ -526,6 +770,36 @@
         "tablet": "Feature rows stay stacked. Benefits go three across and integrations six across.",
         "desktop": "Feature rows alternate screenshot and text side by side. Integrations eight across."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "feature-text",
+            "track": "1fr",
+            "from": "wide"
+          },
+          {
+            "name": "feature-media",
+            "track": "1fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "integrations",
+            "item_min": "--item-min-icon-tile",
+            "caps": {
+              "narrow": 4,
+              "snug": 6,
+              "roomy": 6,
+              "wide": 8
+            }
+          }
+        ],
+        "panels": [],
+        "note": "Benefits go three across on tablet. Not listed in collections because no item token is set for them yet."
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -569,6 +843,45 @@
         "phone": "Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row.",
         "tablet": "Story cards and quotes go two across. The featured story keeps the image above the text.",
         "desktop": "Hero text beside a stat list. Featured story split into image and text. Story grid three across. Quote wall two across."
+      },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "hero-text",
+            "track": "1fr",
+            "from": "wide"
+          },
+          {
+            "name": "hero-stats",
+            "track": "1fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "stories",
+            "item_min": "--item-min-story",
+            "caps": {
+              "narrow": 1,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 3
+            }
+          },
+          {
+            "name": "quotes",
+            "item_min": "--item-min-story",
+            "caps": {
+              "narrow": 1,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 2
+            }
+          }
+        ],
+        "panels": []
       },
       "states": [],
       "interaction": null,
@@ -624,6 +937,35 @@
         "tablet": "Posts go two across. The New list sits under the featured post.",
         "desktop": "Featured post takes two thirds with the New list beside it. Posts three across."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "featured",
+            "track": "2fr",
+            "from": "wide"
+          },
+          {
+            "name": "new-list",
+            "track": "1fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [
+          {
+            "name": "posts",
+            "item_min": "--item-min-story",
+            "caps": {
+              "narrow": 1,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 3
+            }
+          }
+        ],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -673,6 +1015,25 @@
         "tablet": "Stats three across. Company facts fold into a four across row above the story.",
         "desktop": "Header text beside a photo. Three stats in a row. Company facts in a left column and the story capped near 680px."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "company-facts",
+            "track": "--region-company-facts",
+            "from": "wide"
+          },
+          {
+            "name": "story",
+            "track": "--measure-article",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": [],
+        "note": "The three stats go three across on tablet and desktop. Not listed in collections because no item token is set for them yet."
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -716,6 +1077,29 @@
         "phone": "Header and hero image full width. Contents fold into one row at the top. Share icons move under the article.",
         "tablet": "Same as phone with a wider reading column. Contents stay folded.",
         "desktop": "Share icons on the left, article in the middle at about 680px, contents and tags on the right."
+      },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "share",
+            "track": "auto",
+            "from": "wide"
+          },
+          {
+            "name": "article",
+            "track": "--measure-article",
+            "from": "wide"
+          },
+          {
+            "name": "contents",
+            "track": "--region-contents",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": []
       },
       "states": [],
       "interaction": null,
@@ -762,6 +1146,24 @@
         "tablet": "Heading and form side by side. Name and company fields go two across.",
         "desktop": "Heading, benefits, and trust badges on the left. Form card on the right."
       },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "intro",
+            "track": "1fr",
+            "from": "roomy"
+          },
+          {
+            "name": "form",
+            "track": "1fr",
+            "from": "roomy"
+          }
+        ],
+        "collections": [],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -802,6 +1204,21 @@
         "phone": "The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort stay pinned top right as two buttons. Selecting rows shows a bar above the list with one Actions button.",
         "tablet": "All columns stay and the grid scrolls sideways with the name pinned. Toolbar keeps search on the left with Filter and Sort pinned top right, under one view tab row.",
         "desktop": "All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "fill",
+        "regions": [],
+        "collections": [],
+        "panels": [
+          {
+            "name": "filter",
+            "mode": "overlay",
+            "size": "--panel-overlay-sm",
+            "from": "roomy",
+            "below": "fullscreen"
+          }
+        ]
       },
       "states": [
         {
@@ -856,6 +1273,32 @@
         "phone": "Each person is a stacked row: avatar and name as the title, with email, role, and status under it. Tapping the row opens the edit panel. Invite stays at the top.",
         "tablet": "Sub-nav becomes tabs across the top. Role shows as a dropdown in the row. Status stays in the row.",
         "desktop": "Sub-nav column on the left. Table with Role dropdown, Joined date, and Status. Active and Invited are grouped under small headers."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "subnav",
+            "track": "--region-subnav",
+            "from": "wide"
+          },
+          {
+            "name": "members",
+            "track": "fluid",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": [
+          {
+            "name": "edit-member",
+            "mode": "overlay",
+            "size": "--panel-overlay-md",
+            "from": "roomy",
+            "below": "fullscreen"
+          }
+        ]
       },
       "states": [
         {
@@ -919,6 +1362,24 @@
         "tablet": "Table keeps all its columns.",
         "desktop": "Four summary cards, then the full table with a PDF button per row and a Download all button."
       },
+      "layout": {
+        "shell": "app",
+        "frame": "contained",
+        "regions": [],
+        "collections": [
+          {
+            "name": "summary",
+            "item_min": "--item-min-card",
+            "caps": {
+              "narrow": 2,
+              "snug": 2,
+              "roomy": 2,
+              "wide": 4
+            }
+          }
+        ],
+        "panels": []
+      },
       "states": [
         {
           "name": "Default",
@@ -969,8 +1430,35 @@
       "navigation": "Same app shell. The selected row stays highlighted. On phones, opening a row is a new screen with a back arrow, and the list keeps its scroll position.",
       "responsive": {
         "phone": "List only. Tapping a row pushes the detail as its own screen. Compose or Add becomes a floating button.",
-        "tablet": "List and detail split about half and half. Checkboxes and extra row text go away to make room.",
+        "tablet": "From an 800px window, list and detail split about half and half. Checkboxes and extra row text go away to make room. Below 800px it works like the phone: list only, and the detail opens as its own screen.",
         "desktop": "List on the left, a wider detail pane on the right, with tabs for overview, activity, and notes."
+      },
+      "layout": {
+        "shell": "app",
+        "frame": "fill",
+        "regions": [
+          {
+            "name": "list",
+            "track": "1fr",
+            "from": "wide"
+          },
+          {
+            "name": "detail",
+            "track": "2fr",
+            "from": "wide"
+          }
+        ],
+        "collections": [],
+        "panels": [
+          {
+            "name": "detail",
+            "mode": "two-pane",
+            "size": "--pane-min",
+            "from": "roomy",
+            "below": "push-screen"
+          }
+        ],
+        "note": "Two panes need --pane-min each (DS-PANEL-007), which starts at an 800px window. Between 768px and 799px it behaves like the phone."
       },
       "states": [
         {
@@ -1021,6 +1509,13 @@
         "tablet": "Chart on top, table below. All columns stay and the table scrolls sideways with the first column pinned. Numbers right-aligned so they line up.",
         "desktop": "All columns, a bold totals row at the bottom, and Export in the header."
       },
+      "layout": {
+        "shell": "app",
+        "frame": "fill",
+        "regions": [],
+        "collections": [],
+        "panels": []
+      },
       "states": [],
       "interaction": null,
       "density_note": null,
@@ -1065,6 +1560,19 @@
         "phone": "Stepper keeps its three markers but drops the labels and adds one line, Step 2 of 3: Goals. Content is one column. Back and Next sit in a sticky bottom bar with Next filling the width, and Skip is a text link above it.",
         "tablet": "Stepper shows markers with labels. Content is centered in a column capped near 560px. Back sits at the far left of the footer and Skip then Next at the far right.",
         "desktop": "Same as tablet with more air around the column. Choice cards go two across. The footer stays under the content, not pinned to the window."
+      },
+      "layout": {
+        "shell": "site",
+        "frame": "contained",
+        "regions": [
+          {
+            "name": "step",
+            "track": "--measure-onboarding",
+            "from": "roomy"
+          }
+        ],
+        "collections": [],
+        "panels": []
       },
       "states": [
         {
@@ -1124,5 +1632,19 @@
         }
       ]
     }
-  ]
+  ],
+  "layout_fields": {
+    "shell": "app = bottom bar, then rail, then sidebar; site = no side nav. See DS-GRID-002.",
+    "frame": "contained = content max applies (DS-GRID-003). fill = dense page, fills the region.",
+    "regions": "Side-by-side regions, left to right. track is fluid, a fraction like 2fr, auto, or a token name. from is the first WINDOW class where they sit side by side, the same tier the responsive text calls tablet (roomy) or desktop (wide). Below it they stack or fold, as the responsive text says.",
+    "collections": "Equal-track grids. item_min is a token name. caps is the most columns per window class. Column count comes from DS-GRID-007. Caps for narrow and snug refine the phone text: the phone text describes narrow, and snug (600px to 767px) may hold more columns. Only grids with an item token are listed. Caps for the marketing logos at snug, roomy and wide (4, 6, 8) are proposals: the template text only says three per row on a phone.",
+    "panels": "mode is push, overlay or two-pane (DS-PANEL-001). size is a token name. from is the first window class where the panel is not full screen. until, if present, is the window class where it stops (the drawer on Browse). below says what happens under from: fullscreen, detail-page, inline-row or push-screen. A two-pane panel starts by DS-PANEL-007 and not by its from class. Overlay size tiers (sm, md) are proposals: no template text states a panel width, so treat them as the starting choice, not a finding from the Mobbin screens.",
+    "classes": [
+      "narrow",
+      "snug",
+      "roomy",
+      "wide"
+    ],
+    "note": "Each region, collection and panel has a `name`. It is a local label, not an identity, so it can repeat across templates. A `note` on a layout says what the lists cannot."
+  }
 }

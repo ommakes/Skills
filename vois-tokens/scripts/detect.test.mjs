@@ -953,3 +953,225 @@ test("DS-CSS-003 treats // as ordinary text in .css, even after a space", () => 
   assert.equal(nestHits(".d { background: url( //cdn.test/a.png ); }\n.e { .f { x: y; } }", "a.css").length, 0);
   assert.equal(nestHits(".d { grid-area: a //b; }\n.e { .f { x: y; } }", "a.css").length, 0);
 });
+
+// ---- DS-GRID-007, DS-GRID-004, DS-PANEL-008 ----------------------------------------------------------------
+
+const gridHits = (rule, code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === rule);
+
+test("DS-GRID-007 flags a hard-coded count in every syntax it reads", () => {
+  for (const code of [
+    '<div className="grid grid-cols-3" />',
+    '<div className="md:grid-cols-5" />',
+    '<div className="grid-cols-[repeat(3,1fr)]" />',
+    '<div style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }} />',
+    "const s = stylex.create({ a: { gridTemplateColumns: 'repeat(2, 1fr)' } });",
+  ]) assert.equal(gridHits("DS-GRID-007", code).length, 1, code);
+  assert.equal(gridHits("DS-GRID-007", ".a { display: grid; grid-template-columns: repeat(2, 1fr); }", "a.css").length, 1);
+  assert.equal(gridHits("DS-GRID-007", ".a { grid-template-columns: repeat(2, 1fr); }", "a.scss").length, 1);
+  assert.equal(gridHits("DS-GRID-007", ".a { grid-template-columns: repeat(2, 1fr); }", "C:\\x\\A.CSS").length, 1, "Windows path and upper-case extension");
+  assert.equal(gridHits("DS-GRID-007", '<div className="grid-cols-3 md:grid-cols-5" />').length, 2, "one finding per count");
+});
+
+test("DS-GRID-007 stays quiet on counts it cannot call hard-coded", () => {
+  for (const code of [
+    '<div className="grid grid-cols-1" />',
+    '<div className="grid grid-cols-4 snug:grid-cols-8 wide:grid-cols-12" />', // the page grid
+    '<div className="grid-cols-subgrid" />',
+    '<div className="data-grid-cols-3" />',
+    '<div className="my-grid-cols-3" />',
+    '<div style={{ gridTemplateColumns: "repeat(auto-fill, minmax(var(--item-min-card), 1fr))" }} />',
+    '<div style={{ gridTemplateColumns: "repeat(1, 1fr)" }} />',
+    '<div style={{ gridTemplateColumns: "1fr 2fr" }} />',
+    "const repeat = (n, v) => v; repeat(3, 1);",
+  ]) assert.equal(gridHits("DS-GRID-007", code).length, 0, code);
+  assert.equal(gridHits("DS-GRID-007", ".a { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); }", "a.css").length, 0);
+  assert.equal(gridHits("DS-GRID-007", ".a { margin: 0 repeat(3, 1fr); }", "a.css").length, 0, "only grid-template-columns");
+});
+
+test("DS-GRID-004 flags a raw gutter on a grid and nothing else", () => {
+  for (const code of [
+    '<div className="grid gap-[24px]" />',
+    '<div className="md:grid gap-x-[1.5rem]" />',
+    '<div className="grid-cols-1 gap-[16px]" />',
+    '<div style={{ display: "grid", gap: 24 }} />',
+    "const s = stylex.create({ a: { display: 'grid', columnGap: '16px' } });",
+  ]) assert.equal(gridHits("DS-GRID-004", code).length, 1, code);
+  assert.equal(gridHits("DS-GRID-004", ".a { display: grid; gap: 16px 24px; }", "a.css").length, 1);
+  assert.equal(gridHits("DS-GRID-004", ".a { grid-template-columns: 1fr; column-gap: 1rem; }", "a.scss").length, 1);
+  assert.equal(gridHits("DS-GRID-004", ".a { display: inline-grid; grid-gap: 8px; }", "a.css").length, 1);
+});
+
+test("DS-GRID-004 reads the gap from the grid it belongs to, and only plain lengths", () => {
+  for (const code of [
+    '<div className="grid gap-[var(--grid-gutter)]" />',
+    '<div className="grid gap-[calc(var(--grid-gutter)*2)]" />',
+    '<div className="grid gap-[0px]" />',
+    '<div className="flex gap-[24px]" />',
+    '<div className="grid gap-y-[24px]" />',
+    '<div className="grid"><div className="flex gap-[24px]" /></div>', // the gap is on a different tag
+    '<div className="data-grid gap-[24px]" />',
+    '<div style={{ display: "grid", gap: "var(--grid-gutter)" }} />',
+    '<div style={{ display: "grid", gap: 0 }} />',
+    '<div style={{ display: "flex", gap: 24 }} />',
+    '<div style={{ display: "grid" }}><b style={{ gap: 24 }} /></div>',
+  ]) assert.equal(gridHits("DS-GRID-004", code).length, 0, code);
+  for (const css of [
+    ".a { display: grid; gap: var(--grid-gutter); }",
+    ".a { display: grid; gap: calc(var(--grid-gutter) * 2); }",
+    ".a { display: grid; gap: min(24px, 2vw); }",
+    ".a { display: grid; gap: 0; }",
+    ".a { display: flex; gap: 24px; }",
+    ".a { display: grid; row-gap: 24px; }",
+    "/* display: grid */ .a { gap: 24px; }",
+  ]) assert.equal(gridHits("DS-GRID-004", css, "a.css").length, 0, css);
+});
+
+test("DS-PANEL-008 flags a raw width on a panel in every syntax it reads", () => {
+  for (const code of [
+    '<SheetContent className="w-[420px]" />',
+    '<Drawer className="min-w-96" />',
+    '<Dialog.Panel className="max-w-[480px]" />',
+    '<div className="side-panel w-[320px]" />',
+    '<div className={`detail-pane w-80`} />',
+    '<Panel style={{ width: 320 }} />',
+    '<Panel style={{ minWidth: "24rem" }} />',
+    '<Panel width="320" />',
+    "<Sheet width={360} />",
+    "const [panelWidth, setPanelWidth] = useState(320);",
+    "const [panelWidth, setPanelWidth] = useState<number>(320);",
+    "const PANE_WIDTH = 360;",
+    "const s = { drawerWidth: 400 };",
+    "<Layout panelWidth={320} />",
+    "const s = stylex.create({ panel: { width: 320 } });",
+  ]) assert.equal(gridHits("DS-PANEL-008", code).length, 1, code);
+  for (const css of [
+    ".drawer-content { max-width: 480px; }",
+    "#detail-pane { width: 24rem; }",
+    ".panel { flex-basis: 20em; }",
+    ".side-panel, .card { width: 320px !important; }",
+    "@media (min-width: 48em) { .panel { width: 320px; } }",
+  ]) assert.equal(gridHits("DS-PANEL-008", css, "a.scss").length, 1, css);
+});
+
+test("DS-PANEL-008 stays quiet on tokens, fractions and things that only look like a panel", () => {
+  for (const code of [
+    '<Sheet className="w-(--panel-push-default) max-w-full" />',
+    '<Drawer className="w-[var(--panel-overlay-md)]" />',
+    '<Sheet className="w-[calc(100%-var(--grid-margin))]" />',
+    '<Panel className="w-full w-1/2 w-[50%] w-screen w-auto w-0 w-px" />',
+    '<Panel style={{ width: "var(--panel-push-default)" }} />',
+    '<Panel style={{ width: "100%", maxWidth: "100vw", width2: 0 }} />',
+    '<Panel width={0} />',
+    '<Spreadsheet className="w-80" />',
+    '<Stylesheet width={320} />',
+    '<div className="w-[320px]">panel</div>',
+    '<Chart width={320} />',
+    '<div className="card w-[320px]" data-panel="x" />',
+    "const [tableWidth, setTableWidth] = useState(320);",
+    "const [panelWidth, setPanelWidth] = useState(0);",
+    "const panelWidth = tokens.panelPushDefault;",
+    "const PANEL_COUNT = 3;",
+    "const s = { panel: { color: 'red' }, card: { width: 320 } };",
+    "const s = stylex.create({ panel: { width: 'var(--panel-push-default)' } });",
+  ]) assert.equal(gridHits("DS-PANEL-008", code).length, 0, code);
+  for (const css of [
+    ".panel { width: var(--panel-push-default); }",
+    ".panel { width: 100%; max-width: 100vw; }",
+    ".panel { width: min(320px, 100vw); }",
+    ".panel { width: calc(100% - 32px); }",
+    ".panel { width: 0; }",
+    ".spreadsheet { width: 320px; }",
+    "/* panel notes */ .card { width: 320px; }",
+    "// panel\n.card { width: 320px; }",
+    ".card { width: 320px; }",
+  ]) assert.equal(gridHits("DS-PANEL-008", css, "a.scss").length, 0, css);
+});
+
+test("the grid detectors stay fast on large and hostile input", () => {
+  const big = [
+    "grid-cols-".repeat(20000),
+    "grid-template-columns:".repeat(40000), // one line; an unbounded scan to the end of the line took 13s
+    "[a,".repeat(120000), // an unbounded `[^\]]*` after the name took 16s
+    "gap-[".repeat(30000),
+    "w-[".repeat(30000),
+    "<a ".repeat(30000),
+    "{".repeat(100000),
+    '<Panel className="grid ' + "a:".repeat(1000) + '" />'.repeat(50),
+    "x".repeat(300000),
+  ];
+  // Only the three grid checks are timed. Other detectors have their own limits.
+  for (const text of big) {
+    for (const file of ["a.tsx", "a.css"]) {
+      for (const id of ["DS-GRID-007", "DS-GRID-004", "DS-PANEL-008"]) {
+        const t = Date.now();
+        RULES.find((r) => r.id === id).check({ content: text, lines: text.split("\n"), filePath: file, params: undefined });
+        assert.ok(Date.now() - t < 3000, `${id} on ${text.slice(0, 12)}… took ${Date.now() - t}ms on ${file}`);
+      }
+    }
+  }
+});
+
+test("KNOWN GAPS: the grid detectors do not read a page-grid count, a theme gap step or CSS in a template string", () => {
+  const found = adversarialTsxFindings.filter((f) => ["DS-GRID-007", "DS-GRID-004"].includes(f.ruleId));
+  assert.deepEqual(found, [], "if this now fires, a gap in hooks.md was closed: update the test to assert a finding");
+});
+
+// Review round: each of these failed before the fix.
+const lineOf = (rule, code, file) => gridHits(rule, code, file).map((f) => f.line);
+
+test("DS-PANEL-008 reads the panel itself, not the parts inside it", () => {
+  for (const code of [
+    '<PanelLeft className="w-4 h-4" />',
+    '<SheetClose className="w-8" />',
+    '<SheetTitle className="w-[200px]" />',
+    '<div className="panel-title w-[200px]" />',
+    '<div className="panel-icon w-6" />',
+  ]) assert.equal(gridHits("DS-PANEL-008", code).length, 0, code);
+  for (const code of ['<SheetContent className="w-[420px]" />', '<DrawerContent className="w-80" />', '<div className="detail-pane w-80" />'])
+    assert.equal(gridHits("DS-PANEL-008", code).length, 1, code);
+  for (const css of [".panel-title { max-width: 600px; }", ".panel .icon { width: 16px; }", ".panel > .row, .card { width: 320px; }", ".panel:hover .x { width: 8px; }"])
+    assert.equal(gridHits("DS-PANEL-008", css, "a.css").length, 0, css);
+  for (const css of [".panel { width: 320px; }", ".card .side-panel { width: 320px; }", ".x, .drawer-content { max-width: 480px; }", ".panel:hover { width: 321px; }"])
+    assert.equal(gridHits("DS-PANEL-008", css, "a.css").length, 1, css);
+});
+
+test("DS-PANEL-008 and DS-GRID-004 report the line of the declaration", () => {
+  assert.deepEqual(lineOf("DS-PANEL-008", ".side-panel {\n color: red;\n background: blue;\n width: 320px;\n}", "a.css"), [4]);
+  assert.deepEqual(lineOf("DS-PANEL-008", ".panel { width: 320px; }", "a.css"), [1]);
+  assert.deepEqual(lineOf("DS-PANEL-008", ".panel {\n  width: 320px;\n}", "a.css"), [2]);
+  assert.deepEqual(lineOf("DS-GRID-004", ".a { display:grid;\n row-gap: 4px;\n gap: 24px; }", "a.css"), [3], "not the row-gap line");
+  assert.deepEqual(lineOf("DS-GRID-004", ".a {\n  display: grid;\n  /* gap note */\n  gap: 24px;\n}", "a.css"), [4], "not the comment line");
+  assert.deepEqual(lineOf("DS-GRID-007", "/* one\ntwo\nthree */\n.a { grid-template-columns: repeat(3, 1fr); }", "a.css"), [4], "a multi-line comment keeps the line count");
+  assert.deepEqual(lineOf("DS-GRID-007", "<div>\n{/* a\nb */}\n<i className=\"grid-cols-3\" />\n</div>", "a.tsx"), [4]);
+});
+
+test("the grid detectors skip commented-out code, and a glob in a string does not hide code", () => {
+  assert.equal(gridHits("DS-GRID-007", "/* grid-template-columns: repeat(3, 1fr); */", "a.css").length, 0);
+  assert.equal(gridHits("DS-GRID-007", '<div>{/* grid-cols-3 */}</div>').length, 0);
+  assert.equal(gridHits("DS-GRID-007", '/* grid-cols-3 */\n<i className="grid-cols-3" />').length, 1, "only the live one");
+  assert.equal(gridHits("DS-GRID-004", '{/* <i className="grid gap-[24px]" /> */}').length, 0);
+  assert.equal(gridHits("DS-PANEL-008", '/* <Sheet className="w-[420px]" /> */').length, 0);
+  // "src/*.ts" opens no comment, so the "*/" far below does not swallow the line in between.
+  assert.equal(gridHits("DS-GRID-007", 'const a = "src/*.ts";\n<i className="grid-cols-3" />\nconst b = "**/*.css"; // x */ y').length, 1);
+});
+
+test("DS-GRID-004 reads the class, not another attribute that says grid", () => {
+  assert.equal(gridHits("DS-GRID-004", '<div className="flex gap-[24px]" aria-label="Photo grid" />').length, 0);
+  assert.equal(gridHits("DS-GRID-004", '<div className="flex gap-[24px]" data-kind=\'grid\' />').length, 0);
+  assert.equal(gridHits("DS-GRID-004", '<div aria-label="Photo grid" className="grid gap-[24px]" />').length, 1);
+  assert.equal(gridHits("DS-GRID-004", '<div className={cn("grid", "gap-[24px]")} />').length, 1, "a class built with cn() is still a class");
+});
+
+test("DS-GRID-004 does not read a spaced function, and reads upper-case units", () => {
+  for (const css of [".a { display: grid; gap: clamp( 16px, 2vw, 24px ); }", ".a { display: grid; gap: calc( 1rem + 8px ); }", ".a { display: grid; gap: min( 24px , 2vw ); }"])
+    assert.equal(gridHits("DS-GRID-004", css, "a.css").length, 0, css);
+  assert.equal(gridHits("DS-GRID-004", ".a { display: grid; gap: 24PX; }", "a.css").length, 1);
+  assert.equal(gridHits("DS-GRID-004", '<div className="grid gap-[24PX]" />').length, 1);
+});
+
+test("DS-PANEL-008 reads a typed constant", () => {
+  for (const code of ["const PANEL_WIDTH: number = 320;", "const drawerWidth:number=400;", "let panelWidth: number | undefined = 320;"])
+    assert.equal(gridHits("DS-PANEL-008", code).length, 1, code);
+  for (const code of ["const PANEL_WIDTH: number = tokens.panel;", "const tableWidth: number = 320;", "const PANEL_COUNT: number = 3;", "type P = { panelWidth: number };"])
+    assert.equal(gridHits("DS-PANEL-008", code).length, 0, code);
+});

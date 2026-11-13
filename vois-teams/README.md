@@ -78,7 +78,7 @@ Only limits listed in `data/ranges.json`. Each entry has a base value, a stricte
 | `DS-ICON-001` | `stroke_width_px` | 1.5 px | none (refine) | 1 to 2 |
 | `DS-SPACING-001` | `spacing_divisors` | [4, 8] | subset | a subset of [4, 8] |
 | `DS-ICON-002` | `icon_sizes_px` | [16, 20, 24, 32] | subset | a subset of [16, 20, 24, 32] |
-| `DS-RESPONSIVE-002` | `test_breakpoints_px` | [640, 768, 1024] | superset | the base plus any of [1280, 1536] |
+| `DS-RESPONSIVE-002` | `test_breakpoints_px` | [360, 600, 768, 1024] | superset | the base plus any of [1280, 1536] |
 | `JOB-MULTISTEP-GUIDE` | `stepper_max_steps` | 5 | lower | 2 to 5 |
 | `JOB-CHOOSE-FROM-LIST` | `select_max_items` | 8 | lower | 4 to 8 |
 | `JOB-DISPLAY-DATA` | `table_max_rows` | 100 | lower | 25 to 100 |

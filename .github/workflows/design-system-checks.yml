@@ -22,6 +22,9 @@ jobs:
       - name: Detector regression suite (vois-tokens)
         run: node vois-tokens/scripts/detect.test.mjs
 
+      - name: Grid and panel maths (vois-tokens)
+        run: node vois-tokens/scripts/grid.test.mjs
+
       - name: Lookalike scanner fixtures (vois-eval)
         run: node vois-eval/lookalike-pass/scan.test.mjs
 

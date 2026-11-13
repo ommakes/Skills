@@ -18,3 +18,13 @@ export function ArbitraryHexGradient() {
 function SharedTableWrapper({ children }: { children: React.ReactNode }) {
   return <div className="relative w-full overflow-x-auto">{children}</div>;
 }
+
+// KNOWN GAPS (DS-GRID-007, DS-GRID-004): a count of 4, 8 or 12 is read as the page grid, a Tailwind
+// scale gap (gap-6) is a theme step the detector cannot resolve, and CSS inside a template string is not read.
+function GridGaps() {
+  const Styled = css`
+    display: grid;
+    gap: 24px;
+  `;
+  return <div className="grid grid-cols-4 gap-6" />;
+}

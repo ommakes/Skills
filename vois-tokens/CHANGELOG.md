@@ -4,6 +4,43 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.28.0] - 2026-11-12
+
+### Added
+
+- **Three detectors in `scripts/registry.mjs`** (code in `scripts/grid-checks.mjs`), all advisory, none blocking:
+  - `DS-GRID-007` flags a hard-coded column count: Tailwind `grid-cols-3`, `grid-cols-[repeat(3,1fr)]`, and `repeat(3, ...)` in `grid-template-columns` or `gridTemplateColumns`. A count of 1, 4, 8 or 12 is not flagged, because 4, 8 and 12 are the page grid.
+  - `DS-GRID-004` flags a raw gutter on a grid container: a Tailwind `gap-[24px]` or `gap-x-[1.5rem]` on a tag that is a grid, an inline or StyleX object that is a grid and sets a literal `gap` or `columnGap`, and `gap`, `column-gap` or `grid-gap` with a plain length in a `.css` or `.scss` rule that is a grid. `var()`, `calc()`, `0` and row gaps are not flagged.
+  - `DS-PANEL-008` flags a hard-coded width on a panel or pane: a tag named or classed for a panel, drawer, sheet, flyout, tray, inspector or pane with `w-[420px]`, `w-80`, `style={{ width: 320 }}` or `width={320}`, a panel-named style object, a name such as `PANEL_WIDTH` or `useState(320)` for `panelWidth`, and a `.css` or `.scss` rule with a panel selector and a plain `width`, `min-width`, `max-width` or `flex-basis`. Whole words only, so `Spreadsheet` is not a sheet.
+- Block comments are skipped, line numbers stay put across a multi-line comment, and `DS-PANEL-008` reads only the panel itself (`Sheet`, `SheetContent`, `.side-panel`), not parts inside it (`SheetClose`, `PanelLeft`, `.panel .icon`).
+- The three rules move from `judgment` to `detector`. A detector catches some violations, not all (see `references/hooks.md`).
+- Tests for each: every syntax it reads, the inputs that must stay quiet, the three known gaps, and a stress test on large and hostile input.
+
+### Changed
+
+- `cssBlocks` moved to `scripts/css-blocks.mjs` so two files can share it. `registry.mjs` still exports it.
+
+---
+
+## [1.27.0] - 2026-11-12
+
+### Added
+
+- **`references/grid.md`** with 18 new rules: `DS-GRID-001` to `010` and `DS-PANEL-001` to `008`. They cover four grid classes picked from the region width (`narrow`, `snug`, `roomy`, `wide`), nav by window width, content max, margin and gutter tokens, safe areas, measuring the parent, the card grid column formula, regions, push and overlay panels, overlay width, and two-pane lists. All are `judgment` for now: no detector and no rendered check exists for them yet.
+- **`scripts/grid-logic.mjs`** and **`scripts/grid.test.mjs`**: the maths from `grid.md` as code, with a test (29 cases) that also checks the worked example in `grid.md`, the layout data in `vois-patterns` and the token names. `scripts/grid-fixture.json` holds proposed token values so the test runs offline.
+- The logic fails closed: a token set that is not the four classes in order, a typo'd shell or tier, a missing cap or a non-number throws, and never returns NaN or falls back to another shell.
+- **`prds/grid-token-request.md`**: the tokens the Vois token source needs to add before the rules can be applied for real. Values are not stored in the skill.
+
+### Changed
+
+- **Token request, decisions applied.** Margin and gutter are stored as four plain numbers each (`-min`, `-max`, `-min-at`, `-max-at`), and `--grid-margin` and `--grid-gutter` are generated outputs, so no custom token type is needed. `md` and `lg` are renamed outright to `--breakpoint-roomy` and `--breakpoint-wide`. `--region-aside` is replaced by `--region-right-rail`, `--region-filters`, `--region-company-facts` and `--region-contents`. The six template widths stay as proposed.
+- **`DS-RESPONSIVE-002`** now says to test at the start of each grid class: 360, 600, 768 and 1024, not `sm` 640, `md` 768 and `lg` 1024. 600 is new. The old rule named the Tailwind breakpoints, which clash with the Android and Apple meanings.
+- **Teams: `test_breakpoints_px`** in `vois-teams/data/ranges.json` has the new base [360, 600, 768, 1024]. A team override that lists 640 as a base value must change it. Extra values (1280, 1536) still work.
+- **`DS-SPACING-001`** has one exception: `--grid-margin` and `--grid-gutter` between their end values. The end values stay on the scale.
+- `DS-A11Y-001` is unchanged. The decision for this work was a 44 touch target, which is 4px under Material's 48dp. The value lives in the token source.
+
+---
+
 ## [1.26.0] - 2026-10-27
 
 ### Added

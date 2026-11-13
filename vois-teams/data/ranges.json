@@ -206,19 +206,21 @@
       "unit": "px",
       "type": "set",
       "base": [
-        640,
+        360,
+        600,
         768,
         1024
       ],
       "stricter": "superset",
       "allowed": [
-        640,
+        360,
+        600,
         768,
         1024,
         1280,
         1536
       ],
-      "match": "`sm` (640px), `md` (768px), `lg` (1024px)",
+      "match": "narrow (360px), snug (600px), roomy (768px) and wide (1024px)",
       "note": "A team may test at more breakpoints."
     },
     {

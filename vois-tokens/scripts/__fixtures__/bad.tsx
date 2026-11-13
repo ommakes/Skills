@@ -66,3 +66,12 @@ function BadLookalikes() {
     </div>
   );
 }
+
+// DS-GRID-007 (hard-coded column count), DS-GRID-004 (raw gutter), DS-PANEL-008 (hard-coded panel width).
+function BadGridAndPanel() {
+  return (
+    <div className="grid grid-cols-3 gap-[24px]">
+      <SheetContent className="w-[420px]" />
+    </div>
+  );
+}

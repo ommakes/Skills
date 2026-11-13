@@ -228,6 +228,7 @@ If you notice a recurring structure that's not covered:
 | 1.15.0 | 2026-10-09 | Added `references/motion.md`: when a state change should travel or morph, with worked examples |
 | 1.16.0 | 2026-10-09 | Added the status button to `references/motion.md`: decision-test step, table row and worked example |
 | 1.18.0 | 2026-10-28 | Added `references/page-templates.md` and `data/page-templates.json`: 20 whole-page templates in five levels, plus `PATH-PAGE-*` rules for widths, navigation, density by width, overlays, button order, view to edit and narrow tables |
+| 1.20.0 | 2026-11-12 | Added a `layout` field to every page template (shell, frame, regions, collections, panels, all token names) and `layout_fields`. Record properties panel is now a token. Split view starts at an 800px window. Phone splits in two at 600px for grids. |
 | 1.19.0 | 2026-10-28 | Added the Onboarding steps template (1-2-3 stepper, `PATH-PAGE-ONBOARDING`) and `PATH-PAGE-SORT-FILTER`: Filter and Sort pinned top right of every table, list and card grid. Blog article renamed Blog post, with reading time, newsletter and previous and next |
 | 1.17.0 | 2026-10-09 | `references/motion.md`: twelve-step decision test (tray, typed input, chart range change, collapse to indicator, small state changes), delight tiers, remove-the-motion review |
 | 1.9.0 | 2026-09-30 | Added `references/pricing-pages.md` (PATH-F) and 64 matching rule entries |
@@ -278,6 +279,6 @@ If you have questions about a pattern or need clarification:
 
 ---
 
-**Last updated:** 2026-10-28  
-**Skill version:** 1.19.0  
+**Last updated:** 2026-11-12  
+**Skill version:** 1.20.0  
 **Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`vois_record_pattern_choice`, `vois_report_pattern_gap`) are optional.

@@ -1,0 +1,69 @@
+{
+  "note": "Proposed token values for the grid and panel rules. NOT a source of truth: your token source holds the real values (if a `vois_get_tokens` tool is available, it serves them). This fixture lets grid.test.mjs run offline. prds/grid-token-request.md lists the same names for the token owner, and the test checks the two agree.",
+  "tokens": {
+    "grid": {
+      "classes": [
+        { "id": "narrow", "min": 360, "cols": 4 },
+        { "id": "snug", "min": 600, "cols": 8 },
+        { "id": "roomy", "min": 768, "cols": 8 },
+        { "id": "wide", "min": 1024, "cols": 12 }
+      ],
+      "margin": { "from": { "w": 360, "v": 16 }, "to": { "w": 1024, "v": 32 } },
+      "gutter": { "from": { "w": 600, "v": 16 }, "to": { "w": 768, "v": 24 } },
+      "contentMax": 1200
+    },
+    "nav": { "rail": 80, "sidebar": 240 },
+    "panel": {
+      "pushMin": 280,
+      "pushDefault": 320,
+      "pushMax": 400,
+      "mainMin": 480,
+      "overlayMin": 320,
+      "overlay": { "sm": 360, "md": 480, "lg": 640 },
+      "paneMin": 360
+    }
+  },
+  "named": {
+    "--width-viewport-min": { "value": 360, "status": "existing, confirm" },
+    "--breakpoint-snug": { "value": 600, "status": "new" },
+    "--breakpoint-roomy": { "value": 768, "status": "existing as md, renamed" },
+    "--breakpoint-wide": { "value": 1024, "status": "existing as lg, renamed" },
+    "--grid-margin-min": { "value": 16, "status": "new" },
+    "--grid-margin-max": { "value": 32, "status": "new" },
+    "--grid-margin-min-at": { "value": 360, "status": "new, window width where the margin is at its minimum" },
+    "--grid-margin-max-at": { "value": 1024, "status": "new, window width where the margin reaches its maximum" },
+    "--grid-gutter-min": { "value": 16, "status": "new" },
+    "--grid-gutter-max": { "value": 24, "status": "new" },
+    "--grid-gutter-min-at": { "value": 600, "status": "new, region width where the gutter is at its minimum" },
+    "--grid-gutter-max-at": { "value": 768, "status": "new, region width where the gutter reaches its maximum" },
+    "--grid-margin": { "value": "generated", "status": "output, built from the four --grid-margin tokens. Not stored." },
+    "--grid-gutter": { "value": "generated", "status": "output, built from the four --grid-gutter tokens. Not stored." },
+    "--grid-content-max": { "value": 1200, "status": "new" },
+    "--nav-rail": { "value": 80, "status": "new" },
+    "--nav-sidebar": { "value": 240, "status": "new" },
+    "--panel-push-min": { "value": 280, "status": "new" },
+    "--panel-push-default": { "value": 320, "status": "new" },
+    "--panel-push-max": { "value": 400, "status": "new" },
+    "--main-min": { "value": 480, "status": "new" },
+    "--panel-overlay-sm": { "value": 360, "status": "new" },
+    "--panel-overlay-md": { "value": 480, "status": "new" },
+    "--panel-overlay-lg": { "value": 640, "status": "new" },
+    "--panel-overlay-min": { "value": 320, "status": "new" },
+    "--pane-min": { "value": 360, "status": "new" },
+    "--item-min-icon-tile": { "value": 64, "status": "new" },
+    "--item-min-logo": { "value": 96, "status": "new" },
+    "--item-min-card": { "value": 152, "status": "new" },
+    "--item-min-plan": { "value": 216, "status": "new" },
+    "--item-min-story": { "value": 264, "status": "new" },
+    "--region-right-rail": { "value": 320, "status": "new, proposed, not in the template text" },
+    "--region-filters": { "value": 280, "status": "new, proposed, not in the template text" },
+    "--region-company-facts": { "value": 320, "status": "new, proposed, not in the template text" },
+    "--region-contents": { "value": 240, "status": "new, proposed, not in the template text" },
+    "--region-buy-box": { "value": 380, "status": "new, from the product template text" },
+    "--region-subnav": { "value": 200, "status": "new, from the settings template text" },
+    "--measure-feed": { "value": 600, "status": "new, from the feed template text" },
+    "--measure-settings": { "value": 640, "status": "new, from the settings template text" },
+    "--measure-article": { "value": 680, "status": "new, from the article and case study text" },
+    "--measure-onboarding": { "value": 560, "status": "new, from the onboarding template text" }
+  }
+}

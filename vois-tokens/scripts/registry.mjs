@@ -16,6 +16,10 @@
 
 import { BASE_PARAMS, limitNote } from "./team-overrides.mjs";
 import { openingTags } from "./jsx-tags.mjs";
+import { cssBlocks } from "./css-blocks.mjs";
+import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs";
+
+export { cssBlocks };
 
 const CSS_EXT = [".css", ".scss"];
 const CODE_EXT = [".tsx", ".jsx", ".ts", ".js"];
@@ -483,6 +487,30 @@ export const RULES = [
     },
   },
   {
+    id: "DS-GRID-007",
+    title: "Hard-coded column count",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Let the item width set the count: repeat(auto-fill, minmax(var(--item-min-card), 1fr)), or the formula in DS-GRID-007 capped by the page template. A count of 4, 8 or 12 is read as the page grid and is not flagged.",
+    check: rawColumnCount,
+  },
+  {
+    id: "DS-GRID-004",
+    title: "Raw gutter on a grid container",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Use var(--grid-gutter) for the gap on a grid container.",
+    check: rawGridGutter,
+  },
+  {
+    id: "DS-PANEL-008",
+    title: "Hard-coded panel or pane width",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Use a panel token: --panel-push-default (between --panel-push-min and --panel-push-max), a --panel-overlay-sm, -md or -lg tier, or --pane-min.",
+    check: rawPanelWidth,
+  },
+  {
     id: "DS-TYPOGRAPHY-009",
     title: "Three-period ellipsis instead of the … character",
     severity: "quality",
@@ -834,33 +862,6 @@ function tagFindings(content, lines, names, keep, message) {
     findings.push({ line, snippet: snippetAt(lines, line), message });
   }
   return findings;
-}
-
-/**
- * Flat CSS-like blocks: a run of text with no braces, then "{", a body with no braces, then "}".
- * One pass over the text. (The regex /([^{}]*)\{([^{}]*)\}/g gives the same blocks but rescans every
- * brace-free run from each start, which takes seconds on a large file with no braces.)
- */
-export function cssBlocks(content) {
-  const blocks = [];
-  let runStart = 0;
-  let i = 0;
-  while (i < content.length) {
-    const c = content[i];
-    if (c === "}") { runStart = i + 1; i++; continue; }
-    if (c !== "{") { i++; continue; }
-    let j = i + 1;
-    while (j < content.length && content[j] !== "{" && content[j] !== "}") j++;
-    if (content[j] === "}") {
-      blocks.push({ selector: content.slice(runStart, i), body: content.slice(i + 1, j), index: i });
-      runStart = j + 1;
-      i = j + 1;
-    } else {
-      runStart = i + 1; // a "{" with no closing "}" before the next brace is not a block
-      i++;
-    }
-  }
-  return blocks;
 }
 
 /** First match only: one finding per file for rules about a whole-file pattern. */
