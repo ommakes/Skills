@@ -30,7 +30,7 @@ Ships as `SKILL.md` plus a `references/` folder split by pattern (detail pages, 
 ---
 
 ### Vois Components
-Component selection rubrics organized by job-to-be-done. Covers 20 high-ambiguity component pairs (Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.) with decision trees and "why not X" reasoning.
+Component selection rubrics organized by job-to-be-done. Covers the high-ambiguity component choices (Dialog vs Drawer, Toast vs Banner, Select vs Combobox, etc.) with decision trees and "why not X" reasoning.
 
 **Read second** (after vois-patterns determines structure) to pick the right specific component for each job.
 
@@ -229,11 +229,27 @@ Read them in order. Each skill assumes you've read the previous one and points f
 - **Tokens** answers "how do I implement this correctly?"
 - **Righter** answers "what words go here?" (consulted at every step)
 
+### Where each layer lives
+
+The skills are the unit you install, so the folders follow the skills. This map shows where each layer of the design system is in them:
+
+| Layer | What it holds | Where |
+|---|---|---|
+| Tokens | Color, spacing, type, surface, elevation, motion, layout | `vois-tokens/data/vois-rules.json`, `vois-tokens/references/` |
+| Components | Which component for which job, and what not to hand-build | `vois-components/data/components-rules.json` (jobs, lookalikes), `vois-components/references/` (specs) |
+| Patterns | How one container behaves: a settings page, a table with details, a form, a dialog | `vois-patterns/data/patterns-rules.json` (`PATH-A` to `PATH-G`) |
+| Templates | Which containers a page holds, in what order, at each width | `vois-patterns/data/page-templates.json` (`PATH-PAGE-*`) |
+| Charts | Chart form, color and dashboard rules | `vois-dataviz/data/` |
+| Words | All UI copy | `righter/` |
+| Evidence | Why a rule exists: product research, eval runs, known failures | [`EVIDENCE.md`](./EVIDENCE.md) |
+
+A pattern says how one container behaves. A template says which containers a page holds and how they move at each width. For example, `PATH-A` says how the settings container works, and `PATH-PAGE-SETTINGS` places it on a page with its navigation. See `vois-patterns/references/page-templates.md`.
+
 ---
 
 ## Design Previews (for Claude Design)
 
-[`design-previews/`](./design-previews) is a rendered, static HTML/CSS companion to the four design system skills — 33 self-contained preview files (foundations, highest-confusion component pairs, page-level patterns, and anti-pattern demonstrations) built for **Claude Design** (claude.ai/design), a visual design-system browser, not a coding agent. Run `design-previews/scripts/validate-previews.sh` for the current per-folder counts rather than trusting this prose as file counts change.
+[`design-previews/`](./design-previews) is a rendered, static HTML/CSS companion to the four design system skills: self-contained preview files (foundations, highest-confusion component pairs, page-level patterns, and anti-pattern demonstrations) built for **Claude Design** (claude.ai/design), a visual design-system browser, not a coding agent. Run `design-previews/scripts/validate-previews.sh` for the current per-folder counts rather than trusting this prose as file counts change.
 
 **This is not a skill.** It has no `SKILL.md` and isn't listed in `skills.json` or installed via `npx skills add` — it's a rendered artifact derived from the skill content above, kept in this repo because it's versioned alongside it. See [`design-previews/README.md`](./design-previews/README.md) for what's sourced directly from the skills vs. invented to fill a documented gap, and how to sync it into a live Claude Design project.
 
@@ -243,7 +259,7 @@ Read them in order. Each skill assumes you've read the previous one and points f
 
 [`vois-eval/`](./vois-eval) is a set of scenarios for checking whether a screen an agent generates with these skills actually followed the decision layer — `vois-components`' job trees and `vois-patterns`' path trees — not just whether it used the right tokens. Each scenario is drawn from an existing decision tree's condition/recommendation rather than a new invented format; the 55 scenarios are checked by hand, and score categories are defined without weights until they have been run enough to know where drift concentrates. A separate runner, `vois-eval/run/run.mjs`, builds screens with the `claude` CLI with the skills on and off and scores them with scripts; CI checks its committed results for a drop in the skills-on pass rate. See [`vois-eval/README.md`](./vois-eval/README.md).
 
-[`vois-teams/`](./vois-teams) is how a team changes the base rules for itself without forking them. A team override file can add a rule, tighten a limit the base marks as tunable, or choose a value inside a range the base leaves open. It cannot loosen anything. A change every team should inherit goes through a base-change proposal instead. There is a validator and tests, and the hook does not read the overrides yet. See [`vois-teams/README.md`](./vois-teams/README.md).
+[`vois-teams/`](./vois-teams) is how a team changes the base rules for itself without forking them. A team override file can add a rule, tighten a limit the base marks as tunable, or choose a value inside a range the base leaves open. It cannot loosen anything. A change every team should inherit goes through a base-change proposal instead. There is a validator and tests, and the `vois-tokens` hook applies a team's tightened limits for the tunables it checks. See [`vois-teams/README.md`](./vois-teams/README.md).
 
 **This is also not a skill**, for the same reason `design-previews/` isn't — it's a testing artifact for the skills above, not instructions an agent reads mid-build.
 
@@ -251,11 +267,9 @@ Read them in order. Each skill assumes you've read the previous one and points f
 
 ## Quick Links
 
-- **Contributing:** See CONTRIBUTING.md (in progress)
 - **Issues & Feedback:** [GitHub Issues](https://github.com/ommakes/Skills/issues)
 - **Vois platform:** [vois.app](https://vois.app)
 
 ---
 
-**Maintained by:** Om Suthar  
-**Last updated:** 2026-09-26
+**Maintained by:** Om Suthar
