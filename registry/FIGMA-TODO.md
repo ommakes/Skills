@@ -46,6 +46,8 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
   - **Rebinds.** The Primary Loading spinners bind `--action-primary-text`. 9 field borders bound to the orphaned `Surface-State-Disabled` now bind `--border-state-disabled`.
   - Re-export checksum `cf84c244` (758 tokens).
 
+- **Calmer blues, same day:** every Global blue step has about 15% less OKLCH chroma, with the same lightness and hue, in both modes. The 12 blue alpha steps use the new `blue-8` with their old alpha. 48 values in all. Re-export checksum `48eab083` (758 tokens).
+
 ## Still open
 
 1. **Loose type that matches no token.**
