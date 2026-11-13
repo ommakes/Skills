@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.29.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.29.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.29.1**: `SKILL.md` only. Marketing gaps start above 128px, matching `DS-MKT-008`, and the rules index lists grid, tables and marketing.
 - **1.29.0**: Token names come from Figma (each variable's Web code syntax), in four layers: Global, Base, System, Component. New `references/figma-variables.md` with `DS-TOKEN-001` to `005` (layers, names, `:root` not `@theme`, the twelve brand slots, the shadcn/ui mapping). Status tokens use the Figma names and `warning` is now `notice`. Elevation has Figma's five tiers and the scrim is a token. The spacing scale matches Figma.
 - **1.28.2**: The grid classes are `narrow`, `sm`, `md` and `lg`, with `--breakpoint-sm` at 600. `md` and `lg` keep their names. The `sm` container width in the table and form rules is now `37.5em`. The grid example values are called default, not proposed. Detector behavior did not change.
 - **1.28.1**: `DS-ANIMATION-005` no longer slows down on very long one-line input. It matched the same things before. It now skips a keyframe block over 1000 characters and a `starting:` class with more than 31 variants between `starting:` and `scale`.

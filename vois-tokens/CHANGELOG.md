@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.29.1] - 2026-11-13
+
+### Fixed
+- `SKILL.md`: the marketing reference row says gaps above 128px, matching `DS-MKT-008` and `references/marketing-type-and-spacing.md` (the product scale ends at 128). The `data/vois-rules.json` category list now names grid and panels, data tables, and marketing type and spacing.
+
 ## [1.29.0] - 2026-11-13
 
 ### Added
