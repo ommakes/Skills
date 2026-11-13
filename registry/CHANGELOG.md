@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1] - 2026-11-13
+
+- **The blues are calmer.** Every Global blue step (`--blue-1` to `--blue-12`) has about 15% less chroma, with the same OKLCH lightness and hue, so contrast barely moves. The blue alpha steps (`--blue-a1` to `--blue-a12`) use the new `blue-8` with their old alpha. The change was made in Figma first. Re-export checksum `48eab083` (758 tokens).
+  - Everything that aliases a blue follows: the default primary and accent, info text, icons and borders, the focus border, links and the blue labels.
+  - White on the default primary (`blue-10`) goes from 5.57:1 to 5.43:1, so it still meets 4.5:1.
+
 ## [0.3.0] - 2026-11-13
 
 - **New item `vois-button`** (`vois/button/button.tsx`). It replaces shadcn's `components/ui/button.tsx` and keeps its variant and size names, so `buttonVariants({ variant: "outline" })` in other shadcn components still works.
@@ -13,7 +19,7 @@
 - **New items `vois-input` and `vois-select`** (Radix Select). Sizes `default` 36 (web), `native` 48 and `compact` 32 (inline in tables). The states (hover, 2px focus, error, disabled, read-only, prefill) and the Select list come from the Figma Input Field, Dropdown Field, Dropdown Menu and Menu Item.
 - **Primary text is a brand slot**, `--action-primary-text`, 17 slots in all. It is white on the blue default and black on Goldie in Figma. `vois-theme` maps `--primary-foreground` to it, and the Button reads it.
   - **Breaking for brand files.** A brand file with the earlier 16 slots now fails `build-tokens.mjs --brand` with "brand slot --action-primary-text has no value". Add `"--action-primary-text"` with the color your primary labels and icons use on `--action-primary-resting`, and check it meets 4.5:1 on every primary fill.
-- **The default primary is one step darker:** resting and focus `blue-10`, hover `blue-11`, pressed `blue-12`. White on `blue-9` is about 3.5:1, which fails AA for the 14 and 16px labels. White on `blue-10` is about 5.6:1.
+- **The default primary is one step darker:** resting and focus `blue-10`, hover `blue-11`, pressed `blue-12`. White on `blue-9` is about 3.5:1, which fails AA for the 14 and 16px labels. White on `blue-10` was about 5.6:1 (about 5.4:1 after 0.3.1).
 - **The checker** allows the five Radix Select runtime properties (`--radix-select-trigger-width` and the others Radix documents) in component files, by exact name, so a misspelled one still fails.
 - **New item `vois-spinner`** (`vois/spinner/spinner.tsx`): the loading.dev arc (MIT, credit kept).
   - Timing: one turn per `--motion-duration-spin`.
