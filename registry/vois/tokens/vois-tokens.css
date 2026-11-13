@@ -172,6 +172,7 @@
   --breakpoint-md: 768px;
   --breakpoint-sm: 600px;
   --control-aux: var(--black);
+  --control-border: var(--gray-6);
   --control-disabled: var(--black-a2);
   --control-focus: var(--blue-7);
   --control-off: var(--gray-2);
@@ -641,6 +642,7 @@
   --switch-off: var(--gray-2);
   --switch-on: var(--base-accent-solid);
   --switch-oncolor: var(--white);
+  --switch-outline: var(--gray-6);
   --text-accent: var(--blue-10);
   --text-auxiliary: var(--white);
   --text-hint: var(--gray-8);
@@ -756,6 +758,9 @@
   --yellow-a7: oklch(0.9134 0.206 115.14 / 0.502);
   --yellow-a8: oklch(0.9134 0.206 115.14 / 0.6);
   --yellow-a9: oklch(0.9134 0.206 115.14 / 0.698);
+  --z-dropdown: 1000;
+  --z-modal: 1300;
+  --z-overlay: 1200;
   --grid-margin: clamp(var(--grid-margin-min), calc(var(--grid-margin-min) + (100cqi - var(--grid-margin-min-at)) * 0.024096), var(--grid-margin-max));
   --grid-gutter: clamp(var(--grid-gutter-min), calc(var(--grid-gutter-min) + (100cqi - var(--grid-gutter-min-at)) * 0.047619), var(--grid-gutter-max));
   --shadow-base: 0 0 1px 1px oklch(0 0 0 / 0.039), 0 0 2px 0 oklch(0 0 0 / 0.078), 0 1px 4px 1px oklch(0 0 0 / 0.039);
@@ -845,6 +850,7 @@
   --border-state-hover: var(--gray-7);
   --border-transparent: var(--white-a1);
   --control-aux: var(--white);
+  --control-border: var(--gray-6);
   --control-disabled: var(--white-a2);
   --control-focus: var(--blue-7);
   --control-off: var(--gray-8);
@@ -951,6 +957,7 @@
   --switch-off: var(--gray-8);
   --switch-on: var(--base-accent-solid);
   --switch-oncolor: var(--black);
+  --switch-outline: var(--gray-6);
   --text-accent: var(--blue-7);
   --text-auxiliary: var(--black);
   --text-hint: var(--gray-7);

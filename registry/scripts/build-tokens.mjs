@@ -13,7 +13,7 @@
 // source/brand-default.json, plus source/figma-pending.json: tokens decided but not yet in Figma
 // (FIGMA-TODO.md lists them). They are build inputs, not shipped files, so they live outside vois/. The export holds the seventeen brand slots (DS-TOKEN-004) as null;
 // the brand file fills them. Colors become OKLCH, numbers px (ms for --motion-duration-*, unitless for
-// --font-weight-*), font-family lists as written, aliases
+// --font-weight-* and the --z-* layers), font-family lists as written, aliases
 // var(--name). Light values go in :root, dark values in .dark (only where they differ), as DS-TOKEN-003
 // says. The --motion-* tokens go to motion-tokens.css: the vois-tokens skill allows literal durations and
 // curves only in a file with that name (DS-MOTION-001).
@@ -89,6 +89,11 @@ export function cssValue(v, names, name = "") {
     if (!Number.isFinite(v)) throw new Error(`not a finite number: ${v}`);
     if (name.startsWith("--font-weight-")) {
       if (!Number.isInteger(v) || v < 1 || v > 1000) throw new Error(`${name}: a font weight is a whole number from 1 to 1000`);
+      return String(v);
+    }
+    // A z-index layer (--z-dropdown, --z-modal): a whole number with no unit, or z-index ignores it.
+    if (/^--z-[a-z0-9]/.test(name)) {
+      if (!Number.isInteger(v)) throw new Error(`${name}: a z-index is a whole number`);
       return String(v);
     }
     if (name.startsWith("--motion-duration-")) {

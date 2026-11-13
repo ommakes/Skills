@@ -48,12 +48,35 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
 
 - **Calmer blues, same day:** every Global blue step has about 15% less OKLCH chroma, with the same lightness and hue, in both modes. The 12 blue alpha steps use the new `blue-8` with their old alpha. 48 values in all. Re-export checksum `48eab083` (758 tokens).
 
+- **Controls, z-index and type, same day:**
+  - New `--switch-outline` (gray-6): a 1px inside edge on the off Web Switch and iOS Switch tracks. The Android Switch is unchanged.
+  - New `--control-border` (gray-6): the unselected Checkbox and Radio outlines (Enabled and Focus). The Aux variants keep `--border-aux`. The 49 Checkbox and 49 Radio instances on Selectors pick it up.
+  - New `Values/Z-index/` group: `--z-dropdown` 1000, `--z-overlay` 1200, `--z-modal` 1300 (scopes empty, since a layer can't bind z-index).
+  - The 13 color brand slots now point at the generic blue default (the same as `brand-default.json`). No variable aliases the Lipstick or Goldie palettes any more, and no layer on the six component pages (Components, Inputs, Actions, Selectors, Indicators, Messaging) has a raw fill or stroke from them. The Color page still shows both palettes as swatches, on purpose.
+  - Type: 198 more text layers bound to exact tokens (Actions 1, Inputs 4, Selectors 2, Components 5, Molecules 186), with no value changed. No mixed-style layers are left in component sets. This count includes instance sublayers, so it differs from the earlier table:
+
+    | Page | Before | After | Total |
+    |---|---|---|---|
+    | Inputs | 1231 | 1235 | 1242 |
+    | Molecules | 1008 | 1209 | 1209 |
+    | Selectors | 372 | 374 | 374 |
+    | Components | 141 | 145 | 145 |
+    | Actions | 99 | 100 | 104 |
+
+  - Re-export checksum `954d63b5` (763 tokens).
+
+- **Type decisions, same day:**
+  - Selectors: the 10px text on a 14px line height now binds Line height/Micro (12): 9 main layers in Date Picker, Native Horizontal Tabs and Bottom Nav, and the 109 layers that use them.
+  - Calendar Picker: the weekday labels are 10px (Size/Micro, line height 12) and two letters (Su Mo Tu We Th Fr Sa), so they fit the 19px day columns. At 10px, three letters overlapped.
+  - Components: the Hero CTA label binds Line height/Medium (26). The button stays 48 tall and the label stays centered.
+  - Text bindings are not exported variables, so the checksum is unchanged.
+
 ## Still open
 
-1. **Loose type that matches no token.**
-   - 33 mixed-style text layers. They need splitting or a decision.
-   - Off-scale values: 8px (Selectors), 5.03px (Inputs), line heights 14 (×9, Selectors), 15 and 7.54, and 3 auto line heights (Components).
-   - 3 Google Sans layers in Molecules, probably the SSO buttons. That font can't load in the export session, so they weren't touched.
+1. **Type that needs a design decision.** Each of these changes the layout, so none was forced:
+   - Components: one page-layout text at 12/15. Line height/Tiny is 16.
+   - Molecules: the Story "Ambivalent" emoji is 24px on line height 40 (bound to 3XL, the pair for 32px). 24/32 may be meant.
+   - Leave as is: the CVC card drawing (5.03 and 7.54px, a scaled illustration), the Apple and Facebook SSO buttons (their own type), and the Google Sans layers (mock-ups of Google's location dialogs, not SSO buttons).
 2. **`size-40` outside fields.** Menu items (218 on Selectors), Icon Buttons (237 on Molecules) and example layouts (345 on Inputs) still bind raw `size-40`. That's fine as a size, but menu items might want a semantic token such as `--size-menu-item`.
 3. **Pre-existing overlap.** In Dropdown Field, the Disabled and Read-only variants overlap, at Default and Native.
-4. **No z-index variables.** The skill names z-layers (`--z-dropdown`, `--z-modal`), but Figma has none, so the registry Select uses shadcn's `z-50`.
+4. **Switch details.** The knob's drop shadow is unbound (the registry uses `--shadow-small`). The Web Switch focus ring binds `--border-state-focus`, and `--switch-focus` is unused. The Android Switch off track has no outline.

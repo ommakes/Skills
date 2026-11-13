@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.20.0] - 2026-11-13
+
+### Changed
+- Capture a binary preference (`JOB-BINARY-PREFERENCE`) points to the registry's `vois-switch` (32 x 20 on web, 52 x 32 native) and `vois-checkbox` when a project has neither.
+
 ## [1.19.0] - 2026-11-13
 
 ### Changed
