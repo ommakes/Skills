@@ -25,7 +25,7 @@ node vois-components/scripts/motion-logic.test.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
 node registry/scripts/check-registry.test.mjs
 node registry/scripts/check-registry.mjs
-(cd registry && npm ci && npm run build)
+(cd registry && npm ci --ignore-scripts && npm run build)
 node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
 
@@ -51,7 +51,7 @@ Mutation tests ("what if I remove this guard") run in a copy or a `git worktree`
 ## Conventions
 
 - For the Vois design system skills (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-dataviz`, `righter`) and the component registry (`registry/`), `ommakes/vois-skills` (private) is canonical. Change the rules, the detector and the premium wording there first. This repo is the standalone mirror: it must work without the Vois MCP.
-- Port to this repo after the private change merges. `scripts/check-mirror.mjs` checks the mirror. It fails when the shared detector code or any file in `registry/` differs, when a rule ID or its content differs outside the named exceptions in `ALLOWED`, or when a public skill presents an MCP call as required. Run it with `--private <path to a checkout of ommakes/vois-skills>`. CI does this with a read-only token.
+- Port to this repo after the private change merges. `scripts/check-mirror.mjs` checks the mirror. It fails when the shared detector code or any git-tracked file in `registry/` differs, when a rule ID or its content differs outside the named exceptions in `ALLOWED`, or when a public skill presents an MCP call as required. Run it with `--private <path to a checkout of ommakes/vois-skills>`. CI does this with a read-only token.
 - Public must never gain a required MCP call. If a change needs the MCP, the premium wording goes in the private repo only.
 - Other skills in this repo (`design-ask`, `design-rationale`, `conversion-patterns`, `metrics-tagging`, and the rest) keep the public repo as their source.
 - Branch from `main`, open a draft PR against `main`, and do not stack PR bases. Do not merge your own PRs.

@@ -8,6 +8,7 @@
 //   2. CSS, in any item: only the mapping block, and each line points one shadcn variable at the one
 //      Vois token a Vois rule names for it (MAPPINGS). Each mapping's rule must still name that token.
 //   3. Every registry file is a type the vois-tokens detector reads, and it has no findings.
+//   4. package.json's version is the newest version in CHANGELOG.md.
 //
 // Bad input fails closed: an unknown type, an odd path or an unparseable line is a problem, never a skip.
 // The schema check proper is `npm run build` (shadcn build), which needs the CLI installed.
@@ -185,6 +186,19 @@ export function ruleSection(src, at) {
   return section;
 }
 
+// ---- Version -------------------------------------------------------------------------
+
+// package.json's version must be the first `## [x.y.z]` heading in CHANGELOG.md, so a release bumps both.
+export function versionProblems(pkgText, changelogText) {
+  let version;
+  try { version = JSON.parse(pkgText).version; } catch (e) { return [`package.json: ${e.message}`]; }
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+$/.test(version)) return ["package.json: version must be x.y.z"];
+  const head = /^## \[(\d+\.\d+\.\d+)\]/m.exec(changelogText ?? "");
+  if (!head) return ["CHANGELOG.md: no `## [x.y.z]` entry"];
+  if (head[1] !== version) return [`package.json version ${version} is not the newest CHANGELOG.md entry (${head[1]})`];
+  return [];
+}
+
 // ---- Whole registry ------------------------------------------------------------------
 
 // Lists a folder without following symlinks; a symlink is reported, never entered.
@@ -233,6 +247,8 @@ export function checkRegistry(registryDir) {
   }
 
   problems.push(...mappingProblems(repo));
+  const readOrNull = (f) => { try { return readFileSync(join(registryDir, f), "utf8"); } catch { return null; } };
+  problems.push(...versionProblems(readOrNull("package.json") ?? "", readOrNull("CHANGELOG.md")));
   const seen = new Set();
   for (const { file } of accepted) {
     if (kindAt(registryDir, file.path) !== "file") continue; // checkRegistryJson already reported it

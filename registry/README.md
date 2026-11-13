@@ -11,7 +11,7 @@ This folder is canonical in the private `ommakes/vois-skills` repo. The public `
 The built files are not committed. Build them, then add an item from the build output:
 
 ```bash
-cd registry && npm ci && npm run build      # writes public/r/*.json
+cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
 cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-theme.json
 ```
 
@@ -70,13 +70,13 @@ An earlier draft mapped shadcn's `@theme inline` keys instead. That only works i
 1. Put its files under `vois/<item-name>/` and add the item to `registry.json`.
 2. Every file must be a type the `vois-tokens` detector reads (`.tsx`, `.jsx`, `.ts`, `.js`, `.css`, `.scss`) and pass it with no findings.
 3. Run the checks below. Both must pass.
-4. Add a line to `CHANGELOG.md`.
+4. Add a line to `CHANGELOG.md`. For a release, add a new `## [x.y.z]` entry and set the same `version` in `package.json`; the check fails if they differ.
 
 ## Checks
 
 | Command | Needs install | What it checks |
 |---|---|---|
-| `node registry/scripts/check-registry.mjs` | No | Item types; unique names, paths and install targets (ignoring case); a target on every `registry:file`; regular files with no symlink on the way; no unlisted files; CSS holds only the mapping block, with each shadcn variable pointing at the one token its rule names; every file is a type the detector reads, with no findings |
+| `node registry/scripts/check-registry.mjs` | No | Item types; unique names, paths and install targets (ignoring case); a target on every `registry:file`; regular files with no symlink on the way; no unlisted files; CSS holds only the mapping block, with each shadcn variable pointing at the one token its rule names; every file is a type the detector reads, with no findings; `package.json`'s version is the newest CHANGELOG entry |
 | `node registry/scripts/check-registry.test.mjs` | No | The checker's own tests |
 | `npm run build` (in `registry/`) | Yes | `shadcn build` validates every item against the registry schema |
 

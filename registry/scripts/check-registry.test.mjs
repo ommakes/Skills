@@ -6,7 +6,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, sy
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, checkRegistry, kindAt, MAPPINGS, SHADCN_VARS } from "./check-registry.mjs";
+import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, MAPPINGS, SHADCN_VARS } from "./check-registry.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const repo = resolve(registryDir, "..");
@@ -313,6 +313,27 @@ test("whole registry: a mapping whose rule is gone fails", () => {
 test("whole registry: a broken registry.json fails", () => {
   const out = withCopy((r) => writeFileSync(join(r, "registry.json"), "{ not json"));
   assert.match(out.join("\n"), /registry\.json:/);
+});
+
+test("version: package.json matches the newest CHANGELOG entry", () => {
+  const log = "# Changelog\n\n## [0.2.0] - 2026-12-01\n\n- x\n\n## [0.1.0] - 2026-11-13\n";
+  assert.deepEqual(versionProblems('{"version":"0.2.0"}', log), []);
+  assert.match(versionProblems('{"version":"0.1.0"}', log).join(), /not the newest CHANGELOG\.md entry \(0\.2\.0\)/);
+  assert.match(versionProblems('{"name":"x"}', log).join(), /version must be x\.y\.z/);
+  assert.match(versionProblems('{"version":"v0.2.0"}', log).join(), /version must be x\.y\.z/);
+  assert.match(versionProblems('{"version":"0.2.0"}', "# Changelog\n").join(), /no `## \[x\.y\.z\]` entry/);
+  assert.match(versionProblems('{"version":"0.2.0"}', null).join(), /no `## \[x\.y\.z\]` entry/);
+  assert.match(versionProblems("{ nope", log).join(), /package\.json:/);
+  // A version in body text, not a heading, does not count.
+  assert.match(versionProblems('{"version":"0.2.0"}', "Moved to [0.2.0] later\n## [0.1.0]\n").join(), /\(0\.1\.0\)/);
+});
+
+test("whole registry: a version that does not match the CHANGELOG fails", () => {
+  const out = withCopy((r) => {
+    const p = join(r, "package.json");
+    writeFileSync(p, readFileSync(p, "utf8").replace('"version": "0.1.0"', '"version": "0.9.0"'));
+  });
+  assert.match(out.join("\n"), /package\.json version 0\.9\.0 is not the newest/);
 });
 
 test("MAPPINGS only names shadcn variables", () => {

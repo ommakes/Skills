@@ -66,15 +66,13 @@ jobs:
       - name: Routing and link audit (paths, skills, work types, graph, rule IDs)
         run: python3 scripts/check-routing.py
 
-      - name: Registry items, paths, theme mappings and detector (no install)
-        run: |
-          node registry/scripts/check-registry.test.mjs
-          node registry/scripts/check-registry.mjs
-
   # The registry is the only part that installs packages. It runs on every PR, like the job above,
-  # so a change to the detector or the token docs still rebuilds it. Node 22 matches registry/package.json.
+  # so a change to the detector or the token docs still rebuilds it. Its own job because it needs the
+  # Node that registry/package.json declares (22.13+); the checks job stays on 20.
   registry-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: registry
@@ -87,8 +85,14 @@ jobs:
           cache: npm
           cache-dependency-path: registry/package-lock.json
 
+      - name: Registry items, paths, theme mappings and detector (no install)
+        run: |
+          node scripts/check-registry.test.mjs
+          node scripts/check-registry.mjs
+
+      # --ignore-scripts: the build only needs the CLI, so no dependency's install script runs.
       - name: Install the pinned shadcn CLI
-        run: npm ci --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Build the registry (shadcn validates every item against its schema)
         run: npm run build
