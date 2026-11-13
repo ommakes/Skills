@@ -1,0 +1,14 @@
+{
+  "format": 1,
+  "about": "Vois shape roles (vois-tokens DS-SHAPE-001). Each role is a behavior, not only a number: fixed (a radius token), proportional (round corners that grow with the surface, clamped), elliptical (a percentage per axis), capsule (fully round ends) or circle. build-tokens.mjs writes vois/tokens/shape-tokens.css from this file. These values live in code, not Figma: Figma radius variables can only hold numbers. Fixed roles point at the Figma radius roles, so they follow Figma.",
+  "roles": {
+    "--shape-sharp": { "type": "fixed", "value": "0", "note": "No rounding: full-bleed media, table cells, edge-to-edge bars." },
+    "--shape-subtle": { "type": "fixed", "value": "=--radius-buttons-and-controls", "note": "Buttons, inputs, selects and other controls (Figma: 6)." },
+    "--shape-rounded": { "type": "fixed", "value": "=--radius-small-container", "note": "Menus, popovers, small cards (Figma: 12)." },
+    "--shape-soft": { "type": "fixed", "value": "=--radius-large-container", "note": "Dialogs, sheets, large cards (Figma: 24)." },
+    "--shape-pill": { "type": "capsule", "note": "Tags, chips, pill tabs, segmented controls, status indicators: the height sets the curve." },
+    "--shape-circle": { "type": "circle", "note": "Avatars, radio dots, round icon buttons." },
+    "--shape-responsive-soft": { "type": "proportional", "min": "=--radii-16", "scale": "4cqi", "max": "=--radii-40", "note": "Large image-led surfaces, hero media, editorial and promo tiles: round corners that grow with the container's width, from 16 to 40." },
+    "--shape-responsive-elliptical": { "type": "elliptical", "horizontal": "4%", "vertical": "6%", "note": "A distinctive media surface where elliptical corners are intended. Round on a 3:2 box, elliptical on any other shape." }
+  }
+}

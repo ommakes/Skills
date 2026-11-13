@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Builds vois/tokens/vois-tokens.css from the Figma export and a brand file.
 //
-//   node registry/scripts/build-tokens.mjs                 write the CSS (vois-tokens.css and motion-tokens.css)
+//   node registry/scripts/build-tokens.mjs                 write the CSS (vois-tokens.css, motion-tokens.css, shape-tokens.css)
 //   node registry/scripts/build-tokens.mjs --check         fail if the committed CSS is not what this writes
 //   node registry/scripts/build-tokens.mjs --brand <file>  use another brand file (a product's own theme;
 //                                                          the CSS goes to stdout, nothing is written)
@@ -26,6 +26,7 @@ const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const SOURCE = join(registryDir, "source");
 const OUT = join(registryDir, "vois/tokens/vois-tokens.css");
 const MOTION_OUT = join(registryDir, "vois/tokens/motion-tokens.css");
+const SHAPE_OUT = join(registryDir, "vois/tokens/shape-tokens.css");
 
 // ---- Color ---------------------------------------------------------------------------
 
@@ -306,6 +307,93 @@ export function buildFiles(exportJson, brandJson, { brandLabel = "registry/sourc
   return { tokens: tokensCss, motion: motionCss };
 }
 
+// ---- Shape (vois-tokens DS-SHAPE-001) ------------------------------------------------------
+// source/shape.json holds each role as a behavior. Every role is checked strictly, and anything odd
+// fails the build, never a guess: an unknown type, a missing or extra key, an alias that is not a radius
+// token, a scale outside 0 to 20cqi, a min not below max, or a percentage outside 0 to 50.
+
+const SHAPE_KEYS = {
+  fixed: ["value"],
+  proportional: ["min", "scale", "max"],
+  elliptical: ["horizontal", "vertical"],
+  capsule: [],
+  circle: [],
+};
+const RADIUS_ALIAS = /^=(--(?:radii|radius)-[a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const PERCENT = /^(\d+(?:\.\d+)?)%$/;
+const CQI = /^(\d+(?:\.\d+)?)cqi$/;
+
+// Follow a radius alias down to its number of px, so min and max can be compared.
+function radiusPx(alias, tokens, role) {
+  let cur = alias;
+  for (let steps = 0; steps <= Object.keys(tokens).length; steps++) {
+    const m = typeof cur === "string" && ALIAS.exec(cur);
+    if (!m) break;
+    if (!Object.hasOwn(tokens, m[1])) throw new Error(`${role}: ${m[1]} is not a token`);
+    const v = tokens[m[1]];
+    cur = Array.isArray(v) ? v[0] : v;
+  }
+  if (typeof cur !== "number") throw new Error(`${role}: ${alias} does not resolve to a number of px`);
+  return cur;
+}
+
+function radiusRef(v, tokens, role, key) {
+  const m = typeof v === "string" && RADIUS_ALIAS.exec(v);
+  if (!m) throw new Error(`${role}: ${key} must be an alias to a radius token (=--radii-* or =--radius-*)`);
+  if (!Object.hasOwn(tokens, m[1])) throw new Error(`${role}: ${key} points at ${m[1]}, which is not a token`);
+  radiusPx(v, tokens, role);
+  return `var(${m[1]})`;
+}
+
+export function buildShape(shapeJson, tokens) {
+  if (shapeJson?.format !== 1) throw new Error("shape.json: format must be 1");
+  const roles = shapeJson.roles;
+  if (!roles || typeof roles !== "object" || Array.isArray(roles) || !Object.keys(roles).length) throw new Error("shape.json: roles must be a non-empty object");
+  const lines = [];
+  for (const [role, def] of Object.entries(roles)) {
+    if (!/^--shape-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(role)) throw new Error(`shape.json: ${role} is not a --shape-* name`);
+    if (Object.hasOwn(tokens, role)) throw new Error(`${role}: the export already has a token with this name`);
+    if (!def || typeof def !== "object" || Array.isArray(def)) throw new Error(`${role}: must be an object`);
+    if (!Object.hasOwn(SHAPE_KEYS, def.type)) throw new Error(`${role}: unknown type ${JSON.stringify(def.type)}; use fixed, proportional, elliptical, capsule or circle`);
+    const allowed = new Set(["type", "note", ...SHAPE_KEYS[def.type]]);
+    for (const k of Object.keys(def)) if (!allowed.has(k)) throw new Error(`${role}: ${k} is not a key of a ${def.type} shape`);
+    for (const k of SHAPE_KEYS[def.type]) if (!Object.hasOwn(def, k)) throw new Error(`${role}: a ${def.type} shape needs ${k}`);
+    if (Object.hasOwn(def, "note") && typeof def.note !== "string") throw new Error(`${role}: note must be text`);
+    let css;
+    if (def.type === "fixed") css = def.value === "0" ? "0" : radiusRef(def.value, tokens, role, "value");
+    else if (def.type === "capsule") css = "9999px";
+    else if (def.type === "circle") css = "50%";
+    else if (def.type === "proportional") {
+      const s = typeof def.scale === "string" && CQI.exec(def.scale);
+      if (!s || !(+s[1] > 0 && +s[1] <= 20)) throw new Error(`${role}: scale must be above 0 and at most 20cqi, like 4cqi`);
+      const min = radiusRef(def.min, tokens, role, "min");
+      const max = radiusRef(def.max, tokens, role, "max");
+      if (!(radiusPx(def.min, tokens, role) < radiusPx(def.max, tokens, role))) throw new Error(`${role}: min must be below max`);
+      css = `clamp(${min}, ${+s[1]}cqi, ${max})`;
+    } else {
+      const parts = [def.horizontal, def.vertical].map((v) => {
+        const m = typeof v === "string" && PERCENT.exec(v);
+        if (!m || !(+m[1] > 0 && +m[1] <= 50)) throw new Error(`${role}: horizontal and vertical must be percentages above 0 and at most 50`);
+        return `${+m[1]}%`;
+      });
+      css = `${parts[0]} / ${parts[1]}`;
+    }
+    lines.push(`  ${role}: ${css};`);
+  }
+  return [
+    "/*",
+    "  GENERATED by registry/scripts/build-tokens.mjs. Do not edit by hand.",
+    "  The Vois shape roles (vois-tokens DS-SHAPE-001), from registry/source/shape.json.",
+    "  Fixed roles point at the Figma radius roles. --shape-responsive-soft grows with the nearest",
+    "  container's width (cqi): give the surface's wrapper container-type: inline-size.",
+    "*/",
+    ":root {",
+    ...lines,
+    "}",
+    "",
+  ].join("\n");
+}
+
 export const fnv1a = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, "0"); };
 
 function main(argv) {
@@ -322,21 +410,25 @@ function main(argv) {
   const bi = args.indexOf("--brand");
   const brandPath = bi !== -1 ? resolve(args[bi + 1] ?? "") : join(SOURCE, "brand-default.json");
   const pending = readPending(readFileSync(join(SOURCE, "figma-pending.json"), "utf8"));
-  const files = buildFiles(JSON.parse(exportText), JSON.parse(readFileSync(brandPath, "utf8")), { pending, ...(bi !== -1 ? { brandLabel: args[bi + 1] } : {}) });
+  const exportJson = JSON.parse(exportText);
+  const files = buildFiles(exportJson, JSON.parse(readFileSync(brandPath, "utf8")), { pending, ...(bi !== -1 ? { brandLabel: args[bi + 1] } : {}) });
   // A brand build writes only vois-tokens.css (to stdout); motion does not depend on the brand.
   if (bi !== -1) { process.stdout.write(files.tokens); return; }
+  // Shape aliases resolve against the same tokens vois-tokens.css is built from, pending ones included.
+  const shapeCss = buildShape(JSON.parse(readFileSync(join(SOURCE, "shape.json"), "utf8")), applyPending(exportJson.tokens, exportJson.brandSlots, pending));
   if (args.includes("--check")) {
-    for (const [out, css] of [[OUT, files.tokens], [MOTION_OUT, files.motion]]) {
+    for (const [out, css] of [[OUT, files.tokens], [MOTION_OUT, files.motion], [SHAPE_OUT, shapeCss]]) {
       let current = "";
       try { current = readFileSync(out, "utf8"); } catch { /* missing counts as stale */ }
       if (current !== css) { console.error(`${out} is not what build-tokens.mjs writes. Run: node registry/scripts/build-tokens.mjs`); process.exit(1); }
     }
-    console.log("vois-tokens.css and motion-tokens.css are up to date");
+    console.log("vois-tokens.css, motion-tokens.css and shape-tokens.css are up to date");
     return;
   }
   writeFileSync(OUT, files.tokens);
   writeFileSync(MOTION_OUT, files.motion);
-  console.log(`wrote ${OUT} and ${MOTION_OUT}`);
+  writeFileSync(SHAPE_OUT, shapeCss);
+  console.log(`wrote ${OUT}, ${MOTION_OUT} and ${SHAPE_OUT}`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) main(process.argv);

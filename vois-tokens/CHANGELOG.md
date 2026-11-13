@@ -4,6 +4,23 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.0] - 2026-11-13
+
+### Added
+- `references/shape.md` and rules `DS-SHAPE-001` to `DS-SHAPE-007`: corners are a behavior, not only a number.
+  - `DS-SHAPE-001`: choose a shape role before a number. The roles are `--shape-sharp`, `-subtle`, `-rounded`, `-soft`, `-pill`, `-circle`, `-responsive-soft` and `-responsive-elliptical`. Prefer the existing component, then a role, then an adjustment, and a new value last.
+  - `DS-SHAPE-002`: controls keep the fixed control radius. Tags, chips, pill tabs, segmented controls and status dots are pills, and avatars are circles.
+  - `DS-SHAPE-003`: large visual surfaces that resize use `--shape-responsive-soft`, round corners that grow with the container's width, clamped.
+  - `DS-SHAPE-004`: elliptical corners only on purpose.
+  - `DS-SHAPE-005`: no one-off radii. Name the missing role instead.
+  - `DS-SHAPE-006`: the concentric rule applies between fixed roles only.
+  - `DS-SHAPE-007`: continuous (squircle) corners as an enhancement on the soft and responsive roles.
+- The registry's `vois-tokens` item ships the roles in `shape-tokens.css`, generated from `registry/source/shape.json`.
+
+### Changed
+- `references/surfaces.md`: the concentric rule points to the shape roles.
+- The Pre-Submit Checklist has a shape line.
+
 ## [1.30.1] - 2026-11-13
 
 ### Changed

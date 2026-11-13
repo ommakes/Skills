@@ -22,7 +22,8 @@
     "DS-TYPOGRAPHY": "Typography",
     "DS-TABLE": "Data Tables",
     "DS-MKT": "Marketing Type and Spacing",
-    "DS-TOKEN": "Token Layers and Names"
+    "DS-TOKEN": "Token Layers and Names",
+    "DS-SHAPE": "Shape"
   },
   "rules": [
     {
@@ -1858,6 +1859,83 @@
       "enforcement": "advisory",
       "verification": "judgment",
       "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--action-primary-text`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--border-default`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
+    },
+    {
+      "id": "DS-SHAPE-001",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Choose a shape role (`--shape-sharp`, `--shape-subtle`, `--shape-rounded`, `--shape-soft`, `--shape-pill`, `--shape-circle`, `--shape-responsive-soft`, `--shape-responsive-elliptical`) before choosing a number, from the component's size, aspect ratio, prominence and content. Prefer, in order: the project's existing component, an existing shape role, a contextual adjustment within it, and a new value only when nothing fits.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "any corner radius on a component, surface or media element"
+    },
+    {
+      "id": "DS-SHAPE-002",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Controls (buttons, inputs, selects) keep the library's fixed control radius (`--shape-subtle`). Tags, chips, pill tabs, segmented controls and status indicators use `--shape-pill`; avatars and round icon buttons use `--shape-circle`. Don't turn a button or input into a pill unless the project's component already is one.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "choosing the radius of a control, tag, chip, avatar or status indicator"
+    },
+    {
+      "id": "DS-SHAPE-003",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Large visual surfaces whose size changes with the layout (hero media, large image-led cards, editorial and promo tiles) use `--shape-responsive-soft`: round corners that grow with the nearest container's width, clamped. The surface's wrapper declares `container-type: inline-size`. Structural UI (dialogs, menus, standard cards) keeps a fixed role even when large.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "a hero, media, image-led or editorial surface that resizes with the layout"
+    },
+    {
+      "id": "DS-SHAPE-004",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Use `--shape-responsive-elliptical` (a percentage per axis) only where an elliptical corner is intended, on a distinctive media surface. It is round only on a 3:2 box. For round corners that scale, use `--shape-responsive-soft`.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "considering a percentage or elliptical border radius"
+    },
+    {
+      "id": "DS-SHAPE-005",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Never write a one-off radius because it looks right (`rounded-[19px]`, `border-radius: 19px`). Use a shape role, or a `--radius-*` or `--radii-*` token within one. If no role fits, name the missing role and why instead of adding a number.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "writing any border-radius value"
+    },
+    {
+      "id": "DS-SHAPE-006",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "The concentric rule (outer radius = inner radius + padding) applies between fixed roles only. Inside a proportional, elliptical or capsule parent, choose the child's role on its own.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "a rounded element nested in a proportional, elliptical or capsule surface"
+    },
+    {
+      "id": "DS-SHAPE-007",
+      "category": "DS-SHAPE",
+      "category_label": "Shape",
+      "source_file": "vois-tokens/references/shape.md",
+      "rule": "Add continuous (squircle) corners as an enhancement on the soft and responsive roles only, behind a support check (`supports-[corner-shape:squircle]:[corner-shape:squircle]` or `@supports (corner-shape: squircle)`). Never on controls, pills or circles.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "a soft or responsive-shape surface where smoother corners are wanted"
     }
   ]
 }

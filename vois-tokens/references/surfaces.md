@@ -16,6 +16,8 @@ Mismatched radii on nested elements is one of the most common things that makes 
 
 If padding between the two surfaces is larger than `24px`, treat them as independent surfaces and pick each radius on its own — forcing strict concentric math at that distance looks over-engineered, not intentional. `[DS-SURFACE-002]`
 
+This math applies between fixed radii. Pick the shape role first, and inside a proportional, elliptical or capsule parent choose the child's role on its own (`references/shape.md`, `[DS-SHAPE-006]`).
+
 ```css
 /* Good — concentric */
 .card { border-radius: 20px; padding: 8px; }   /* 12 + 8 */

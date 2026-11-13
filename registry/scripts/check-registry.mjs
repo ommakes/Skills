@@ -23,7 +23,7 @@ import { join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "../../vois-tokens/scripts/detect.mjs";
 import { rulesForFile } from "../../vois-tokens/scripts/registry.mjs";
-import { buildFiles, readPending } from "./build-tokens.mjs";
+import { applyPending, buildFiles, buildShape, readPending } from "./build-tokens.mjs";
 
 export const REGISTRY_NAME = "vois";
 // Item types this registry may use. Others fail until someone adds them here on purpose.
@@ -67,6 +67,7 @@ export const MAPPINGS = {
 // The generated token files. They hold values on purpose, so the mapping-only CSS rule does not apply.
 export const TOKENS_FILE = "vois/tokens/vois-tokens.css";
 export const MOTION_FILE = "vois/tokens/motion-tokens.css";
+export const SHAPE_FILE = "vois/tokens/shape-tokens.css";
 
 // ---- Paths ---------------------------------------------------------------------------
 
@@ -382,15 +383,18 @@ export function checkRegistry(registryDir) {
   if (md) { const t = token005Table(md); problems.push(...t.problems, ...tableProblems(t.table)); }
   let generated = null;
   let generatedMotion = null;
+  let generatedShape = null;
   let pending = null;
   const src = (f) => JSON.parse(readFileSync(join(registryDir, "source", f), "utf8"));
   try {
     pending = readPending(readFileSync(join(registryDir, "source/figma-pending.json"), "utf8"));
-    ({ tokens: generated, motion: generatedMotion } = buildFiles(src("figma-export.json"), src("brand-default.json"), { pending }));
+    const exportJson = src("figma-export.json");
+    ({ tokens: generated, motion: generatedMotion } = buildFiles(exportJson, src("brand-default.json"), { pending }));
+    try { generatedShape = buildShape(src("shape.json"), applyPending(exportJson.tokens, exportJson.brandSlots, pending)); } catch (e) { problems.push(`shape build: ${e.message}`); }
   } catch (e) { problems.push(`token build: ${e.message}`); }
   let names = null;
   if (generated) {
-    names = new Set([...definedTokens(generated), ...definedTokens(generatedMotion)]);
+    names = new Set([...definedTokens(generated), ...definedTokens(generatedMotion), ...(generatedShape ? definedTokens(generatedShape) : [])]);
     for (const [name, { token }] of Object.entries(MAPPINGS)) if (!names.has(token)) problems.push(`MAPPINGS.${name}: ${token} is not a generated token`);
   }
   const readOrNull = (f) => { try { return readFileSync(join(registryDir, f), "utf8"); } catch { return null; } };
@@ -411,8 +415,8 @@ export function checkRegistry(registryDir) {
     const full = join(registryDir, file.path);
     if (rulesForFile(full).length === 0) { problems.push(`${file.path}: the vois-tokens detector does not read this file type`); continue; }
     const text = readFileSync(full, "utf8");
-    if (file.path === TOKENS_FILE || file.path === MOTION_FILE) {
-      const want = file.path === TOKENS_FILE ? generated : generatedMotion;
+    if (file.path === TOKENS_FILE || file.path === MOTION_FILE || file.path === SHAPE_FILE) {
+      const want = file.path === TOKENS_FILE ? generated : file.path === MOTION_FILE ? generatedMotion : generatedShape;
       if (want !== null && text !== want) problems.push(`${file.path}: not what build-tokens.mjs writes; run node registry/scripts/build-tokens.mjs`);
     } else if (/\.css$/i.test(file.path)) for (const p of cssProblems(text, { seen })) problems.push(`${file.path}: ${p}`);
     else if (names !== null) for (const p of tokenRefProblems(text, names)) problems.push(`${file.path}:${p}`);

@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.6.0] - 2026-11-13
+
+- **Shape roles** (vois-tokens `DS-SHAPE-001`): the `vois-tokens` item ships a third generated file, `shape-tokens.css`, built from `source/shape.json`. Each role is a behavior:
+  - fixed: `--shape-sharp` (0), `--shape-subtle`, `--shape-rounded` and `--shape-soft`, which alias the Figma `--radius-*` roles
+  - capsule: `--shape-pill`
+  - circle: `--shape-circle`
+  - proportional: `--shape-responsive-soft`, `clamp(--radii-16, 4cqi, --radii-40)`. Round corners grow with the container's width.
+  - elliptical: `--shape-responsive-elliptical`, `4% / 6%`
+- `build-tokens.mjs` checks each role strictly and fails on an unknown type, a missing or extra key, an alias that isn't a radius token, a scale outside 0 to 20cqi, a min not below max, or a percentage outside 0 to 50. `check-registry` fails when `shape-tokens.css` differs from what the generator writes, and counts the roles as known tokens.
+- Install: import `shape-tokens.css` after `motion-tokens.css`.
+- `vois-tabs` pills use `--shape-pill` and `vois-radio-group` uses `--shape-circle` (`DS-SHAPE-002`), so both need `shape-tokens.css`. Figma's Tab set binds `--radii-24`, which is a capsule at its 28 and 40 heights. The registry uses the role, so a taller tab stays a capsule.
+- Shape aliases resolve against the same tokens `vois-tokens.css` is built from, including pending tokens.
+
+## [0.5.0] - 2026-11-13
+
+- **New item `vois-radio-group`** (`vois/radio-group/radio-group.tsx`), shadcn's RadioGroup (Radix) with the same parts, plus `variant` on the item. From the Figma Radio set:
+  - A 22 circle. Unselected: a 3px `--control-border` ring. Selected: the ring grows to 8px in `--control-on`, which leaves Figma's 6px hole, in `--motion-duration-fast` (still under reduced motion).
+  - Disabled: `--control-disabled`, and disabled wins over selected. `variant="aux"`: `--control-aux`.
+  - Focus: a 2px `--border-state-focus` ring 3px out. A 44 hit area. Arrow keys and one tab stop come from Radix.
+- **New item `vois-tabs`** (`vois/tabs/tabs.tsx`), shadcn's Tabs (Radix) with the same parts, plus `variant` and `size` on `TabsList`:
+  - `pill` (the default), the Figma Tab set: `size="default"` 28 tall with a 1px border, `size="lg"` 40 tall with a 2px border. Resting `--tab-resting`, hover `--tab-hover`, active `--tab-selected` with `--text-auxiliary`, disabled `--tab-disabled`.
+  - `underline`, the Figma Tab Nav set: 48 tall with a 32 tall label box. Active: `--text-primary` and a 2px `--border-accent` edge. Hover: a 1px `--border-state-hover` edge.
+  - Disabled wins over active. Focus is a 2px `--border-state-focus` ring, on the pill or on the underline label box.
+- **New tokens** `--tab-resting`, `--tab-hover`, `--tab-selected` and `--tab-disabled`: the Figma Tab variables, which had no Web code syntax. Re-export checksum `c53f1c05` (767 tokens).
+- Both were checked in Chromium (39 checks), in light, dark and under reduced motion.
+
 ## [0.4.0] - 2026-11-13
 
 - **New item `vois-checkbox`** (`vois/checkbox/checkbox.tsx`), shadcn's Checkbox (Radix) with the same API plus `variant`. From the Figma Checkbox set:

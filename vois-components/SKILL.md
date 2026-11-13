@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.20.0
+version: 1.21.0
 ---
 
 # Vois Component Selection Skill
@@ -103,7 +103,7 @@ Agents often write markup that looks like a component but isn't one. A screen ca
 |---|---|
 | A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger. No project Button yet? Install the registry's `vois-button` item |
 | `Loader2` with `animate-spin` | Spinner. No project Spinner yet? Install the registry's `vois-spinner`. Inside a Button, use the Button's `loading` prop |
-| Buttons with `role="radio"` | RadioGroup, or ToggleGroup (single) for a segmented control |
+| Buttons with `role="radio"` | RadioGroup (no project RadioGroup yet? Install the registry's `vois-radio-group`), or ToggleGroup (single) for a segmented control |
 | Numbered circles joined by lines | The shared Stepper (`references/stepper.md`) |
 
 **Not seen, but already forbidden by a rule:**

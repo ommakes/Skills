@@ -37,7 +37,7 @@ Two Figma spellings are corrected in CSS: `Golide-10` to `-12` are `--goldie-10`
 
 The Vois MCP serves a workspace's live values (`vois_get_tokens`). When a project doesn't use the MCP, the registry's `vois-tokens` item seeds a default for every token, generated from the Figma variables with a generic blue brand. Use the MCP values when you have them; the defaults are the fallback.
 
-The item ships two files: `vois-tokens.css` and `motion-tokens.css`, because the motion tokens may hold literal durations and curves only in a file with that name (`[DS-MOTION-001]`). The tokens decided while Figma was unreachable (`--size-36`, the field heights, `--hit-area-min`, the motion tokens, and `--size-action-large` at 36) are now Figma variables. `registry/FIGMA-TODO.md` lists what Figma still needs.
+The item ships three files: `vois-tokens.css`, `motion-tokens.css`, because the motion tokens may hold literal durations and curves only in a file with that name (`[DS-MOTION-001]`), and `shape-tokens.css`, the shape roles (`references/shape.md`). The shape roles live in code, not Figma, because Figma radius variables hold only numbers; the fixed roles alias the Figma `--radius-*` roles. The tokens decided while Figma was unreachable (`--size-36`, the field heights, `--hit-area-min`, the motion tokens, and `--size-action-large` at 36) are now Figma variables. `registry/FIGMA-TODO.md` lists what Figma still needs.
 
 ## Where they live `[DS-TOKEN-003]`
 

@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.30.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.31.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.31.0**: new `references/shape.md` and rules `DS-SHAPE-001` to `007`. Corners are a behavior: choose a shape role (fixed, proportional, elliptical, capsule, circle) before a number. Controls stay fixed, tags and chips are pills, large visual surfaces scale with their container, and continuous corners are an enhancement.
 - **1.30.1**: `references/figma-variables.md` names the z-index layers (`--z-dropdown`, `--z-overlay`, `--z-modal`), which are now Figma variables, written without a unit.
 - **1.30.0**: New rule `DS-COMPONENT-007`: control heights. Button 28, 36 and 48 (36 is the web default, 48 the native default) and 56 for the circular action only (no other control); Input and Select `--size-field-web` (36) and `--size-field-native` (48). The `buttonVariants` example uses Vois tokens, with `color:` type hints so `tailwind-merge` keeps both the text color and size. New tokens `--size-36`, `--size-field-web`, `--size-field-native`, `--hit-area-min` and the motion tokens, with `--size-action-large` now 36. The registry ships the motion tokens as `motion-tokens.css`, equal to the starter block, plus a new `--motion-duration-spin`. `DS-ANIMATION-004` reads arbitrary `animate-[...]` classes and accepts `motion-reduce:` and `motion-safe:`. Typography tokens from Figma (`--font-size-*`, `--line-height-*`, `--font-weight-*`, font roles), and the four font families join the brand slots (16).
 - **1.29.1**: `SKILL.md` only. Marketing gaps start above 128px, matching `DS-MKT-008`, and the rules index lists grid, tables and marketing.

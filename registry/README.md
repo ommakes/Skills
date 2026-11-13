@@ -9,6 +9,7 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-spinner`: the loading arc.
 - `vois-input` and `vois-select`: fields at 36 (web), 48 (native) and 32 (compact, inline in tables).
 - `vois-checkbox` and `vois-switch`: the Figma Checkbox and the Web and iOS Switch.
+- `vois-radio-group` and `vois-tabs`: the Figma Radio, and the Tab (pill) and Tab Nav (underline) sets.
 - `vois-button`: the first component, with icons and a loading state.
 
 Next come the components blind builds hand-built most (`vois-components` lookalike rows `LOOKALIKE-003` and `004`, plus Avatar): RadioGroup or ToggleGroup, Stepper and Avatar.
@@ -21,7 +22,7 @@ The built files are not committed. Build them, then add the items from the build
 
 ```bash
 cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
-cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json
+cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json
 ```
 
 Where the built registry is hosted (so you can install by URL) is not decided yet.
@@ -32,6 +33,7 @@ Then import them right after Tailwind, tokens first:
 @import "tailwindcss";
 @import "./styles/vois-tokens.css";
 @import "./styles/motion-tokens.css";
+@import "./styles/shape-tokens.css";
 @import "./styles/vois-theme.css";
 ```
 
@@ -48,7 +50,7 @@ The defaults use a **generic blue brand**. The Base layer sets the brand (`DS-TO
 
 ### `vois-tokens`
 
-`vois/tokens/vois-tokens.css` and `vois/tokens/motion-tokens.css` are generated. Don't edit them by hand.
+`vois/tokens/vois-tokens.css`, `vois/tokens/motion-tokens.css` and `vois/tokens/shape-tokens.css` are generated. Don't edit them by hand.
 
 - Light values go in `:root`, dark values in `.dark`, and only the tokens that differ appear in `.dark` (`DS-TOKEN-003`).
 - Colors are OKLCH (`color.md`). Every color is within 1/255 per channel of the Figma value, and a test checks that.
@@ -96,6 +98,26 @@ The file is empty today. The Button's tokens were made this way on 2026-11-13 an
 ### Z-index layers
 
 `--z-dropdown` (1000), `--z-overlay` (1200) and `--z-modal` (1300) come from the Figma `Values` collection, written without a unit. The gaps leave room for a sticky layer (1100) and toasts (1400) later. Each layer goes with an elevation tier (vois-tokens `elevation.md`): a menu at `--shadow-medium` on `--z-dropdown`, a popover at `--shadow-large` on `--z-overlay`, a dialog at `--shadow-xlarge` on `--z-modal`.
+
+### Shape roles (`shape-tokens.css`)
+
+Corners are a behavior, not only a number (vois-tokens `DS-SHAPE-001`). `source/shape.json` holds each role as a structured definition, and the generator writes `shape-tokens.css`. These live in code because Figma radius variables can only hold numbers. The fixed roles point at the Figma radius roles, so they still follow Figma.
+
+| Role | Type | Value | For |
+|---|---|---|---|
+| `--shape-sharp` | fixed | `0` | full-bleed media, table cells |
+| `--shape-subtle` | fixed | `--radius-buttons-and-controls` (6) | buttons, inputs, selects |
+| `--shape-rounded` | fixed | `--radius-small-container` (12) | menus, popovers, small cards |
+| `--shape-soft` | fixed | `--radius-large-container` (24) | dialogs, sheets, large cards |
+| `--shape-pill` | capsule | `9999px` | tags, chips, pill tabs, segmented controls, status dots |
+| `--shape-circle` | circle | `50%` | avatars, round icon buttons |
+| `--shape-responsive-soft` | proportional | `clamp(--radii-16, 4cqi, --radii-40)` | hero media, large image-led and editorial tiles |
+| `--shape-responsive-elliptical` | elliptical | `4% / 6%` | a distinctive media surface, where elliptical corners are wanted |
+
+- `--shape-responsive-soft` stays round and grows with the width of the nearest container. Give the surface's wrapper `container-type: inline-size`. With no container, `cqi` falls back to the small viewport.
+- `--shape-responsive-elliptical` is round on a 3:2 box and elliptical on any other shape, because each percentage applies to its own axis.
+- Continuous (squircle) corners are an enhancement on the soft and responsive roles: `supports-[corner-shape:squircle]:[corner-shape:squircle]`. Browsers without `corner-shape` keep the round corner.
+- The generator fails on an unknown type, a missing or extra key, an alias that isn't a radius token, a scale outside 0 to 20cqi, a min not below max, or a percentage outside 0 to 50.
 
 ### Motion tokens (`motion-tokens.css`)
 
@@ -216,6 +238,36 @@ Both have a hit area of at least `--hit-area-min`, and disabled wins over on. La
 
 **Contrast.** The unchecked checkbox border (`--control-border`) and the off Switch edge (`--switch-outline`) are gray-6, about 4.1:1 on the light page and 4.4:1 on dark, so the control boundary meets the 3:1 of WCAG 1.4.11. The Switch fill alone (`--switch-off`) is about 1.1:1, which is why the edge is there. Inputs and Selects keep `--border-default`.
 
+### `vois-radio-group`
+
+`vois/radio-group/radio-group.tsx` is shadcn's RadioGroup (Radix) on Vois tokens, from the Figma Radio set. Use it for one choice among a few options in a form, never buttons with `role="radio"` (`vois-components` `LOOKALIKE-003`).
+
+| State | Look |
+|---|---|
+| Unselected | a 22 circle with a 3px `--control-border` ring |
+| Selected | the ring grows to 8px in `--control-on`, leaving a 6px hole |
+| Disabled | `--control-disabled`, as a ring or a disc. Disabled wins over selected |
+| Focus | a 2px `--border-state-focus` ring, 3px out |
+| `variant="aux"` | `--control-aux`, for a strong background |
+
+The group spaces items by `--space-v-between-items`. Pair each item with a `<label>`.
+
+### `vois-tabs`
+
+`vois/tabs/tabs.tsx` is shadcn's Tabs (Radix) on Vois tokens. `TabsList` takes `variant` and `size`, and each trigger follows the list.
+
+| | `pill` (default) | `underline` |
+|---|---|---|
+| From Figma | the Tab set | the Tab Nav set |
+| Height | `size="default"` 28, `size="lg"` 40 | 48, with a 32 tall label box |
+| Resting | `--tab-resting`, `--border-default` border | `--text-subtle` |
+| Hover | `--tab-hover`, `--border-state-hover` | `--text-primary`, a 1px `--border-state-hover` edge |
+| Active | `--tab-selected`, `--text-auxiliary` | `--text-primary`, a 2px `--border-accent` edge |
+| Disabled | `--tab-disabled`, `--text-state-disabled` | `--text-state-disabled`, a 1px `--border-state-disabled` edge |
+| Focus | 2px `--border-state-focus`, 2px out | 2px `--border-state-focus` around the label box |
+
+Disabled wins over active. Keep tabs visible all at once: for more than 5 or 6, use a Select (`vois-components` Job 5).
+
 ### `vois-spinner`
 
 `vois/spinner/spinner.tsx` is one open arc turning in a circle: the loading.dev "arc", with its MIT notice kept in the file.
@@ -256,7 +308,7 @@ An earlier draft mapped shadcn's `@theme inline` keys instead. That only works i
 
 | Command | Needs install | What it checks |
 |---|---|---|
-| `node registry/scripts/check-registry.mjs` | No | Item types; unique names, paths and install targets (ignoring case); a target on every `registry:file`; regular files with no symlink on the way; no unlisted files; every `.css` file other than the two token files holds only the mapping block, each shadcn variable pointing at the one token `DS-TOKEN-005` names, with `MAPPINGS` equal to that table and every target a generated token; `vois-tokens.css` and `motion-tokens.css` equal what the generator writes; the motion values equal `animation.md`'s starter block; every pending token is listed in `FIGMA-TODO.md`; every custom property a component file reads is a generated token or defined in that file; every file is a type the detector reads, with no findings; `package.json`'s version is the newest CHANGELOG entry |
+| `node registry/scripts/check-registry.mjs` | No | Item types; unique names, paths and install targets (ignoring case); a target on every `registry:file`; regular files with no symlink on the way; no unlisted files; every `.css` file other than the two token files holds only the mapping block, each shadcn variable pointing at the one token `DS-TOKEN-005` names, with `MAPPINGS` equal to that table and every target a generated token; `vois-tokens.css`, `motion-tokens.css` and `shape-tokens.css` equal what the generator writes (and `shape.json` builds); the motion values equal `animation.md`'s starter block; every pending token is listed in `FIGMA-TODO.md`; every custom property a component file reads is a generated token or defined in that file; every file is a type the detector reads, with no findings; `package.json`'s version is the newest CHANGELOG entry |
 | `node registry/scripts/check-registry.test.mjs` | No | The checker's own tests |
 | `node registry/scripts/build-tokens.test.mjs` | No | The generator's tests: OKLCH round trip, brand slots null in the export and filled only by the brand file, alias chains end at a value, the grid lines, the default brand is blue, pending tokens stay pending, motion units and the motion file |
 | `npm run build` (in `registry/`) | Yes | `shadcn build` validates every item against the registry schema |

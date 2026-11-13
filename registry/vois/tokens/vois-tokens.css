@@ -643,6 +643,10 @@
   --switch-on: var(--base-accent-solid);
   --switch-oncolor: var(--white);
   --switch-outline: var(--gray-6);
+  --tab-disabled: var(--gray-1);
+  --tab-hover: var(--gray-2);
+  --tab-resting: var(--white);
+  --tab-selected: var(--gray-12);
   --text-accent: var(--blue-10);
   --text-auxiliary: var(--white);
   --text-hint: var(--gray-8);
@@ -958,6 +962,10 @@
   --switch-on: var(--base-accent-solid);
   --switch-oncolor: var(--black);
   --switch-outline: var(--gray-6);
+  --tab-disabled: var(--white-a2);
+  --tab-hover: var(--white-a2);
+  --tab-resting: var(--black);
+  --tab-selected: var(--white);
   --text-accent: var(--blue-7);
   --text-auxiliary: var(--black);
   --text-hint: var(--gray-7);
