@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.28.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.28.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.28.1**: `DS-ANIMATION-005` no longer slows down on very long one-line input. It matched the same things before. It now skips a keyframe block over 1000 characters and a `starting:` class with more than 31 variants between `starting:` and `scale`.
 - **1.28.0**: the hook checks three grid and panel rules: `DS-GRID-007` (a hard-coded column count), `DS-GRID-004` (a raw gutter on a grid container) and `DS-PANEL-008` (a hard-coded panel or pane width). All three are advisory and marked `verification: "detector"`.
 - **1.27.0**: new `references/grid.md` with `DS-GRID-001` to `010` and `DS-PANEL-001` to `008` (grid classes, margins and gutters, card grid column counts, push and overlay side panels). `DS-RESPONSIVE-002` now tests at the four grid classes. `DS-SPACING-001` has one exception, the two grid tokens.
 - **1.26.0**: the hook checks four more team limits: the start scale of enter animations (`DS-ANIMATION-005`), selector nesting (`DS-CSS-003`), icon stroke width (`DS-ICON-001`) and icon size (`DS-ICON-002`). The last three rules were `judgment` and are now `detector`.
