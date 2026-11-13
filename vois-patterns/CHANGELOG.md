@@ -6,6 +6,23 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.21.0] - 2026-11-13
+
+### Added
+
+- **`PATH-DENSITY-PRODUCT`** (`references/content-density.md`): a product sets `workbench` or `relaxed`. Workbench moves Standard pages to Dense. Relaxed moves Dense pages to Standard. Spacious never moves. A product that sets nothing keeps the template tier. The touch rule applies after it.
+- **`references/native-behavior.md`** with six rules: `PATH-NATIVE-SHEET-KIND`, `-FORM-SHEET`, `-DISMISS`, `-SWIPE-ROW`, `-BACK`, `-REFRESH`. Written from iOS screens and flows on Mobbin, each with its links. Android is not observed: Mobbin has no Android filter, so the file lists Android guidance as notes only.
+- `SKILL.md` routes PATH D to the new file for phones.
+
+### Changed
+
+- **`PATH-PAGE-DENSITY-TOUCH`** keys on input, not width. Dense becomes Standard when the primary input is not a fine pointer (`(pointer: fine)` does not match), at any width. Unknown input counts as touch. An iPad with a trackpad reports a touch primary input, so it stays at regular rows.
+- `PATH-PAGE-DENSITY-MAP` says Dense "with a fine pointer", not "on desktop". The Dashboard density note and the density note in `page-templates.json` say the same.
+- `PATH-PAGE-BREAKPOINTS` adds `expanded` (840px) as an extra check for native Android layouts.
+- The form-sheet rule says a tall iOS modal sheet counts as the "full screen on phone" overlay in `PATH-PAGE-OVERLAY`. `PATH-PAGE-OVERLAY` itself is unchanged.
+
+---
+
 ## [1.20.0] - 2026-11-12
 
 ### Added

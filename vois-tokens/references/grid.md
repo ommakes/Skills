@@ -24,7 +24,7 @@ Pick the grid class from the region width. Four classes. The names mean nothing 
 | `md` | `--breakpoint-md` | 8 |
 | `lg` | `--breakpoint-lg` | 12 |
 
-`md` and `lg` start where the tablet and desktop tiers in `vois-patterns` start. `sm` splits the phone tier in two. Columns flex. Margins and gutters do not come from the class, see `[DS-GRID-004]`.
+`md` and `lg` start where the tablet and desktop tiers in `vois-patterns` start. `sm` splits the phone tier in two. `--breakpoint-expanded` (840px) sits between `md` and `lg`. It is not a grid class. A native Android layout checks it as well. Columns flex. Margins and gutters do not come from the class, see `[DS-GRID-004]`.
 
 ## Navigation shell `[DS-GRID-002]`
 

@@ -13,6 +13,7 @@ Values are plain numbers: one unit is one CSS pixel, one dp, one point (`DS-GRID
 | `--width-viewport-min` | 360 | existing, confirm |
 | `--breakpoint-sm` | 600 | existing at 640, moves to 600 |
 | `--breakpoint-md` | 768 | existing, no change |
+| `--breakpoint-expanded` | 840 | new, not a grid class. The Android expanded window class. |
 | `--breakpoint-lg` | 1024 | existing, no change |
 | `--grid-margin-min` | 16 | new |
 | `--grid-margin-max` | 32 | new |

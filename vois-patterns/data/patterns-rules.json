@@ -2873,7 +2873,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Page widths",
       "condition": "Any template is drawn or checked at a width.",
-      "outcome": "Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).",
+      "outcome": "Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`). A native Android layout is also checked at `expanded` (840px). It is a breakpoint token, not a grid class.",
       "builds_on": [
         "DS-RESPONSIVE-002"
       ],
@@ -2920,7 +2920,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Density tier by page",
       "condition": "Choosing a density tier for a whole page.",
-      "outcome": "Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense on desktop.",
+      "outcome": "Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense with a fine pointer.",
       "builds_on": [
         "PATH-DENSITY-DENSE",
         "PATH-DENSITY-STANDARD",
@@ -2936,16 +2936,17 @@
       "parent": null,
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Dense is for pointers only",
-      "condition": "A Dense page is shown at phone or tablet width, or on a touch device.",
-      "outcome": "Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. A SaaS screen is tighter on desktop than on a phone, never the other way round.",
+      "condition": "A Dense page is shown while the primary input is not a fine pointer (CSS `(pointer: fine)` does not match), at any width.",
+      "outcome": "Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. Unknown input counts as touch. A phone-width window with a mouse can stay Dense, and its layout still follows width (PATH-B-NARROW). An iPad with a trackpad still reports a touch primary input, so it stays at regular rows.",
       "builds_on": [
         "PATH-DENSITY-DENSE",
         "DS-TABLE-019",
         "DS-A11Y-001",
-        "DS-RESPONSIVE-004"
+        "DS-RESPONSIVE-004",
+        "PATH-DENSITY-PRODUCT"
       ],
       "basis": "decision",
-      "basis_note": "decision. Set by Om: SaaS is denser on desktop, mobile needs more breathing room.",
+      "basis_note": "decision. Set by Om: SaaS is denser with a mouse, and touch needs more breathing room. Changed on 13 Nov 2026 from keying on width to keying on input.",
       "evidence": []
     },
     {
@@ -3054,6 +3055,145 @@
         "https://mobbin.com/flows/1a0a53a6-d570-41f9-be28-c537ae0d5831",
         "https://mobbin.com/screens/d40d99b7-bf8a-4e84-9bb3-a659b7b2a7b5",
         "https://mobbin.com/screens/a33b4f74-8bbe-4fb8-8367-060abfcf25b5"
+      ]
+    },
+    {
+      "id": "PATH-DENSITY-PRODUCT",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/content-density.md",
+      "rule_name": "Product setting for density",
+      "condition": "A product sets `workbench` or `relaxed`, and a page already has its tier from PATH-PAGE-DENSITY-MAP.",
+      "outcome": "The setting moves a page's tier by one step. Workbench: Standard becomes Dense. Relaxed: Dense becomes Standard. Spacious never moves. A product that sets nothing keeps the tier the template gives. Then PATH-PAGE-DENSITY-TOUCH applies: when the primary input is not a fine pointer, Dense becomes Standard. So the setting only changes a page when a fine pointer is present. Grid, margins, gutters, columns and panel widths ignore the setting.",
+      "builds_on": [
+        "PATH-PAGE-DENSITY-MAP",
+        "PATH-PAGE-DENSITY-TOUCH",
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD"
+      ],
+      "basis": "decision",
+      "basis_note": "decision. Set by Om on 13 Nov 2026: add the setting, and key density on input.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-NATIVE-SHEET-KIND",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "Modal or nonmodal sheet",
+      "condition": "Something opens over the page on a phone.",
+      "outcome": "If the user still needs the page behind it (a map, a list they keep using), open a nonmodal sheet with detents and no scrim, and keep the page usable. If they do not (a form, a confirmation, a pick), open a modal sheet or an alert with a scrim. A long task, or one with its own URL, is a full screen. From tablet up, a nonmodal sheet becomes a side panel and a modal sheet becomes a dialog or popover, as PATH-PAGE-OVERLAY says. Nothing opens over a popover except an alert.",
+      "builds_on": [
+        "PATH-PAGE-OVERLAY",
+        "PATH-D",
+        "DS-PANEL-001"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Nonmodal sheets over maps in five iOS apps. Android: not observed. Material also splits sheets into standard and modal, but no Android screens were checked.",
+      "evidence": [
+        "https://mobbin.com/screens/dad4a79a-26f6-4b67-b0f2-ccd7499a8f86?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/48979d83-670d-48e4-84d6-a7b8e6eff7f5?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/3273b096-22c7-4be5-bd1b-4628fa1a7053?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/96244d4a-40b9-488d-a466-9ae2180b6e64?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/b590abf4-f9cb-41e0-87d1-c980e3d698a8?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp"
+      ]
+    },
+    {
+      "id": "PATH-NATIVE-FORM-SHEET",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "Form in a modal sheet",
+      "condition": "A form opens as a modal sheet on a phone.",
+      "outcome": "The tall modal sheet is how the full screen overlay in PATH-PAGE-OVERLAY looks on iOS: the parent shows above it and the title is centered in a top bar. Close or Cancel sits on the left. A named commit sits on the right (Add, Create, Save). The commit stays disabled until the form can be saved. It is never an action sheet (PATH-D). Labels come from righter.",
+      "builds_on": [
+        "PATH-PAGE-OVERLAY",
+        "PATH-PAGE-BUTTON-ORDER",
+        "PATH-D"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Cancel or close left and a named commit right in four iOS apps. Only Partiful shows the disabled commit. Android: not observed.",
+      "evidence": [
+        "https://mobbin.com/screens/f4dc9422-2c5e-41fb-9ea0-eb4e5adb163c?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/4ce34519-ace8-4a54-a97e-63564433a725?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/5a352644-2149-4722-9098-b97a5c8c727d?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/adc89d9f-a056-4064-860b-9c5df10ee581?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp"
+      ]
+    },
+    {
+      "id": "PATH-NATIVE-DISMISS",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "Sheets always have a visible way out",
+      "condition": "A sheet can be dismissed by swiping down.",
+      "outcome": "Every sheet shows a visible close control or Cancel. Swiping down is extra, never the only way out. A sheet with unsaved edits ignores a swipe down and asks to discard (PATH-PAGE-VIEW-EDIT). A nonmodal sheet with detents keeps its close control at every detent.",
+      "builds_on": [
+        "PATH-PAGE-VIEW-EDIT"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. Close controls show on three of five iOS map sheets and on the form sheets. The swipe block for unsaved edits is not from a screen. Android: not observed.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-NATIVE-SWIPE-ROW",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "One swipe action per row",
+      "condition": "A list row has a swipe action.",
+      "outcome": "Reveal at most one action on the trailing swipe. If it deletes or removes, it is red and has a text label. Never stack two or more. A swipe is never the only path: the same action is also on a visible menu or on the detail screen. Keep horizontal swipe handlers away from the screen edges, where back gestures start. A row inside a horizontally scrolling area has no swipe action.",
+      "builds_on": [
+        "DS-A11Y-001"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. One red labeled trailing action in four iOS apps. The other clauses are judgment. Android: not observed.",
+      "evidence": [
+        "https://mobbin.com/screens/873d27a4-ba4e-4922-8055-09d02debd295?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/4bb415b1-2a89-4c97-b713-f058f7e62e72?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/72032ea6-066e-4745-90a6-3b0c9ad9a885?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/e97a2ae1-ef94-4f8d-bdfb-f85b325a9936?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp"
+      ]
+    },
+    {
+      "id": "PATH-NATIVE-BACK",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "Back and close on phone",
+      "condition": "A phone screen opens another screen.",
+      "outcome": "Drill-down pushes a new level and shows a back control at the top left (PATH-PAGE-LEVELS). Do not replace the system back gesture with a custom swipe. A full-screen modal shows a close control at the top left, and that is a close, not a back. The bottom tab bar may stay on a detail screen.",
+      "builds_on": [
+        "PATH-PAGE-LEVELS",
+        "PATH-PAGE-NAV"
+      ],
+      "basis": "observed",
+      "basis_note": "observed. Back at top left on three iOS list-to-detail flows and close at top left on three full-screen modals. The tab bar stays on two of the three flows. Android: not observed.",
+      "evidence": [
+        "https://mobbin.com/flows/258439a8-40a5-4574-b6f1-4bfd0327b57d?tab=screens&utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/flows/34de7860-6af6-4f03-88c8-5367aba88270?tab=screens&utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/flows/a10df4dd-7ca3-41d4-847a-7d764fa79d1f?tab=screens&utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/7a632aba-2017-4ae6-94ea-8d49d22028f9?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/5e5d2f3b-a219-4045-89be-a3f9c6a22c85?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/12a91773-f655-463d-9b3a-6bd0673c7c4e?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp"
+      ]
+    },
+    {
+      "id": "PATH-NATIVE-REFRESH",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/native-behavior.md",
+      "rule_name": "Pull to refresh",
+      "condition": "A list can be refreshed by pulling down.",
+      "outcome": "Use pull to refresh only at the top of a list sorted by recent content. Never on a map, a canvas or other content that pans. Every pull to refresh also has a visible refresh control for fine pointers. Show the result briefly (a toast or a pill).",
+      "builds_on": [
+        "DS-A11Y-001"
+      ],
+      "basis": "judgment",
+      "basis_note": "judgment. The two iOS screens found show only the result, not the pull. The where-to-use clause comes from the Material 1 swipe-to-refresh page. Android: not observed.",
+      "evidence": [
+        "https://mobbin.com/screens/fd330182-950b-40b8-8e53-9fa2b9985df0?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp",
+        "https://mobbin.com/screens/c7a8dd36-b182-443d-baf0-bc7b68787597?utm_source=claude&utm_medium=ai-assistant&utm_source_platform=mcp"
       ]
     }
   ]
