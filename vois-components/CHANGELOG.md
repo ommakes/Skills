@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.18.0] - 2026-11-12
+
+### Added
+
+- **`panel_roles`** on `JOB-OVERLAY-INTERACTION` and `JOB-SECONDARY-CONTENT` in `data/components-rules.json`. It tags Sheet and Drawer as `overlay-panel` and Panel as `push-panel`, with the `DS-PANEL-*` rule that sets their width. This is the first step of the role vocabulary suggested in the private framework-neutrality audit. Decision text is unchanged.
+
+---
+
 ## [1.17.0] - 2026-10-26
 
 ### Changed

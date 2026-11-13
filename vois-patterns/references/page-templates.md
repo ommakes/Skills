@@ -19,6 +19,10 @@ A template is a skeleton. It decides regions, order, and responsive behavior. It
 3. Follow its `routes_to` paths for content, and the cross-cutting rules below for width, navigation, density, overlays and buttons.
 4. Check the page at phone, tablet and desktop (`[PATH-PAGE-BREAKPOINTS]`).
 
+## The layout field
+
+Each template in `data/page-templates.json` has a `layout` object. It says which nav shell the page sits in (`shell`), whether the content max applies (`frame`), which regions sit side by side (`regions`), which equal-track grids it holds and the most columns each may have (`collections`), and which panels it opens (`panels`). Sizes are token names, never numbers. `layout_fields` in the same file defines each field. The rules that turn these into column counts and panel widths are in `vois-tokens/references/grid.md`. The prose in each entry says what happens below the `from` class.
+
 ## Levels `[PATH-PAGE-LEVELS]`
 
 | Level | Name | Meaning |
@@ -61,7 +65,7 @@ Each page knows its parent. Back goes up exactly one level. Desktop shows the tr
 
 ### Page widths `[PATH-PAGE-BREAKPOINTS]`
 
-Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three.
+Phone is below roomy (768px). Tablet is roomy up to wide (768px to 1023px). Desktop is wide and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `snug` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`).
 
 ### Page levels and drill down `[PATH-PAGE-LEVELS]`
 

@@ -1,5 +1,5 @@
 {
-  "source": "vois-tokens/references/*.md (15 files; excludes anti-slop.md and hooks.md — see note)",
+  "source": "vois-tokens/references/*.md (16 files; excludes anti-slop.md and hooks.md — see note)",
   "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either. Every rule also has `verification`: `detector` (a check in scripts/registry.mjs catches some or all violations of it, named in `detector`; passing the check does not prove the rule is met, and gaps are listed in references/hooks.md), `spec` (a chart-spec check), `rendered` (needs the page rendered) or `judgment` (an agent reads the code). It says how a rule can be checked, which is a different question from `enforcement` (whether a hook may deny the edit) and `severity` (how much the rule weighs).",
   "categories": {
     "DS-A11Y": "Accessibility",
@@ -14,6 +14,8 @@
     "DS-LAYOUT": "Layout, Viewport, and Responsive Behavior",
     "DS-RESPONSIVE": "Layout, Viewport, and Responsive Behavior",
     "DS-SPACING": "Spacing",
+    "DS-GRID": "Grid",
+    "DS-PANEL": "Panels",
     "DS-STYLEX": "StyleX",
     "DS-SURFACE": "Surfaces and Motion Polish",
     "DS-TAILWIND": "Tailwind v4",
@@ -711,7 +713,7 @@
       "category": "DS-RESPONSIVE",
       "category_label": "Layout, Viewport, and Responsive Behavior",
       "source_file": "vois-tokens/references/layout-and-responsive.md",
-      "rule": "Test at `sm` (640px), `md` (768px), `lg` (1024px) before considering a component done.",
+      "rule": "Test at the start of each grid class, narrow (360px), snug (600px), roomy (768px) and wide (1024px), before considering a component done. These are the values of --width-viewport-min and the breakpoint tokens in DS-GRID-001.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -821,7 +823,7 @@
       "category": "DS-SPACING",
       "category_label": "Spacing",
       "source_file": "vois-tokens/references/spacing.md",
-      "rule": "All spacing must be divisible by 4 or 8. No exceptions.",
+      "rule": "All spacing must be divisible by 4 or 8. The only exception is --grid-margin and --grid-gutter between their end values (DS-GRID-004).",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "detector",
@@ -1341,6 +1343,189 @@
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-001",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Pick the grid class from the region width, not the window width. Four classes: narrow (4 columns), snug (8), roomy (8) and wide (12), starting at --width-viewport-min, --breakpoint-snug, --breakpoint-roomy and --breakpoint-wide.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-002",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Window width picks the navigation: bottom bar below --breakpoint-roomy, a --nav-rail rail from there, a --nav-sidebar sidebar from --breakpoint-wide. The site shell has a top bar and no side navigation. Region width is window width minus navigation width.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-003",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Content stops at --grid-content-max and centers. A page whose template says frame fill (dashboard, data grid, report, split view) opts out and fills the region.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-004",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Margin and gutter come from --grid-margin and --grid-gutter, never a raw value. Each is a line between two anchor points on region width, held flat outside them. The token source stores four plain numbers per line (min, max, min-at, max-at) and the two names above are generated from them: clamp() on the web, the same line in code on native. The end values sit on the spacing scale, the values between them do not, so DS-SPACING-001 does not apply to these two tokens.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-GRID-004"
+    },
+    {
+      "id": "DS-GRID-005",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "The real margin is the larger of --grid-margin and the safe-area inset on that side. Use start and end sides, never left and right.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-006",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "A component measures the space it is given, not the screen: a container query on the web, LayoutBuilder, BoxWithConstraints or GeometryReader on native. Never branch on device type, device model or orientation.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-007",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "A collection holds max(1, min(cap[windowClass], floor((inner + gutter) / (itemMin + gutter)))) columns. cap comes from the page template, inner is the region width minus both margins held at --grid-content-max (no hold on a fill page; a container narrower than the region uses its own width), gutter is --grid-gutter at the region width, and itemMin is the item token the template names.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-GRID-007"
+    },
+    {
+      "id": "DS-GRID-008",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Larger text raises itemMin, so the column count drops. It never changes the grid, margins or gutters.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-009",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "A region is a track: fluid, a fraction such as 2fr, auto, or a token name. A split must fit the columns of the current class: an 8 column class splits 4 and 4 or 5 and 3, never 6 and 6.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GRID-010",
+      "category": "DS-GRID",
+      "category_label": "Grid",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "One token unit is one CSS pixel, one dp on Android and one point on iOS. Tokens are plain numbers that every platform reads the same way.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-001",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Use a push panel (inline, moves the main content) when people need to see the page and the panel together. Use an overlay panel (floats over the page) for a task that ends.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-002",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Below --breakpoint-roomy every panel is full screen. No push, no half-width overlay.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-003",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "From --breakpoint-roomy a panel pushes only if window width minus --nav-rail minus the panel width leaves at least --main-min. Otherwise it is an overlay.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-004",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "While a push panel is open, the app shell keeps the full sidebar only if window width minus --nav-sidebar minus the panel width leaves at least --main-min. Otherwise the sidebar shows as the rail until the panel closes. Do this before turning the panel into an overlay.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-005",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "A push panel is --panel-push-default wide. If people can resize it, keep it between --panel-push-min and --panel-push-max. The main content never goes below --main-min.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-006",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "An overlay uses a size tier (--panel-overlay-sm, --panel-overlay-md or --panel-overlay-lg). Its width is the smallest of the tier and half the window width rounded down to a multiple of 4, and never under --panel-overlay-min.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-007",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "A list with a detail pane shows both side by side only if each pane gets at least --pane-min. Otherwise it behaves like a phone: the list alone, and the detail opens as its own screen with a back control.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-PANEL-008",
+      "category": "DS-PANEL",
+      "category_label": "Panels",
+      "source_file": "vois-tokens/references/grid.md",
+      "rule": "Panel and pane widths are token names. Never a raw number in code, in a template or in a design spec.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-PANEL-008"
     },
     {
       "id": "DS-TABLE-001",

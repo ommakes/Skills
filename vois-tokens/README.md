@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.26.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.28.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -55,6 +55,8 @@ Every rule has a unique ID like `[DS-SPACING-001]` or `[DS-A11Y-005]`. If a `voi
 | `DS-COMPONENT` | shadcn/ui components, CVA, variants |
 | `DS-MODAL` | Modal focus trapping, scroll bleed, layout shift |
 | `DS-LAYOUT` | Viewport units, `content-visibility` |
+| `DS-GRID` | Grid classes, margins and gutters, card grid column counts, content max |
+| `DS-PANEL` | Push and overlay side panels, panel widths, two-pane lists |
 | `DS-TABLE` | Table scroll owner, sticky header and column, scrollbar styling, one-axis wheel lock |
 | `DS-TAILWIND` | Tailwind v4 migration patterns, utility rules |
 | `DS-ANIMATION` | Timing, easing, reduced motion, scale/origin |
@@ -81,6 +83,8 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.28.0**: the hook checks three grid and panel rules: `DS-GRID-007` (a hard-coded column count), `DS-GRID-004` (a raw gutter on a grid container) and `DS-PANEL-008` (a hard-coded panel or pane width). All three are advisory and marked `verification: "detector"`.
+- **1.27.0**: new `references/grid.md` with `DS-GRID-001` to `010` and `DS-PANEL-001` to `008` (grid classes, margins and gutters, card grid column counts, push and overlay side panels). `DS-RESPONSIVE-002` now tests at the four grid classes. `DS-SPACING-001` has one exception, the two grid tokens.
 - **1.26.0**: the hook checks four more team limits: the start scale of enter animations (`DS-ANIMATION-005`), selector nesting (`DS-CSS-003`), icon stroke width (`DS-ICON-001`) and icon size (`DS-ICON-002`). The last three rules were `judgment` and are now `detector`.
 - **1.25.0**: `DS-A11Y-002` (focus indicator) and `DS-A11Y-004` (contrast) are marked `verification: "rendered"`, because a static read of the code cannot settle them.
 - **1.24.0**: every rule in `data/vois-rules.json` now says how it can be checked (`verification`), and the rules a detector covers name it (`detector`).

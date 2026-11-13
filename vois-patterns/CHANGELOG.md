@@ -6,6 +6,25 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.20.0] - 2026-11-12
+
+### Added
+
+- **`layout` field on all 21 page templates** in `data/page-templates.json`: `shell` (app or site), `frame` (contained or fill), `regions`, `collections` (with caps per grid class) and `panels` (push, overlay or two-pane). Sizes are token names. `layout_fields` in the same file defines each field. The rules that use it are `DS-GRID-*` and `DS-PANEL-*` in `vois-tokens`.
+- `layout_fields` says `from` is the first window class, the same tier the responsive text uses. Panels may have `until` and must have `below`. Caps for narrow and snug refine the phone text: phone text describes narrow, and snug (600px to 767px) may hold more columns.
+- `layout_fields` says which values are proposals and not from the template text: overlay panel size tiers, and the marketing logo caps above the phone.
+- Dashboard gains a notifications panel. Browse's filter drawer stops at the wide class. Record, Feature and Case study have notes for grids not yet listed in `collections`. Browse says to measure the card area.
+- A short "The layout field" section in `references/page-templates.md`.
+
+### Changed
+
+- Tier names in the page width rule are now `roomy` and `wide`, not `md` and `lg`. The four side columns (feed right rail, browse filters, case study company facts, article contents) each use their own token instead of `--region-aside`.
+- **Record detail** no longer says "300px". Its properties panel uses `--panel-push-default`.
+- **Split view** now starts at an 800px window, because two panes need `--pane-min` each. Between 768px and 799px it behaves like the phone. The tablet text and the layout note say so.
+- **`PATH-PAGE-BREAKPOINTS`** says phone splits in two at 600px for grids, so check phone at 360px and 600px.
+
+---
+
 ## [1.19.0] - 2026-10-28
 
 ### Added

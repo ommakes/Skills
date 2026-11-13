@@ -31,6 +31,8 @@ const SHARED_CODE = [
   "vois-tokens/scripts/registry.mjs",
   "vois-tokens/scripts/team-overrides.mjs",
   "vois-tokens/scripts/jsx-tags.mjs",
+  "vois-tokens/scripts/css-blocks.mjs",
+  "vois-tokens/scripts/grid-checks.mjs",
 ];
 
 for (const f of SHARED_CODE) {

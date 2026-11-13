@@ -16,11 +16,13 @@ Rebuilt 2026-10-06 from the sources on `main`, and `vois-components` and `vois-t
 | `design-ask.md` | 1.0.0 | In sync |
 | `metrics-tagging.md` | 1.1.0 | 1.0.0: missed the Properties column, task-level events, and the taxonomy-bloat rules |
 | `righter.md` | 1.9.0 (behind: source is 1.9.1) | 1.4.0 |
-| `vois-components.md` | 1.12.0 (behind: source is 1.17.0) | 1.5.0 |
-| `vois-patterns.md` | 1.15.0 (behind: source is 1.17.0) | 1.9.0 |
-| `vois-tokens.md` | 1.21.1 (behind: source is 1.26.0) | 1.13.0 |
+| `vois-components.md` | 1.12.0 (behind: source is 1.18.0) | 1.5.0 |
+| `vois-patterns.md` | 1.15.0 (behind: source is 1.20.0) | 1.9.0 |
+| `vois-tokens.md` | 1.21.1 (behind: source is 1.28.0) | 1.13.0 |
 
 There is still no build script, and the four Vois and Righter editions are condensed by hand, so they fall behind whenever a source changes. A rule worth keeping: rebuild an edition in the same pass as a source version bump, or note here that it's behind.
+
+The grid and panel work (`vois-tokens` 1.27.0 and 1.28.0, `vois-patterns` 1.20.0, `vois-components` 1.18.0: `DS-GRID-*`, `DS-PANEL-*`, the grid classes and the `layout` field on page templates) is also not in any edition.
 
 The motion work in `vois-tokens` 1.23.0, `vois-patterns` 1.17.0 and `vois-components` 1.15.0 (the morph and tray specs, `DS-MOTION-003` to `007`) is not in any edition. The editions carry the older animation rules (durations, easing, reduced motion, icon transitions) but none of the morph, tray or delight guidance, so they are behind by that much on top of the versions above. The full versions have it. Two lines in `vois-tokens.md` are stale because of it: the spring line ("no bounce by default", where the source now allows a spring at `bounce: 0` with a token duration, `DS-MOTION-006`) and the icon-swap line, which still gives a literal spring `duration: 0.3` and the CSS curve `cubic-bezier(0.2, 0, 0, 1)` where the source uses `motionSpring.standard` and `var(--motion-ease-standard)`. They stay as built, so the file matches the 1.21.1 it says it is, until the edition is rebuilt.
 

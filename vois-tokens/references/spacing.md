@@ -1,6 +1,6 @@
 # Spacing `[DS-SPACING]`
 
-All spacing must be divisible by **4 or 8**. No exceptions. `[DS-SPACING-001]`
+All spacing must be divisible by **4 or 8**. The only exception is `--grid-margin` and `--grid-gutter` between their end values, see `grid.md` (`DS-GRID-004`). `[DS-SPACING-001]`
 
 **Allowed values:** 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96px
 
