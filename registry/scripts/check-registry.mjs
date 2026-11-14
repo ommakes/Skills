@@ -311,6 +311,11 @@ export const RUNTIME = new Set([
   "--radix-select-content-available-height",
   "--radix-select-trigger-width",
   "--radix-select-trigger-height",
+  // Radix Tooltip (Content)
+  "--radix-tooltip-content-transform-origin",
+  "--radix-tooltip-content-available-width",
+  "--radix-hover-card-content-transform-origin",
+  "--radix-hover-card-content-available-width",
 ]);
 
 export function tokenRefProblems(text, known) {

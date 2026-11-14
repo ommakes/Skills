@@ -863,9 +863,10 @@ export const RULES = [
 // and stay judgment-only. All of these are advisory ("quality").
 // ---------------------------------------------------------------------------
 
-// shadcn primitives (components/ui/*) are where the raw elements legitimately live.
+// shadcn primitives (components/ui/*) are where the raw elements legitimately live. The Vois registry
+// sources (registry/vois/<item>/<item>.tsx) install as components/ui/<item>.tsx, so they count too.
 function isUiPrimitive(filePath) {
-  return /(?:^|[\\/])components[\\/]ui[\\/]/.test(filePath || "");
+  return /(?:^|[\\/])(?:components[\\/]ui|registry[\\/]vois)[\\/]/.test(filePath || "");
 }
 
 /** Whether the file imports one of these components from anywhere: "@/components/ui/x", "./ui/x", "@workspace/ui/components/x", "react-x" or a bare "x". */
@@ -996,6 +997,36 @@ const LOOKALIKE_RULES = [
     check({ content, lines, filePath }) {
       if (isUiPrimitive(filePath) || importsFrom(content, ["tooltip"])) return [];
       return tagFindings(content, lines, ["div", "span", "button", "a", "svg", "img", "td", "th", "p", "i"], (a) => /(?<![\w-])title=["'{]/.test(a), "title= used as a tooltip. Use Tooltip.");
+    },
+  },
+  {
+    id: "LOOKALIKE-012",
+    title: "Hand-built avatar",
+    fixHint: "Use Avatar with AvatarImage and AvatarFallback.",
+    check({ content, lines, filePath }) {
+      // The file that defines an avatar, and a file that already imports one (any path with "avatar" in it,
+      // or an import line that mentions Avatar), are left alone.
+      if (isUiPrimitive(filePath) || /avatar[^\\/]*\.[a-z]+$/i.test(filePath || "")) return [];
+      if (/^\s*import\b[^\n]*Avatar/m.test(content) || /\bfrom\s*["'][^"']*avatar[^"']*["']/i.test(content)) return [];
+      // A round box of avatar size (24 to 80px: size-6 to size-20, size-[var(--size-avatar-*)], or h-N with w-N)
+      // whose first content is an <img>, a Next <Image>, or one or two capital letters. A dot (size-2), a bare
+      // round box, an icon, a word, a self-closing box and a prefixed (md:, hover:) class do not match.
+      const N = "(?:6|7|8|9|10|11|12|14|16|20)";
+      const round = /(?<![\w:-])rounded-(?:full|\[var\(--shape-circle\)\])(?![\w-])/;
+      const sizeBoth = new RegExp(`(?<![\\w:-])size-(?:${N}(?![\\w./-])|\\[var\\(--size-avatar-[a-z-]+\\)\\])`);
+      const h = new RegExp(`(?<![\\w:-])h-${N}(?![\\w./-])`), w = new RegExp(`(?<![\\w:-])w-${N}(?![\\w./-])`);
+      const findings = [];
+      for (const t of openingTags(content, ["div", "span"])) {
+        const a = t.attrs;
+        if (/\/\s*$/.test(a)) continue; // <div ... />: no children
+        if (!round.test(a)) continue;
+        if (!(sizeBoth.test(a) || (h.test(a) && w.test(a)))) continue;
+        const from = t.index + 1 + t.name.length + a.length + 1;
+        if (!/^\s*(?:<(?:img|Image)[\s/>]|[A-Z]{1,2}\s*<)/.test(content.slice(from, from + 120))) continue;
+        const line = lineAt(content, t.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "Round box with an image or initials built by hand. Use Avatar." });
+      }
+      return findings;
     },
   },
 ].map((r) => ({ severity: "quality", extensions: CODE_EXT, ...r }));

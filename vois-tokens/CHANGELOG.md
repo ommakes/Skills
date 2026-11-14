@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.2] - 2026-11-14
+
+### Added
+- `LOOKALIKE-012` (watch tier, advisory): a round `div` or `span` of avatar size (24 to 80px) whose first content is an `<img>` or one or two capital letters, in a file with no Avatar import. A dot, a hero image, an icon, a word and a responsive-only size do not match. Documented in `references/hooks.md`.
+
+### Changed
+- The `LOOKALIKE-*` detector rules skip files under `registry/vois/` as well as `components/ui/`. The registry sources install as `components/ui/<item>.tsx`, so a raw `<button>` there is the base element. Windows, `./`, root-relative and absolute paths all match, and `myregistry/vois/` and `registry/voisx/` do not.
+
 ## [1.31.1] - 2026-11-13
 
 ### Added

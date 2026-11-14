@@ -196,6 +196,257 @@
           "target": "components/ui/tabs.tsx"
         }
       ]
+    },
+    {
+      "name": "vois-textarea",
+      "type": "registry:ui",
+      "title": "Vois Textarea",
+      "description": "shadcn/ui's Textarea on Vois tokens: the Vois Input's box and states, growing with its content (field-sizing: content) from 3 to 12 lines and then scrolling, with a rows and resize fallback for older browsers. Install vois-input with it: it imports the Input's field classes.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/textarea/textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/textarea.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-field",
+      "type": "registry:ui",
+      "title": "Vois Field",
+      "description": "shadcn/ui's Field parts on Vois tokens, with the Figma Input Label text styles, a required asterisk and FieldControl, which wires the control's id, aria-describedby, aria-invalid and aria-required. The error is announced with role=\"alert\".",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/field/field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-avatar",
+      "type": "registry:ui",
+      "title": "Vois Avatar",
+      "description": "shadcn/ui's Avatar (Radix) on Vois tokens: a circle at the --size-avatar-* sizes (24/28/40/56/72, 40 by default) with a ring that keeps stacked avatars apart, initials in the Figma type for each size, and initials, generic and invite fallbacks that show while the image loads or when it fails.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/avatar/avatar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/avatar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-badge",
+      "type": "registry:ui",
+      "title": "Vois Badge",
+      "description": "shadcn/ui's Badge on Vois tokens, from the Figma Labels and Status Labels: solid, soft and outline in the 16 label hues and the status colors (info, positive, warning, negative, neutral, accent, aux), sizes 20 and 24, a pill shape, and states when it is a link or button. shadcn's default, secondary, destructive and outline names still work.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/badge/badge.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-tooltip",
+      "type": "registry:ui",
+      "title": "Vois Tooltip",
+      "description": "shadcn/ui's Tooltip (Radix) on Vois tokens: the Figma Tooltip's dark surface and 12px text on the --z-overlay layer, opening on hover and keyboard focus, kept inside the viewport, with a short fade timed by the motion tokens and none under reduced motion.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/tooltip/tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tooltip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-input-group",
+      "type": "registry:ui",
+      "title": "Vois Input Group",
+      "description": "shadcn/ui's InputGroup on Vois tokens: the Vois Input's box and heights with icons, text, a prefix or a button inside, from the Figma Search, Email, Password, URL and Input Field with Button sets. The box shows the inner input's focus, error, disabled and prefill states via :has(). Install vois-input with it: the group imports its field classes.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/input-group/input-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-segmented-control",
+      "type": "registry:ui",
+      "title": "Vois Segmented Control",
+      "description": "shadcn/ui's ToggleGroup parts (Radix, type single) on Vois tokens, from the Figma Segments set: a 32 tall --segment-inactive track with --shape-subtle ends, a 28 tall --segment-active indicator with a --border-default edge and --shadow-base, focus, disabled, arrow keys with one tab stop, and no way back to no selection once a choice is made.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/segmented-control/segmented-control.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/segmented-control.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-stepper",
+      "type": "registry:ui",
+      "title": "Vois Stepper",
+      "description": "The step-progress Stepper from vois-components references/stepper.md (shadcn/ui has none): a nav with an ordered list, 32 markers from the Figma Stepper Dots set for upcoming, current (aria-current=\"step\"), complete and error, 2px connectors from the Stepper Line set, horizontal or vertical, a \"Step 2 of 3\" line below sm, and optional clickable complete steps.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/stepper/stepper.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/stepper.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-choice-list",
+      "type": "registry:ui",
+      "title": "Vois Choice List",
+      "description": "Full-width choice rows from the Figma Radio Select and Checkbox Select sets: a 56 row with the radio or checkbox on the left, a 16/24 label and an optional 12/16 description, resting, hover, pressed, active (--select-soft-active with a 2px --border-accent edge), negative, disabled and aux states. ChoiceRadioGroup (one choice, Radix RadioGroup) and ChoiceCheckboxGroup (a value array) share one row style, and the whole row is the click target. Needs vois-radio-group and vois-checkbox.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/choice-list/choice-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/choice-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-choice-card",
+      "type": "registry:ui",
+      "title": "Vois Choice Card",
+      "description": "Choice cards from the Figma Radio Card and Checkbox Card sets: --bg-card, --radius-selectors, a 16/24 semibold label, a 14/20 description and an optional body, the radio or checkbox on the right, with resting, hover, active (2px --border-state-active) and focus (2px --border-state-focus) edges. Uses the ChoiceRadioGroup and ChoiceCheckboxGroup groups from vois-choice-list, and the whole card is the click target.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/choice-card/choice-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/choice-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-card",
+      "type": "registry:ui",
+      "title": "Vois Card",
+      "description": "shadcn/ui's Card on Vois tokens, from the Figma Card set: the container parts plus an interactive card whose whole surface is one link or button (CardLink), with hover, pressed, focus and disabled looks.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/card/card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-hover-card",
+      "type": "registry:ui",
+      "title": "Vois Hover Card",
+      "description": "shadcn/ui's HoverCard (Radix) on the Figma Popover surface: Bg-Card with a border, a tail, 320 wide, on the overlay layer, kept inside the viewport, with a motion-token fade.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/hover-card/hover-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/hover-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-panel",
+      "type": "registry:ui",
+      "title": "Vois Panel",
+      "description": "A persistent secondary pane (inspector, properties) from the Figma Panel set: the push-panel widths 280, 320 or 400, one inner edge, header, scrolling content and footer.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/panel/panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/panel.tsx"
+        }
+      ]
     }
   ]
 }

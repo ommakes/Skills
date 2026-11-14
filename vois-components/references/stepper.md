@@ -40,8 +40,8 @@ Every state carries more than color (`[DS-COLOR-003]`).
 | State | Marker | Label | Screen reader |
 |---|---|---|---|
 | Upcoming | Number, neutral border | Muted | "Step 3, Review" |
-| Current | Filled with the primary color, number | Foreground, medium weight | `aria-current="step"` |
-| Complete | Check icon | Foreground | "Completed" in visually hidden text |
+| Current | Filled with `--base-positive`, number | Foreground, medium weight | `aria-current="step"` |
+| Complete | Filled with `--base-positive`, check icon | Foreground | "Completed" in visually hidden text |
 | Error | Alert icon in the `negative` role (`[DS-COLOR-008]`) | Foreground | "Needs attention" in visually hidden text |
 
 ## Behavior
@@ -57,7 +57,7 @@ Every state carries more than color (`[DS-COLOR-003]`).
 - Put it at the top of the form container, above the step content. Cap the container at `--width-form-max`.
 - One Stepper per flow.
 - Below the `sm` breakpoint, show only the current label and a short line such as "Step 2 of 3: Team". Keep the markers.
-- Markers are 32px (`size-8`) so they sit on the 4px grid. Connectors are 1px lines in `--color-border`, filled with `--color-primary` when complete.
+- Markers are 32px (`size-8`) so they sit on the 4px grid. Connectors are 2px lines in `--border-default`, `--border-state-focus` after a complete step (the Figma Stepper Line set). The registry's `vois-stepper` follows this.
 
 ## Motion
 

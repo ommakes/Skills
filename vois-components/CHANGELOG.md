@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.22.0] - 2026-11-14
+
+### Added
+- Lookalike row `LOOKALIKE-012` (watch tier): a round `div` or `span` with an image or initials as a person's picture, instead of Avatar (`JOB-REPRESENT-USER`; the registry's `vois-avatar` if the project has none). It has a detector in `vois-tokens` 1.31.2.
+
+### Changed
+- Pointers to thirteen new registry items, for a project that has none: `vois-tooltip` (`JOB-CONTEXTUAL-INFO`, `LOOKALIKE-011`), `vois-badge` (`JOB-LABEL-CONTENT`), `vois-avatar` (`JOB-REPRESENT-USER`), `vois-stepper` (`JOB-MULTISTEP-GUIDE`, `LOOKALIKE-004`), `vois-segmented-control` (`JOB-SWITCH-VIEWS`, `LOOKALIKE-003`), `vois-input-group`, `vois-field` and `vois-textarea` (`JOB-ACCEPT-TEXT`), `vois-choice-list` and `vois-choice-card` (`JOB-CHOOSE-FROM-LIST`, `JOB-BINARY-PREFERENCE`), `vois-card` (`JOB-CONTAIN-CONTENT`, including the whole-card link), `vois-panel` (`JOB-SECONDARY-CONTENT`) and `vois-hover-card` (`JOB-CONTEXTUAL-INFO`).
+- `references/stepper.md` matches the Figma Stepper: current and complete markers are `--base-positive`, and connectors are 2px.
+
 ## [1.21.0] - 2026-11-13
 
 ### Changed

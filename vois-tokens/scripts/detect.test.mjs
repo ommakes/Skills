@@ -122,6 +122,18 @@ test("LOOKALIKE-* rules skip files under components/ui", () => {
   assert.ok(detectFile("mycomponents/ui/thing.tsx", src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length >= 3);
 });
 
+test("LOOKALIKE-* rules skip registry/vois sources, which install as components/ui", () => {
+  const src = '<button className="focus-visible:ring-2">x</button><div onClick={go}>y</div><Loader2 className="animate-spin" />';
+  const n = (p) => detectFile(p, src).filter((f) => f.ruleId.startsWith("LOOKALIKE-")).length;
+  for (const p of ["registry/vois/stepper/stepper.tsx", "./registry/vois/stepper/stepper.tsx", "/repo/registry/vois/stepper/stepper.tsx", "apps/web/src/registry/vois/stepper.tsx", "registry\\vois\\stepper\\stepper.tsx"]) {
+    assert.equal(n(p), 0, p);
+  }
+  // Near misses still count: a different folder name, or vois without registry in front.
+  for (const p of ["myregistry/vois/x.tsx", "registry/voisx/x.tsx", "vois/stepper/x.tsx", "src/registry/other/x.tsx"]) {
+    assert.ok(n(p) >= 3, p);
+  }
+});
+
 test("LOOKALIKE-005 handles arrow functions inside attributes and skips role= and stopPropagation", () => {
   const hit = detectFile("a.tsx", "<div onClick={() => go(1)} className=\"x\">row</div>");
   assert.ok(hit.some((f) => f.ruleId === "LOOKALIKE-005"));
@@ -348,6 +360,47 @@ test("a > inside an attribute does not hide a raw button or clickable div", () =
   const start = Date.now();
   f("<div ".repeat(4000) + "onClick={x}");
   assert.ok(Date.now() - start < 2000, "an unterminated tag flood stays fast");
+});
+
+test("LOOKALIKE-012 flags a hand-built avatar and leaves dots, icons and Avatar users alone", () => {
+  const f = (src, path = "a.tsx") => detectFile(path, src).map((x) => x.ruleId);
+  // Flagged: a round box of avatar size, then an image or one or two capitals.
+  assert.ok(f('<div className="size-10 rounded-full"><img src={u} alt="" /></div>').includes("LOOKALIKE-012"));
+  assert.ok(f('<span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">AB</span>').includes("LOOKALIKE-012"));
+  assert.ok(f('<div className="rounded-full size-12">J<b /></div>').includes("LOOKALIKE-012"), "attribute order does not matter");
+  assert.ok(f('<div className={cn("size-10 rounded-full", c)}><img src={u} /></div>').includes("LOOKALIKE-012"));
+  // Not flagged: the guards from the other side.
+  assert.ok(!f('<span className="size-2 rounded-full bg-green-500"><img src={u} /></span>').includes("LOOKALIKE-012"), "a dot is size-2");
+  assert.ok(!f('<div className="size-10 rounded-lg"><img src={u} /></div>').includes("LOOKALIKE-012"), "not round");
+  assert.ok(!f('<div className="size-40 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "size-40 is a hero image");
+  assert.ok(!f('<div className="size-100 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "size-100 is not size-10");
+  assert.ok(!f('<div className="size-10 rounded-full"><Icon /></div>').includes("LOOKALIKE-012"), "an icon");
+  assert.ok(!f('<div className="size-10 rounded-full">Alice</div>').includes("LOOKALIKE-012"), "a word");
+  assert.ok(!f('<div className="rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "no size");
+  assert.ok(!f('<div className="size-10 rounded-full-x"><img src={u} /></div>').includes("LOOKALIKE-012"), "rounded-full-x is another class");
+  assert.ok(!f('<div className="md:size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "a responsive size is read as no size");
+  assert.ok(!f('import { Avatar } from "@/components/ui/avatar"\n<div className="size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "Avatar imported");
+  assert.ok(!f('<div className="size-10 rounded-full"><img src={u} /></div>', "src/components/ui/avatar.tsx").includes("LOOKALIKE-012"), "a ui primitive");
+  assert.ok(f('<div className="size-10 rounded-full"><img src={u} /></div>', "src/screens/team.tsx").includes("LOOKALIKE-012"));
+  // Review findings: a self-closing box has no children, so the next sibling is not its content.
+  assert.ok(!f('<div className="size-10 rounded-full bg-muted" /><img src={u} alt="" />').includes("LOOKALIKE-012"), "self-closing");
+  assert.ok(!f('<span className="size-6 rounded-full" />AB<b/>').includes("LOOKALIKE-012"), "self-closing span");
+  // A variant prefix on rounded-full does not make the box round at rest.
+  assert.ok(!f('<div className="size-10 hover:rounded-full"><img src={u}/></div>').includes("LOOKALIKE-012"), "hover:rounded-full");
+  assert.ok(!f('<div className="size-10 md:rounded-full"><img src={u}/></div>').includes("LOOKALIKE-012"), "md:rounded-full");
+  // Vois-native spellings and a Next Image are read too.
+  assert.ok(f('<div className="size-[var(--size-avatar-medium)] rounded-[var(--shape-circle)]"><img src={u} /></div>').includes("LOOKALIKE-012"), "tokens");
+  assert.ok(f('<div className="size-10 rounded-full"><Image src={u} alt="" /></div>').includes("LOOKALIKE-012"), "Next Image");
+  // The file that defines an avatar, and other ways of importing one, are left alone.
+  assert.ok(!f('<div className="size-10 rounded-full"><img src={u} /></div>', "src/components/avatar.tsx").includes("LOOKALIKE-012"), "avatar.tsx");
+  assert.ok(!f('<div className="size-10 rounded-full"><img src={u} /></div>', "src/components/user-avatar.tsx").includes("LOOKALIKE-012"), "user-avatar.tsx");
+  assert.ok(!f('import Avatar from "@mui/material/Avatar"\n<div className="size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "MUI Avatar");
+  assert.ok(!f('import { Avatar } from "radix-ui"\n<div className="size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "radix-ui Avatar");
+  assert.ok(!f('import { UserAvatar } from "@/components/people"\n<div className="size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "UserAvatar name");
+  assert.ok(f('import { Badge } from "@/components/ui/badge"\n<div className="size-10 rounded-full"><img src={u} /></div>').includes("LOOKALIKE-012"), "an unrelated import");
+  // Length: a tag over 3000 characters is skipped by openingTags (a documented limit), and a long one under it is read.
+  assert.ok(!f(`<div className="${"x ".repeat(5000)}size-10 rounded-full"><img src={u} /></div>`).includes("LOOKALIKE-012"), "tag over 3000 characters is not read");
+  assert.ok(f(`<div className="${"x ".repeat(1000)}size-10 rounded-full"><img src={u} /></div>`).includes("LOOKALIKE-012"), "a long tag under the cap is read");
 });
 
 test("LOOKALIKE-011 ignores hyphenated attributes that end in title", () => {
