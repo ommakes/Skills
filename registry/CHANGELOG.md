@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.7.0] - 2026-11-14
+
+Thirteen new items, each checked in Chromium in light and dark.
+
+- `vois-textarea` and `vois-field`: the Vois Input's box with field-sizing growth (3 to 12 lines), and Field with `FieldControl`, which wires the id, `aria-describedby`, `aria-invalid` and `aria-required`.
+- `vois-input-group`: shadcn's InputGroup on the Vois Input. Search (pill, clear button), Email and URL (icon or "https://"), Password with show and hide (the name changes, no `aria-pressed`), an input with an inline button, at 36, 48 and 32. The box mirrors the inner input's states with `:has()`.
+- `vois-avatar` (five sizes, initials, generic and invite fallbacks), `vois-badge` (Figma Labels and Status Labels: solid, soft and outline across 16 hues and 7 statuses, shadcn names kept) and `vois-tooltip` (Figma Tooltip on `--z-overlay`, kept in the viewport, motion-token fade). `RUNTIME` in `check-registry` gains two Radix Tooltip variables.
+- `vois-segmented-control` (Figma Segments on Radix ToggleGroup, always one choice) and `vois-stepper` (a step indicator, horizontal or vertical, with clickable complete steps).
+- `vois-choice-list` and `vois-choice-card`: radio and checkbox rows, and cards, from the Figma Select and Card sets.
+- `vois-card`, `vois-hover-card` and `vois-panel`, which completes Phase 1. The Card and Panel sets were built in Figma first, from existing tokens only (no export change). `vois-card` has an `interactive` card whose whole surface is one `CardLink` (a stretched `::after` layer, so there is one link named by the title). `vois-hover-card` follows the Figma Popover surface, with a tail, and `RUNTIME` gains two Radix HoverCard variables. `vois-panel` uses the push-panel width tokens (280, 320, 400). The Figma sets use slots (Card and Panel: Action, Content, Footer; Popover: Content) and text properties, so designers can swap content, and each slot's description names its code part. A new Field set (Control slot, Message text) and a Body slot on Radio Card and Checkbox Card follow the same pattern. A new Tabs set has a panel `Content` slot, Labels gets a swappable leading icon (off by default), Status Labels a swappable trailing icon, and the Avatar Generic and Invited variants a `Content` slot.
+- **Invited avatar, made in Figma first.** New `--avatar-invite-edge` (Goldie-10, 3.55:1 on the light page and 4.56:1 on the dark page). `--avatar-invite` was the accent background; it is now Goldie-3 in light and Goldie-A3 in dark, so the fill and the edge are one hue. The six Invited avatars bind both. The edge no longer uses `--border-accent`.
+- **`--text-subtle` reaches 4.5:1, made in Figma first.** It was gray-7 in light and gray-6 in dark. That passed on the light page (4.53:1) and cards (5.02:1) but not on the input fill (4.15), segment track (4.41), hover fills, soft labels or chips (3.9 to 4.5), and not on the dark page (4.42) or dark cards (4.05). It is now gray-8 in light (6.7:1 or more on those fills) and gray-5 in dark (6.9:1 or more), the same values as `--text-state-resting`. This reaches every text that used it: the underline Tab label, Stepper upcoming labels and descriptions, sidebar and menu text, table rows, chips and the rest of the product. `--text-hint` gets the same fix in dark only: gray-7 (3.57:1 on the dark page) to gray-5 (7:1 or more on every field fill). Light was already gray-8. Re-export checksum `7b3f214f` (880 tokens).
+- **Field text, made in Figma first.** The Field description (240 texts) and the "https://" prefix (21) move from `--text-subtle` to `--text-state-resting`. Re-export checksum `ff5f1fc1` (880 tokens).
+- The new components use the contrast-fixed tokens from 0.6.1: info and accent solid badges, `--text-secondary` initials, `--icon-subtle` glyphs, `--segment-focus-ring` and `--text-state-resting` on segments, and `--text-state-resting` or `--text-auxiliary` descriptions on choice rows and cards.
+- `vois-tokens` 1.31.2 detector: the `LOOKALIKE-*` rules now skip `registry/vois/` sources too, because they install as `components/ui/`. Before, the Stepper's raw step button had to hide its classes in a constant.
+
+## [0.6.1] - 2026-11-14
+
+- **State borders and focus rings meet 3:1** (WCAG 1.4.11), made in Figma first. Each token moves to the nearest step of its own hue that reaches 3:1 on every surface it sits on (backgrounds, cards, input and select fills, the segment track), in both modes:
+  - `--border-default`: gray-5 to gray-6 in light, gray-8 to gray-5 in dark (was 1.77:1 and 1.31:1 on the worst surface).
+  - `--border-state-hover`: gray-7 in light, gray-4 in dark, one step stronger than default.
+  - `--border-state-active`: blue-9 to blue-10 in light.
+  - `--border-state-focus`: blue-7 to blue-11 in light (was 1.46:1), one step darker than active so a focused active card still reads as focused. Dark is unchanged.
+  - `--border-accent` (a brand slot, so the default brand file changes) and `--border-info`: blue-8 to blue-10 in light.
+  - `--border-negative`: tomato-7 to tomato-8 in light.
+  - `--control-border`: gray-6 to gray-5 in dark.
+  - Disabled edges and `--border-pretty` separators are decorative and unchanged.
+- **Also made in Figma:** darker light-mode solid label steps and accent slot (so white badge text meets 4.5:1), the Segments inactive label and a new `--segment-focus-ring`, and the Avatar initials, circles and glyph on the avatar tokens. Re-export checksum `6e99566d` (879 tokens).
+
 ## [0.6.0] - 2026-11-13
 
 - **Shape roles** (vois-tokens `DS-SHAPE-001`): the `vois-tokens` item ships a third generated file, `shape-tokens.css`, built from `source/shape.json`. Each role is a behavior:

@@ -558,7 +558,7 @@
       "tree_path": [0, 1],
       "user_prompt": "Show a user's saved reports as tiles. Clicking anywhere on a tile opens the report.",
       "condition": "The card itself is the primary action target",
-      "expected_outcome": "Make the whole card clickable",
+      "expected_outcome": "Make the whole card clickable: one link or button in the card whose hit area covers it (the registry's vois-card, interactive with CardLink)",
       "forbidden_outcomes": [
         "A tile with only a small 'Open' link as its target",
         "A div with onClick (a link or Button is the real target)"

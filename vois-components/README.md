@@ -90,7 +90,7 @@ If the tool isn't available, this skill still works standalone — just make the
 
 ## Version
 
-**v1.21.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.22.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 

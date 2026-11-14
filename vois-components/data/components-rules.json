@@ -9,12 +9,12 @@
       "source_file": "vois-components/SKILL.md",
       "framing": "Something on screen needs a label or explanation that shouldn't always be visible.",
       "decision_tree": [
-        { "condition": "Short label for an icon, control, or abbreviated text (25 words or under)", "recommendation": "Tooltip (appears on hover/focus, disappears when cursor moves)" },
+        { "condition": "Short label for an icon, control, or abbreviated text (25 words or under)", "recommendation": "Tooltip (appears on hover/focus, disappears when cursor moves). If the project has none, the registry's vois-tooltip item (short passive text only)" },
         { "condition": "Rich content — links, images, longer text, interactive elements", "sub_branches": [
           { "condition": "Triggered by click (user controls when to see it)", "recommendation": "Popover" },
-          { "condition": "Triggered by hover (passive preview)", "recommendation": "HoverCard" }
+          { "condition": "Triggered by hover (passive preview)", "recommendation": "HoverCard (the registry's vois-hover-card if the project has none; touch never sees it, so keep everything in it on the page it leads to)" }
         ] },
-        { "condition": "Contextual preview of a linked entity (user profile, link preview)", "recommendation": "HoverCard" }
+        { "condition": "Contextual preview of a linked entity (user profile, link preview)", "recommendation": "HoverCard (the registry's vois-hover-card if the project has none)" }
       ],
       "rationale": [
         { "question": "Why not Popover for tooltips?", "answer": "Popovers require a click to open and close, which is more friction than a label needs. Tooltips are passive — they inform, they don't require action. If the content requires a click to dismiss, it's a Popover, not a Tooltip." },
@@ -70,7 +70,7 @@
       "source_file": "vois-components/SKILL.md",
       "framing": "You need to communicate metadata, status, or category attached to an item.",
       "decision_tree": [
-        { "condition": "Status or category label, not interactive (read-only, decorative)", "recommendation": "Badge (inline, non-interactive)" },
+        { "condition": "Status or category label, not interactive (read-only, decorative)", "recommendation": "Badge (inline, non-interactive). If the project has none, the registry's vois-badge item (solid, soft or outline, 16 hues and the status colors)" },
         { "condition": "User-created label that can be applied and removed (tags in a CRM, labels on an issue)", "recommendation": "Badge with dismiss button (Chip/Tag pattern)" },
         { "condition": "Selected filter or active facet in a search or filter UI", "recommendation": "Badge with dismiss (dismissing removes the filter)" }
       ],
@@ -88,7 +88,7 @@
       "decision_tree": [
         { "condition": "Single user", "sub_branches": [
           { "condition": "User has a profile photo", "recommendation": "Avatar (image)" },
-          { "condition": "No photo available", "recommendation": "Avatar (initials fallback)" }
+          { "condition": "No photo available", "recommendation": "Avatar (initials fallback). If the project has none, the registry's vois-avatar item (initials, generic and invite fallbacks)" }
         ] },
         { "condition": "Multiple users, count matters (showing all members of a team)", "recommendation": "AvatarGroup (stacks avatars with overflow count: \"+4\")" },
         { "condition": "Real-time presence (online/offline/away, active in document)", "recommendation": "Avatar + Presence indicator (colored dot, workspace-specific — check manifest)" }
@@ -204,7 +204,7 @@
       "framing": "The user needs to complete multiple steps in sequence to accomplish a larger goal.",
       "decision_tree": [
         { "condition": "Steps are all required, user must complete them in order, progress is visible", "sub_branches": [
-          { "condition": "2 to 5 steps, and each step's content fits in a page container (a form, a short list)", "recommendation": "Stepper (inline step indicator; spec in references/stepper.md)" },
+          { "condition": "2 to 5 steps, and each step's content fits in a page container (a form, a short list)", "recommendation": "Stepper (inline step indicator; spec in references/stepper.md). The registry's vois-stepper item builds it" },
           { "condition": "6 or more steps, or any number of steps where a step needs its own full-screen layout", "recommendation": "Wizard (full-page steps with own layout)" }
         ] },
         { "condition": "Steps represent phases of an ongoing process the user checks back on", "recommendation": "Progress component (read-only status tracker, not a navigation element)" },
@@ -242,7 +242,7 @@
       "decision_tree": [
         { "condition": "Switching between distinct pages or major content areas (Settings: Profile, Billing, Members)", "recommendation": "Tabs (persistent selection, full content swap). If the project has none, the registry's vois-tabs item (pill by default, underline with variant=\"underline\"). A settings page with 4 or more sections uses sidebar navigation instead (vois-patterns PATH-A-DEPTH-DEEP)" },
         { "condition": "Filtering a list or data set to a category (All / Active / Archived)", "sub_branches": [
-          { "condition": "2–4 options, mutually exclusive", "recommendation": "Segmented Control (or Tabs styled as pills: the registry's vois-tabs item is pill by default)" },
+          { "condition": "2–4 options, mutually exclusive", "recommendation": "Segmented Control (the registry's vois-segmented-control item, always one choice) or Tabs styled as pills (the registry's vois-tabs item is pill by default)" },
           { "condition": "5+ options or options that change dynamically", "recommendation": "Select or Combobox (see Job 6)" }
         ] },
         { "condition": "Applying non-exclusive labels or types to items (tagging, multi-select filter)", "recommendation": "Checkbox group or Badge filters (not Tabs — Tabs are always mutually exclusive)" }
@@ -329,8 +329,8 @@
       "framing": "You need a surface to group related content or data into a discrete visual block.",
       "decision_tree": [
         { "condition": "Content is interactive (user can click, expand, or take action on it)", "sub_branches": [
-          { "condition": "Standard container for items", "recommendation": "Card (has header, body, optional footer)" },
-          { "condition": "The card itself is the primary action target", "recommendation": "Make the whole card clickable" }
+          { "condition": "Standard container for items", "recommendation": "Card (has header, body, optional footer). If the project has none, the registry's vois-card item" },
+          { "condition": "The card itself is the primary action target", "recommendation": "Make the whole card clickable: one link or button in the card whose hit area covers it (the registry's vois-card, interactive with CardLink)" }
         ] },
         { "condition": "Content is a named section of a larger page (not a standalone item)", "recommendation": "Use semantic HTML section + heading, not a Card" },
         { "condition": "Content is a workspace panel, tool pane, or persistent sidebar section", "recommendation": "Surface / Panel (workspace-specific — check manifest)" }
@@ -363,7 +363,7 @@
         { "condition": "Persistent navigation (app-level, always visible on desktop)", "recommendation": "Sidebar (navigation variant — always rendered, collapsible)" },
         { "condition": "Contextual detail or tools related to a selected item (inspector, properties)", "sub_branches": [
           { "condition": "User triggered it explicitly (clicked a button or item)", "recommendation": "Sheet (slides in from edge)" },
-          { "condition": "Always visible when an item is selected", "recommendation": "Panel (persistent secondary pane)" }
+          { "condition": "Always visible when an item is selected", "recommendation": "Panel (persistent secondary pane). If the project has none, the registry's vois-panel item" }
         ] },
         { "condition": "Temporary overlay for a task (mobile nav, filters on mobile, multi-step task)", "recommendation": "Drawer (full-height slide-in, closes when done)" }
       ],
@@ -389,7 +389,7 @@
         { "condition": "Short list (under 8 items), no search needed, single select", "recommendation": "Select (dropdown, keyboard navigable). If the project has none, the registry's vois-select item: 36px on web, 48px native, 32px compact only inline in a table (vois-tokens DS-COMPONENT-007)" },
         { "condition": "Long list (8+ items) OR user might not know the exact option name", "recommendation": "Combobox (Select + search input, filters as user types)" },
         { "condition": "User needs to search across multiple data types or trigger actions (not just pick a value)", "recommendation": "Command (palette-style, supports search + sections + keyboard shortcuts)" },
-        { "condition": "Only 2 options", "recommendation": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices. If the project has no RadioGroup, the registry's vois-radio-group item" }
+        { "condition": "Only 2 options", "recommendation": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices. If the project has no RadioGroup, the registry's vois-radio-group item. Full-width rows or cards instead of bare radios: the registry's vois-choice-list or vois-choice-card item" }
       ],
       "rationale": [
         { "question": "Why not Combobox for short lists?", "answer": "Combobox adds a text input that implies searching. For short lists where all options are visible immediately, a Select is simpler and has less friction." },
@@ -403,10 +403,10 @@
       "source_file": "vois-components/SKILL.md",
       "framing": "The user needs to enter text as part of a form or interaction.",
       "decision_tree": [
-        { "condition": "Single line of text (name, email, search, number, URL)", "recommendation": "Input. If the project has none, the registry's vois-input item: 36px on web, 48px native, 32px compact only inline in a table (vois-tokens DS-COMPONENT-007)" },
+        { "condition": "Single line of text (name, email, search, number, URL)", "recommendation": "Input. If the project has none, the registry's vois-input item: 36px on web, 48px native, 32px compact only inline in a table (vois-tokens DS-COMPONENT-007). With an icon, a prefix, a clear or show-password button or an inline button: the registry's vois-input-group item. A label, description and error around any field: the registry's vois-field item" },
         { "condition": "Fixed-length one-time code (email or SMS verification code, authenticator code)", "recommendation": "InputOTP (check workspace manifest; shadcn InputOTP). One cell per character, behaves as a single field." },
         { "condition": "Multi-line text without formatting (description, notes, feedback)", "sub_branches": [
-          { "condition": "1–3 lines expected", "recommendation": "Textarea sized with the line-count tokens (see DS-LAYOUT-FIELD-003). Keep a rows attribute as the fallback for browsers without field-sizing support." },
+          { "condition": "1–3 lines expected", "recommendation": "Textarea sized with the line-count tokens (see DS-LAYOUT-FIELD-003). Keep a rows attribute as the fallback for browsers without field-sizing support. The registry's vois-textarea item does both." },
           { "condition": "4+ lines expected", "recommendation": "Textarea with field-sizing: content (DS-LAYOUT-FIELD-001), or fixed height + scroll" }
         ] },
         { "condition": "Formatted text (bold, lists, links — where formatting matters to the user)", "recommendation": "RichTextEditor (workspace-specific — check manifest; typically Tiptap or similar)" }
@@ -429,7 +429,7 @@
           { "condition": "One option in a group of related options", "recommendation": "Checkbox. If the project has none, the registry's vois-checkbox item" },
           { "condition": "Single standalone agree/consent", "recommendation": "Checkbox (not Switch — Switch implies immediate effect)" }
         ] },
-        { "condition": "Mutually exclusive choice between two options in a form", "recommendation": "Radio buttons (not Checkbox — Checkbox implies multi-select is possible). If the project has no RadioGroup, the registry's vois-radio-group item" }
+        { "condition": "Mutually exclusive choice between two options in a form", "recommendation": "Radio buttons (not Checkbox — Checkbox implies multi-select is possible). If the project has no RadioGroup, the registry's vois-radio-group item. As rows or cards: the registry's vois-choice-list or vois-choice-card item" }
       ],
       "rationale": [
         { "question": "Why not Switch for form fields?", "answer": "Switch communicates immediate effect — the moment the user flips it, something changes. In a form with a submit button, the user expects nothing to change until they submit. Using a Switch in that context sends a mixed signal." },
@@ -465,15 +465,16 @@
     "rows": [
       {"id": "LOOKALIKE-001", "tier": "observed", "verification": "detector", "detector": "LOOKALIKE-001", "built": "A raw `<button>` with a hand-written focus ring (`focus-visible:ring-2 ...`) used as a text link, an icon inside an input (clear x), or a Tooltip or Popover trigger", "instead": "Button. `variant=\"link\"` for text, `variant=\"ghost\"` with an icon size and an `aria-label` for icons. As a trigger, `asChild` on the Button. If the project has no Button, install the registry's `vois-button` item", "why": "Focus ring, hit area and press state drift from screen to screen, and each copy has to be fixed by hand", "rule_ids": ["DS-COMPONENT-001", "DS-A11Y-001", "DS-A11Y-007"], "evidence": "8 of 40 builds: LP-06a, LP-06b, LP-06c, LP-10a, LP-10b, HP-03, HP-05, HP-10", "signal": "`<button` with `focus-visible:ring` or `focus-visible:outline` in the same tag"},
       {"id": "LOOKALIKE-002", "tier": "observed", "verification": "detector", "detector": "LOOKALIKE-002", "built": "A `Loader2` icon with `animate-spin`", "instead": "Spinner (the registry's `vois-spinner` if the project has none). In a Button, the Button's `loading` prop", "why": "One spinner means one size, one speed, and one place to fix reduced motion", "rule_ids": ["DS-COMPONENT-001", "DS-ANIMATION-004"], "evidence": "2 of 12 spinner uses: LP-03b, HP-02. Both inside a \"deleting\" button", "signal": "`animate-spin` in a file that does not import Spinner (from any path ending in `spinner`)"},
-      {"id": "LOOKALIKE-003", "tier": "observed", "verification": "detector", "detector": "LOOKALIKE-003", "built": "Buttons with `role=\"radio\"` and a hand-set `aria-checked`", "instead": "RadioGroup for a choice among options (the registry's vois-radio-group if the project has none), or ToggleGroup (single) for a segmented control", "why": "A role on a Button doesn't give arrow-key movement or a single tab stop. RadioGroup and ToggleGroup do", "rule_ids": ["DS-COMPONENT-001"], "evidence": "1 of 40 builds: HP-07", "signal": "`role=\"radio\"` in a file that imports neither `radio-group` nor `toggle-group`"},
-      {"id": "LOOKALIKE-004", "tier": "observed", "verification": "judgment", "built": "Numbered circles joined by lines, written fresh on the screen", "instead": "The shared Stepper, built once per workspace to `references/stepper.md`", "why": "shadcn ships no Stepper. A per-screen copy drifts, and the state and accessibility rules get skipped", "rule_ids": ["DS-COMPONENT-001", "DS-COLOR-003"], "evidence": "1 of 40 builds: HP-07, written before the spec existed", "signal": "An `ol` of numbered `rounded-full` markers with no Stepper import"},
+      {"id": "LOOKALIKE-003", "tier": "observed", "verification": "detector", "detector": "LOOKALIKE-003", "built": "Buttons with `role=\"radio\"` and a hand-set `aria-checked`", "instead": "RadioGroup for a choice among options (the registry's vois-radio-group if the project has none), or ToggleGroup (single) for a segmented control (the registry's vois-segmented-control if the project has none)", "why": "A role on a Button doesn't give arrow-key movement or a single tab stop. RadioGroup and ToggleGroup do", "rule_ids": ["DS-COMPONENT-001"], "evidence": "1 of 40 builds: HP-07", "signal": "`role=\"radio\"` in a file that imports neither `radio-group` nor `toggle-group`"},
+      {"id": "LOOKALIKE-004", "tier": "observed", "verification": "judgment", "built": "Numbered circles joined by lines, written fresh on the screen", "instead": "The shared Stepper (the registry's vois-stepper, or one built once per workspace to `references/stepper.md`)", "why": "shadcn ships no Stepper. A per-screen copy drifts, and the state and accessibility rules get skipped", "rule_ids": ["DS-COMPONENT-001", "DS-COLOR-003"], "evidence": "1 of 40 builds: HP-07, written before the spec existed", "signal": "An `ol` of numbered `rounded-full` markers with no Stepper import"},
       {"id": "LOOKALIKE-005", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-005", "built": "A `div` or `span` with `onClick`", "instead": "Button for an action, a link for navigation", "why": "No keyboard activation, no focus, no role", "rule_ids": ["DS-A11Y-005"], "evidence": "Not seen in 40 builds. Forbidden by an existing rule", "signal": "`<div`, `<span`, `<li` or `<p` with `onClick` and no `role`, unless the handler calls `stopPropagation`"},
       {"id": "LOOKALIKE-006", "tier": "watch", "verification": "judgment", "built": "A `fixed inset-0` backdrop with a centered box", "instead": "Dialog, AlertDialog or Sheet (`JOB-OVERLAY-INTERACTION`, `JOB-CONFIRM-DESTRUCTIVE`)", "why": "No focus trap, no scroll lock, no Escape handling", "rule_ids": ["DS-MODAL-001", "DS-MODAL-002", "DS-MODAL-003"], "evidence": "Not seen in 40 builds. HP-02 described this exact look and still got an AlertDialog", "signal": "`fixed inset-0` with no dialog, sheet or alert-dialog import"},
       {"id": "LOOKALIKE-007", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-007", "built": "A `setTimeout` that hides a message held in state", "instead": "Sonner toast (`JOB-TRANSIENT-FEEDBACK`)", "why": "No announcement to screen readers, and no shared timing or stacking", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`setTimeout` of 1.5s or more calling a state setter with `false`, `null` or `\"\"`, and no `sonner` import. Setters named like `setLoading`, `setSaving` or `setSubmitting` are skipped"},
       {"id": "LOOKALIKE-008", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-008", "built": "\"x\", \"×\" or `&times;` as text for a close control", "instead": "The close control that comes with Dialog or Sheet, or a ghost icon Button with an `aria-label`", "why": "Tiny hit area and no accessible name", "rule_ids": ["DS-A11Y-001", "DS-A11Y-007"], "evidence": "Not seen in 40 builds. HP-01 described a red \"×\" and used a labelled ghost icon Button", "signal": "`×`, `✕`, `✖` or `&times;` as the only text of an element. A plain letter x is not detected"},
       {"id": "LOOKALIKE-009", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-009", "built": "`window.confirm`, `alert` or `prompt`", "instead": "AlertDialog for a confirmation, Sonner for a message", "why": "Unstyled, can't carry the typed confirmation or the consequences, and blocks the page", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "A call to `confirm(`, `alert(` or `prompt(` that is not a function the file declares or a comment"},
       {"id": "LOOKALIKE-010", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-010", "built": "A colored box with `border-l-4`, an icon and text for a message", "instead": "Alert with a status role (`info`, `positive`, `negative`, `notice`)", "why": "Status colors come from the role tokens, and Alert carries the right role and announcement", "rule_ids": ["DS-COLOR-008", "DS-COLOR-009", "DS-A11Y-009"], "evidence": "Not seen in 40 builds. LP-05b built a failure panel from a `<p role=\"alert\">`", "signal": "`role=\"alert\"` on a box with `border-l-4`, a `bg-<palette color>-*` class or `bg-destructive/*`, and no `alert` import"},
-      {"id": "LOOKALIKE-011", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-011", "built": "A `title=\"...\"` attribute as a tooltip", "instead": "Tooltip (`JOB-CONTEXTUAL-INFO`)", "why": "Doesn't show on keyboard focus or touch, and can't be styled", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, and no `tooltip` import"}
+      {"id": "LOOKALIKE-011", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-011", "built": "A `title=\"...\"` attribute as a tooltip", "instead": "Tooltip (`JOB-CONTEXTUAL-INFO`; the registry's vois-tooltip if the project has none)", "why": "Doesn't show on keyboard focus or touch, and can't be styled", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`title=` on a `div`, `span`, `button`, `a`, `svg`, `img`, `td`, `th`, `p` or `i`, and no `tooltip` import"},
+      {"id": "LOOKALIKE-012", "tier": "watch", "verification": "detector", "detector": "LOOKALIKE-012", "built": "A round `div` or `span` holding an `img`, or one or two capital letters, as a person's picture", "instead": "Avatar with AvatarImage and AvatarFallback (the registry's vois-avatar if the project has none; `JOB-REPRESENT-USER`)", "why": "A hand-built circle has no fallback while the image loads or fails, drifts in size and initials style from screen to screen, and has no alt text", "rule_ids": ["DS-COMPONENT-001"], "evidence": "Not seen in 40 builds", "signal": "`rounded-full` with a size of 24 to 80px (`size-6` to `size-20`, or `h-N` with `w-N`) on a `div` or `span` whose first content is an `<img>` or one or two capital letters, and no `avatar` import"}
     ]
   }
 }
