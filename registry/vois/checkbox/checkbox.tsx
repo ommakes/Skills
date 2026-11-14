@@ -4,7 +4,7 @@
 // From the Figma Checkbox set (Selectors page): a 24 box (--size-24, --radii-4) with a 2px
 // --control-border inside border (3:1 or more on the page, WCAG 1.4.11). Checked and indeterminate
 // fill with --control-on and show the mark in --icon-on-dark. Disabled fills with --control-disabled and the mark turns --icon-state-disabled. Focus
-// is a 2px --control-focus ring 2px outside the box, as in Figma's 32 frame. `variant="aux"` is the
+// is a 2px --control-focus ring (the same color as --border-state-focus) 2px outside the box, as in Figma's 32 frame. `variant="aux"` is the
 // Figma Aux set (--border-aux, --control-aux, --icon-auxiliary), for a checkbox on a strong color.
 // The hit area is at least --hit-area-min without changing the visible size (DS-A11Y-001).
 //

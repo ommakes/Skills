@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0] - 2026-11-14
+
+- **Focus ring.** Figma first: `Border-State-Focus` is Blue-10 in light and Blue-8 in dark (was Blue-11 and Blue-5), `Control-Focus` aliases it (it was Blue-7, 1.6:1 on the page), and two new Values variables, `Focus Ring/Width` and `Focus Ring/Offset` (2px each, `--focus-ring-width`, `--focus-ring-offset`). Export checksum `8810c065` (884 tokens).
+- **Fields draw an external ring.** `vois-input`, and so the Textarea and the InputGroup box, and the open Select trigger keep their 1px `--input-border` edge on focus and show a 2px `--border-state-focus` ring 2px outside, using the two new tokens. Before, focus swapped the border to blue and added an inset ring. The size and corners never change, and a focused invalid field keeps its red edge and shows the ring. The Figma Input Field Focus states are redrawn the same way (35 field frames, a "Focus Ring" frame behind each).
+- Checkbox and Radio rings now read the shared color and pass 3:1. Buttons, Tabs, Badge and the others already used the token, so only the color changed.
+- **The token also colors things that are not rings**, so these change too: the completed-step connector in the Stepper (Blue-11 to Blue-10 in light, Blue-5 to Blue-8 in dark), the Choice Card focus edge, the Scroll Area and Panel rings, and the shadcn `--ring` variable (`DS-TOKEN-005`).
+- Left alone on purpose: `--segment-focus-ring` (Blue-10 light, Blue-9 dark) was set separately to keep 3:1 on the Segment track and indicator, and the primary Button keeps `--action-primary-focus` (a brand slot). `--switch-focus` and `--segment-focus-active` are Blue-7 in Figma but no component reads them as a ring.
+- **Room for the ring.** The ring is an outline 2px out and 2px wide, so a field needs 4px of clear space on every side. A parent with `overflow` other than visible (an `overflow-hidden` Card, a Dialog body flush to its edge) cuts it off. Give such a parent 4px of padding, or draw the ring inside as menu items do.
+- In-list items (menus, Command, Scroll Area, Panel) keep their inside ring.
+- `build-tokens.test.mjs`: the ring meets 3:1 on every surface in both modes and is at least 4.5:1 on the page, `--control-focus` is the same token, width and offset are 2.
+
 ## [0.8.2] - 2026-11-14
 
 - **Field and control edges are the lightest gray that meets 3:1, light mode.** New Figma tokens `--gray-5-5` (#858585) and `--input-border`. `vois-input` (and so the Select trigger, the Textarea and the InputGroup box, which share its field classes) uses `--input-border` for its resting edge. `--control-border` (Checkbox, Radio) and `--switch-outline` (off Switch) use `--gray-5-5` in light, and are unchanged in dark. The shadcn `--input` variable points at `--input-border`. `--border-default` and `--gray-6` are unchanged: cards, dividers, panels and placeholder text keep them. So do the secondary and outline Button edges and the InputGroup segment dividers, which stay at #7e7e7e next to a #858585 field edge (8 of 255 apart, and both pass 3:1). `source/figma-export.json` is re-exported (checksum `35816e03`, 882 tokens).

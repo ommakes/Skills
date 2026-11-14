@@ -334,11 +334,12 @@ test("whole registry: a version that does not match the CHANGELOG fails", () => 
   const out = withCopy((r) => {
     const p = join(r, "package.json");
     const before = readFileSync(p, "utf8");
-    const after = before.replace(/"version": "\d+\.\d+\.\d+"/, '"version": "0.9.0"');
+    // A version no release can have yet, so the test does not break each time the real version moves.
+    const after = before.replace(/"version": "\d+\.\d+\.\d+"/, '"version": "99.0.0"');
     assert.notEqual(after, before, "the test must actually change the version");
     writeFileSync(p, after);
   });
-  assert.match(out.join("\n"), /package\.json version 0\.9\.0 is not the newest/);
+  assert.match(out.join("\n"), /package\.json version 99\.0\.0 is not the newest/);
 });
 
 // ---- DS-TOKEN-005 table and generated tokens ----

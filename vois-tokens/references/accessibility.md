@@ -40,13 +40,32 @@ Three focus pseudo-classes. Know when to use each one.
 
 ```css
 .form-field:focus-within {
-  border-color: var(--border-state-focus);
+  outline: var(--focus-ring-width) solid var(--border-state-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 ```
 
 **`:focus`** — triggers on any focus, including mouse clicks. Avoid using this for visual rings. Only reach for it when you need to respond to all focus events regardless of input method.
 
 Never remove `outline` without providing a `:focus-visible` replacement. `[DS-A11Y-003]`
+
+### The ring follows the control `[DS-A11Y-018]`
+
+A focus indicator is an external ring, not a change to the control's border. Use the tokens: `--focus-ring-width` (2px), `--focus-ring-offset` (2px) and `--border-state-focus`. Light mode is Blue-10 (4.9:1 on the page) and dark mode is Blue-8 (6.7:1). Both are well above the 3:1 WCAG asks for, so they hold on a card or a tinted surface too.
+
+```css
+.input { border: 1px solid var(--input-border); border-radius: var(--radius-input); }
+.input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--border-state-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+```
+
+- **The border stays.** Do not change it to a 2px blue border on focus. That moves the content and loses the resting edge.
+- **No `border-radius` on focus.** A browser draws an outline at the control's radius plus the offset, so a 6px field gets an 8px inner ring edge without any extra CSS. Setting a radius on `:focus-visible` changes the control's own corners.
+- **Inside a clipped container** (a menu item, a list row, a scroll area viewport) use `outline-offset: -2px`, so the ring is not cut off. Same color token.
+- **Errors keep the ring.** A focused invalid field shows its red edge and the blue ring.
+- **Pills and circles** keep their shape: the ring follows it.
 
 ## Contrast
 

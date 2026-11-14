@@ -4,6 +4,11 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
 
 ## Done on 2026-11-14
 
+- **Focus ring** (registry 0.9.0). `System/Border/Border-State-Focus`: Light Blue-10, Dark Blue-8. `Component/Control/Control-Focus` aliases it in both modes. New `Values/Focus Ring/Width` and `Focus Ring/Offset` (2, scopes empty, `--focus-ring-width`, `--focus-ring-offset`). Export checksum `8810c065` (884 tokens).
+  - 35 Focus-state field frames on the Inputs page (Input Field, Dropdown Field, Search, Email, Mobile, Password, Date of Birth, URL, Stepper, Format, Input Field with Button, Text Box) now have a 1px `Input-Border` edge and a locked "Focus Ring" frame behind: 2px stroke bound to `Border-State-Focus`, 2px out, corner radius field radius + 4. The ring frame is sized to the default width.
+  - Not changed: the Card Info field (mixed strokes), the Inline Range Input, and the Select/Dropdown open state in dropdown menus. The primary Button ring still uses `Action-Primary-Focus` (Blue-10, brand slot).
+- **Gray-5-5 swatch** on the Color page (both Gray frames), under the Black Alpha row, labelled "Gray edge", bound to `Global/Gray/Gray-5-5`.
+
 - **Z-index order** (registry 0.8.1): `Z-index/dropdown` 1000 to 1400 and `Z-index/overlay` 1200 to 1500, with `Z-index/modal` kept at 1300, so a menu, select, hover card or tooltip opened from inside a Dialog shows above it. Export checksum `7e6728b4` (880 tokens).
 - **Field and control edges, light mode** (registry 0.8.2): the lightest gray that still meets 3:1 (WCAG 1.4.11). Export checksum `35816e03` (882 tokens).
   - New `Global/Gray/Gray-5-5` (`--gray-5-5`, #858585 in both modes), between Gray-5 and Gray-6. It is the lightest gray that meets 3:1 on the #f3f3f3 page and on the resting input fill over it (3.04:1 at worst). One step lighter fails.

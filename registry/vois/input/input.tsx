@@ -2,7 +2,7 @@
 //
 // Heights (vois-tokens DS-COMPONENT-007): default 36 (--size-field-web, web), native 48
 // (--size-field-native), compact 32 (--size-field-compact, only for an inline field in a table or a
-// dense row). States follow the Figma Input Field: resting, hover, focus (2px --border-state-focus),
+// dense row). States follow the Figma Input Field: resting, hover, focus (a 2px --border-state-focus ring, 2px outside),
 // error (aria-invalid), disabled, read-only (no box) and prefill (data-prefill="true").
 // The resting edge is --input-border: the lightest gray that still meets 3:1 on the page and on the resting fill
 // (WCAG 1.4.11). The Select trigger, the Textarea and the InputGroup box take it from here through fieldClasses.
@@ -24,11 +24,12 @@ const fieldClasses = [
   "px-[var(--space-padding-small)] text-[color:var(--text-primary)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)]",
   "transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
   "hover:border-[color:var(--border-state-hover)] hover:bg-[color:var(--input-hover)]",
-  // Focus: the 2px Figma border, drawn as the border plus a 1px inset ring so the size never changes.
-  "outline-none focus-visible:border-[color:var(--border-state-focus)] focus-visible:bg-[color:var(--input-focus)] focus-visible:shadow-[inset_0_0_0_1px_var(--border-state-focus)]",
+  // Focus: the 1px edge stays, and a separate ring (an outline, so the size never changes) sits --focus-ring-offset
+  // outside it. The browser draws an outline with the control's radius plus the offset, so the ring follows the
+  // corners without a radius of its own. Never set border-radius on focus.
+  "focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-[color:var(--border-state-focus)] focus-visible:bg-[color:var(--input-focus)]",
   "data-[prefill=true]:not-aria-invalid:not-disabled:border-[color:var(--border-info)] data-[prefill=true]:not-aria-invalid:not-disabled:bg-[color:var(--input-prefill)]",
   "aria-invalid:not-disabled:border-[color:var(--border-negative)] aria-invalid:not-disabled:bg-[color:var(--input-negative)] aria-invalid:not-disabled:text-[color:var(--text-negative)]",
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--border-negative)]",
   "disabled:cursor-not-allowed disabled:border-[color:var(--border-state-disabled)] disabled:bg-[color:var(--input-disabled)] disabled:text-[color:var(--text-state-disabled)]",
 ]
 

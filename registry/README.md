@@ -207,7 +207,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 |---|---|---|---|
 | Resting | `--input-resting` | `--input-border` | placeholder `--text-state-instruction` |
 | Hover | `--input-hover` | `--border-state-hover` | |
-| Focus | `--input-focus` | 2px `--border-state-focus` (a 1px border plus a 1px inset ring, so the size never changes) | |
+| Focus | `--input-focus` | The 1px edge stays. A 2px `--border-state-focus` ring sits 2px outside it (an outline, so the size and corners never change; the browser draws it at the control's radius plus the offset) | |
 | Error (`aria-invalid`) | `--input-negative` | `--border-negative` | `--text-negative` |
 | Disabled | `--input-disabled` | `--border-state-disabled` | `--text-state-disabled` |
 | Prefill (`prefill`) | `--input-prefill` | `--border-info` | |
@@ -239,7 +239,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 | Off | `--control-border` border | `--switch-off` track with a 1px `--switch-outline` edge |
 | On | `--control-on`, mark `--icon-on-dark` (also indeterminate) | `--switch-on` track, `--switch-knob` knob |
 | Disabled | `--control-disabled`, mark `--icon-state-disabled` | `--switch-disabled`, knob `--icon-state-disabled` |
-| Focus | 2px `--control-focus`, 2px out | 2px `--border-state-focus`, 2px out |
+| Focus | 2px `--control-focus` (the same color as `--border-state-focus`), 2px out | 2px `--border-state-focus`, 2px out |
 | Other | `variant="aux"` for a strong background | The knob slides in `--motion-duration-fast` |
 
 Both have a hit area of at least `--hit-area-min`, and disabled wins over on. Labels are separate, as in shadcn: pair each one with a `<label>`.

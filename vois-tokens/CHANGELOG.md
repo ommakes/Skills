@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.32.0] - 2026-11-14
+
+### Added
+- `DS-A11Y-018`, "The ring follows the control" (`references/accessibility.md`, `data/vois-rules.json`). The focus indicator is an external ring: `outline` of `--focus-ring-width` (2px) at `--focus-ring-offset` (2px) in `--border-state-focus`. The control keeps its 1px border and its size. Never set `border-radius` on focus: the browser already draws an outline at the control's radius plus the offset. Clipped containers use a negative offset. A focused invalid field keeps its ring.
+
+### Changed
+- The focus color is Blue-10 in light (4.9:1 on the page, 5.4:1 on white) and Blue-8 in dark (6.7:1). It was Blue-11 and Blue-5, 8.6:1 and 13.8:1, far above the 3:1 WCAG asks for. `--control-focus` (Checkbox and Radio) was Blue-7, 1.6:1 on the page, and is now the same token.
+- The `:focus-within` example in `accessibility.md` draws the ring, not a border color change.
+
 ## [1.31.5] - 2026-11-14
 
 ### Changed

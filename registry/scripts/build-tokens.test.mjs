@@ -344,7 +344,7 @@ const edgeColors = (() => {
   const worst = (gray, list) => list.reduce((w, s) => { const r = ratio(s.rgb, [gray, gray, gray]); return r < w.ratio ? { ratio: r, name: s.name } : w; }, { ratio: Infinity, name: "" });
   const lightestPassing = (list) => { for (let g = 255; g >= 0; g--) if (worst(g, list).ratio >= 3) return g; return -1; };
   const grayOf = (token, mode = 0) => { const p = parse(value(token, mode)); assert.equal(p.a, 1); assert.ok(p.c[0] === p.c[1] && p.c[1] === p.c[2], `${token} is not a gray`); return p.c[0]; };
-  return { grayOf, worst, lightestPassing, surfaces };
+  return { grayOf, worst, lightestPassing, surfaces, value, parse, ratio };
 })();
 
 test("edges: --input-border is the lightest gray that meets 3:1 on every surface and on the resting fill (light)", () => {
@@ -383,4 +383,33 @@ test("edges: the gray is darker than the border steps below it and the hover edg
   const { grayOf } = edgeColors;
   assert.ok(grayOf("--input-border") < grayOf("--gray-5"), "--input-border should be darker than --gray-5");
   assert.ok(grayOf("--border-state-hover") < grayOf("--input-border"), "the hover edge should be darker than the resting edge");
+});
+
+// ---- Focus ring: one color token, 3:1 on every surface in both modes, and a fixed width and offset ----
+test("focus: --border-state-focus meets 3:1 on the page, a card and the subtle surface in light and dark, and --control-focus is the same token", () => {
+  const { surfaces, value, parse, ratio } = edgeColors;
+  for (const mode of [0, 1]) {
+    const ring = parse(value("--border-state-focus", mode)).c;
+    // The ring sits outside the control, so it is read against the surfaces a control stands on.
+    for (const s of surfaces(mode).control) {
+      const r = ratio(s.rgb, ring);
+      assert.ok(r >= 3, `ring (${mode ? "dark" : "light"}) is ${r.toFixed(2)}:1 on ${s.name}, under 3:1`);
+    }
+  }
+  assert.equal(realExport.tokens["--control-focus"], "=--border-state-focus", "--control-focus must alias --border-state-focus so the Checkbox and Radio ring passes too");
+  assert.equal(realExport.tokens["--select-focus"], "=--border-state-focus");
+});
+
+test("focus: the ring is 2px wide and 2px out, and does not drift", () => {
+  assert.equal(realExport.tokens["--focus-ring-width"], 2);
+  assert.equal(realExport.tokens["--focus-ring-offset"], 2);
+});
+
+test("focus: the ring is not a pale blue: at least 4.5:1 on the page in light and in dark, so a small surface change cannot push it under 3:1", () => {
+  const { surfaces, value, parse, ratio } = edgeColors;
+  for (const mode of [0, 1]) {
+    const ring = parse(value("--border-state-focus", mode)).c;
+    const page = surfaces(mode).control[0];
+    assert.ok(ratio(page.rgb, ring) >= 4.5, `ring (${mode ? "dark" : "light"}) is ${ratio(page.rgb, ring).toFixed(2)}:1 on the page`);
+  }
 });

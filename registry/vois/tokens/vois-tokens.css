@@ -169,7 +169,7 @@
   --border-state-active: var(--blue-10);
   --border-state-disabled: var(--gray-4);
   --border-state-filled: var(--gray-6);
-  --border-state-focus: var(--blue-11);
+  --border-state-focus: var(--blue-10);
   --border-state-hover: var(--gray-7);
   --border-transparent: var(--black-a1);
   --breakpoint-lg: 1024px;
@@ -184,7 +184,7 @@
   --control-aux: var(--black);
   --control-border: var(--gray-5-5);
   --control-disabled: var(--black-a2);
-  --control-focus: var(--blue-7);
+  --control-focus: var(--border-state-focus);
   --control-off: var(--gray-2);
   --control-on: var(--base-accent-solid);
   --control-oncolor: var(--white);
@@ -224,6 +224,8 @@
   --cyan-a7: oklch(0.9055 0.1443 196 / 0.502);
   --cyan-a8: oklch(0.9055 0.1443 196 / 0.6);
   --cyan-a9: oklch(0.9055 0.1443 196 / 0.698);
+  --focus-ring-offset: 2px;
+  --focus-ring-width: 2px;
   --font-body: var(--font-family-system);
   --font-family-brand: system-ui, sans-serif;
   --font-family-mono: ui-monospace, monospace;
@@ -969,13 +971,13 @@
   --border-state-active: var(--blue-8);
   --border-state-disabled: var(--gray-9);
   --border-state-filled: var(--gray-6);
-  --border-state-focus: var(--blue-5);
+  --border-state-focus: var(--blue-8);
   --border-state-hover: var(--gray-4);
   --border-transparent: var(--white-a1);
   --control-aux: var(--white);
   --control-border: var(--gray-5);
   --control-disabled: var(--white-a2);
-  --control-focus: var(--blue-7);
+  --control-focus: var(--border-state-focus);
   --control-off: var(--gray-8);
   --control-on: var(--base-accent-solid);
   --control-oncolor: var(--black);
