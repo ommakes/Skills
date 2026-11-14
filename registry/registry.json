@@ -447,6 +447,120 @@
           "target": "components/ui/panel.tsx"
         }
       ]
+    },
+    {
+      "name": "vois-button-group",
+      "type": "registry:ui",
+      "title": "Vois Button Group",
+      "description": "shadcn/ui's ButtonGroup on Vois tokens, from the Figma Button Group set: Buttons joined into one control with shared edges and an inside focus ring, plus a text segment and a separator. Install vois-button with it.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/button-group/button-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-collapsible",
+      "type": "registry:ui",
+      "title": "Vois Collapsible",
+      "description": "shadcn/ui's Collapsible (Radix) with a height animation on the Vois motion tokens that stops under reduced motion. The trigger has no look of its own.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/collapsible/collapsible.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/collapsible.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-scroll-area",
+      "type": "registry:ui",
+      "title": "Vois Scroll Area",
+      "description": "shadcn/ui's ScrollArea (Radix) with the Figma Scrollbar: a 16 wide transparent track and an 8 wide capsule thumb in --border-default (3:1 or more), darker on hover and drag, with an inside focus ring on the viewport.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/scroll-area/scroll-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/scroll-area.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-dropdown-menu",
+      "type": "registry:ui",
+      "title": "Vois Dropdown Menu",
+      "description": "shadcn/ui's DropdownMenu (Radix) on Vois tokens, from the Figma Dropdown Menu and Menu Item sets: the same list as the Select, with checked and radio items, destructive items, shortcuts, labels, separators and submenus.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/dropdown-menu/dropdown-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dropdown-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-dialog",
+      "type": "registry:ui",
+      "title": "Vois Dialog",
+      "description": "shadcn/ui's Dialog (Radix) on Vois tokens, from the Figma Dialog: a 344 wide card on --z-modal over a scrim, with a 40 ghost close button, header, footer and a motion-token fade. Install vois-button with it.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/dialog/dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dialog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-command",
+      "type": "registry:ui",
+      "title": "Vois Command",
+      "description": "shadcn/ui's Command (cmdk) on Vois tokens, from the Figma Command Menu: a 56 tall search row, a 12-padded list with group headings, 40 tall items with hover and pressed fills and a keyboard ring, and a CommandDialog. Install vois-dialog with it.",
+      "dependencies": [
+        "cmdk"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/command/command.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/command.tsx"
+        }
+      ]
     }
   ]
 }

@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.3] - 2026-11-14
+
+### Fixed
+- `DS-MODAL` no longer flags a file that imports the project's own Dialog. It matched any file with `<Dialog` or a function named `...Dialog` that did not import Radix's dialog, so a `CommandDialog` wrapper around the design system's Dialog was reported as a custom modal. An import of a component whose name starts with `Dialog` from a module named `dialog` (`@/components/ui/dialog`, `./Dialog`, `./dialog/index`, with or without an extension) now counts, because that Dialog does the focus trap and `inert`. A hand-built modal is still flagged, even if the file imports a helper such as `openDialog` from `@/lib/dialog`, or a Dialog from `dialogs-old`.
+
 ## [1.31.2] - 2026-11-14
 
 ### Added
