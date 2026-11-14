@@ -4,6 +4,16 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.5] - 2026-11-14
+
+### Changed
+- `DS-TOKEN-005`: the shadcn `input` variable points at `--input-border`, not `--border-default`. `--input-border` is a new Figma token: Gray-5-5 (#858585) in light and Gray-5 in dark. It is the lightest gray whose edge meets 3:1 (WCAG 1.4.11) on the page and on the resting input fill. `references/figma-variables.md` and `data/vois-rules.json` carry the new mapping. No detector changed.
+
+## [1.31.4] - 2026-11-14
+
+### Changed
+- The z-index layers are reordered in Figma and in the default tokens: `--z-modal` 1300, `--z-dropdown` 1400, `--z-overlay` 1500 (they were 1000, 1200 and 1300). A menu, select, hover card or tooltip opened from inside a Dialog used to render behind it. `references/elevation.md` and `references/figma-variables.md` state the order. No rule or detector changed.
+
 ## [1.31.3] - 2026-11-14
 
 ### Fixed

@@ -38,7 +38,7 @@
   --accent-foreground: var(--text-primary);
   --destructive: var(--base-negative);
   --border: var(--border-pretty);
-  --input: var(--border-default);
+  --input: var(--input-border);
   --ring: var(--border-state-focus);
   --radius: var(--radii-8);
 }

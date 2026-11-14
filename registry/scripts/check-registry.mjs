@@ -60,7 +60,7 @@ export const MAPPINGS = {
   "accent-foreground": { token: "--text-primary", rule: T5 },
   destructive: { token: "--base-negative", rule: T5 },
   border: { token: "--border-pretty", rule: T5 },
-  input: { token: "--border-default", rule: T5 },
+  input: { token: "--input-border", rule: T5 },
   ring: { token: "--border-state-focus", rule: T5 },
   radius: { token: "--radii-8", rule: T5 },
 };

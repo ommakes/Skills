@@ -1858,7 +1858,7 @@
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment",
-      "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--action-primary-text`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--border-default`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
+      "rule": "With shadcn/ui, point each shadcn variable at its Vois token: `background` at `--bg-background`; `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` at `--text-primary`; `card` and `popover` at `--bg-card`; `primary` at `--action-primary-resting`; `primary-foreground` at `--action-primary-text`; `secondary` at `--action-secondary-resting`; `muted` at `--bg-subtle`; `muted-foreground` at `--text-secondary`; `accent` at `--bg-hover`; `destructive` at `--base-negative`; `border` at `--border-pretty`; `input` at `--input-border`; `ring` at `--border-state-focus`; `radius` at `--radii-8`, so shadcn's derived steps land on the Vois radius roles (`md` 6, `lg` 8, `xl` 12)."
     },
     {
       "id": "DS-SHAPE-001",

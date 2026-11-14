@@ -2,6 +2,16 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-14
+
+- **Z-index order** (registry 0.8.1): `Z-index/dropdown` 1000 to 1400 and `Z-index/overlay` 1200 to 1500, with `Z-index/modal` kept at 1300, so a menu, select, hover card or tooltip opened from inside a Dialog shows above it. Export checksum `7e6728b4` (880 tokens).
+- **Field and control edges, light mode** (registry 0.8.2): the lightest gray that still meets 3:1 (WCAG 1.4.11). Export checksum `35816e03` (882 tokens).
+  - New `Global/Gray/Gray-5-5` (`--gray-5-5`, #858585 in both modes), between Gray-5 and Gray-6. It is the lightest gray that meets 3:1 on the #f3f3f3 page and on the resting input fill over it (3.04:1 at worst). One step lighter fails.
+  - New `Component/Input/Input-Border` (`--input-border`): Gray-5-5 in light, Gray-5 in dark (as Border-Default). 35 resting-edge strokes on the Inputs page moved from Border-Default to it (the Text Field Background frames, Start and End Input, Text Box, the Pin Code cell, the Card Info fields and Field box), plus the Inline Input Field and Inline Dropdown on the Components page. Instances follow their components.
+  - `Component/Control/Control-Border` (Checkbox, Radio) and `Component/Switch/Switch-Outline` now use Gray-5-5 in light. Dark is unchanged (Gray-5 and Gray-6).
+  - Left on Border-Default on purpose: the dividers inside the Inline Stepper and Format segments, the Inline Input Button edge, Filter Chip, Dropdown Menu and Payment icons. They are not field edges, and the join with the field is 8 of 255 apart. In code the same goes for the InputGroup segment dividers and the secondary and outline Button edges. If you want a Button and a field side by side to share one gray, point those at Input-Border too.
+  - `Gray-6` is unchanged. It still colors placeholder text (`--text-state-instruction`), disabled text and the subtle icon, so lightening it would lower their contrast.
+
 ## Done on 2026-11-13
 
 - **Variables.**
@@ -110,4 +120,4 @@ What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that cod
    - **Dialog:** Figma binds the 12 radius (`--shape-rounded`), where `DS-SHAPE-002` suggests the 24 `--shape-soft` for dialogs. The code follows Figma. The title has no size token in the Figma header, so the code uses 20/28 semibold.
    - **Command:** the item heights are 36 and 40 (the code uses 40). Figma's Active state (current choice) is not built because a command list has none. The search row has a trailing icon in Figma that the code does not draw.
    - **No Figma design:** Collapsible. It has no visual of its own, so there is nothing to build.
-   - **The z-index ladder puts overlays under the modal.** `--z-dropdown` is 1000, `--z-overlay` 1200 and `--z-modal` 1300. Radix portals menus, selects, hover cards and tooltips to the page, so one opened from inside a Dialog renders behind the dialog card and scrim, and cannot be used. It needs a decision: reorder the ladder so popups from within a dialog sit above it (for example modal 1300, dropdown 1400, overlay 1500), which is a Figma variable change plus an export, or portal these parts into the dialog. I did not change it.
+   - **The z-index ladder put overlays under the modal. Fixed in 0.8.1.** Figma now has `--z-modal` 1300, `--z-dropdown` 1400 and `--z-overlay` 1500 (export checksum `7e6728b4`, 880 tokens), so a menu, select, hover card or tooltip opened from inside a Dialog shows above it. It was 1000, 1200 and 1300 before.

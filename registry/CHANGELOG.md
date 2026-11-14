@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.2] - 2026-11-14
+
+- **Field and control edges are the lightest gray that meets 3:1, light mode.** New Figma tokens `--gray-5-5` (#858585) and `--input-border`. `vois-input` (and so the Select trigger, the Textarea and the InputGroup box, which share its field classes) uses `--input-border` for its resting edge. `--control-border` (Checkbox, Radio) and `--switch-outline` (off Switch) use `--gray-5-5` in light, and are unchanged in dark. The shadcn `--input` variable points at `--input-border`. `--border-default` and `--gray-6` are unchanged: cards, dividers, panels and placeholder text keep them. So do the secondary and outline Button edges and the InputGroup segment dividers, which stay at #7e7e7e next to a #858585 field edge (8 of 255 apart, and both pass 3:1). `source/figma-export.json` is re-exported (checksum `35816e03`, 882 tokens).
+- The lightest gray was found with the resting fill blended and rounded to whole pixels, as a browser draws it. #868686 looked like it passed at 3.01:1 on paper and measured 2.999:1 once rounded, so the value is #858585 (3.04:1 at worst).
+- `build-tokens.test.mjs` now checks the three edges: each meets 3:1 on every surface and on the resting fill, and `--input-border` is exactly the lightest passing gray. A lighter value, a darker one or a changed surface or fill fails it.
+
+## [0.8.1] - 2026-11-14
+
+- **Z-index order fixed.** Figma now has `--z-modal` 1300, `--z-dropdown` 1400 and `--z-overlay` 1500 (they were 1000, 1200 and 1300), so a DropdownMenu, Select, HoverCard or Tooltip opened from inside a Dialog shows above it. `source/figma-export.json` is re-exported (checksum `7e6728b4`, 880 tokens) and `vois-tokens.css` is rebuilt. No component class changed. A Chromium check opens a menu, a select and a tooltip inside a Dialog and tests that each one is on top.
+
 ## [0.8.0] - 2026-11-14
 
 Wave 0: the six primitives the AI components need (see `prds/ai-components-wave-1.md`). Each is checked in Chromium in light, dark and reduced motion.
@@ -11,7 +21,7 @@ Wave 0: the six primitives the AI components need (see `prds/ai-components-wave-
 - `vois-dialog`: Radix Dialog from the Figma Dialog: a 344 wide card on `--z-modal`, a `--bg-overlay-dark` scrim, a 40 ghost close button and a motion-token fade.
 - `vois-command`: cmdk from the Figma Command Menu: a 56 tall search row, 40 tall items with a keyboard ring, and a `CommandDialog`.
 - `RUNTIME` in `check-registry` gains the Radix Collapsible (`--radix-collapsible-content-height`) and DropdownMenu (`--radix-dropdown-menu-content-transform-origin` and `-content-available-height`) variables, only the ones the code reads.
-- Known gap, for a decision: a DropdownMenu, Select, HoverCard or Tooltip opened from inside a Dialog renders behind it, because the z-index ladder puts the modal (1300) above the dropdown (1000) and overlay (1200) layers. See `registry/FIGMA-TODO.md`.
+- Known gap (fixed in 0.8.1): a DropdownMenu, Select, HoverCard or Tooltip opened from inside a Dialog renders behind it, because the z-index ladder puts the modal (1300) above the dropdown (1000) and overlay (1200) layers. See `registry/FIGMA-TODO.md`.
 - Two Radix and cmdk traps are documented in the files: a custom `id` on `CollapsibleContent`, `DialogTitle` or `DialogDescription` breaks the `aria-*` link, and cmdk ignores custom ids.
 - No token or export change.
 

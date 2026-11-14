@@ -305,3 +305,82 @@ test("pending: a token written twice fails, in one section or across add and cha
 test("pending: the committed figma-pending.json has no duplicate names", () => {
   assert.deepEqual(pendingDuplicates(read("source/figma-pending.json")), []);
 });
+
+// ---- Form control edges: the lightest gray that still meets 3:1 (WCAG 1.4.11) in light mode, and 3:1 in dark ----
+// The field edge (--input-border) has to meet 3:1 against the surface outside it and against the resting fill inside it.
+// --control-border (Checkbox, Radio) and --switch-outline (off Switch) share the same gray in light. A lighter edge fails
+// 3:1, a darker one is heavier than it needs to be, so the test derives the lightest passing gray from the export itself.
+// Dark mode is not tuned to the minimum, but it has to meet 3:1 too.
+const edgeColors = (() => {
+  const parse = (hex) => {
+    const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i.exec(hex);
+    assert.ok(m, `not a hex color: ${hex}`);
+    return { c: [1, 2, 3].map((i) => parseInt(m[i], 16)), a: m[4] ? parseInt(m[4], 16) / 255 : 1 };
+  };
+  // mode 0 is light, 1 is dark. A token with one value (not a pair) has it in both modes.
+  const value = (token, mode, seen = []) => {
+    assert.ok(!seen.includes(token), `alias loop at ${token}`);
+    let v = realExport.tokens[token];
+    assert.ok(v !== undefined && v !== null, `${token} is not in the export`);
+    if (Array.isArray(v)) v = v[mode];
+    return typeof v === "string" && v.startsWith("=") ? value(v.slice(1), mode, [...seen, token]) : v;
+  };
+  const over = (top, under) => top.c.map((x, i) => Math.round(x * top.a + under[i] * (1 - top.a)));
+  const lum = (rgb) => { const [r, g, b] = rgb.map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const solid = (token, mode) => { const p = parse(value(token, mode)); assert.equal(p.a, 1, `${token} must be opaque`); return p.c; };
+  const surfaces = (mode) => {
+    const pageTokens = ["--bg-background", "--bg-card", "--bg-subtle"];
+    const pages = pageTokens.map((t) => ({ name: t, rgb: solid(t, mode) }));
+    const fill = parse(value("--input-resting", mode));
+    return {
+      field: [...pages, ...pages.map((p) => ({ name: `--input-resting over ${p.name}`, rgb: over(fill, p.rgb) }))],
+      control: pages,
+      // In light the outline also clears the track it sits on. In dark it does not (about 2:1 on --switch-off, as before
+      // this change), and it does not need to: the boundary of the Switch is the outline against the page around it.
+      switch: mode === 0 ? [...pages, { name: "--switch-off", rgb: solid("--switch-off", mode) }] : pages,
+    };
+  };
+  const worst = (gray, list) => list.reduce((w, s) => { const r = ratio(s.rgb, [gray, gray, gray]); return r < w.ratio ? { ratio: r, name: s.name } : w; }, { ratio: Infinity, name: "" });
+  const lightestPassing = (list) => { for (let g = 255; g >= 0; g--) if (worst(g, list).ratio >= 3) return g; return -1; };
+  const grayOf = (token, mode = 0) => { const p = parse(value(token, mode)); assert.equal(p.a, 1); assert.ok(p.c[0] === p.c[1] && p.c[1] === p.c[2], `${token} is not a gray`); return p.c[0]; };
+  return { grayOf, worst, lightestPassing, surfaces };
+})();
+
+test("edges: --input-border is the lightest gray that meets 3:1 on every surface and on the resting fill (light)", () => {
+  const { grayOf, worst, lightestPassing, surfaces } = edgeColors;
+  const list = surfaces(0).field, g = grayOf("--input-border");
+  const w = worst(g, list);
+  assert.ok(w.ratio >= 3, `--input-border is ${g}, which is ${w.ratio.toFixed(3)}:1 on ${w.name}, under 3:1`);
+  const best = lightestPassing(list);
+  assert.equal(g, best, `--input-border is ${g}; the lightest gray that still meets 3:1 is ${best}, and ${g} is ${w.ratio.toFixed(3)}:1 on ${w.name}. If a surface or the resting fill changed, re-pick the gray.`);
+});
+
+test("edges: the Checkbox, Radio and Switch edges use the same gray and meet 3:1 on their own surfaces (light)", () => {
+  const { grayOf, worst, surfaces } = edgeColors;
+  const g = grayOf("--input-border"), s = surfaces(0);
+  assert.equal(grayOf("--control-border"), g, "--control-border should be the same gray as --input-border in light mode");
+  assert.equal(grayOf("--switch-outline"), g, "--switch-outline should be the same gray as --input-border in light mode");
+  const c = worst(g, s.control), w = worst(g, s.switch);
+  assert.ok(c.ratio >= 3, `control edge is ${c.ratio.toFixed(3)}:1 on ${c.name}`);
+  assert.ok(w.ratio >= 3, `switch edge is ${w.ratio.toFixed(3)}:1 on ${w.name}`);
+});
+
+test("edges: in dark mode the field and control edges meet 3:1 on every surface, and the dark values did not move", () => {
+  const { grayOf, worst, surfaces } = edgeColors;
+  const s = surfaces(1);
+  for (const [token, list] of [["--input-border", s.field], ["--control-border", s.control], ["--switch-outline", s.switch]]) {
+    const w = worst(grayOf(token, 1), list);
+    assert.ok(w.ratio >= 3, `${token} (dark) is ${w.ratio.toFixed(3)}:1 on ${w.name}, under 3:1`);
+  }
+  // Dark is gray-5 for the field and the Checkbox and Radio, and gray-6 for the Switch edge, as before.
+  assert.equal(grayOf("--input-border", 1), grayOf("--gray-5"), "--input-border in dark is --gray-5");
+  assert.equal(grayOf("--control-border", 1), grayOf("--gray-5"), "--control-border in dark is --gray-5");
+  assert.equal(grayOf("--switch-outline", 1), grayOf("--gray-6"), "--switch-outline in dark is --gray-6");
+});
+
+test("edges: the gray is darker than the border steps below it and the hover edge stays darker than resting", () => {
+  const { grayOf } = edgeColors;
+  assert.ok(grayOf("--input-border") < grayOf("--gray-5"), "--input-border should be darker than --gray-5");
+  assert.ok(grayOf("--border-state-hover") < grayOf("--input-border"), "the hover edge should be darker than the resting edge");
+});

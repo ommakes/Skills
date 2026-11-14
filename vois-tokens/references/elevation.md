@@ -33,4 +33,4 @@ Pair with `references/components.md`'s modal section (`inert`, `overscroll-behav
 
 ## When in Doubt `[DS-ELEVATION-002]`
 
-Match the tier to the z-index layer it occupies: `--shadow-medium` goes with `--z-dropdown` when it is a menu (a raised card at Medium stays in the page), `--shadow-large` with `--z-overlay`, `--shadow-xlarge` with `--z-modal`. Don't put a heavier shadow on a lower-stacked element than a lighter one above it.
+Match the tier to the z-index layer it occupies: `--shadow-medium` goes with `--z-dropdown` when it is a menu (a raised card at Medium stays in the page), `--shadow-large` with `--z-overlay`, `--shadow-xlarge` with `--z-modal`. Don't put a heavier shadow on a lower-stacked element than a lighter one above it. The one exception is a popup opened from inside a dialog: a menu, select, hover card or tooltip stacks above the modal (`--z-modal` 1300, `--z-dropdown` 1400, `--z-overlay` 1500) and keeps its own lighter tier.
