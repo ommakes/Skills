@@ -82,7 +82,7 @@ When a project uses shadcn/ui, point each shadcn variable at the Vois token belo
 | `accent-foreground` | `--text-primary` |
 | `destructive` | `--base-negative` |
 | `border` | `--border-pretty` |
-| `input` | `--border-default` |
+| `input` | `--input-border` |
 | `ring` | `--border-state-focus` |
 | `radius` | `--radii-8` |
 

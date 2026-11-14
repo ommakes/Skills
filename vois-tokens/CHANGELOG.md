@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.5] - 2026-11-14
+
+### Changed
+- `DS-TOKEN-005`: the shadcn `input` variable points at `--input-border`, not `--border-default`. `--input-border` is a new Figma token: Gray-5-5 (#858585) in light and Gray-5 in dark. It is the lightest gray whose edge meets 3:1 (WCAG 1.4.11) on the page and on the resting input fill. `references/figma-variables.md` and `data/vois-rules.json` carry the new mapping. No detector changed.
+
 ## [1.31.4] - 2026-11-14
 
 ### Changed

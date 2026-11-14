@@ -205,7 +205,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 
 | State | Fill | Border | Text |
 |---|---|---|---|
-| Resting | `--input-resting` | `--border-default` | placeholder `--text-state-instruction` |
+| Resting | `--input-resting` | `--input-border` | placeholder `--text-state-instruction` |
 | Hover | `--input-hover` | `--border-state-hover` | |
 | Focus | `--input-focus` | 2px `--border-state-focus` (a 1px border plus a 1px inset ring, so the size never changes) | |
 | Error (`aria-invalid`) | `--input-negative` | `--border-negative` | `--text-negative` |
@@ -244,7 +244,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 
 Both have a hit area of at least `--hit-area-min`, and disabled wins over on. Labels are separate, as in shadcn: pair each one with a `<label>`.
 
-**Contrast.** The unchecked checkbox and radio border (`--control-border`) is gray-6 in light and gray-5 in dark, and the off Switch edge (`--switch-outline`) is gray-6. All three are at least 3.35:1 on every surface they sit on, so the control boundary meets the 3:1 of WCAG 1.4.11. The Switch fill alone (`--switch-off`) is about 1.1:1, which is why the edge is there. `--border-default`, which Inputs and Selects use, now meets 3:1 too.
+**Contrast.** The unchecked checkbox and radio border (`--control-border`) and the off Switch edge (`--switch-outline`) are `--gray-5-5` (#858585) in light, the same gray as the field edge (`--input-border`). It is the lightest gray that meets the 3:1 of WCAG 1.4.11 on the page (3.33:1), a card (3.69:1), the Switch track (3.24:1) and the resting input fill over the page (3.04:1, the tightest case). One step lighter fails. In dark, `--control-border` and `--input-border` are gray-5 and `--switch-outline` is gray-6, all three at 3:1 or more on the dark page and card. The dark Switch edge is about 2:1 against its own dark track, as before: the boundary that counts is the edge against the page. The Switch fill alone (`--switch-off`) is about 1.1:1, which is why the edge is there. `--border-default` is unchanged (gray-6 in light) and stays the edge for cards, dividers, panels, the InputGroup segment dividers and the secondary and outline Buttons. `build-tokens.test.mjs` derives the lightest passing gray from the export and fails if any of the three edges is darker, lighter or under 3:1.
 
 ### `vois-radio-group`
 

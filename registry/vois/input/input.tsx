@@ -4,6 +4,8 @@
 // (--size-field-native), compact 32 (--size-field-compact, only for an inline field in a table or a
 // dense row). States follow the Figma Input Field: resting, hover, focus (2px --border-state-focus),
 // error (aria-invalid), disabled, read-only (no box) and prefill (data-prefill="true").
+// The resting edge is --input-border: the lightest gray that still meets 3:1 on the page and on the resting fill
+// (WCAG 1.4.11). The Select trigger, the Textarea and the InputGroup box take it from here through fieldClasses.
 // Colors carry a `color:` type hint so tailwind-merge in cn() merges caller overrides.
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -18,7 +20,7 @@ import { cn } from "@/lib/utils"
 // focus and hover, and error over focus and hover. Error (aria-*) and prefill (data-*) come after
 // disabled, so they are guarded with not-disabled, and prefill with not-aria-invalid as well.
 const fieldClasses = [
-  "w-full min-w-0 rounded-[var(--radius-input)] border border-[color:var(--border-default)] bg-[color:var(--input-resting)]",
+  "w-full min-w-0 rounded-[var(--radius-input)] border border-[color:var(--input-border)] bg-[color:var(--input-resting)]",
   "px-[var(--space-padding-small)] text-[color:var(--text-primary)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)]",
   "transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
   "hover:border-[color:var(--border-state-hover)] hover:bg-[color:var(--input-hover)]",

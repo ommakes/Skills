@@ -182,7 +182,7 @@
   --chip-pressed: oklch(1 0 0);
   --chip-resting: oklch(1 0 0);
   --control-aux: var(--black);
-  --control-border: var(--gray-6);
+  --control-border: var(--gray-5-5);
   --control-disabled: var(--black-a2);
   --control-focus: var(--blue-7);
   --control-off: var(--gray-2);
@@ -285,6 +285,7 @@
   --gray-3: oklch(0.9128 0 0);
   --gray-4: oklch(0.8421 0 0);
   --gray-5: oklch(0.7604 0 0);
+  --gray-5-5: oklch(0.6167 0 0);
   --gray-6: oklch(0.5931 0 0);
   --gray-7: oklch(0.5417 0 0);
   --gray-8: oklch(0.4313 0 0);
@@ -341,6 +342,7 @@
   --icon-subtle: var(--gray-7);
   --icon-transparent: var(--black-a6);
   --input-active: var(--white);
+  --input-border: var(--gray-5-5);
   --input-disabled: var(--gray-2);
   --input-focus: var(--white);
   --input-hover: var(--white);
@@ -755,7 +757,7 @@
   --switch-off: var(--gray-2);
   --switch-on: var(--base-accent-solid);
   --switch-oncolor: var(--white);
-  --switch-outline: var(--gray-6);
+  --switch-outline: var(--gray-5-5);
   --tab-disabled: var(--gray-1);
   --tab-hover: var(--gray-2);
   --tab-resting: var(--white);
@@ -998,6 +1000,7 @@
   --icon-subtle: var(--gray-6);
   --icon-transparent: var(--white-a4);
   --input-active: var(--white-a2);
+  --input-border: var(--gray-5);
   --input-disabled: var(--white-a3);
   --input-focus: var(--white-a1);
   --input-hover: var(--white-a2);
