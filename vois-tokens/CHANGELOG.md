@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.31.4] - 2026-11-14
+
+### Changed
+- The z-index layers are reordered in Figma and in the default tokens: `--z-modal` 1300, `--z-dropdown` 1400, `--z-overlay` 1500 (they were 1000, 1200 and 1300). A menu, select, hover card or tooltip opened from inside a Dialog used to render behind it. `references/elevation.md` and `references/figma-variables.md` state the order. No rule or detector changed.
+
 ## [1.31.3] - 2026-11-14
 
 ### Fixed

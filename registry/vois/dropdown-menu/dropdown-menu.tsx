@@ -24,9 +24,8 @@
 // Which state wins: disabled, then highlighted, then checked, then resting. A checked item that is also highlighted
 // shows the hover fill and keeps its accent text and check mark.
 //
-// Known gap: a menu opened from inside a Dialog renders behind it, because --z-dropdown (1000) is under --z-modal
-// (1300) and Radix portals the menu to the page. The z-index ladder has the same problem for the Select, the
-// HoverCard and the Tooltip. The fix is a token decision (see registry/FIGMA-TODO.md), not a change here.
+// Inside a Dialog: Radix puts the menu on the page, outside the dialog, so it relies on --z-dropdown (1400) being
+// above --z-modal (1300). The Select, the HoverCard and the Tooltip rely on the same order.
 //
 // Serves vois-components JOB-EXPOSE-ACTIONS (a set of actions behind one trigger). For choosing a value for a field,
 // use the Select.

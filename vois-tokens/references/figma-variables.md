@@ -26,7 +26,7 @@ The names follow these rules, so you can predict them:
 | Radius | `radii-{px}` for the scale, `radius-` + name for the roles | `--radii-6`, `--radius-input` |
 | Spacing | `space-{px}`, `space-padding-*`, `space-v-*` (vertical), `space-h-*` (horizontal) | `--space-16`, `--space-v-between-inputs` |
 | Size | `size-{px}`, `size-avatar-*`, `size-icon-*`, `size-action-*`, `size-field-web` and `size-field-native` (`[DS-COMPONENT-007]`), and `hit-area-min` (`[DS-A11Y-001]`) | `--size-icon-small`, `--size-field-web` |
-| Values (Z-index group) | `z-*` (unitless whole numbers): `--z-dropdown`, `--z-overlay`, `--z-modal`, paired with the elevation tiers (`[DS-ELEVATION-002]`) | `--z-dropdown` |
+| Values (Z-index group) | `z-*` (unitless whole numbers): `--z-dropdown`, `--z-overlay`, `--z-modal`, paired with the elevation tiers (`[DS-ELEVATION-002]`). The order is modal (1300), then dropdown (1400), then overlay (1500), so a popup opened from inside a dialog shows above it | `--z-dropdown` |
 | Motion | `motion-duration-*` (ms), `motion-ease-*` (a string variable holding a `cubic-bezier`), `motion-distance-*` | `--motion-duration-fast` |
 | Typography | `font-size-*` and `line-height-*` (px), `font-weight-*` (unitless), `font-family-*` (brand slots), and the roles `font-heading`, `font-body`, `font-mono`. Leaf in kebab case: `Font/Size/XSmall` → `--font-size-xsmall`, `Font/Weight/Semi Bold` → `--font-weight-semi-bold`. Not `--text-*`, which Tailwind reads as font sizes and Vois uses for text colors | `--font-size-small` |
 | Elevation (effect styles, which have no code syntax) | `shadow-` + tier | `--shadow-medium` |

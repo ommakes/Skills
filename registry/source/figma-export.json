@@ -879,9 +879,9 @@
   "--yellow-a7": "#dff10b80",
   "--yellow-a8": "#dff10b99",
   "--yellow-a9": "#dff10bb2",
-  "--z-dropdown": 1000,
+  "--z-dropdown": 1400,
   "--z-modal": 1300,
-  "--z-overlay": 1200
+  "--z-overlay": 1500
  },
  "shadows": {
   "--shadow-base": [[0,0,1,1,"#0000000a"],[0,0,2,0,"#00000014"],[0,1,4,1,"#0000000a"]],

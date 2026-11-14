@@ -105,7 +105,7 @@ The file is empty today. The Button's tokens were made this way on 2026-11-13 an
 
 ### Z-index layers
 
-`--z-dropdown` (1000), `--z-overlay` (1200) and `--z-modal` (1300) come from the Figma `Values` collection, written without a unit. The gaps leave room for a sticky layer (1100) and toasts (1400) later. Each layer goes with an elevation tier (vois-tokens `elevation.md`): a menu at `--shadow-medium` on `--z-dropdown`, a popover at `--shadow-large` on `--z-overlay`, a dialog at `--shadow-xlarge` on `--z-modal`.
+`--z-modal` (1300), `--z-dropdown` (1400) and `--z-overlay` (1500) come from the Figma `Values` collection, written without a unit. The order is on purpose: Radix puts menus, selects, hover cards and tooltips on the page, outside the dialog, so one opened from inside a Dialog must sit above it. The gaps leave room for a sticky layer (1100 to 1200) and toasts (1600 or more) later. Each layer goes with an elevation tier (vois-tokens `elevation.md`): a menu at `--shadow-medium` on `--z-dropdown`, a popover at `--shadow-large` on `--z-overlay`, a dialog at `--shadow-xlarge` on `--z-modal`.
 
 ### Shape roles (`shape-tokens.css`)
 
@@ -223,7 +223,7 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 - A disabled trigger dims its chevron to `--icon-state-disabled`.
 
 **Not covered here:**
-- The list sits on the `--z-dropdown` layer (1000).
+- The list sits on the `--z-dropdown` layer (1400).
 - Open and close are not animated.
 - The field's label, description and helper text are separate: use your form layout.
 

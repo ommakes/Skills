@@ -875,9 +875,9 @@
   --yellow-a7: oklch(0.9134 0.206 115.14 / 0.502);
   --yellow-a8: oklch(0.9134 0.206 115.14 / 0.6);
   --yellow-a9: oklch(0.9134 0.206 115.14 / 0.698);
-  --z-dropdown: 1000;
+  --z-dropdown: 1400;
   --z-modal: 1300;
-  --z-overlay: 1200;
+  --z-overlay: 1500;
   --grid-margin: clamp(var(--grid-margin-min), calc(var(--grid-margin-min) + (100cqi - var(--grid-margin-min-at)) * 0.024096), var(--grid-margin-max));
   --grid-gutter: clamp(var(--grid-gutter-min), calc(var(--grid-gutter-min) + (100cqi - var(--grid-gutter-min-at)) * 0.047619), var(--grid-gutter-max));
   --shadow-base: 0 0 1px 1px oklch(0 0 0 / 0.039), 0 0 2px 0 oklch(0 0 0 / 0.078), 0 1px 4px 1px oklch(0 0 0 / 0.039);
