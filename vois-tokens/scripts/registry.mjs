@@ -644,6 +644,10 @@ export const RULES = [
       if (!modalMatch) return [];
       const usesRadix = /from\s+["']@radix-ui\/react-dialog["']|from\s+["']radix-ui["']/.test(content);
       if (usesRadix) return []; // Radix handles inert/focus-trap automatically
+      // A file that imports a Dialog component from the project's own dialog module ("@/components/ui/dialog",
+      // "./Dialog", "./dialog/index") wraps it, and that Dialog does the safeguards. The imported name must start with
+      // Dialog, so a helper such as `import { openDialog } from "@/lib/dialog"` does not exempt a hand-built modal.
+      if (/import\s+(?:type\s+)?(?:\w+\s*,\s*)?(?:\{[^}]*\bDialog\w*\b[^}]*\}|Dialog\w*)\s*from\s*["'](?:[^"']*\/)?(?:react-)?dialog(?:\/index)?(?:\.[jt]sx?)?["']/i.test(content)) return [];
       const missing = [];
       if (!/\binert\b/.test(content)) missing.push("inert");
       if (!/overscroll-behavior:\s*contain/.test(content)) missing.push("overscroll-behavior: contain");

@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.31.2** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.31.3** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.31.3**: `DS-MODAL` skips a file that imports a `Dialog...` component from the project's own `dialog` module (`@/components/ui/dialog`, `./Dialog`), such as a `CommandDialog` wrapper. A hand-built modal is still flagged, even if it imports a dialog helper.
 - **1.31.2**: New `LOOKALIKE-012` (a hand-built avatar). The `LOOKALIKE-*` detector rules skip `registry/vois/` sources, which install as `components/ui/`.
 - **1.31.1**: New breakpoint token `--breakpoint-expanded` (840px, the Android expanded window class). Not a grid class.
 - **1.31.0**: new `references/shape.md` and rules `DS-SHAPE-001` to `007`. Corners are a behavior: choose a shape role (fixed, proportional, elliptical, capsule, circle) before a number. Controls stay fixed, tags and chips are pills, large visual surfaces scale with their container, and continuous corners are an enhancement.

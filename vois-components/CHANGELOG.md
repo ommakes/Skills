@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.23.0] - 2026-11-14
+
+### Changed
+- Pointers to three more registry items for a project that has none: `vois-dropdown-menu` (`JOB-TRIGGER-ACTION`, `JOB-EXPOSE-ACTIONS`), `vois-command` (`JOB-EXPOSE-ACTIONS`, `JOB-CHOOSE-FROM-LIST`) and `vois-dialog` (`JOB-OVERLAY-INTERACTION`). `vois-button-group`, `vois-collapsible` and `vois-scroll-area` have no job yet; they are in the registry README.
+
 ## [1.22.0] - 2026-11-14
 
 ### Added

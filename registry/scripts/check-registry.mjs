@@ -316,6 +316,9 @@ export const RUNTIME = new Set([
   "--radix-tooltip-content-available-width",
   "--radix-hover-card-content-transform-origin",
   "--radix-hover-card-content-available-width",
+  "--radix-collapsible-content-height",
+  "--radix-dropdown-menu-content-transform-origin",
+  "--radix-dropdown-menu-content-available-height",
 ]);
 
 export function tokenRefProblems(text, known) {

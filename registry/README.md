@@ -2,7 +2,7 @@
 
 A shadcn-style registry of Vois core components, so an agent can install a real component instead of hand-building a lookalike. It is a reference implementation of the Vois skills on shadcn/ui and Tailwind v4, not a competing component library.
 
-**Status: Phase 1 components, complete.** Twenty-three items:
+**Status: Phase 1 components, complete, plus Wave 0 of the AI components.** Twenty-nine items:
 
 - `vois-tokens`: default values for every Vois token, plus the motion tokens.
 - `vois-theme`: shadcn's variables pointed at those tokens.
@@ -18,7 +18,9 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-choice-list` and `vois-choice-card`: full-width radio or checkbox rows, and radio or checkbox cards.
 - `vois-card`, `vois-hover-card` and `vois-panel`: the container with a whole-card link, the hover preview, and the persistent secondary pane.
 
-Phase 1 is complete. Next are the AI components, in waves.
+- Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog` and `vois-command`.
+
+Phase 1 is complete. Next are the AI components, in waves (Wave 1 builds on the Wave 0 primitives).
 
 This folder is canonical in the private `ommakes/vois-skills` repo. The public `ommakes/Skills` repo carries a byte-for-byte copy, which its mirror check enforces. Nothing in it may call or import the Vois MCP, so the public copy works on its own.
 
@@ -28,7 +30,7 @@ The built files are not committed. Build them, then add the items from the build
 
 ```bash
 cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
-cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-panel.json
+cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-panel.json <path to>/registry/public/r/vois-button-group.json <path to>/registry/public/r/vois-collapsible.json <path to>/registry/public/r/vois-scroll-area.json <path to>/registry/public/r/vois-dropdown-menu.json <path to>/registry/public/r/vois-dialog.json <path to>/registry/public/r/vois-command.json
 ```
 
 Where the built registry is hosted (so you can install by URL) is not decided yet.
@@ -43,7 +45,7 @@ Then import them right after Tailwind, tokens first:
 @import "./styles/vois-theme.css";
 ```
 
-`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`.
+`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-dialog` imports `vois-button`, `vois-command` imports `vois-dialog` (for `CommandDialog`), and `vois-button-group` is meant for `vois-button`. `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`.
 
 ## Where the values come from
 
@@ -403,6 +405,54 @@ It opens when the pointer rests on the trigger (700ms) or the trigger gets keybo
 - **Content.** 16 padding, takes the free height and scrolls inside. A scroll area needs a way in for a keyboard: if the content has no focusable item, pass `tabIndex={0}`, and it shows a 2px inset `--border-state-focus` ring.
 
 In Figma the Panel's `Action` (header), `Content` and `Footer` are slots, and `Title` and `Description` are text properties. A pane the user opens with a click is a Sheet, and one that holds app navigation is a Sidebar. Neither is in the registry yet.
+
+### `vois-button-group`
+
+`vois/button-group/button-group.tsx` is shadcn's ButtonGroup with `ButtonGroup`, `ButtonGroupText` and `ButtonGroupSeparator`, from the Figma Button Group set. Put Vois Buttons (variant `outline` or `secondary`) inside. The group does not restyle their colors, which already match the Figma hover, pressed and disabled states.
+
+- **Joined edges.** The first Button keeps its left corners and the last its right corners (`--radius-buttons-and-controls`, 6). Every corner between two is square. Each Button keeps its 1px border and overlaps the one before by 1px, so a shared edge is one line. Figma draws only three positions (Left, Middle, Right); this works for any number.
+- **Focus.** The ring moves inside the Button (2px, `-2px` offset), as in Figma, and the focused Button sits above its neighbors.
+- **Vertical.** `orientation="vertical"` stacks the group and joins the top and bottom edges.
+- **Text and separator.** `ButtonGroupText` is a label segment (`--bg-subtle`, `--border-default` edge, 16/24 medium `--text-secondary`). `ButtonGroupSeparator` is a 1px `--border-default` line.
+
+Use it for a few related actions that read as one control. For a choice of one view, use the SegmentedControl.
+
+### `vois-collapsible`
+
+`vois/collapsible/collapsible.tsx` is shadcn's Collapsible (Radix) with `Collapsible`, `CollapsibleTrigger` and `CollapsibleContent`. It has no look of its own: the trigger is whatever you pass, so it takes the Vois focus ring from that component. The Vois part is the motion. The content opens and closes by height in `--motion-duration-base` with `--motion-ease-standard`, and under reduced motion it opens and closes at once. Do not pass your own `id` to `CollapsibleContent`: Radix points the trigger's `aria-controls` at its own id.
+
+### `vois-scroll-area`
+
+`vois/scroll-area/scroll-area.tsx` is shadcn's ScrollArea (Radix) with `ScrollArea` and `ScrollBar`, from the new Figma Scrollbar set (Selectors page, `8086:3446`). A 16 wide transparent track and an 8 wide capsule thumb, 4 on each side. The thumb is `--border-default` at rest (3:1 or more on the page and cards) and `--border-state-hover` on hover and while dragging. The viewport shows a 2px inset `--border-state-focus` ring when the keyboard focuses it. Use `type="always"` where the scrollbar is the only sign that there is more.
+
+### `vois-dropdown-menu`
+
+`vois/dropdown-menu/dropdown-menu.tsx` is shadcn's DropdownMenu (Radix) with all its parts, from the Figma Dropdown Menu and Menu Item sets. It is the same list as the Select.
+
+| Part | Look |
+|---|---|
+| Content | `--bg-card`, 1px `--border-pretty`, `--shape-rounded`, `--shadow-medium`, 8 padding, `--z-dropdown`, a motion-token fade |
+| Item | 40 tall (`size="sm"` 32), 12 left and 8 right padding, 14/20, `--select-resting` and `--text-state-resting` |
+| Highlighted | `--select-hover` (pointer or arrow keys). Keyboard focus adds a 2px inside `--border-state-focus` ring |
+| Checked (checkbox and radio) | `--select-soft-active`, `--text-accent`, a check or a dot |
+| `variant="destructive"` | `--text-negative`, `--select-negative` when highlighted (the Figma Error state) |
+| Disabled | no fill, `--text-state-disabled`, skipped by the arrow keys |
+| Label, shortcut | 14/20 semibold and 12/16 medium, both `--text-hint` |
+| Separator | 1px `--border-default`, inset 24, 12 above and below |
+
+Figma binds the label and shortcut to `--text-state-instruction` (gray-6, under 4.5:1), so the code uses `--text-hint`. The Figma Solid Active and Aux item states are not built. For choosing a value for a field, use the Select.
+
+### `vois-dialog`
+
+`vois/dialog/dialog.tsx` is shadcn's Dialog (Radix) with `Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogContent`, `DialogClose`, `DialogHeader`, `DialogFooter`, `DialogTitle` and `DialogDescription`, from the Figma Dialog. Install `vois-button` with it.
+
+A 344 wide card (never wider than the screen minus 16 each side): `--bg-card`, 1px `--border-default`, `--shape-rounded` (Figma binds the 12 radius), `--shadow-large`, centered on `--z-modal` over a `--bg-overlay-dark` scrim. The header has 24 padding, a 20/28 semibold title and a 14/20 `--text-secondary` description. The close button is a 40 by 40 ghost icon Button, 8 from the corner (`showCloseButton={false}` removes it). The footer aligns actions to the end, 16 apart. The scrim and the card fade in `--motion-duration-fast`, and under reduced motion they appear at once. Radix traps and returns focus, closes on Escape and makes the page behind inert. Do not pass your own `id` to `DialogTitle` or `DialogDescription`: Radix points `aria-labelledby` and `aria-describedby` at its own ids. A destructive confirmation is an AlertDialog, which is not in the registry yet.
+
+### `vois-command`
+
+`vois/command/command.tsx` is shadcn's Command (cmdk) with `Command`, `CommandDialog`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandShortcut` and `CommandSeparator`, from the Figma Command Menu. Install `vois-dialog` with it.
+
+`Command` is a `--bg-card` surface with no edge or shadow, so it can sit in a Popover or a Dialog. `CommandDialog` is the Figma menu: a 460 wide Dialog with no padding. The search row is 56 tall with 24 side padding, a 20 icon, 16/24 text and a 1px `--border-default` line under it. The list has 12 padding, 320 max height, and group headings in 14/20 semibold `--text-hint`. An item is 40 tall with 16 side padding. cmdk keeps keyboard focus in the input and marks one item selected, so selected is the hover look (`--bg-hover`), pressed is `--bg-pressed`, and the selected item gets a 2px inside `--border-state-focus` ring while the input has keyboard focus (`--bg-hover` alone is about 1.1:1). cmdk sets its own ids on the input, list and items, so select them by `data-slot` or `data-value`.
 
 ### `vois-spinner`
 

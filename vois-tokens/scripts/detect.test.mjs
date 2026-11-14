@@ -403,6 +403,26 @@ test("LOOKALIKE-012 flags a hand-built avatar and leaves dots, icons and Avatar 
   assert.ok(f(`<div className="${"x ".repeat(1000)}size-10 rounded-full"><img src={u} /></div>`).includes("LOOKALIKE-012"), "a long tag under the cap is read");
 });
 
+test("DS-MODAL skips a file that imports the project's Dialog, and still flags a hand-built modal", () => {
+  const ids = (src, path = "src/screens/x.tsx") => detectFile(path, src).map((f) => f.ruleId);
+  const custom = "function MyDialog() { return <Dialog open>hi</Dialog> }";
+  assert.ok(ids(custom).includes("DS-MODAL"), "a hand-built modal is flagged");
+  assert.ok(!ids('import { Dialog } from "@/components/ui/dialog"\n' + custom).includes("DS-MODAL"), "alias import");
+  assert.ok(!ids('import { Dialog } from "./dialog"\n' + custom).includes("DS-MODAL"), "relative import");
+  assert.ok(!ids('import { Dialog } from "radix-ui"\n' + custom).includes("DS-MODAL"), "radix-ui import (unchanged)");
+  // The review found these: capital letters, extensions and index files count.
+  assert.ok(!ids('import { Dialog } from "@/components/Dialog"\n' + custom).includes("DS-MODAL"), "capital D path");
+  assert.ok(!ids('import { Dialog } from "./dialog.tsx"\n' + custom).includes("DS-MODAL"), "extension");
+  assert.ok(!ids('import { DialogContent } from "./dialog/index"\n' + custom).includes("DS-MODAL"), "index file");
+  assert.ok(!ids('import Dialog from "./dialog"\n' + custom).includes("DS-MODAL"), "default import");
+  assert.ok(!ids('import {\n  Dialog,\n  DialogContent,\n} from "@/components/ui/dialog"\n' + custom).includes("DS-MODAL"), "multi-line import");
+  // Other imports and look-alike paths do not count.
+  assert.ok(ids('import { Dialog } from "@/components/ui/dialogs-old"\n' + custom).includes("DS-MODAL"), "dialogs-old is not dialog");
+  assert.ok(ids('import { Button } from "@/components/ui/button"\n' + custom).includes("DS-MODAL"), "an unrelated import");
+  assert.ok(ids('import { openDialog } from "@/lib/dialog"\n' + custom).includes("DS-MODAL"), "a dialog helper is not the Dialog component");
+  assert.ok(ids('import { show } from "../utils/dialog"\n' + custom).includes("DS-MODAL"), "a utility in a dialog module");
+});
+
 test("LOOKALIKE-011 ignores hyphenated attributes that end in title", () => {
   const f = (src) => detectFile("a.tsx", src).map((x) => x.ruleId);
   assert.ok(!f('<div data-title="Revenue">x</div>').includes("LOOKALIKE-011"));

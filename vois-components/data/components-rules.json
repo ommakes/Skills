@@ -30,7 +30,7 @@
       "decision_tree": [
         { "condition": "Action has a text label (most actions should)", "sub_branches": [
           { "condition": "Primary, secondary, destructive, outline, ghost", "recommendation": "Button (variant handles it). If the project has none, the registry's vois-button item: 36px by default on web, 48px on native (vois-tokens DS-COMPONENT-007)" },
-          { "condition": "Action opens a menu of related choices", "recommendation": "Button + DropdownMenu (see Job 15)" }
+          { "condition": "Action opens a menu of related choices", "recommendation": "Button + DropdownMenu (see Job 15; the registry's vois-dropdown-menu if the project has none)" }
         ] },
         { "condition": "Action is icon-only (constrained space, toolbar, well-understood symbol)", "sub_branches": [
           { "condition": "Single action", "recommendation": "Button with icon and aria-label" },
@@ -51,11 +51,11 @@
       "framing": "You need to give the user access to multiple actions without cluttering the primary UI.",
       "decision_tree": [
         { "condition": "Actions are specific to the item on screen (row in a table, selected card)", "sub_branches": [
-          { "condition": "Triggered by a button click", "recommendation": "DropdownMenu" },
+          { "condition": "Triggered by a button click", "recommendation": "DropdownMenu (the registry's vois-dropdown-menu if the project has none)" },
           { "condition": "Triggered by right-click", "recommendation": "ContextMenu" }
         ] },
-        { "condition": "Actions are global or page-level (header actions, toolbar)", "recommendation": "DropdownMenu (anchored to a trigger button)" },
-        { "condition": "Actions are searched or navigated by keyboard (power users, complex apps)", "recommendation": "Command (palette-style — see Job 6)" }
+        { "condition": "Actions are global or page-level (header actions, toolbar)", "recommendation": "DropdownMenu (anchored to a trigger button; the registry's vois-dropdown-menu if the project has none)" },
+        { "condition": "Actions are searched or navigated by keyboard (power users, complex apps)", "recommendation": "Command (palette-style — see Job 6; the registry's vois-command if the project has none)" }
       ],
       "rationale": [
         { "question": "Why not a flat list of buttons for everything?", "answer": "Two visible actions is the target and three is the ceiling. Group everything else, including secondary and destructive actions, inside a DropdownMenu." },
@@ -287,7 +287,7 @@
       "decision_tree": [
         { "condition": "Editing or acting on exactly one field or value, anchored to the specific row/item that triggered it (not a multi-field task)", "recommendation": "Popover (anchored to the trigger element, no Dialog/Sheet/Drawer chrome)" },
         { "condition": "Short, self-contained task (confirm, quick form, select one thing)", "sub_branches": [
-          { "condition": "1–4 fields or a single decision", "recommendation": "Dialog" },
+          { "condition": "1–4 fields or a single decision", "recommendation": "Dialog (the registry's vois-dialog if the project has none)" },
           { "condition": "Destructive or consequential", "recommendation": "AlertDialog (see Job 1)" }
         ] },
         { "condition": "Task touches more than one field (a handful or more), needs more screen space, or otherwise relates to an item in a list", "sub_branches": [
@@ -388,7 +388,7 @@
       "decision_tree": [
         { "condition": "Short list (under 8 items), no search needed, single select", "recommendation": "Select (dropdown, keyboard navigable). If the project has none, the registry's vois-select item: 36px on web, 48px native, 32px compact only inline in a table (vois-tokens DS-COMPONENT-007)" },
         { "condition": "Long list (8+ items) OR user might not know the exact option name", "recommendation": "Combobox (Select + search input, filters as user types)" },
-        { "condition": "User needs to search across multiple data types or trigger actions (not just pick a value)", "recommendation": "Command (palette-style, supports search + sections + keyboard shortcuts)" },
+        { "condition": "User needs to search across multiple data types or trigger actions (not just pick a value)", "recommendation": "Command (palette-style, supports search + sections + keyboard shortcuts; the registry's vois-command if the project has none)" },
         { "condition": "Only 2 options", "recommendation": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices. If the project has no RadioGroup, the registry's vois-radio-group item. Full-width rows or cards instead of bare radios: the registry's vois-choice-list or vois-choice-card item" }
       ],
       "rationale": [

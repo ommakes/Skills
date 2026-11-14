@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.0] - 2026-11-14
+
+Wave 0: the six primitives the AI components need (see `prds/ai-components-wave-1.md`). Each is checked in Chromium in light, dark and reduced motion.
+
+- `vois-button-group`: joined Buttons that work for any number (1px overlap, square inner corners), an inside focus ring as in the Figma Button Group, a vertical orientation, a text segment and a separator.
+- `vois-collapsible`: Radix Collapsible with a height animation on the motion tokens that stops under reduced motion.
+- `vois-scroll-area`: Radix ScrollArea with the new Figma Scrollbar set (`8086:3446`): a 16 wide track, an 8 wide capsule thumb in `--border-default` (3:1 or more), darker on hover and drag.
+- `vois-dropdown-menu`: Radix DropdownMenu from the Figma Dropdown Menu and Menu Item sets, the same list as the Select, with checked and radio items, destructive items, shortcuts, labels, separators and submenus.
+- `vois-dialog`: Radix Dialog from the Figma Dialog: a 344 wide card on `--z-modal`, a `--bg-overlay-dark` scrim, a 40 ghost close button and a motion-token fade.
+- `vois-command`: cmdk from the Figma Command Menu: a 56 tall search row, 40 tall items with a keyboard ring, and a `CommandDialog`.
+- `RUNTIME` in `check-registry` gains the Radix Collapsible (`--radix-collapsible-content-height`) and DropdownMenu (`--radix-dropdown-menu-content-transform-origin` and `-content-available-height`) variables, only the ones the code reads.
+- Known gap, for a decision: a DropdownMenu, Select, HoverCard or Tooltip opened from inside a Dialog renders behind it, because the z-index ladder puts the modal (1300) above the dropdown (1000) and overlay (1200) layers. See `registry/FIGMA-TODO.md`.
+- Two Radix and cmdk traps are documented in the files: a custom `id` on `CollapsibleContent`, `DialogTitle` or `DialogDescription` breaks the `aria-*` link, and cmdk ignores custom ids.
+- No token or export change.
+
 ## [0.7.0] - 2026-11-14
 
 Thirteen new items, each checked in Chromium in light and dark.
