@@ -44,8 +44,7 @@ const selectTriggerVariants = cva(
     // data-* variants are written after disabled and aria-*, so each one here is guarded so that disabled
     // and error still win: the placeholder color skips a disabled trigger, and open skips an invalid one.
     "data-[placeholder]:not-disabled:text-[color:var(--text-state-instruction)]",
-    "data-[state=open]:not-aria-invalid:border-[color:var(--border-state-focus)] data-[state=open]:not-aria-invalid:shadow-[inset_0_0_0_1px_var(--border-state-focus)]",
-    "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--border-negative)]",
+    "data-[state=open]:outline-[length:var(--focus-ring-width)] data-[state=open]:outline-offset-[var(--focus-ring-offset)] data-[state=open]:outline-[color:var(--border-state-focus)]",
     "[&>span]:truncate [&_svg]:pointer-events-none [&_svg]:shrink-0",
     "[&:disabled_[data-slot=select-icon]]:text-[color:var(--icon-state-disabled)]",
   ],

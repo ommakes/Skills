@@ -8,7 +8,7 @@
 // same border, fill, radius, padding, hover and transition. The states live on the inner input, so the
 // group mirrors them onto its box with :has() (not focus-within):
 // - focus: the inner input matches :focus-visible. A focused InputGroupButton does not light the group;
-//   it draws its own 2px --border-state-focus outline, 2px out.
+//   it draws its own 2px --border-state-focus outline, 2px out. The group box itself shows the same ring when its input has focus.
 // - error: the inner input has aria-invalid="true".
 // - disabled: the inner input is disabled.
 // - prefill: InputGroupInput takes `prefill`, as the Input does.
@@ -63,14 +63,13 @@ const inputGroupVariants = cva(
     // a div, so the :has() rules below carry those states.
     ...fieldClasses,
     "relative flex items-center gap-[var(--space-8)]",
-    // Focus: the 2px Figma border, a 1px border plus a 1px inset ring. Error needs no exclusion here: its
-    // rule below is more specific (two :has() parts), so a focused invalid field keeps its red border.
-    "[&:has([data-slot=input-group-control]:focus-visible)]:border-[color:var(--border-state-focus)] [&:has([data-slot=input-group-control]:focus-visible)]:bg-[color:var(--input-focus)] [&:has([data-slot=input-group-control]:focus-visible)]:shadow-[inset_0_0_0_1px_var(--border-state-focus)]",
+    // Focus: the 1px edge stays and a ring (an outline) sits 2px outside it. A focused invalid field keeps its red
+    // edge and shows the ring as well.
+    "[&:has([data-slot=input-group-control]:focus-visible)]:outline-[length:var(--focus-ring-width)] [&:has([data-slot=input-group-control]:focus-visible)]:outline-offset-[var(--focus-ring-offset)] [&:has([data-slot=input-group-control]:focus-visible)]:outline-[color:var(--border-state-focus)] [&:has([data-slot=input-group-control]:focus-visible)]:bg-[color:var(--input-focus)]",
     // Prefill: loses to disabled, error and focus.
     "[&:has([data-slot=input-group-control][data-prefill=true]):not(:has([data-slot=input-group-control]:disabled,[data-slot=input-group-control][aria-invalid=true],[data-slot=input-group-control]:focus-visible))]:border-[color:var(--border-info)] [&:has([data-slot=input-group-control][data-prefill=true]):not(:has([data-slot=input-group-control]:disabled,[data-slot=input-group-control][aria-invalid=true],[data-slot=input-group-control]:focus-visible))]:bg-[color:var(--input-prefill)]",
     // Error: loses only to disabled. Focused with an error keeps the red border, with a red inner ring.
     "[&:has([data-slot=input-group-control][aria-invalid=true]):not(:has([data-slot=input-group-control]:disabled))]:border-[color:var(--border-negative)] [&:has([data-slot=input-group-control][aria-invalid=true]):not(:has([data-slot=input-group-control]:disabled))]:bg-[color:var(--input-negative)]",
-    "[&:has([data-slot=input-group-control][aria-invalid=true]:focus-visible)]:shadow-[inset_0_0_0_1px_var(--border-negative)]",
     // Disabled wins over everything.
     "[&:has([data-slot=input-group-control]:disabled)]:cursor-not-allowed [&:has([data-slot=input-group-control]:disabled)]:border-[color:var(--border-state-disabled)] [&:has([data-slot=input-group-control]:disabled)]:bg-[color:var(--input-disabled)]",
     // A segment at an edge (Inline Input Button, URL prefix) sits flush with the border: no padding there.

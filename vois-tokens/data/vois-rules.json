@@ -202,6 +202,16 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-A11Y-018",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Focus indicators inherit component geometry. A focus indicator is an external ring: `outline: var(--focus-ring-width) solid var(--border-state-focus)` with `outline-offset: var(--focus-ring-offset)` (2px and 2px). Keep the control's own 1px border and its size: never swap the border for a thicker one, and never set `border-radius` on focus, because the browser draws an outline at the control's radius plus the offset. Where the ring would be clipped (an item in a scrolling or `overflow` container) draw it inside with a negative offset in the same color. Keep the ring when the field is in error. The ring color meets 3:1 on every surface in both themes.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-ANIMATION-001",
       "category": "DS-ANIMATION",
       "category_label": "Animation",
