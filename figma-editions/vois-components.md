@@ -1,12 +1,12 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.18.0
+version: 1.26.0
 ---
 
 # Vois Component Selection Skill
 
-> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`), the Stepper spec as its own file, and the motion specs (`references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`, `motion-logic.md`: label and text morph, shared element transfer, number ticker, icon morph, status button, chart range change and more). This edition inlines the Stepper and the Tray, and leaves the other motion specs out.
+> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`), the Stepper spec as its own file, and the motion specs (`references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`, `motion-logic.md`: label and text morph, shared element transfer, number ticker, icon morph, status button, chart range change and more). This edition inlines the Stepper and the Tray, and leaves the other motion specs out. The full repo also has `registry/`: Vois versions of many components named here (Button, Input, Select, Checkbox, Switch, RadioGroup, Tabs, Dialog, Card, Tooltip, Badge, Avatar, Stepper and more). Where a job says "the registry's `vois-x` item", use it when the project has no component of that name.
 
 You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-tokens`).
 
@@ -66,6 +66,9 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Open a record from a table row | Sheet (full page if the record is big) | Dialog |
 | One headline number | Stat tile in a Card (see vois-dataviz) | A one-bar chart |
 | Trend, comparison, share, distribution | Chart: walk the vois-dataviz decision tree | A table of raw rows |
+| One or several options in a questionnaire | RadioGroup or Checkbox as whole-row cards (Job 22) | Select |
+| Rate on a scale, or rank items | ToggleGroup, RadioGroup or Slider by scale; a drag-sort list with buttons to rank (Job 23) | A matrix grid |
+| Show how others answered a choice question | Poll or quiz result rows, after the answer (Job 24) | A chart |
 | Persistent app navigation | Sidebar | Drawer |
 | Contextual tools for selected item | Sheet or Panel | Sidebar, Drawer |
 
@@ -82,7 +85,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 - Affects other users (revoke access, cancel shared resource) → AlertDialog + post-action notification
 - Has external consequences (publish, send email, charge) → AlertDialog with explicit consequence text in body
 
-Why not Dialog? AlertDialog enforces `role="alertdialog"`, which screen readers announce with higher urgency — use it whenever consequences exist. Why not Toast for irreversible actions? Toasts auto-dismiss; if the user looks away, they miss confirmation. Reserve Toast-with-undo for actions with at least a 5-second undo window.
+Why not Dialog? AlertDialog enforces `role="alertdialog"`, which screen readers announce with higher urgency — use it whenever consequences exist. Why not Toast for irreversible actions? Toasts auto-dismiss; if the user looks away, they miss confirmation. Reserve Toast-with-undo for actions with at least a 5-second undo window. Where does focus start in an AlertDialog? On Cancel, never on the destructive button (`DS-A11Y-020`), so a reflex Enter cannot confirm a delete.
 
 **Job 2 — Show transient feedback after a user action** `JOB-TRANSIENT-FEEDBACK`
 *The user did something and the UI needs to acknowledge it.*
@@ -96,7 +99,7 @@ Why not Toast for actionable messages? It can disappear before the user reads or
 **Job 13 — Communicate loading state** `JOB-LOADING-STATE`
 *Something is being fetched or processed.*
 - Fetching content that fills a known layout (page/list/card load) → Skeleton matching the shape of incoming content
-- Short in-place action (button submitting, search running) → Spinner inside/replacing the trigger, disable the trigger
+- Short in-place action (button submitting, search running) → Spinner inside/replacing the trigger, disable the trigger. With the registry Button, set its `loading` prop: it shows the Vois spinner, keeps the width and ignores clicks
 - Long operation with measurable progress (upload, multi-step processing) → Progress bar with percentage/step count
 - A table is loading: first load → Skeleton rows under the real column headers, matching the loaded column widths; filter, sort, or page change reloading data → keep the stale rows and show a small Spinner, don't blank the table
 
@@ -121,9 +124,9 @@ Why not skip the empty state? A blank area with no explanation looks broken. Why
 - Editing exactly one field/value, anchored to the specific row/item that triggered it → Popover (anchored to the trigger, no Dialog/Sheet/Drawer chrome)
 - Short, self-contained task, 1–4 fields or a single decision → Dialog
 - Short, self-contained, destructive/consequential → AlertDialog (see Job 1)
-- Task touches a handful of fields or more, needs more screen space, or otherwise relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap)
+- Task touches a handful of fields or more, needs more screen space, or otherwise relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap). When the user must keep working in the page behind it (compare, copy a value, pick rows), use it as a peek: no scrim, no inert background and no focus trap (`PATH-D-4`). The modal rules `DS-MODAL-001` and `DS-MODAL-002` do not apply to a peek
 - Longer task needing full attention → Drawer (full-height, slides from bottom on mobile)
-- Simple contextual input on mobile (quick select, number entry, confirmation) → Drawer (action sheet pattern)
+- Simple contextual input on mobile (quick select, number entry, confirmation) → Drawer (the bottom sheet pattern)
 - A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it → Drawer used as a tray: one container that stays mounted while the steps swap inside it (see Tray Spec below)
 - Filters or sort controls for a list or table on a mobile layout → Drawer (slides from the bottom, closes when done). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone
 - The user opens a record from a table row: 8 or fewer fields and no related records → Sheet (right-anchored, table stays visible), view first with an Edit action or edit directly; tabs, a timeline, related records, or a long form → full page, reached from an Open action in the Sheet; only a confirmation, not a record → AlertDialog or Dialog
@@ -158,7 +161,7 @@ Why not Drawer for persistent navigation? Drawer is temporary; navigation the us
 
 **Job 5 — Switch between views or filter to a subset** `JOB-SWITCH-VIEWS`
 *Navigate between distinct views, or filter content into categories.*
-- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs. A settings page with 4 or more sections uses sidebar navigation instead
+- Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs (the registry's `vois-tabs` is pill by default, underline with `variant="underline"`). A settings page with 4 or more sections uses sidebar navigation instead
 - Filtering to a category, 2–4 mutually exclusive options → Segmented Control (or pill-styled Tabs)
 - Filtering, 5+ options or options that change dynamically → Select or Combobox (see Job 6)
 - Applying non-exclusive labels/types (tagging, multi-select filter) → Checkbox group or Badge filters, not Tabs
@@ -177,16 +180,16 @@ Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unn
 
 **Job 6 — Let the user choose from a known list** `JOB-CHOOSE-FROM-LIST`
 *Select one or more items from a predefined set.*
-- Short list (under 8), no search needed, single select → Select (dropdown)
+- Short list (under 8), no search needed, single select → Select (dropdown; the registry's `vois-select` is 36px on web, 48px native, 32px compact only inline in a table: `DS-COMPONENT-007`)
 - Long list (8+) or user might not know the exact option name → Combobox (Select + search)
 - User needs to search across data types or trigger actions, not just pick a value → Command (palette-style)
-- Only 2 options → Radio buttons or Segmented Control, not Select
+- Only 2 options → Radio buttons or Segmented Control, not Select. Full-width rows or cards instead of bare radios: the registry's `vois-choice-list` or `vois-choice-card`
 
 Why not Combobox for short lists? Adds a search affordance where none is needed — Select is simpler with less friction. Why not Command for standard selection? It's a power-user tool; using it for a plain form field pick adds cognitive overhead.
 
 **Job 9 — Accept text input from the user** `JOB-ACCEPT-TEXT`
 *The user needs to enter text as part of a form or interaction.*
-- Single line (name, email, search, number, URL) → Input
+- Single line (name, email, search, number, URL) → Input (the registry's `vois-input` is 36px on web, 48px native, 32px compact only inline in a table; with an icon, prefix, clear or show-password button use `vois-input-group`; a label, description and error around any field is `vois-field`)
 - Fixed-length one-time code (email or SMS verification code, authenticator code) → InputOTP (one cell per character, behaves as a single field)
 - Multi-line, unformatted, 1–3 lines expected → Textarea sized with the line-count tokens; keep a `rows` attribute as the fallback for browsers without `field-sizing` support
 - Multi-line, unformatted, 4+ lines expected → Textarea with `field-sizing: content`, or fixed height + scroll
@@ -196,7 +199,7 @@ Why not Textarea for everything? Single-line inputs set a clear expectation — 
 
 **Job 10 — Capture a binary preference** `JOB-BINARY-PREFERENCE`
 *Turn something on/off, or agree/disagree.*
-- Takes effect immediately, no save button → Switch (or Toggle)
+- Takes effect immediately, no save button → Switch (or Toggle; the registry's `vois-switch` is 32 x 20 on web, 52 x 32 native)
 - Part of a form submitted later, one option in a group → Checkbox
 - Part of a form submitted later, single standalone consent → Checkbox, not Switch
 - Mutually exclusive choice between two options in a form → Radio buttons, not Checkbox
@@ -255,7 +258,7 @@ Why not Popover for tooltips? Requires a click to open/close — more friction t
 
 **Job 8 — Trigger an action** `JOB-TRIGGER-ACTION`
 *The user needs a target to tap or click.*
-- Has a text label, primary/secondary/destructive/outline/ghost → Button (variant handles it)
+- Has a text label, primary/secondary/destructive/outline/ghost → Button (variant handles it; the registry's `vois-button` is 36px on web, 48px native: `DS-COMPONENT-007`)
 - Has a text label, opens a menu of related choices → Button + DropdownMenu (see Job 15)
 - Icon-only, single action → Button with icon + `aria-label`
 - Icon-only, grouped with other icon actions → Toggle (on/off) or Button (one-shot)
@@ -291,6 +294,36 @@ Why not Progress for onboarding flows? Progress just displays how far along some
 
 Why not FormProvider for everything? Excess infrastructure for a single controlled field — use it at 3+ fields with cross-field validation. Why not nested Forms? HTML doesn't allow nested `<form>` elements — use sibling forms for independent submission targets.
 
+### Surveys & Questionnaires
+
+One question per screen, answered on a phone. `vois-patterns` `PATH-H` has the structure around these jobs.
+
+**Job 22 — Let a respondent choose from options** `JOB-ANSWER-CHOICE-QUESTION`
+*The question has a fixed set of answers.*
+- One answer: 7 options or fewer → RadioGroup as whole-row cards; 8 to 12 → RadioGroup as rows in a scrolling list; more than 12 → a searchable list with an announced result count
+- More than one answer: 12 options or fewer → Checkbox as whole-row cards, with the min and max stated before the answer, and at the max the rest disabled with a reason; more than 12 → a searchable checkbox list
+- The respondent needs a free answer too → "Other" as the last option, opening a short field inline in the same question
+
+Why not a Select? On mobile the respondent taps and scrolls to see the options; a vertical list shows them all. Why disable at the max and not drop an earlier pick? Dropping a pick silently changes the answer. Why no auto-advance? A mis-tap cannot be corrected; Next is explicit and a Review screen follows.
+
+**Job 23 — Let a respondent rate or rank** `JOB-ANSWER-SCALE-OR-RANK`
+*The answer is a position on a scale, or an order.*
+- Rate one statement: 5 points → ToggleGroup as a Likert row, 48px points, every point labelled (vertical if a point would drop below 44px); 7 points → RadioGroup as full-width Likert rows, every point labelled; 11 points (0 to 10) → Slider (native range) with word labels on both ends and `aria-valuetext`
+- Rate several statements on one scale → an Accordion, one statement at a time, 5 per group at most; no grid below 1024px
+- Put items in order: 6 or fewer → a drag-sort list, rank all; 7 to 12 → drag-sort, top 3 count; more than 12 → do not rank, ask for a top 3 pick or use MaxDiff. Press and hold to drag, and always give up and down buttons
+
+Why is there no ranking component in shadcn? Build one on a sortable list library; the up and down buttons let a person rank without dragging (WCAG 2.5.7). Why 5 points by default? It is the lowest burden that still separates opinions; never mix 5 and 7 for one construct. Why not a matrix grid? On a phone it forces horizontal scroll or tiny targets.
+
+**Job 24 — Show how others answered a choice question** `JOB-SHOW-POLL-RESULTS`
+*After the answer, the respondent sees the crowd.*
+- The question has a right answer → quiz mode: result rows with a check icon and the words "Correct answer" on the right option, and "Your answer" on the respondent's pick
+- No right answer → poll mode: the respondent's pick marked and the most chosen option emphasised
+- Fewer than 10 votes → no percents and no counts; say there are too few votes yet (still mark the correct answer in a quiz)
+- Multi-select → each row is its share of respondents; rows add up to more than 100%, and one line says so
+- A scale or a ranking → out of scope here; use a distribution chart (`vois-dataviz`)
+
+Why reveal only after the answer? Seeing the crowd first changes what people pick. Why keep the option order? Rows that re-sort by votes make people lose their place. Why an icon and words for the correct answer? Colour alone fails for colour blind users and screen readers. Why hide numbers under 10 votes? A percent or a count can point at one person.
+
 ---
 
 ## Stepper Spec
@@ -299,9 +332,9 @@ shadcn/ui ships no Stepper. Build it once per workspace and reuse it; don't rebu
 
 - **What it is:** a step indicator for a sequential, required flow of 2 to 5 steps, shown above the step content. Not a quantity control (minus, number, plus), not Tabs, not Progress, not a Breadcrumb. One step is not a flow.
 - **Anatomy:** a `nav` with an `aria-label` that names the flow, holding an `ol`. Each `li` has a marker (a circle with the step number, or a check when complete), a one or two word noun label, and a connector line that fills when the step before it is complete. An optional one-line description shows on the current step only.
-- **States** (each carries more than color): Upcoming = number, neutral border, muted label. Current = filled with the primary color, `aria-current="step"`. Complete = check icon, "Completed" in visually hidden text. Error = alert icon in the `negative` status role, "Needs attention" in visually hidden text.
+- **States** (each carries more than color): Upcoming = number, neutral border, muted label. Current = filled with `--base-positive`, `aria-current="step"`. Complete = filled with `--base-positive`, check icon, "Completed" in visually hidden text. Error = alert icon in the `negative` status role, "Needs attention" in visually hidden text.
 - **Behavior:** Back and Next move between steps; the indicator is not in the tab order. A completed step is clickable only when going back loses nothing the user typed. Each step validates before the next opens. Back keeps what the user typed. On a step change, move focus to the new step's heading. The last step is a result ("Done") with no Next.
-- **Layout:** top of the form container, above the step content. One Stepper per flow. Below the `sm` breakpoint, show only the current label and a line such as "Step 2 of 3: Team", and keep the markers. Markers are 32px; connectors are 1px lines.
+- **Layout:** top of the form container, above the step content. One Stepper per flow. Below the `sm` breakpoint, show only the current label and a line such as "Step 2 of 3: Team", and keep the markers. Markers are 32px; connectors are 2px lines in `--border-default`, and `--border-state-focus` after a complete step.
 - **Motion and contrast:** color changes take 200ms or less and respect `prefers-reduced-motion`. Label on its background is normal text (4.5:1); the marker border against the page is a UI component (3:1).
 
 ---
@@ -347,7 +380,8 @@ Agents often write markup that looks like a component but isn't one. A screen ca
 | `setTimeout` that hides a message | Sonner toast |
 | "x" or "×" text as a close | The Dialog or Sheet close, or a ghost icon Button with `aria-label` |
 | `window.confirm`, `alert` or `prompt` | AlertDialog, or Sonner |
-| A colored `border-l-4` box with an icon and text | Alert with a status role |
+| A colored `border-l-4` box with an icon and text | Alert with a status role (`info`, `positive`, `negative`, `notice`; not `warning`) |
+| A round `div` or `span` holding an image, or one or two capital letters, as a person's picture | Avatar with AvatarImage and AvatarFallback |
 | `title="..."` as a tooltip | Tooltip |
 
 When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
@@ -361,5 +395,7 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 **Read `vois-tokens` after.** Once components are selected, `vois-tokens` handles tokens, spacing, animation, and accessibility implementation.
 
 **`vois-dataviz` for charts.** `JOB-VISUALIZE-DATA` picks the container (Card, Tabs, filter row, states). The chart form, chart colors, honesty rules and dashboard structure come from `vois-dataviz` in the full repo.
+
+**`vois-fields` for specialized inputs.** `JOB-ACCEPT-TEXT` picks the component (Input, Textarea, InputOTP). For an email, phone, URL, postal code, name, VIN, driver's license, SSN, money, percent, date or one-time code value, a prefilled value or a record picker, `vois-fields` (full repo) gives the input type, keyboard, autofill, check timing and privacy handling. A one-time code input must take a pasted or autofilled whole code.
 
 **Righter for all copy.** Component labels, empty state messages, button text, error copy — all of it goes through `righter`. This skill says nothing about words.
