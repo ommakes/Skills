@@ -175,7 +175,7 @@ const copyIds = new Set();
 for (const c of copy) {
   if (copyIds.has(c.id)) fail(`duplicate copy id ${c.id}`); copyIds.add(c.id);
   for (const k of ["id", "name", "when_to_use", "golden_rule", "rules", "variants", "examples", "path_ids"]) if (!c[k]) fail(`copy ${c.id} is missing ${k}`);
-  for (const p of c.path_ids || []) if (!nodeIds.has(p) && !fieldIds.has(p) && !(fieldIds.size === 0 && p.startsWith("FIELD-"))) fail(`copy ${c.id} cites ${p}, which is not a known id`);
+  for (const p of c.path_ids || []) if (!nodeIds.has(p) && !fieldIds.has(p) && !(!existsSync(fieldsPath) && p.startsWith("FIELD-"))) fail(`copy ${c.id} cites ${p}, which is not a known id`);
   for (const v of c.variants || []) if (!v.name || !v.sentence_construction) fail(`copy ${c.id} has a variant without name or sentence_construction`);
   if (!c.examples?.good?.length || !c.examples?.bad?.length) fail(`copy ${c.id} needs good and bad examples`);
   if (JSON.stringify(c).includes("\u2014")) fail(`copy ${c.id} contains an em dash`);
