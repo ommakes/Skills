@@ -113,7 +113,7 @@ Each is the Large tier's layers (without the 1px ring) moved along one axis by t
 - `[DS-ELEVATION-011]` Cross-fade the opacity of a pre-drawn layer to animate Medium and heavier tiers. Do not animate `box-shadow` on them.
 - `[DS-ELEVATION-012]` Check contrast on every elevated fill: text 4.5:1, control edge 3:1.
 
-These are advisory today. There is no detector yet.
+`DS-ELEVATION-006` and `-007` have detectors (`scripts/elevation-checks.mjs`, listed in `references/hooks.md` with their gaps). The others are judgment.
 
 ## Checking the map
 

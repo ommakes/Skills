@@ -61,3 +61,14 @@ function GoodGridAndPanel() {
     </div>
   );
 }
+
+// Elevation done right: tier tokens, zero-blur rings, and the directional token for the docked edge.
+function GoodElevation() {
+  return (
+    <div className="shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)]" style={{ boxShadow: "0 0 0 2px var(--border-state-focus)" }}>
+      <section className="shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-small)] shadow-none" />
+      <aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-right)]" />
+      <div className="fixed inset-x-0 bottom-0 shadow-[var(--shadow-large-bottom)]" />
+    </div>
+  );
+}

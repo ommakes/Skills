@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.37.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.38.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.38.0**: Detectors for `DS-ELEVATION-007` (a raw shadow with blur) and `DS-ELEVATION-006` (a docked panel without the directional shadow). Both warn, neither blocks.
 - **1.37.0**: Docked-panel shadow tokens (`--shadow-large-right`, `-left`, `-bottom`, `-top`, light and dark) and the Choice Card hover and press deltas. `DS-ELEVATION-006` names the tokens.
 - **1.36.0**: New `references/questionnaire-ui.md` with `DS-A11Y-024` to `-028` and `DS-RESPONSIVE-011` to `-013` (required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows, poll and quiz results) and `data/tokens.questionnaire.json`.
 - **1.35.0**: Dark elevation tokens (fills, hairline, blacker Medium to XLarge shadows, Base and Small draw nothing in dark). `DS-ELEVATION-005` names them.
