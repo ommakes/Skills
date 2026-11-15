@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.11.0] - 2026-11-15
+
+- **Dark elevation.** Figma first: `Elevation/Dark/Medium`, `Large` and `XLarge` effect styles (black at 16, 20 and 24% per layer, the same layers as the light tier without the 1px ring), a new `Global/Black Alpha/Black-A0` (transparent), and three Colors variables: `Component/Elevation/Surface-Small`, `Surface-Raised` and `Hairline`. Export checksum `7f179f8c` (890 tokens, 3 dark shadows).
+- `figma-export.js` writes `darkShadows`. `build-tokens.mjs` puts them in `.dark` and makes `--shadow-base` and `--shadow-small` draw nothing there. It fails closed on a dark style with no light twin, a dark style for Base or Small, a tier left without one, or a block that is not an object. A file with no `darkShadows` builds as before.
+- Light output is unchanged: the new light values are the card white and a transparent hairline, and the light shadows are byte for byte the same.
+- `vois-hover-card` and the Card hover fill with `--elevation-surface-small`; `vois-dropdown-menu`, `vois-select` and `vois-dialog` fill with `--elevation-surface-raised`; `CommandDialog` makes its Command transparent so the Dialog fill shows. Tooltip and Switch knob keep their own fills: the Tooltip is a dark fill in both themes, and the knob is a light knob on a dark track (its Small shadow draws nothing in dark, which costs nothing).
+- `build-tokens.test.mjs` checks the generator and its failures (a dark style must have the light layers minus the 1px ring, in black), that each dark fill is at least 0.02 OKLCH lightness above the one below, text 4.5:1 and control edges 3:1 on every elevated fill, text on a menu item hover over the raised fill, a transparent hairline in light, and that the components read the new fills. Not tested: the decorative `--border-pretty` edge on the raised fill.
+- **Known gaps.** In dark, a Select list or menu opened inside a Dialog has the Dialog's fill, and a Hover Card over a Dialog is darker than it, so only the shadow separates them. A stock shadcn Popover still maps to `--bg-card`. `--elevation-hairline` is not used by a built component yet.
+
+## [0.10.0] - 2026-11-15
+
+- **Dialog widths are tokens.** Figma first: `Semantic/Dialog/width-dialog-sm` (344) and `width-dialog-lg` (560) in the Size collection, with Web syntax `--width-dialog-sm` and `--width-dialog-lg`. The Figma Dialog's width is bound to the small one. Export checksum `cbd49db0` (886 tokens).
+- `vois-dialog` takes `size`: `"sm"` (default, `--width-dialog-sm`) or `"lg"` (`--width-dialog-lg`). It was a hard-coded 344. The default looks the same. The large value is proposed: no Figma Dialog is drawn at 560 yet, and it needs a check on real screens.
+- `build-tokens.test.mjs` checks both width tokens and that the small one equals the width the Figma Dialog is built at.
+
 ## [0.9.0] - 2026-11-14
 
 - **Focus ring.** Figma first: `Border-State-Focus` is Blue-10 in light and Blue-8 in dark (was Blue-11 and Blue-5), `Control-Focus` aliases it (it was Blue-7, 1.6:1 on the page), and two new Values variables, `Focus Ring/Width` and `Focus Ring/Offset` (2px each, `--focus-ring-width`, `--focus-ring-offset`). Export checksum `8810c065` (884 tokens).

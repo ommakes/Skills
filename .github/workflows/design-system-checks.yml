@@ -48,6 +48,21 @@ jobs:
           node vois-teams/scripts/validate.test.mjs
           node vois-teams/scripts/validate.mjs all
 
+      - name: Field table schema and rules (vois-fields)
+        run: |
+          node vois-fields/scripts/check-fields.test.mjs
+          node vois-fields/scripts/check-fields.mjs
+
+      - name: Questionnaire data (vois-patterns)
+        run: |
+          npm i --no-save --no-package-lock ajv
+          node vois-patterns/scripts/check-questions.mjs
+
+      - name: Elevation map and rules (vois-tokens)
+        run: |
+          node vois-tokens/scripts/elevation-map.test.mjs
+          node vois-tokens/scripts/elevation-map.mjs
+
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs
 

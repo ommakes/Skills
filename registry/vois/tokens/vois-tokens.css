@@ -95,6 +95,7 @@
   --bg-pressed: var(--black-a2);
   --bg-subtle: var(--warm-gray-1);
   --black: oklch(0.1684 0 0);
+  --black-a0: oklch(0 0 0 / 0);
   --black-a1: oklch(0 0 0 / 0.039);
   --black-a10: oklch(0 0 0 / 0.8);
   --black-a11: oklch(0 0 0 / 0.898);
@@ -224,6 +225,9 @@
   --cyan-a7: oklch(0.9055 0.1443 196 / 0.502);
   --cyan-a8: oklch(0.9055 0.1443 196 / 0.6);
   --cyan-a9: oklch(0.9055 0.1443 196 / 0.698);
+  --elevation-hairline: var(--black-a0);
+  --elevation-surface-raised: var(--white);
+  --elevation-surface-small: var(--white);
   --focus-ring-offset: 2px;
   --focus-ring-width: 2px;
   --font-body: var(--font-family-system);
@@ -854,6 +858,8 @@
   --white-a7: oklch(1 0 0 / 0.502);
   --white-a8: oklch(1 0 0 / 0.6);
   --white-a9: oklch(1 0 0 / 0.698);
+  --width-dialog-lg: 560px;
+  --width-dialog-sm: 344px;
   --width-viewport-min: 360px;
   --yellow-1: oklch(0.9976 0.0118 106.61);
   --yellow-10: oklch(0.6667 0.1505 115.08);
@@ -981,6 +987,9 @@
   --control-off: var(--gray-8);
   --control-on: var(--base-accent-solid);
   --control-oncolor: var(--black);
+  --elevation-hairline: var(--white-a3);
+  --elevation-surface-raised: var(--warm-gray-9);
+  --elevation-surface-small: var(--warm-gray-10);
   --font-body: var(--font-family-system);
   --font-heading: var(--font-family-brand);
   --font-mono: var(--font-family-mono);
@@ -1208,4 +1217,9 @@
   --text-state-instruction: var(--gray-6);
   --text-state-resting: var(--gray-5);
   --text-subtle: var(--gray-5);
+  --shadow-base: 0 0 0 0 oklch(0 0 0 / 0);
+  --shadow-small: 0 0 0 0 oklch(0 0 0 / 0);
+  --shadow-medium: 0 1px 1px 0 oklch(0 0 0 / 0.161), 0 2px 2px 0 oklch(0 0 0 / 0.161), 0 4px 4px 0 oklch(0 0 0 / 0.161), 0 8px 8px 0 oklch(0 0 0 / 0.161);
+  --shadow-large: 0 1px 1px 0 oklch(0 0 0 / 0.2), 0 2px 2px 0 oklch(0 0 0 / 0.2), 0 4px 4px 0 oklch(0 0 0 / 0.2), 0 8px 8px 0 oklch(0 0 0 / 0.2), 0 16px 16px 0 oklch(0 0 0 / 0.2);
+  --shadow-xlarge: 0 1px 1px 0 oklch(0 0 0 / 0.239), 0 2px 2px 0 oklch(0 0 0 / 0.239), 0 4px 4px 0 oklch(0 0 0 / 0.239), 0 8px 8px 0 oklch(0 0 0 / 0.239), 0 16px 16px 0 oklch(0 0 0 / 0.239), 0 24px 24px 0 oklch(0 0 0 / 0.239);
 }

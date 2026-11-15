@@ -115,8 +115,16 @@ function checkPatterns() {
   const rulesData = JSON.parse(readFileSync(rulesPath, "utf8"));
   const jsonById = new Map(rulesData.nodes.map((n) => [n.id, n]));
 
+  // A patterns reference may cite a numbered vois-tokens rule (for example
+  // [DS-MODAL-005]). The tag counts as known only when that exact id is in
+  // vois-tokens/data/vois-rules.json. A bare PATH tag is never cross-skill.
+  const tokenRuleIds = new Set(
+    JSON.parse(readFileSync(join(ROOT, "vois-tokens", "data", "vois-rules.json"), "utf8")).rules.map((r) => r.id)
+  );
+
   for (const [id, files] of mdTags) {
     if (jsonById.has(id)) continue;
+    if (id.startsWith("DS-") && tokenRuleIds.has(id)) continue;
     findings.push(
       `[vois-patterns] "${id}" is cited in ${[...files].join(", ")} but has no entry in patterns-rules.json.`
     );

@@ -1,0 +1,261 @@
+{
+  "source": "vois-fields/SKILL.md",
+  "note": "Rules for specialized input fields. Every rule is tagged [FIELD-...] in its source_file. Confidence is `proposed` for all of them in 1.0.0: they come from the field-spec research and common practice, and each should be tested on real screens before it is called settled. See references/core-rules.md for the order to read them in.",
+  "categories": {
+    "core": "Seven core input rules",
+    "timing": "When to check a value",
+    "sensitive": "Sensitive and personal data",
+    "prefill": "Prefilled values",
+    "type-ahead": "Record pickers and type-ahead"
+  },
+  "rules": [
+    {
+      "id": "FIELD-PASTE",
+      "category": "core",
+      "title": "Never block paste or autofill",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Let the user paste into every field and let the browser and password manager fill it. Do not cancel the paste event, do not split a value across boxes that reject a pasted whole, and do not set autocomplete off on a field the browser can fill (email, phone, postal code, name, one-time code). Clean the pasted value afterwards: trim it, strip separators.",
+      "severity": "required",
+      "confidence": "proposed",
+      "never": [
+        "preventDefault on a paste event",
+        "onpaste returning false",
+        "one box per digit that rejects a pasted code"
+      ]
+    },
+    {
+      "id": "FIELD-VALUE-SPLIT",
+      "category": "core",
+      "title": "Keep the shown value and the stored value apart",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "The text in the box is for people, the stored value is for the system. Format what is shown (grouping, hyphens, a currency separator). Store one canonical form (E.164 for a phone, digits for an SSN, cents for money). Never read the shown text back as the stored value.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-TEXT-CODES",
+      "category": "core",
+      "title": "IDs and codes are text",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "A value you do not do arithmetic on is a string: postal code, VIN, license number, SSN, phone, one-time code, policy and claim numbers. Use type text with the right inputmode, never type number, which drops leading zeros, adds spinner arrows, and changes the value on scroll.",
+      "severity": "required",
+      "confidence": "proposed",
+      "never": [
+        "type=number for a code, ID or phone"
+      ]
+    },
+    {
+      "id": "FIELD-FORMAT-BLUR",
+      "category": "core",
+      "title": "Format on blur and keep the cursor",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Apply grouping and separators when the user leaves the field. If you format while typing, keep the caret where the user left it, including after a paste in the middle of the value. A format that jumps the caret to the end is a bug.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-INCOMPLETE",
+      "category": "core",
+      "title": "Incomplete is not invalid",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "A value that is not finished yet has no error. A VIN with 14 of 17 characters is incomplete, not wrong. Show a counter or a hint, never an error, until the user leaves the field or submits.",
+      "severity": "required",
+      "confidence": "proposed",
+      "never": [
+        "red error text while the user is still typing"
+      ]
+    },
+    {
+      "id": "FIELD-CHECK-BLUR",
+      "category": "core",
+      "title": "Check on blur",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "The default time to check a value is when the user leaves the field, then again on submit. Once a field shows an error, re-check on every keystroke so the error clears the moment it is fixed.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-FORMAT-NOT-PROOF",
+      "category": "core",
+      "title": "A format check is not proof",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "A value that has the right shape may still be wrong: a well formed email may bounce, a valid VIN may belong to another vehicle. Word the check as what it did ('This does not look like a VIN') and use an explicit action (send a code, decode the VIN, confirm the address) when you need proof.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-TIMING-TYPING",
+      "category": "timing",
+      "title": "When to check: while typing",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Only for help, never for errors: a character counter, a strength hint, a count of what is left. Never block a keystroke, never show an error.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The user is still entering the value",
+      "outcome": "Show help only"
+    },
+    {
+      "id": "FIELD-TIMING-PAUSE",
+      "category": "timing",
+      "title": "When to check: after a pause",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "For a lookup the user is waiting on (availability, type-ahead). Wait 300 to 500 ms after the last keystroke. Drop any answer that arrives for an older value.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The check calls a server or is slow",
+      "outcome": "Debounce 300 to 500 ms and ignore stale answers"
+    },
+    {
+      "id": "FIELD-TIMING-BLUR",
+      "category": "timing",
+      "title": "When to check: on blur",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "The default for format checks. Run it when focus leaves the field.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "A local format check on one field",
+      "outcome": "Check on blur"
+    },
+    {
+      "id": "FIELD-TIMING-SUBMIT",
+      "category": "timing",
+      "title": "When to check: on submit",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "For checks that need more than one field, and for required fields left empty. Never show a required error on a field the user has not reached yet.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The rule needs other fields, or the field was never visited",
+      "outcome": "Check on submit and move focus to the first error"
+    },
+    {
+      "id": "FIELD-TIMING-ACTION",
+      "category": "timing",
+      "title": "When to check: on an explicit action",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "For anything that costs money, sends a message or needs proof: Verify a code, Look up a VIN, Check availability. Do not run these on blur.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The check sends something or costs something",
+      "outcome": "Put it behind a button"
+    },
+    {
+      "id": "FIELD-SENSITIVE-STORAGE",
+      "category": "sensitive",
+      "title": "Sensitive data stays out of URLs, logs, analytics and error reports",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "SSN, driver's license number, one-time codes and other sensitive fields never go in a URL or query string, a log line, an analytics event, or an error report. Strip them before any of those are written. Personal fields (name, email, phone, address, date of birth) stay out of URLs and analytics events.",
+      "severity": "required",
+      "confidence": "proposed",
+      "never": [
+        "a sensitive value in a query string",
+        "a sensitive value in console.log or an error tracker payload",
+        "a sensitive value as an analytics event property"
+      ]
+    },
+    {
+      "id": "FIELD-SENSITIVE-MASK",
+      "category": "sensitive",
+      "title": "Mask after entry, with a reveal",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Show a sensitive value masked once the user leaves the field, keeping the last four characters, with a control to reveal it. Keep paste and password managers working. Do not mask a value the user is still typing.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-SENSITIVE-LOOKUP",
+      "category": "sensitive",
+      "title": "No lookup per keystroke",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Never send a sensitive value to a server as the user types. Send it once, on an explicit action or on submit.",
+      "severity": "required",
+      "confidence": "proposed",
+      "never": [
+        "type-ahead on an SSN or license number"
+      ]
+    },
+    {
+      "id": "FIELD-SENSITIVE-SUGGEST",
+      "category": "sensitive",
+      "title": "No suggestions on sensitive fields",
+      "source_file": "vois-fields/references/core-rules.md",
+      "rule": "Turn off autocomplete history and suggestion lists on sensitive fields (autocomplete off), and never show earlier values in a dropdown.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-PREFILL-SOURCE",
+      "category": "prefill",
+      "title": "Show the source of a prefilled value",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "When a value was filled in for the user, show it in the field and show where it came from (their profile, the last policy, a lookup, an imported document). Use a small source label next to the field, not a tooltip only. A prefilled value looks different from one the user typed.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "A value is filled in without the user typing it",
+      "outcome": "Show the value with a source label"
+    },
+    {
+      "id": "FIELD-PREFILL-FIX",
+      "category": "prefill",
+      "title": "Let the user fix a prefilled value",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "A prefilled value is an ordinary editable value. Never lock it. Editing it changes its source to 'entered by you'.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-PREFILL-NOTME",
+      "category": "prefill",
+      "title": "'Not me' clears it",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "When the prefilled value may belong to someone else (a shared device, a lookup that matched the wrong record), offer a clear action ('Not me' or 'Clear') that removes the value and the source label together.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-PREFILL-SUGGEST",
+      "category": "prefill",
+      "title": "Low-confidence guesses are suggestions",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "Fill the field only when you are confident. A weaker guess appears as a suggestion the user accepts with one action, not as a value already in the box.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The source is a guess or a partial match",
+      "outcome": "Offer it as a suggestion, do not fill"
+    },
+    {
+      "id": "FIELD-PREFILL-UNDO",
+      "category": "prefill",
+      "title": "Undo an accepted prefill",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "After the user accepts a suggestion or a bulk prefill, keep an Undo available until they leave the page or submit.",
+      "severity": "required",
+      "confidence": "proposed"
+    },
+    {
+      "id": "FIELD-PREFILL-CONFLICT",
+      "category": "prefill",
+      "title": "Show both when sources disagree",
+      "source_file": "vois-fields/references/prefill.md",
+      "rule": "When two sources give different values, show both with their sources and ask the user to choose. Never pick one silently.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "Two sources disagree",
+      "outcome": "Show both, ask the user"
+    },
+    {
+      "id": "FIELD-TYPEAHEAD-DEFAULTS",
+      "category": "type-ahead",
+      "title": "Type-ahead defaults",
+      "source_file": "vois-fields/references/type-ahead.md",
+      "rule": "Start searching after 300 to 500 ms of pause and 2 to 3 characters. Show 3 to 6 results. Drop any response that arrives for an older query. Never pick the first result for the user automatically: the user chooses. Keep the record's ID apart from its label, and store the ID.",
+      "severity": "required",
+      "confidence": "proposed",
+      "condition": "The field picks one record from a large set",
+      "outcome": "Use a record picker with these defaults",
+      "never": [
+        "auto-selecting the first result on Enter or blur",
+        "storing the label as the value"
+      ]
+    }
+  ]
+}

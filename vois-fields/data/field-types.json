@@ -1,0 +1,154 @@
+{
+  "source": "vois-fields/SKILL.md",
+  "note": "One row per field meaning. An agent finds the row for what the field MEANS, not for what it looks like, and copies its input attributes, stored format, check timing and privacy handling. Every row must satisfy data/field-types.schema.json (checked by scripts/check-fields.mjs). `confidence` says how sure we are: `standard` is HTML or a published spec, `convention` is common practice, `proposed` is our own recommendation and should be tested on real screens before it is treated as a rule.",
+  "privacyClasses": {
+    "public": "Fine to show, log and send to analytics.",
+    "internal": "Business data. Fine in logs, not fine in URLs a user shares.",
+    "personal": "Identifies a person. Not in URLs, analytics events or error reports.",
+    "sensitive": "Could enable fraud or identity theft. Mask after entry, never in URLs, logs, analytics or error reports, no lookup per keystroke, no suggestions."
+  },
+  "types": [
+    {
+      "id": "email",
+      "label": "Email address",
+      "meaning": "An address the user can receive mail at.",
+      "input": { "type": "email", "inputmode": "email", "autocomplete": "email", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "Trimmed. Keep the case the user typed." },
+      "shown": "As typed.",
+      "check": { "when": "blur", "how": "Has one @ with text on both sides and a dot in the domain.", "blocksTyping": false, "isProof": false, "proofNote": "A format check does not show the address exists. Only a confirmation message does." },
+      "privacy": { "class": "personal", "mask": false, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": true },
+      "confidence": "standard"
+    },
+    {
+      "id": "phone",
+      "label": "Phone number",
+      "meaning": "A number a person can be called or texted on.",
+      "input": { "type": "tel", "inputmode": "tel", "autocomplete": "tel", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "E.164 with a leading plus and country code, such as +12025550123. Strip spaces, dashes and brackets." },
+      "shown": "Grouped for the user's region, such as (202) 555-0123. Format on blur, keep the cursor.",
+      "check": { "when": "blur", "how": "Digit count is plausible for the country. Accept spaces, dashes, brackets and a leading plus while typing.", "blocksTyping": false, "isProof": false, "proofNote": "A plausible number may not be in service. A text message code proves it." },
+      "privacy": { "class": "personal", "mask": false, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": true },
+      "confidence": "standard"
+    },
+    {
+      "id": "url",
+      "label": "Web address",
+      "meaning": "A link to a page or site.",
+      "input": { "type": "url", "inputmode": "url", "autocomplete": "url", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "Trimmed, with a scheme. Add https:// on blur if the user left it off." },
+      "shown": "As typed, with the scheme added on blur.",
+      "check": { "when": "blur", "how": "Parses as a URL after the scheme is added.", "blocksTyping": false, "isProof": false, "proofNote": "A valid URL may not load." },
+      "privacy": { "class": "internal", "mask": false, "inUrl": false, "inLogs": true, "inAnalytics": false, "suggestions": true },
+      "confidence": "convention"
+    },
+    {
+      "id": "postal-code-us",
+      "label": "US ZIP code",
+      "meaning": "A US delivery area code, 5 digits or ZIP+4.",
+      "input": { "type": "text", "inputmode": "numeric", "autocomplete": "postal-code", "autocapitalize": "none", "spellcheck": false, "maxlength": 10 },
+      "stored": { "format": "string", "rule": "A string, never a number: a leading zero is part of the code (02134). Store 5 digits, or 5 + hyphen + 4." },
+      "shown": "As typed. Add the hyphen in ZIP+4 on blur.",
+      "check": { "when": "blur", "how": "5 digits, or 5 digits, a hyphen and 4 digits. Incomplete while typing is not an error.", "blocksTyping": false, "isProof": false, "proofNote": "A well formed ZIP may not exist. An address lookup shows that." },
+      "privacy": { "class": "personal", "mask": false, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": true },
+      "confidence": "standard",
+      "never": ["type=number: it drops leading zeros and adds spinner arrows."]
+    },
+    {
+      "id": "person-name",
+      "label": "Person name",
+      "meaning": "What a person is called, in any language.",
+      "input": { "type": "text", "inputmode": "text", "autocomplete": "name", "autocapitalize": "words", "spellcheck": false },
+      "stored": { "format": "string", "rule": "Trimmed. Do not change the case or remove characters." },
+      "shown": "As typed.",
+      "check": { "when": "submit", "how": "Not empty. Nothing else: no minimum length, no letters-only rule, no maximum under 100.", "blocksTyping": false, "isProof": false, "proofNote": "No format check can tell a real name from a made up one." },
+      "privacy": { "class": "personal", "mask": false, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": true },
+      "confidence": "convention",
+      "never": ["Reject apostrophes, hyphens, spaces, accents or single-letter names."]
+    },
+    {
+      "id": "vin",
+      "label": "Vehicle identification number (VIN)",
+      "meaning": "The 17 character code that identifies one vehicle.",
+      "input": { "type": "text", "inputmode": "text", "autocomplete": "off", "autocapitalize": "characters", "spellcheck": false, "maxlength": 17 },
+      "stored": { "format": "string", "rule": "17 uppercase characters, no spaces or hyphens. Letters I, O and Q never appear in a VIN." },
+      "shown": "Uppercase as typed. Strip spaces and hyphens on paste. Show a counter such as 14 of 17.",
+      "check": { "when": "blur", "how": "Exactly 17 characters from 0-9 and A-Z without I, O or Q. Incomplete while typing is not an error. For a North American vehicle the 9th character is a check digit: a mismatch is a warning that asks the user to look again, not a block.", "blocksTyping": false, "isProof": false, "proofNote": "A valid VIN may not belong to the vehicle in front of you. A decode lookup shows the year, make and model for the user to confirm." },
+      "privacy": { "class": "internal", "mask": false, "inUrl": false, "inLogs": true, "inAnalytics": false, "suggestions": false },
+      "confidence": "proposed",
+      "never": ["Block paste.", "type=number.", "Reject a VIN for a failed check digit alone: older and non-North-American vehicles have no valid check digit."],
+      "needsTest": "The check digit warning wording, and the decode lookup flow, on real commercial auto screens."
+    },
+    {
+      "id": "drivers-license",
+      "label": "Driver's license number",
+      "meaning": "The number printed on a driver's license.",
+      "input": { "type": "text", "inputmode": "text", "autocomplete": "off", "autocapitalize": "characters", "spellcheck": false },
+      "stored": { "format": "string", "rule": "Uppercase, without spaces or hyphens, with the issuing state stored next to it." },
+      "shown": "Masked after entry, with a reveal control.",
+      "check": { "when": "blur", "how": "Length bounds for the issuing state only. The format differs by state, so do not guess a pattern before the state is known.", "blocksTyping": false, "isProof": false, "proofNote": "Only the issuing agency can confirm a license." },
+      "privacy": { "class": "sensitive", "mask": true, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": false },
+      "confidence": "proposed",
+      "needsTest": "State format table: build it from the states the product serves, not from a generic pattern."
+    },
+    {
+      "id": "ssn",
+      "label": "Social Security number",
+      "meaning": "A US 9 digit tax and identity number.",
+      "input": { "type": "text", "inputmode": "numeric", "autocomplete": "off", "autocapitalize": "none", "spellcheck": false, "maxlength": 11 },
+      "stored": { "format": "string", "rule": "9 digits, no hyphens, encrypted at rest." },
+      "shown": "Group as 123-45-6789 on blur, then mask to the last four digits (•••-••-6789) once the user leaves the field, with a reveal control.",
+      "check": { "when": "blur", "how": "9 digits. Incomplete while typing is not an error.", "blocksTyping": false, "isProof": false, "proofNote": "A well formed number may not be issued or may not belong to this person." },
+      "privacy": { "class": "sensitive", "mask": true, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": false },
+      "confidence": "proposed",
+      "never": ["Put it in a URL, log line, analytics event or error report.", "Look it up on each keystroke.", "Offer type-ahead suggestions."],
+      "needsTest": "Masking that keeps password managers and paste working."
+    },
+    {
+      "id": "money",
+      "label": "Money amount",
+      "meaning": "An amount of currency.",
+      "input": { "type": "text", "inputmode": "decimal", "autocomplete": "off", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "An integer count of the smallest unit (cents) or a decimal string, with the currency code next to it. Never a binary float." },
+      "shown": "Grouped with the user's separators on blur, such as 1,250.00. The currency symbol sits outside the input.",
+      "check": { "when": "blur", "how": "Parses to a number within the allowed range and number of decimals.", "blocksTyping": false, "isProof": false, "proofNote": "A valid amount may not be the amount intended. Show it back on any confirmation step." },
+      "privacy": { "class": "internal", "mask": false, "inUrl": false, "inLogs": true, "inAnalytics": false, "suggestions": false },
+      "confidence": "convention",
+      "never": ["type=number: it blocks grouping separators and changes the value on scroll."]
+    },
+    {
+      "id": "percent",
+      "label": "Percentage",
+      "meaning": "A share out of 100.",
+      "input": { "type": "text", "inputmode": "decimal", "autocomplete": "off", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "A decimal number where 12.5 means 12.5 percent, not 0.125." },
+      "shown": "The percent sign sits outside the input.",
+      "check": { "when": "blur", "how": "Within the allowed range, often 0 to 100.", "blocksTyping": false, "isProof": false, "proofNote": "A value in range may still be the wrong value. Show it back on a confirmation step." },
+      "privacy": { "class": "internal", "mask": false, "inUrl": false, "inLogs": true, "inAnalytics": false, "suggestions": false },
+      "confidence": "convention"
+    },
+    {
+      "id": "one-time-code",
+      "label": "One-time code",
+      "meaning": "A short code sent to the user to prove they hold a phone or inbox.",
+      "input": { "type": "text", "inputmode": "numeric", "autocomplete": "one-time-code", "autocapitalize": "none", "spellcheck": false, "maxlength": 6 },
+      "stored": { "format": "string", "rule": "Sent for checking, never kept. A string, never a number: leading zeros count." },
+      "shown": "One field that takes a pasted or autofilled whole code. The registry-style InputOTP (one cell per character, behaving as one field) is fine when it accepts paste and autofill. A custom row of boxes that rejects a pasted code is not.",
+      "check": { "when": "action", "how": "Check on the explicit Verify action, or automatically when the last digit is entered. Offer Resend after a short cooldown.", "blocksTyping": false, "isProof": true, "proofNote": "The server check is the proof." },
+      "privacy": { "class": "sensitive", "mask": false, "maskExempt": true, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": false },
+      "confidence": "standard",
+      "never": ["Block paste.", "Use one box per digit that rejects a pasted or autofilled code."]
+    },
+    {
+      "id": "date",
+      "label": "Single date",
+      "meaning": "A calendar day.",
+      "input": { "type": "text", "inputmode": "numeric", "autocomplete": "off", "autocapitalize": "none", "spellcheck": false },
+      "stored": { "format": "string", "rule": "ISO 8601, YYYY-MM-DD, whatever the shown format is." },
+      "shown": "A visible format hint such as MM/DD/YYYY, in the user's locale order.",
+      "check": { "when": "blur", "how": "A real calendar day within the allowed range. Incomplete while typing is not an error.", "blocksTyping": false, "isProof": false, "proofNote": "A real day may still be the wrong day, such as a swapped day and month." },
+      "privacy": { "class": "personal", "mask": false, "inUrl": false, "inLogs": false, "inAnalytics": false, "suggestions": false },
+      "confidence": "proposed",
+      "needsTest": "Typed text against the native date input on real phones. Birth dates and dates a few days away need different pickers."
+    }
+  ]
+}

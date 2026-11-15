@@ -70,6 +70,8 @@ When geometric centering looks wrong, align optically instead. `[DS-SURFACE-003]
 
 For cards, containers, and bordered buttons that exist to show **depth or elevation**, prefer a layered `box-shadow` over a solid `border`. Shadows use transparency so they adapt to any background color or image; solid border colors only look right on the background they were tuned for. `[DS-SURFACE-007]`
 
+The example below shows how a shadow works as an edge. In Vois components use the tier tokens, not these literals (`DS-ELEVATION-007`). Which tier to use, and how dark mode changes it, is in `references/elevation.md` (`DS-ELEVATION-003` to `-012`). The dark ring-only example is a zero-blur hairline, which `DS-ELEVATION-005` allows as the border part of a dark surface.
+
 **Do not apply this to dividers** (`border-b`, `border-t`, list separators) or anything whose job is layout separation, not depth. Those stay as borders. `[DS-SURFACE-008]`
 
 ```css

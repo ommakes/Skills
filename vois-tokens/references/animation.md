@@ -3,7 +3,7 @@
 ## Timing Rules
 
 - **UI animations:** under `300ms` as a default. `[DS-ANIMATION-001]`
-- **Large elements** (drawers, action sheets, modals entering): up to `500ms`. `[DS-ANIMATION-002]`
+- **Large elements** (drawers, bottom sheets, modals entering): up to `500ms`. `[DS-ANIMATION-002]`
 - **Never animate keyboard-triggered interactions.** Repeated actions feel slower when animated. Keyboard users feel this. `[DS-ANIMATION-003]`
 
 ## Motion Tokens `[DS-MOTION-001]`

@@ -5,7 +5,7 @@
 //
 // What it exports: every variable that has Web code syntax (its CSS name). A value is a color
 // (#rrggbb or #rrggbbaa), a number (no unit: build-tokens.mjs adds px, or ms, or none) or an alias ("=--name"). When Light and Dark differ the value is
-// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers.
+// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers, and the Elevation/Dark/* styles (Medium, Large, XLarge) as `darkShadows`: the same shape, for .dark.
 // The seventeen brand slots (DS-TOKEN-004: thirteen colors, four font families) are written as null: a product's brand never leaves Figma here.
 
 const BRAND_SLOTS = [
@@ -15,6 +15,7 @@ const BRAND_SLOTS = [
   // The font families carry the brand too (DS-TOKEN-004).
   "--font-family-brand", "--font-family-system", "--font-family-written", "--font-family-mono",
 ];
+const DARK_SHADOW_NAMES = { "Elevation/Dark/Medium": "--shadow-medium", "Elevation/Dark/Large": "--shadow-large", "Elevation/Dark/XLarge": "--shadow-xlarge" };
 const SHADOW_NAMES = { "Elevation/Base": "--shadow-base", "Elevation/Small": "--shadow-small", "Elevation/Medium": "--shadow-medium", "Elevation/Large": "--shadow-large", "Elevation/XLarge": "--shadow-xlarge" };
 
 const hex = (c) => {
@@ -73,26 +74,31 @@ for (const col of collections) {
 for (const s of BRAND_SLOTS) if (!Object.hasOwn(tokens, s)) throw new Error(`brand slot ${s} has no variable`);
 
 const shadows = {};
+const darkShadows = {};
 for (const s of await figma.getLocalEffectStylesAsync()) {
-  const css = SHADOW_NAMES[s.name];
+  const dark = Object.hasOwn(DARK_SHADOW_NAMES, s.name);
+  const css = dark ? DARK_SHADOW_NAMES[s.name] : SHADOW_NAMES[s.name];
   if (!css) continue;
   const visible = s.effects.filter((e) => e.type === "DROP_SHADOW" && e.visible !== false);
   // A shadow bound to variables would change by mode; flattening it to one hex would lose that silently.
   for (const e of visible) if (e.boundVariables && Object.keys(e.boundVariables).length) throw new Error(`${s.name} has a shadow bound to a variable; the export does not support that yet`);
-  shadows[css] = visible.map((e) => [e.offset.x, e.offset.y, e.radius, e.spread ?? 0, hex(e.color)]);
+  (dark ? darkShadows : shadows)[css] = visible.map((e) => [e.offset.x, e.offset.y, e.radius, e.spread ?? 0, hex(e.color)]);
 }
 if (Object.keys(shadows).length !== Object.keys(SHADOW_NAMES).length) throw new Error(`expected ${Object.keys(SHADOW_NAMES).length} elevation styles, found ${Object.keys(shadows).length}`);
+if (Object.keys(darkShadows).length !== Object.keys(DARK_SHADOW_NAMES).length) throw new Error(`expected ${Object.keys(DARK_SHADOW_NAMES).length} dark elevation styles, found ${Object.keys(darkShadows).length}`);
 
 // One token per line, sorted, so a re-export diffs cleanly.
 const line = (k, v) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`;
 const tokenLines = Object.keys(tokens).sort().map((k) => line(k, tokens[k]));
 const shadowLines = Object.values(SHADOW_NAMES).map((k) => line(k, shadows[k]));
+const darkShadowLines = Object.values(DARK_SHADOW_NAMES).map((k) => line(k, darkShadows[k]));
 const json = "{\n" +
   ` "format": 1,\n "brandSlots": ${JSON.stringify(BRAND_SLOTS)},\n` +
   ` "tokens": {\n${tokenLines.join(",\n")}\n },\n` +
-  ` "shadows": {\n${shadowLines.join(",\n")}\n }\n}\n`;
+  ` "shadows": {\n${shadowLines.join(",\n")}\n },\n` +
+  ` "darkShadows": {\n${darkShadowLines.join(",\n")}\n }\n}\n`;
 JSON.parse(json);
 // FNV-1a over UTF-16 code units, as an 8-digit hex string.
 let h = 0x811c9dc5;
 for (let i = 0; i < json.length; i++) { h ^= json.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-return { checksum: h.toString(16).padStart(8, "0"), length: json.length, tokens: Object.keys(tokens).length, shadows: Object.keys(shadows).length, json };
+return { checksum: h.toString(16).padStart(8, "0"), length: json.length, tokens: Object.keys(tokens).length, shadows: Object.keys(shadows).length, darkShadows: Object.keys(darkShadows).length, json };

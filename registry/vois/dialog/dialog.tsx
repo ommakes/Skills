@@ -1,10 +1,12 @@
 // Vois Dialog. shadcn/ui's components/ui/dialog.tsx (Radix Dialog) with the same parts: Dialog, DialogTrigger,
 // DialogPortal, DialogOverlay, DialogContent, DialogClose, DialogHeader, DialogFooter, DialogTitle and
-// DialogDescription. DialogContent takes `showCloseButton` (on by default).
+// DialogDescription. DialogContent takes `showCloseButton` (on by default) and `size`: "sm" (default,
+// --width-dialog-sm, 344) for confirmations and a few stacked fields, or "lg" (--width-dialog-lg, 560) for a textarea or a
+// short list. Pick the tier by what the content needs (vois-patterns PATH-D-SIZE). Both are maximums.
 //
 // From the Figma Dialog (Molecules page, 3613:6593):
-//   Surface: --bg-card, a 1px --border-default edge, --shape-rounded corners (Figma binds --radius-small-container, 12),
-//     --shadow-large, 344 wide (never wider than the screen minus 16 each side). It sits in the middle of the screen on
+//   Surface: --elevation-surface-raised (white in light, a lighter step in dark), a 1px --border-default edge, --shape-rounded corners (Figma binds --radius-small-container, 12),
+//     --shadow-large, --width-dialog-sm wide (344; never wider than the screen minus 16 each side). It sits in the middle of the screen on
 //     --z-modal, over a --bg-overlay-dark scrim.
 //   Header: 24 padding, a 20/28 semibold --text-primary title, and an optional 14/20 --text-secondary description under it.
 //   Close: a 40 by 40 ghost icon Button at the top right, 8 from the edges. Its accessible name is the visually hidden
@@ -74,16 +76,18 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  size = "sm",
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean; size?: "sm" | "lg" }) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        data-size={size}
         className={cn(
-          "group/dialog fixed top-1/2 left-1/2 z-[var(--z-modal)] w-[344px] max-w-[calc(100vw-var(--space-32))] -translate-x-1/2 -translate-y-1/2 overflow-hidden",
-          "rounded-[var(--shape-rounded)] border border-[color:var(--border-default)] bg-[color:var(--bg-card)] text-[color:var(--text-primary)] shadow-[var(--shadow-large)]",
+          "group/dialog fixed top-1/2 left-1/2 z-[var(--z-modal)] w-[var(--width-dialog-sm)] data-[size=lg]:w-[var(--width-dialog-lg)] max-w-[calc(100vw-var(--space-32))] -translate-x-1/2 -translate-y-1/2 overflow-hidden",
+          "rounded-[var(--shape-rounded)] border border-[color:var(--border-default)] bg-[color:var(--elevation-surface-raised)] text-[color:var(--text-primary)] shadow-[var(--shadow-large)]",
           "outline-hidden",
           "motion-safe:data-[state=open]:animate-[vois-dialog-in_var(--motion-duration-fast)_var(--motion-ease-standard)]",
           "motion-safe:data-[state=closed]:animate-[vois-dialog-out_var(--motion-duration-instant)_var(--motion-ease-standard)_forwards]",

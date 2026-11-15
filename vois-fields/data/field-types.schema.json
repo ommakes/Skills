@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vois-fields/data/field-types.schema.json",
+  "title": "Vois field type table",
+  "description": "The contract for data/field-types.json. A row that misses a property, or carries one that is not listed here, fails scripts/check-fields.mjs. The checker reads this file, so the schema and the check cannot drift.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "note", "privacyClasses", "types"],
+  "properties": {
+    "source": { "type": "string", "minLength": 1 },
+    "note": { "type": "string", "minLength": 1 },
+    "privacyClasses": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public", "internal", "personal", "sensitive"],
+      "properties": {
+        "public": { "type": "string", "minLength": 1 },
+        "internal": { "type": "string", "minLength": 1 },
+        "personal": { "type": "string", "minLength": 1 },
+        "sensitive": { "type": "string", "minLength": 1 }
+      }
+    },
+    "types": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fieldType" } }
+  },
+  "$defs": {
+    "fieldType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "meaning", "input", "stored", "shown", "check", "privacy", "confidence"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "meaning": { "type": "string", "minLength": 1 },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "inputmode", "autocomplete", "autocapitalize", "spellcheck"],
+          "properties": {
+            "type": { "enum": ["text", "email", "tel", "url", "search", "date", "password"] },
+            "inputmode": { "enum": ["none", "text", "decimal", "numeric", "tel", "search", "email", "url"] },
+            "autocomplete": { "type": "string", "minLength": 1 },
+            "autocapitalize": { "enum": ["none", "sentences", "words", "characters"] },
+            "spellcheck": { "type": "boolean" },
+            "maxlength": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "stored": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["format", "rule"],
+          "properties": { "format": { "enum": ["string", "integer", "decimal-string"] }, "rule": { "type": "string", "minLength": 1 } }
+        },
+        "shown": { "type": "string", "minLength": 1 },
+        "check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["when", "how", "blocksTyping", "isProof", "proofNote"],
+          "properties": {
+            "when": { "enum": ["typing", "pause", "blur", "submit", "action"] },
+            "how": { "type": "string", "minLength": 1 },
+            "blocksTyping": { "type": "boolean" },
+            "isProof": { "type": "boolean" },
+            "proofNote": { "type": "string" }
+          }
+        },
+        "privacy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "mask", "inUrl", "inLogs", "inAnalytics", "suggestions"],
+          "properties": {
+            "class": { "enum": ["public", "internal", "personal", "sensitive"] },
+            "mask": { "type": "boolean" },
+            "maskExempt": { "type": "boolean" },
+            "inUrl": { "type": "boolean" },
+            "inLogs": { "type": "boolean" },
+            "inAnalytics": { "type": "boolean" },
+            "suggestions": { "type": "boolean" }
+          }
+        },
+        "confidence": { "enum": ["standard", "convention", "proposed"] },
+        "never": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "needsTest": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

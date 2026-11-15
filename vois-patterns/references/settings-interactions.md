@@ -108,7 +108,7 @@ Standard removal confirmation is already covered by `[PATH-D]` and JOB-CONFIRM-D
 
 ### `[PATH-SET-REMOVE-TYPED]` Typed confirmation
 **When:** The deletion is irreversible or high-impact, such as a workspace, team, or account.
-**Do:** The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never an action sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.
+**Do:** The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never a bottom sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.
 **Builds on:** PATH-D, PATH-D-SIZE, JOB-CONFIRM-DESTRUCTIVE, alert-dialog
 **Basis:** observed. Seen: [Resend](https://mobbin.com/screens/52df18d7-8f15-470f-a302-5c407d781091), [Cloudflare](https://mobbin.com/screens/aa928ac1-4a1d-4b8c-9ccb-be35211cdca8), [Linear team delete](https://mobbin.com/screens/b1d9a761-cf3b-4070-afd5-c8063ad60c3e). [Deputy](https://mobbin.com/screens/a88043ed-bb51-4cf5-9c5f-ee050577cc3a) uses an acknowledgement checkbox instead.
 

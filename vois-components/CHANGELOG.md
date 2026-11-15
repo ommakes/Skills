@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.26.0] - 2026-11-15
+
+### Added
+- `JOB-ANSWER-CHOICE-QUESTION`, `JOB-ANSWER-SCALE-OR-RANK` and `JOB-SHOW-POLL-RESULTS` (jobs 22 to 24). The job count is now 24.
+
+## [1.25.0] - 2026-11-15
+
+### Changed
+- `JOB-OVERLAY-INTERACTION`: the Sheet branch for "the user wants to see the page behind it" now covers the side peek: when the user must keep working in the page (compare, copy, pick rows), use the Sheet with no scrim, no inert background and no focus trap. The modal rules do not apply to a peek. "Action sheet pattern" is now "the bottom sheet pattern".
+- `JOB-CONFIRM-DESTRUCTIVE`: a rationale entry says focus starts on Cancel in an AlertDialog, never on the destructive button (`DS-A11Y-020`).
+
+## [1.24.0] - 2026-11-14
+
+### Changed
+- A "`vois-fields` for specialized inputs" paragraph in `SKILL.md` (Relationship to Other Skills) points to the new `vois-fields` skill for specialized values, and says the one-time code input must take a pasted or autofilled code. No rule data changed, no new job, no change to which component is chosen. The note is premium wording: the public mirror has no `vois-fields`.
+
 ## [1.23.0] - 2026-11-14
 
 ### Changed

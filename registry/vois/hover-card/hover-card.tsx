@@ -1,7 +1,7 @@
 // Vois HoverCard. Replaces shadcn/ui's components/ui/hover-card.tsx (Radix HoverCard) with the same
 // parts: HoverCard, HoverCardTrigger, HoverCardContent. HoverCardContent adds `arrow`.
 //
-// From the Figma Popover set (Indicators page, 5938:11483), which is the same surface: --bg-card with
+// From the Figma Popover set (Indicators page, 5938:11483), which is the same surface: --elevation-surface-small (white in light, a lighter step in dark) with
 // a 1px --border-default edge, --shape-rounded corners (--radius-small-container), --shadow-small
 // (Figma's Elevation/Small), 16 padding, 320 wide, and a tail on the side that faces the trigger. Text
 // inside follows the Popover: 14/20 --text-secondary for the body. Put a title (16/24 semibold
@@ -51,7 +51,7 @@ function HoverCardContent({
         collisionPadding={collisionPadding}
         className={cn(
           "z-[var(--z-overlay)] w-80 max-w-[var(--radix-hover-card-content-available-width)] break-words p-[var(--space-padding-medium)]",
-          "rounded-[var(--shape-rounded)] bg-[color:var(--bg-card)] shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-small)]",
+          "rounded-[var(--shape-rounded)] bg-[color:var(--elevation-surface-small)] shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-small)]",
           "text-[color:var(--text-secondary)] text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-regular)]",
           "origin-(--radix-hover-card-content-transform-origin) outline-hidden",
           // motion-safe: guards each state's animation, because a data-* variant would win over motion-reduce:animate-none.
@@ -71,7 +71,7 @@ function HoverCardContent({
           // only the two slanted sides are stroked, so the join has no line across it.
           <HoverCardPrimitive.Arrow data-slot="hover-card-arrow" asChild width={20} height={10}>
             <svg viewBox="0 0 20 10" aria-hidden="true" focusable="false" className="-mt-px">
-              <path d="M0 0 L10 10 L20 0 Z" className="fill-[color:var(--bg-card)]" />
+              <path d="M0 0 L10 10 L20 0 Z" className="fill-[color:var(--elevation-surface-small)]" />
               <path d="M0 0 L10 10 L20 0" fill="none" strokeWidth="1" className="stroke-[color:var(--border-default)]" />
             </svg>
           </HoverCardPrimitive.Arrow>

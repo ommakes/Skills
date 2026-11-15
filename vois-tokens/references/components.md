@@ -64,6 +64,8 @@ document.getElementById('app-root').removeAttribute('inert')
 
 Radix UI Dialog handles this automatically. If you're not using Radix, implement it manually.
 
+How a dialog, a bottom sheet and a full-screen form are built, and the dialog accessibility rules (name, first focus, return focus, Escape), are in `references/overlays.md`.
+
 **Prevent scroll bleed.** Add `overscroll-behavior: contain` to the modal's scrollable container so scrolling inside doesn't scroll the page behind it: `[DS-MODAL-002]`
 
 ```css
