@@ -80,15 +80,16 @@ The tokens, all from Figma:
 |---|---|---|
 | `--elevation-surface-small` | white (same as `--bg-card`) | `--warm-gray-10` |
 | `--elevation-surface-raised` | white | `--warm-gray-9` |
+| `--elevation-surface-popup` | white | `--warm-gray-8` |
 | `--elevation-hairline` | transparent | `--white-a3` |
 | `--shadow-medium`, `-large`, `-xlarge` | as before | blacker, from the `Elevation/Dark/*` effect styles |
 | `--shadow-base`, `--shadow-small` | as before | draw nothing |
 
-A component that reads a tier token gets the dark shadow from `.dark` for free. The fill and the edge it sets itself: use `--elevation-surface-small` or `--elevation-surface-raised` as the fill for the tier, and `--elevation-hairline` as the edge when it has none. A component that already has an edge (Card, menus, Dialog) keeps it, so it does not get two. Light does not change: the fills are the same white and the hairline is transparent. Two built components keep their own fill: the Tooltip is a dark fill in both themes, and the Switch knob is a light knob on a dark track, so its Small shadow disappearing in dark costs nothing.
+A component that reads a tier token gets the dark shadow from `.dark` for free. The fill and the edge it sets itself: use `--elevation-surface-small`, `--elevation-surface-raised` or, for a popup, `--elevation-surface-popup` as the fill, and `--elevation-hairline` as the edge when it has none. A component that already has an edge (Card, menus, Dialog) keeps it, so it does not get two. Light does not change: the fills are the same white and the hairline is transparent. Two built components keep their own fill: the Tooltip is a dark fill in both themes, and the Switch knob is a light knob on a dark track, so its Small shadow disappearing in dark costs nothing.
 
-Dark text (4.5:1) and control edges (3:1) are tested on every fill, and text on a menu item hover over the raised fill (`DS-ELEVATION-012`). The decorative edge `--border-pretty` is not tested: on the raised fill it is nearly the same color, so a menu is outlined against the page by its edge and separated from a Dialog behind it by its shadow only.
+Dark text (4.5:1) and control edges (3:1) are tested on every fill, and text on a menu item hover over the raised and popup fills (`DS-ELEVATION-012`). The decorative edge `--border-pretty` is not tested: on the raised fill it is nearly the same color, so a menu is outlined against the page by its edge and separated from a Dialog behind it by its shadow only.
 
-**Known gap: a popup opened over a Dialog.** The fills follow the tier, not the stacking order. A Select list or menu opened inside a Dialog has the same raised fill as the Dialog, and a Hover Card (Small) is darker than the Dialog. In dark they are told apart by their blacker shadow only. A stock shadcn Popover still maps to `--bg-card` (`DS-TOKEN-005`), so it is darker than the Vois menus. Both are open decisions, not rules.
+**Popups sit one step above the Dialog.** A menu, select list or hover card can open from inside a Dialog (the z-index order is modal 1300, dropdown 1400, overlay 1500), so in dark it fills with `--elevation-surface-popup`, one step lighter than the Dialog's `--elevation-surface-raised`. The fill follows the layer, not the tier: page elements use Base and Small, the modal layer uses Raised, and the dropdown and overlay layers use Popup. The Tooltip is a dark fill in both themes and keeps its own. Light is unchanged: all of them are the card white. A stock shadcn Popover still maps to `--bg-card` (`DS-TOKEN-005`), so it is darker than the Vois menus; that is an open decision, not a rule.
 
 ## Docked panels `[DS-ELEVATION-006]`
 

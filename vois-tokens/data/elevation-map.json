@@ -12,7 +12,7 @@
     "none": "No shadow.",
     "base": "No shadow (--shadow-base draws nothing in .dark). The --bg-card fill and the component's own edge carry it.",
     "small": "No shadow (--shadow-small draws nothing in .dark). The --elevation-surface-small fill and the component's own edge carry it.",
-    "medium": "--elevation-surface-raised fill, the blacker --shadow-medium from the Figma Elevation/Dark/Medium style, and the component's own edge.",
+    "medium": "--elevation-surface-raised fill (--elevation-surface-popup for a menu, select list or hover card), the blacker --shadow-medium from the Figma Elevation/Dark/Medium style, and the component's own edge.",
     "large": "--elevation-surface-raised fill, the blacker --shadow-large from Elevation/Dark/Large, and the component's own edge.",
     "xlarge": "--elevation-surface-raised fill, the blacker --shadow-xlarge from Elevation/Dark/XLarge, and the component's own edge."
   },

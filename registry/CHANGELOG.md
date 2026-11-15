@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.0] - 2026-11-15
+
+- **A fourth dark fill step, for popups.** Figma first: new `Component/Elevation/Surface-Popup` (light white, dark Warm Gray-8, `--elevation-surface-popup`). Export checksum `c01e04df` (891 tokens). In dark, a menu, select list or hover card opened from inside a Dialog had the Dialog's fill (menu, select) or a darker one (hover card), so only the shadow told them apart. `vois-dropdown-menu`, `vois-select` and `vois-hover-card` (and its arrow) now fill with the Popup step, which is lighter than the Dialog's Raised step. The Dialog and Card are unchanged. Light is unchanged: the new token is the card white.
+- `build-tokens.test.mjs`: the dark fills are checked as a ladder of four (each at least 0.02 OKLCH lightness above the one below, popup over a Dialog included), text 4.5:1 and control edges 3:1 on the popup fill, text on item hover over the raised and popup fills, and the three components read the popup fill while the Dialog keeps the raised one. Chromium (dark): menu, select list and hover card `#41413c`, Dialog `#353431`, and a menu opened inside a Dialog differs from it by fill. Light: all white as before.
+- Still open: a stock shadcn Popover maps to `--bg-card` (`DS-TOKEN-005`), so it stays darker than the Vois menus.
+
 ## [0.12.0] - 2026-11-15
 
 - **Docked-panel shadows.** Figma first: `Elevation/Large/Right`, `Left`, `Bottom`, `Top` and `Elevation/Dark/Large/<Side>`, the Large layers without the ring, moved along one axis by their depth with the spread pulled in by half the blur, rounded down. Export checksum `2a6b12f8` (890 tokens, 9 shadows, 7 dark shadows). The generator writes `--shadow-large-right`, `-left`, `-bottom`, `-top` in `:root` and `.dark`. Nothing uses them yet: there is no Sheet or Drawer.

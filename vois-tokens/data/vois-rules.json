@@ -792,7 +792,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "In dark mode, never use a shadow alone. Base and Small carry no shadow: a lighter fill step than the parent and a 1px hairline border carry them. Medium and up use a blacker shadow plus the hairline. A 4 to 5% black shadow is invisible on a dark surface. The tokens exist: `--elevation-surface-small` and `--elevation-surface-raised` for the fills, `--elevation-hairline` for an edge (transparent in light), and `.dark` redefines `--shadow-base` to `--shadow-xlarge`, so a component that reads a tier token gets the dark shadow for free. Set the fill and the edge yourself from the surface and hairline tokens. Do not hand-write dark values.",
+      "rule": "In dark mode, never use a shadow alone. Base and Small carry no shadow: a lighter fill step than the parent and a 1px hairline border carry them. Medium and up use a blacker shadow plus the hairline. A 4 to 5% black shadow is invisible on a dark surface. The tokens exist: `--elevation-surface-small`, `--elevation-surface-raised` and `--elevation-surface-popup` (a menu, select list or hover card, one step above a Dialog) for the fills, `--elevation-hairline` for an edge (transparent in light), and `.dark` redefines `--shadow-base` to `--shadow-xlarge`, so a component that reads a tier token gets the dark shadow for free. Set the fill and the edge yourself from the surface and hairline tokens. Do not hand-write dark values.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"

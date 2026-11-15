@@ -2,7 +2,7 @@
 //
 // The trigger is a field like the Vois Input: the same heights (default 36 web, native 48, compact 32
 // for an inline field in a table, vois-tokens DS-COMPONENT-007) and the same --input-* states as the
-// Figma Dropdown Field. The list follows the Figma Dropdown Menu and Menu Item: --elevation-surface-raised (white in light, a lighter step in dark), a
+// Figma Dropdown Field. The list follows the Figma Dropdown Menu and Menu Item: --elevation-surface-popup (white in light, the lightest step in dark), a
 // --border-pretty border, --radius-small-container, --shadow-medium; items at least 40 tall with
 // --select-* states, and the selected item in --select-soft-active with --text-accent.
 // The list sits on the --z-dropdown layer, with the --shadow-medium tier that goes with it
@@ -84,7 +84,7 @@ function SelectContent({ className, children, position = "popper", ...props }: R
         position={position}
         className={cn(
           "relative z-[var(--z-dropdown)] max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) min-w-[8rem] overflow-x-hidden overflow-y-auto",
-          "rounded-[var(--radius-small-container)] border border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-raised)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
+          "rounded-[var(--radius-small-container)] border border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-popup)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
           position === "popper" && "w-full min-w-(--radix-select-trigger-width) data-[side=bottom]:translate-y-[var(--space-4)] data-[side=top]:-translate-y-[var(--space-4)]",
           className
         )}
