@@ -528,7 +528,7 @@
       "name": "vois-dialog",
       "type": "registry:ui",
       "title": "Vois Dialog",
-      "description": "shadcn/ui's Dialog (Radix) on Vois tokens, from the Figma Dialog: a 344 wide card on --z-modal over a scrim, with a 40 ghost close button, header, footer and a motion-token fade. Install vois-button with it.",
+      "description": "shadcn/ui's Dialog (Radix) on Vois tokens, from the Figma Dialog: a --width-dialog-sm (344) card, or --width-dialog-lg (560) with the lg size, on --z-modal over a scrim, with a 40 ghost close button, header, footer and a motion-token fade. Install vois-button with it.",
       "dependencies": [
         "radix-ui"
       ],

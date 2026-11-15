@@ -74,9 +74,9 @@
       "node_type": "top_level_pattern",
       "parent": null,
       "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
-      "pattern_name": "Dialog / Action Sheet",
+      "pattern_name": "Dialog / Bottom Sheet",
       "condition": "Single quick input needed (amount, selection, confirmation). Simple confirmation (yes/no, approve/reject). Dropdown selection, especially on mobile.",
-      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: action sheet, slides up from bottom, covers 80-90% screen height for multi-step. Never use an action sheet if text input/keyboard is required — that needs a full modal. Footer button placement: primary right, secondary the 20px scale step (`gap-5`) left of primary, optional tertiary on the left."
+      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: bottom sheet, slides up from bottom, at most 90dvh (DS-RESPONSIVE-008). Never use a bottom sheet if text input/keyboard is required — that is a full-screen form (DS-RESPONSIVE-009). Which container to use: PATH-D-1 to PATH-D-5. Footer button placement: primary right, secondary the 20px scale step (`gap-5`) left of primary, optional tertiary on the left."
     },
     {
       "id": "PATH-E",
@@ -1089,7 +1089,7 @@
       "source_file": "vois-patterns/references/settings-interactions.md",
       "pattern_name": "Typed confirmation",
       "condition": "The deletion is irreversible or high-impact, such as a workspace, team, or account.",
-      "outcome": "The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never an action sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.",
+      "outcome": "The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never a bottom sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.",
       "builds_on": [
         "PATH-D",
         "PATH-D-SIZE",
@@ -1594,6 +1594,99 @@
       ],
       "basis": "decision",
       "basis_note": "Set and confirmed by Om: two tiers and widths, tier chosen by layout need, no two-column layouts in dialogs.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-D-1",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Container 1: confirm",
+      "condition": "One yes or no, a destructive or consequential confirmation, or one pick, and the user needs nothing else from the page to decide.",
+      "outcome": "AlertDialog when the action is destructive or has consequences, otherwise a small Dialog (--width-dialog-sm). The body is one or two sentences. On phone it is a bottom sheet. First focus follows DS-A11Y-020. If none of this fits, go to PATH-D-2.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ],
+      "basis": "judgment",
+      "basis_note": "From the gap plan of 14 Nov 2026. The field thresholds follow JOB-OVERLAY-INTERACTION (4 fields for a Dialog, 8 for a Sheet), not the gap plan's 7. To test on real screens.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-D-2",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Container 2: form dialog",
+      "condition": "One task with one to four stacked fields, and the user does not need the page behind it.",
+      "outcome": "A small Dialog (--width-dialog-sm), single column, two footer buttons at most (DS-MODAL-005). On phone, any text field makes it a full-screen form (DS-RESPONSIVE-009). If it needs more room or more fields, go to PATH-D-3.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ],
+      "basis": "judgment",
+      "basis_note": "From the gap plan of 14 Nov 2026. The field thresholds follow JOB-OVERLAY-INTERACTION (4 fields for a Dialog, 8 for a Sheet), not the gap plan's 7. To test on real screens.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-D-3",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Container 3: large dialog",
+      "condition": "One task whose content needs more width: a textarea or a short list, still a single column.",
+      "outcome": "A large Dialog (--width-dialog-lg). Two-column layouts do not go in a dialog (PATH-FIELD-COLUMNS). On phone it is a full-screen form (DS-RESPONSIVE-009). If it has more than four fields, go to PATH-D-4.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-FIELD-COLUMNS"
+      ],
+      "basis": "judgment",
+      "basis_note": "From the gap plan of 14 Nov 2026. The field thresholds follow JOB-OVERLAY-INTERACTION (4 fields for a Dialog, 8 for a Sheet), not the gap plan's 7. To test on real screens.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-D-4",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Container 4: side peek",
+      "condition": "The task touches five to eight fields, or the user needs the page behind it while they work (to compare, copy a value or pick rows).",
+      "outcome": "A right-anchored Sheet (vois-components JOB-OVERLAY-INTERACTION). When the user must keep working in the page, use it as a peek: no scrim and no inert background, so the page stays usable. Otherwise it is a modal Sheet with a scrim. On phone it is full screen (DS-PANEL-002).",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "judgment",
+      "basis_note": "From the gap plan of 14 Nov 2026. The field thresholds follow JOB-OVERLAY-INTERACTION (4 fields for a Dialog, 8 for a Sheet), not the gap plan's 7. To test on real screens.",
+      "evidence": []
+    },
+    {
+      "id": "PATH-D-5",
+      "node_type": "sub_decision",
+      "parent": "PATH-D",
+      "source_file": "vois-patterns/references/dialogs-and-action-sheets.md",
+      "pattern_name": "Container 5: page",
+      "condition": "More than eight fields, tabs, a timeline, related records, a long form, or more than one step.",
+      "outcome": "A full page, reached from an Open action in the overlay. Never a bigger dialog, and never a stack of dialogs: a flow with steps is a page (DS-MODAL-006).",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-B-ROW-OPEN"
+      ],
+      "basis": "judgment",
+      "basis_note": "From the gap plan of 14 Nov 2026. The field thresholds follow JOB-OVERLAY-INTERACTION (4 fields for a Dialog, 8 for a Sheet), not the gap plan's 7. To test on real screens.",
       "evidence": []
     },
     {
@@ -2956,7 +3049,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Which overlay opens",
       "condition": "A page action opens something on top of the page.",
-      "outcome": "A yes or no, or a pick: modal on desktop, action sheet on phone. Any text field: modal on desktop, full screen on phone, never an action sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
+      "outcome": "A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
       "builds_on": [
         "PATH-D",
         "PATH-D-SIZE",
@@ -2990,7 +3083,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "View to edit on the same page",
       "condition": "A record page or settings block can be changed.",
-      "outcome": "Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (action sheet on phone). On phone Save sits in a sticky bar.",
+      "outcome": "Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (bottom sheet on phone). On phone Save sits in a sticky bar.",
       "builds_on": [
         "PATH-SET-VIEW-EDIT-BLOCK",
         "PATH-E",

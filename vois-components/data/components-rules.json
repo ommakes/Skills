@@ -133,7 +133,8 @@
       ],
       "rationale": [
         { "question": "Why not Dialog?", "answer": "Dialog is for any modal interaction. AlertDialog enforces role=\"alertdialog\", which screen readers announce with higher urgency. Any time consequences exist, use AlertDialog — it's not just convention, it's an ARIA distinction." },
-        { "question": "Why not Toast for irreversible actions?", "answer": "Toasts auto-dismiss. If the user looked away or the connection dropped, they miss confirmation. Reserve Toast-with-undo for genuinely reversible actions where the undo window is at least 5 seconds." }
+        { "question": "Why not Toast for irreversible actions?", "answer": "Toasts auto-dismiss. If the user looked away or the connection dropped, they miss confirmation. Reserve Toast-with-undo for genuinely reversible actions where the undo window is at least 5 seconds." },
+        { "question": "Where does focus start in an AlertDialog?", "answer": "On Cancel, never on the destructive button (vois-tokens DS-A11Y-020). Radix does this when the Cancel part is AlertDialogCancel. It stops a reflex Enter from confirming a delete." }
       ]
     },
     {
@@ -291,7 +292,7 @@
           { "condition": "Destructive or consequential", "recommendation": "AlertDialog (see Job 1)" }
         ] },
         { "condition": "Task touches more than one field (a handful or more), needs more screen space, or otherwise relates to an item in a list", "sub_branches": [
-          { "condition": "User will likely want to see the page behind it while working", "recommendation": "Sheet (right-anchored, partial overlap)" },
+          { "condition": "User will likely want to see the page behind it while working", "recommendation": "Sheet (right-anchored, partial overlap). When the user must keep working in the page (to compare, copy a value or pick rows), use it as a peek: no scrim, no inert background and no focus trap, so the page behind stays usable (vois-patterns PATH-D-4). The modal rules DS-MODAL-001 and DS-MODAL-002 do not apply to a peek" },
           { "condition": "User needs full attention on the task", "recommendation": "Drawer (full-height, slides from bottom on mobile)" }
         ] },
         { "condition": "The user opens a record from a table row (see vois-patterns PATH-B-ROW-OPEN)", "sub_branches": [
@@ -299,7 +300,7 @@
           { "condition": "Record has tabs, a timeline, related records, or a long form", "recommendation": "Full page, reached from an Open action in the Sheet" },
           { "condition": "Only a confirmation, not a record", "recommendation": "AlertDialog or Dialog" }
         ] },
-        { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (action sheet pattern on mobile)" },
+        { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (the bottom sheet pattern on mobile)" },
         { "condition": "A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it", "recommendation": "Drawer used as a tray: one container that stays mounted while the steps swap inside it (see vois-components/references/motion-tray.md)" },
         { "condition": "Filters or sort controls for a list or table on a mobile layout", "recommendation": "Drawer (slides from the bottom, closes when done). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone" }
       ],

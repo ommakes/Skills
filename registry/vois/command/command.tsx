@@ -2,7 +2,7 @@
 // CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut and CommandSeparator.
 //
 // From the Figma Command Menu (Molecules page, 5256:7993), Cmd Menu Search and Cmd Menu List:
-//   Surface: --bg-card, --shape-rounded corners. Command itself has no edge or shadow, so it can sit in a Popover
+//   Surface: --bg-card (CommandDialog lets the Dialog fill show), --shape-rounded corners. Command itself has no edge or shadow, so it can sit in a Popover
 //     or a Dialog. CommandDialog is the Figma menu: a 460 wide Dialog (--border-default edge, --shadow-large).
 //   Search row: 56 tall, 16 above and below and 24 at the sides, a 20 search icon in --icon-state-resting, 16/24
 //     --text-primary text, --text-hint placeholder, and a 1px --border-default line under it.
@@ -52,7 +52,7 @@ function CommandDialog({
 }: React.ComponentProps<typeof Dialog> & { title?: string; description?: string; className?: string }) {
   return (
     <Dialog {...props}>
-      <DialogContent showCloseButton={false} className={cn("w-[460px] max-w-[calc(100vw-var(--space-32))] overflow-hidden p-0", className)}>
+      <DialogContent showCloseButton={false} className={cn("w-[460px] max-w-[calc(100vw-var(--space-32))] overflow-hidden p-0 [&_[data-slot=command]]:bg-transparent", className)}>
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

@@ -15,6 +15,8 @@ python3 scripts/check-routing.py
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
 node vois-tokens/scripts/grid.test.mjs
+node vois-tokens/scripts/elevation-map.test.mjs
+node vois-tokens/scripts/elevation-map.mjs
 node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all
 node vois-eval/check-scenarios.mjs

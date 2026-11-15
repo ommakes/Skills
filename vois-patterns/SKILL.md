@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.21.0
+version: 1.22.0
 ---
 
 # Vois Patterns Skill
@@ -115,7 +115,7 @@ existing paths.
 | `references/table-interactions.md` | Selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty and error states, partial failures | `PATH-TABLE-*` rules (see `data/patterns-rules.json`) |
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/form-field-groups.md` | Field widths, columns, spacing, name, address, phone, email, one-time code, auto-growing textareas, AI chat input | rules for form field groups (see `data/patterns-rules.json`) |
-| `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` |
+| `references/dialogs-and-action-sheets.md` | Modal vs bottom sheet by breakpoint, the container ladder (confirm, form dialog, large dialog, side peek, page), confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` `[PATH-D-1]` `[PATH-D-2]` `[PATH-D-3]` `[PATH-D-4]` `[PATH-D-5]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/pricing-pages.md` | Pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), calculators, comparison tables, trial timelines | `[PATH-F]` `[PATH-PRICE-U1]` to `[PATH-PRICE-C11]` |
 | `references/marketing-pages.md` | Landing pages and homepages: one idea per section, three blocks max, detail behind a link, image tiles, no dividers, one primary button. Taste rules for marketing surfaces only | `[PATH-G]` `[PATH-G-*]` |
@@ -153,7 +153,7 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
 - [ ] All copy routed to righter skill and reviewed
 - [ ] Ready to read vois-tokens for tokens, spacing, components
-- [ ] Mobile breakpoint behavior defined (action sheets vs dialogs, sidebar vs hamburger, etc.)
+- [ ] Mobile breakpoint behavior defined (bottom sheets vs dialogs, sidebar vs hamburger, etc.)
 
 ---
 

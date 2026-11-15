@@ -25,6 +25,11 @@ jobs:
       - name: Grid and panel maths (vois-tokens)
         run: node vois-tokens/scripts/grid.test.mjs
 
+      - name: Elevation map and rules (vois-tokens)
+        run: |
+          node vois-tokens/scripts/elevation-map.test.mjs
+          node vois-tokens/scripts/elevation-map.mjs
+
       - name: Lookalike scanner fixtures (vois-eval)
         run: node vois-eval/lookalike-pass/scan.test.mjs
 

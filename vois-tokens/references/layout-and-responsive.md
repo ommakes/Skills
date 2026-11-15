@@ -6,9 +6,9 @@ Stop using `vh`. It breaks on mobile because browser chrome changes the availabl
 
 | Unit | What it means | Use for |
 |------|--------------|---------|
-| `svh` | Small viewport height — assumes maximum browser chrome visible | Hero sections, modals, anything that must fit on first load |
+| `svh` | Small viewport height — assumes maximum browser chrome visible | Hero sections, desktop modals, anything that must fit on first load |
 | `lvh` | Large viewport height — assumes minimum browser chrome | Full-screen backgrounds, decorative elements that can extend under chrome |
-| `dvh` | Dynamic viewport height — updates as chrome appears/disappears | Interfaces that should resize as mobile keyboard or nav appears |
+| `dvh` | Dynamic viewport height — updates as chrome appears/disappears | Interfaces that should resize as mobile keyboard or nav appears: a chat, a bottom sheet, a full-screen form (`references/overlays.md`) |
 
 ```css
 /* Hero that fits even with address bar showing */
@@ -88,7 +88,7 @@ Single-line fields use `max-width: var(--width-field-max)` by default. Short fix
 
 Layouts hold at `var(--width-viewport-min)` with no horizontal scroll. `[DS-LAYOUT-WIDTH-003]`
 
-Desktop dialogs use `max-width: var(--width-dialog-sm)` or `var(--width-dialog-lg)`. Which tier applies is decided in vois-patterns `[PATH-D-SIZE]`. `[DS-LAYOUT-WIDTH-004]`
+Desktop dialogs use `max-width: var(--width-dialog-sm)` or `var(--width-dialog-lg)`. Which tier applies is decided in vois-patterns `[PATH-D-SIZE]`. `[DS-LAYOUT-WIDTH-004]` The values are Figma variables: `--width-dialog-sm` is 344 (the Figma Dialog) and `--width-dialog-lg` is 560 (proposed, to confirm on real screens). A dialog is never wider than the viewport minus 16 on each side.
 
 ## Auto-growing Text Fields `[DS-LAYOUT-FIELD]`
 

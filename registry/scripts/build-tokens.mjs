@@ -132,6 +132,10 @@ export function cssValue(v, names, name = "") {
 // A value is one value for both modes, or [light, dark].
 const modes = (v) => (Array.isArray(v) ? (v.length === 2 ? v : (() => { throw new Error(`[light, dark] must have two values, got ${v.length}`); })()) : [v, v]);
 
+// Tiers that draw no shadow in dark, and the value that stands in for it.
+export const FLAT_IN_DARK = ["--shadow-base", "--shadow-small"];
+export const NO_SHADOW = "0 0 0 0 oklch(0 0 0 / 0)";
+
 export function shadowCss(layers) {
   if (!Array.isArray(layers) || layers.length === 0) throw new Error("a shadow needs at least one layer");
   return layers.map((layer) => {
@@ -271,6 +275,33 @@ export function buildFiles(exportJson, brandJson, { brandLabel = "registry/sourc
     if (!/^--[a-z0-9]+(?:-[a-z0-9]+)*$/.test(k)) throw new Error(`not a shadow token name: ${k}`);
     if (names.has(k)) throw new Error(`shadow ${k} has the same name as a token`);
     light.push(`  ${k}: ${shadowCss(layers)};`);
+  }
+
+  // Dark shadows (DS-ELEVATION-005). Base and Small carry no shadow in dark: a lighter fill and a hairline do that
+  // job, so they become a shadow that draws nothing (a real value, so a list like `inset ..., var(--shadow-base)`
+  // stays valid; `none` inside a list would drop the whole declaration). Every other tier needs a dark style.
+  // Absent block: dark keeps the light shadows, as before.
+  const darkShadows = exportJson.darkShadows;
+  if (darkShadows !== undefined) {
+    if (!darkShadows || typeof darkShadows !== "object" || Array.isArray(darkShadows)) throw new Error("figma-export.json: darkShadows must be an object");
+    for (const k of Object.keys(darkShadows)) {
+      if (!Object.hasOwn(shadows, k)) throw new Error(`dark shadow ${k} has no light shadow of the same name`);
+      if (FLAT_IN_DARK.includes(k)) throw new Error(`dark shadow ${k}: this tier carries no shadow in dark (DS-ELEVATION-005)`);
+    }
+    // A dark style is the light one with the same layers (offset, blur, spread) in black at a higher alpha, minus the
+    // 1px ring, which --elevation-hairline draws. Anything else means the two sets have drifted apart.
+    const isRing = (l) => Array.isArray(l) && l[0] === 0 && l[1] === 0 && l[2] === 0 && l[3] === 1;
+    for (const [k, layers] of Object.entries(darkShadows)) {
+      const want = shadows[k].filter((l) => !isRing(l));
+      const geometry = (ls) => JSON.stringify(Array.isArray(ls) ? ls.map((l) => (Array.isArray(l) ? l.slice(0, 4) : l)) : ls);
+      if (geometry(layers) !== geometry(want)) throw new Error(`dark shadow ${k} must have the layers of the light one without its 1px ring (${geometry(want)}), got ${geometry(layers)}`);
+      for (const l of layers) if (typeof l[4] !== "string" || !/^#000000[0-9a-f]{2}$/i.test(l[4])) throw new Error(`dark shadow ${k}: layers are black at some alpha (#000000aa), got ${JSON.stringify(l[4])}`);
+    }
+    for (const k of Object.keys(shadows)) {
+      if (FLAT_IN_DARK.includes(k)) dark.push(`  ${k}: ${NO_SHADOW};`);
+      else if (!Object.hasOwn(darkShadows, k)) throw new Error(`shadow ${k} has no dark style (only ${FLAT_IN_DARK.join(" and ")} may go without)`);
+      else dark.push(`  ${k}: ${shadowCss(darkShadows[k])};`);
+    }
   }
 
   const pendingCount = Object.keys(pending?.add ?? {}).length + Object.keys(pending?.change ?? {}).length;

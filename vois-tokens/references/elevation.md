@@ -1,36 +1,125 @@
 # Elevation `[DS-ELEVATION]`
 
-Shadow communicates stacking order and interactivity. There are five tiers, from the Figma effect styles (`Elevation/*`). Don't invent a sixth, and don't hand-write a shadow: each tier is a token in the token file.
+Shadow shows stacking order and state. There are five tiers, from the Figma effect styles (`Elevation/*`), plus "no shadow". Don't invent a sixth, and don't hand-write a shadow: each tier is a token in the token file.
 
-| Tier | Token | Use it for (Figma) | Layer |
-|---|---|---|---|
-| Base | `--shadow-base` | Inputs, buttons and selectors, raised | In the page |
-| Small | `--shadow-small` | A card at rest | In the page |
-| Medium | `--shadow-medium` | A raised card (in the page), a dropdown menu (dropdown layer) | In the page, or `--z-dropdown` for a menu |
-| Large | `--shadow-large` | A picker, a popover | `--z-overlay` |
-| XLarge | `--shadow-xlarge` | Modals and dialogs | `--z-modal` |
+The map of which element sits at which tier, and how it moves with state, is `data/elevation-map.json`. `scripts/elevation-map.mjs` checks it against the schema and against the registry components. When a tier in this file and the map disagree, the map wins, because it is checked against the built components.
 
-Each tier is several stacked shadows of black at a low alpha, so it reads on any surface.
+## The tiers
 
-```css
-.card { box-shadow: var(--shadow-small); }
-.card:hover { box-shadow: var(--shadow-medium); }
-.popover { box-shadow: var(--shadow-large); }
-.dialog-content { box-shadow: var(--shadow-xlarge); }
-```
+The ladder runs: none, Base, Small, Medium, Large, XLarge.
 
-## Modal Scrim `[DS-ELEVATION-001]`
+| Tier | Token | Built elements that use it |
+|---|---|---|
+| none | | Pressed Card, disabled elements, static sections that only group content |
+| Base | `--shadow-base` | Card, Choice Card and the Segmented Control indicator at rest |
+| Small | `--shadow-small` | Card on hover, the Switch knob, Hover Card |
+| Medium | `--shadow-medium` | Dropdown menus and select lists |
+| Large | `--shadow-large` | Dialog, Tooltip |
+| XLarge | `--shadow-xlarge` | Nothing at rest. Only a dragged item or a full-screen surface |
 
-The backdrop behind a modal is a separate concern from the modal's own shadow. Use the scrim token, not a darker shadow and not a literal color:
+Each tier is several stacked shadows of black at a low alpha, so it reads on any light surface. Dark mode needs more than that (`DS-ELEVATION-005`).
 
 ```css
-.modal-backdrop {
-  background: var(--bg-overlay-dark);
-}
+.card { box-shadow: var(--shadow-base); }
+.card:hover { box-shadow: var(--shadow-small); }
+.menu { box-shadow: var(--shadow-medium); }
+.dialog-content { box-shadow: var(--shadow-large); }
 ```
 
-Pair with `references/components.md`'s modal section (`inert`, `overscroll-behavior`, `scrollbar-gutter`).
+## Layers `[DS-ELEVATION-002]`
 
-## When in Doubt `[DS-ELEVATION-002]`
+Each tier belongs to a layer. The layer sets the z-index token, and the tiers it may use.
 
-Match the tier to the z-index layer it occupies: `--shadow-medium` goes with `--z-dropdown` when it is a menu (a raised card at Medium stays in the page), `--shadow-large` with `--z-overlay`, `--shadow-xlarge` with `--z-modal`. Don't put a heavier shadow on a lower-stacked element than a lighter one above it. The one exception is a popup opened from inside a dialog: a menu, select, hover card or tooltip stacks above the modal (`--z-modal` 1300, `--z-dropdown` 1400, `--z-overlay` 1500) and keeps its own lighter tier.
+| Layer | Token | Tiers allowed |
+|---|---|---|
+| page | none | none, Base, Small, Medium |
+| dropdown | `--z-dropdown` | Medium |
+| overlay | `--z-overlay` | Small, Medium, Large |
+| modal | `--z-modal` | Large, XLarge |
+
+Layers run in role order, and the heaviest tier a layer allows never drops below the layer before it. This is not z-index order. A popup opened from inside a dialog (a menu, select, hover card or tooltip) stacks above the modal and keeps its own lighter tier. The z-index order is modal 1300, dropdown 1400, overlay 1500.
+
+## Modal scrim `[DS-ELEVATION-001]`
+
+The backdrop behind a modal is separate from the modal's own shadow. Use the scrim token, not a darker shadow and not a literal color. The scrim stays at 20% (`--bg-overlay-dark`).
+
+```css
+.modal-backdrop { background: var(--bg-overlay-dark); }
+```
+
+Pair it with `references/components.md`'s modal section (`inert`, `overscroll-behavior`, `scrollbar-gutter`).
+
+## State changes `[DS-ELEVATION-003]`
+
+| State | Rule |
+|---|---|
+| Hover | Up one tier at most. Never down. |
+| Pressed | Down one tier, or to none. Never up. A card may drop to none. |
+| Dragged | A high tier (Large). Never lower than rest. |
+| Disabled | None, or unchanged. |
+| Focus | No change. The focus ring is the indicator (`DS-A11Y-018`). |
+
+## Resting cards `[DS-ELEVATION-004]`
+
+A resting card keeps a Base or Small shadow. A static section that only groups content stays flat, so a page does not turn into a stack of boxes (`DS-SLOP-010`). Choose by whether the thing is a separate object the user acts on, not by whether it has content.
+
+## Dark mode `[DS-ELEVATION-005]`
+
+A 4 to 5% black shadow is invisible on a dark surface, so dark mode does not use shadow alone.
+
+| Tier | Dark rendering |
+|---|---|
+| none | No shadow |
+| Base | No shadow. The `--bg-card` fill and the component's own edge |
+| Small | No shadow. The `--elevation-surface-small` fill and the component's own edge |
+| Medium, Large, XLarge | `--elevation-surface-raised` fill, a blacker shadow, and the component's own edge |
+
+The tokens, all from Figma:
+
+| Token | Light | Dark |
+|---|---|---|
+| `--elevation-surface-small` | white (same as `--bg-card`) | `--warm-gray-10` |
+| `--elevation-surface-raised` | white | `--warm-gray-9` |
+| `--elevation-hairline` | transparent | `--white-a3` |
+| `--shadow-medium`, `-large`, `-xlarge` | as before | blacker, from the `Elevation/Dark/*` effect styles |
+| `--shadow-base`, `--shadow-small` | as before | draw nothing |
+
+A component that reads a tier token gets the dark shadow from `.dark` for free. The fill and the edge it sets itself: use `--elevation-surface-small` or `--elevation-surface-raised` as the fill for the tier, and `--elevation-hairline` as the edge when it has none. A component that already has an edge (Card, menus, Dialog) keeps it, so it does not get two. Light does not change: the fills are the same white and the hairline is transparent. Two built components keep their own fill: the Tooltip is a dark fill in both themes, and the Switch knob is a light knob on a dark track, so its Small shadow disappearing in dark costs nothing.
+
+Dark text (4.5:1) and control edges (3:1) are tested on every fill, and text on a menu item hover over the raised fill (`DS-ELEVATION-012`). The decorative edge `--border-pretty` is not tested: on the raised fill it is nearly the same color, so a menu is outlined against the page by its edge and separated from a Dialog behind it by its shadow only.
+
+**Known gap: a popup opened over a Dialog.** The fills follow the tier, not the stacking order. A Select list or menu opened inside a Dialog has the same raised fill as the Dialog, and a Hover Card (Small) is darker than the Dialog. In dark they are told apart by their blacker shadow only. A stock shadcn Popover still maps to `--bg-card` (`DS-TOKEN-005`), so it is darker than the Vois menus. Both are open decisions, not rules.
+
+## Docked panels `[DS-ELEVATION-006]`
+
+A panel docked to an edge casts its shadow away from that edge, with a negative spread so it does not leak past the panel.
+
+| Dock | Shadow offset |
+|---|---|
+| Right | x negative |
+| Left | x positive |
+| Bottom | y negative |
+| Top | y positive |
+| Centered | x is 0 |
+
+The map has a `dock` field for each overlay. Directional tokens arrive in a later release. Until then use the tier token.
+
+## Guardrails
+
+- `[DS-ELEVATION-007]` No raw shadow literal with blur. A zero-blur spread-only ring is allowed. It is an edge, not a tier.
+- `[DS-ELEVATION-008]` At most two distinct tiers at rest in one view.
+- `[DS-ELEVATION-009]` Large and XLarge only on overlays, hover and a dragged item.
+- `[DS-ELEVATION-010]` Inset only for a recessed or pressed element. A zero-blur inset ring used as a border or a checked ring is allowed.
+- `[DS-ELEVATION-011]` Cross-fade the opacity of a pre-drawn layer to animate Medium and heavier tiers. Do not animate `box-shadow` on them.
+- `[DS-ELEVATION-012]` Check contrast on every elevated fill: text 4.5:1, control edge 3:1.
+
+These are advisory today. There is no detector yet.
+
+## Checking the map
+
+```
+node vois-tokens/scripts/elevation-map.mjs
+node vois-tokens/scripts/elevation-map.test.mjs
+```
+
+The check fails when the ladder changes, a state moves more than one tier, a tier is outside its layer, a dragged tier is below Large, a built row names a component that is not in the registry, or the component source (comments ignored) never uses a `--shadow-*` token the map names. It does not check which state uses the token. A `proposed` row names no component yet.

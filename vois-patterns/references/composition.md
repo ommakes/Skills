@@ -31,7 +31,7 @@ at the same time.
 
 - **Approval queue.** "Browse pending items, open one, approve or reject it."
   This is `[PATH-B]` (Table/List with Details) for the browse/filter surface,
-  composed with `[PATH-D]` (Dialog/Action Sheet) for the approve/reject
+  composed with `[PATH-D]` (Dialog/Bottom Sheet) for the approve/reject
   confirmation triggered from a row — not a bespoke "queue" component that
   reimplements table filtering and confirmation inline.
 - **Multi-step form with a review step.** The input steps are `[PATH-C]`

@@ -7,7 +7,8 @@
 // 1px --border-default edge drawn inside, with --shadow-base (Figma's Elevation/Base).
 //   Static (the default): a container that is not clickable. Nothing changes on hover.
 //   interactive, resting: the same look, and a pointer cursor.
-//   Hover: the edge becomes --border-state-hover and the shadow --shadow-small.
+//   Hover: the edge becomes --border-state-hover and the shadow --shadow-small. In dark the fill steps up to
+//   --elevation-surface-small (the shadow draws nothing there, DS-ELEVATION-005); in light it is the same white.
 //   Pressed: the edge stays --border-state-hover and the shadow goes, so the card sits flatter.
 //   Focus (CardLink has keyboard focus): a 2px --border-state-focus edge inside, with --shadow-base.
 //   Disabled: a --border-state-disabled edge, no shadow, --text-state-disabled text.
@@ -45,12 +46,12 @@ function Card({
           "relative flex flex-col gap-[var(--space-padding-medium)] rounded-[var(--shape-rounded)] p-[var(--space-padding-medium)]",
           "bg-[color:var(--bg-card)] text-[color:var(--text-primary)]",
           "shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)]",
-          "transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
+          "transition-[box-shadow,background-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
           // interactive states. data-* and has-* come after hover and active, and each is guarded so
           // that disabled wins over focus, and focus wins over pressed and hover. The focus ring needs
           // no `interactive`: any CardLink in the card hides its own outline, so the card must draw it.
           "data-[interactive]:not-data-[disabled]:cursor-pointer",
-          "data-[interactive]:not-data-[disabled]:hover:shadow-[inset_0_0_0_1px_var(--border-state-hover),var(--shadow-small)]",
+          "data-[interactive]:not-data-[disabled]:hover:bg-[color:var(--elevation-surface-small)] data-[interactive]:not-data-[disabled]:hover:shadow-[inset_0_0_0_1px_var(--border-state-hover),var(--shadow-small)]",
           "data-[interactive]:not-data-[disabled]:active:shadow-[inset_0_0_0_1px_var(--border-state-hover)]",
           "not-data-[disabled]:has-[[data-slot=card-link]:focus-visible]:shadow-[inset_0_0_0_2px_var(--border-state-focus),var(--shadow-base)]",
           "data-[disabled]:cursor-not-allowed data-[disabled]:text-[color:var(--text-state-disabled)] data-[disabled]:shadow-[inset_0_0_0_1px_var(--border-state-disabled)]",

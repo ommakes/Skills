@@ -6,6 +6,15 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.22.0] - 2026-11-15
+
+### Added
+- `PATH-D-1` to `PATH-D-5`, the container ladder in `references/dialogs-and-action-sheets.md`: confirm, form dialog, large dialog, side peek, page. Walk them in order and take the first that fits. The field counts follow `vois-components` `JOB-OVERLAY-INTERACTION` (four for a Dialog, eight for a Sheet), not the 7 in the gap plan. A flow with steps is a page, and dialogs are never stacked.
+
+### Changed
+- "Action sheet" is now "bottom sheet" where it means the mobile container (`PATH-D`, `PATH-PAGE-OVERLAY`, the confirmation and discard text). "Action sheet" stays for a short list of choices that ends in a separate Cancel. The file keeps its name, `dialogs-and-action-sheets.md`.
+- `PATH-D` points to the build rules in vois-tokens `references/overlays.md`: a bottom sheet is at most 90dvh, and a dialog that takes text is a full-screen form on a phone.
+
 ## [1.21.0] - 2026-11-13
 
 ### Added

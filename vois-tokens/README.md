@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.32.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.35.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,10 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.35.0**: Dark elevation tokens (fills, hairline, blacker Medium to XLarge shadows, Base and Small draw nothing in dark). `DS-ELEVATION-005` names them.
+- **1.34.0**: `DS-ELEVATION-003` to `-012` (state changes, resting cards, dark mode, docked panels, raw shadows, tier limits, contrast), all advisory with no detector yet. New `data/elevation-map.json` and a checker. `references/elevation.md` now matches the built components (Card at Base, Dialog at Large). No component changed.
+- **1.33.1**: `--width-dialog-sm` (344) and `--width-dialog-lg` (560, proposed) now have values: Figma variables in the Size collection, in the default tokens. `DS-LAYOUT-WIDTH-004` and `PATH-D-SIZE` named them before they existed. Docs only.
+- **1.33.0**: New `references/overlays.md` with twelve rules: `DS-MODAL-004` to `DS-MODAL-007` (body scrolls, two footer buttons, no nested modals, no modal for navigation), `DS-RESPONSIVE-008` to `DS-RESPONSIVE-010` (bottom sheet, full-screen form, safe area) and `DS-A11Y-019` to `DS-A11Y-023` (dialog name, first focus, return focus, Escape, dragging). All are proposed and untested on real phones. `dvh` is the unit for bottom sheets and full-screen forms.
 - **1.32.0**: New `DS-A11Y-018`, "The ring follows the control": the focus indicator is an external 2px ring 2px out, the border stays 1px, no `border-radius` on focus, and an inside ring in clipped containers. Focus color is Blue-10 in light and Blue-8 in dark. `--control-focus` is the same token. Docs and rule data only, no detector.
 - **1.31.5**: `DS-TOKEN-005` points the shadcn `input` variable at `--input-border` (the lightest gray that meets 3:1 on the page and the resting fill), not `--border-default`.
 - **1.31.4**: The z-index order is now modal (1300), dropdown (1400), overlay (1500), so a menu, select, hover card or tooltip opened from inside a Dialog shows above it. Docs only.

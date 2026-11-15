@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vois-tokens/data/elevation-map.schema.json",
+  "title": "Vois elevation map",
+  "description": "The contract for data/elevation-map.json. A row that misses a property, or carries one that is not listed here, fails scripts/elevation-map.mjs. The checker reads this file, so the schema and the check cannot drift.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "note", "ladder", "layers", "dark", "elements"],
+  "properties": {
+    "source": { "type": "string", "minLength": 1 },
+    "note": { "type": "string", "minLength": 1 },
+    "ladder": { "type": "array", "minItems": 2, "items": { "enum": ["none", "base", "small", "medium", "large", "xlarge"] } },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["page", "dropdown", "overlay", "modal"],
+      "properties": {
+        "page": { "$ref": "#/$defs/layer" },
+        "dropdown": { "$ref": "#/$defs/layer" },
+        "overlay": { "$ref": "#/$defs/layer" },
+        "modal": { "$ref": "#/$defs/layer" }
+      }
+    },
+    "dark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["none", "base", "small", "medium", "large", "xlarge"],
+      "properties": {
+        "none": { "type": "string", "minLength": 1 },
+        "base": { "type": "string", "minLength": 1 },
+        "small": { "type": "string", "minLength": 1 },
+        "medium": { "type": "string", "minLength": 1 },
+        "large": { "type": "string", "minLength": 1 },
+        "xlarge": { "type": "string", "minLength": 1 }
+      }
+    },
+    "elements": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/element" } }
+  },
+  "$defs": {
+    "tier": { "enum": ["none", "base", "small", "medium", "large", "xlarge"] },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token", "tiers"],
+      "properties": {
+        "token": { "type": ["string", "null"] },
+        "tiers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/tier" } }
+      }
+    },
+    "element": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "status", "component", "layer", "rest", "hover", "pressed", "dragged", "disabled", "dock", "note"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["built", "proposed"] },
+        "component": { "type": ["string", "null"] },
+        "layer": { "enum": ["page", "dropdown", "overlay", "modal"] },
+        "rest": { "$ref": "#/$defs/tier" },
+        "hover": { "$ref": "#/$defs/tier" },
+        "pressed": { "$ref": "#/$defs/tier" },
+        "dragged": { "type": ["string", "null"] },
+        "disabled": { "$ref": "#/$defs/tier" },
+        "dock": { "enum": ["none", "center", "left", "right", "top", "bottom"] },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}
