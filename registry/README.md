@@ -2,7 +2,7 @@
 
 A shadcn-style registry of Vois core components, so an agent can install a real component instead of hand-building a lookalike. It is a reference implementation of the Vois skills on shadcn/ui and Tailwind v4, not a competing component library.
 
-**Status: Phase 1 components, complete, plus Wave 0 of the AI components.** Twenty-nine items:
+**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Thirty-two items:
 
 - `vois-tokens`: default values for every Vois token, plus the motion tokens.
 - `vois-theme`: shadcn's variables pointed at those tokens.
@@ -19,6 +19,7 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-card`, `vois-hover-card` and `vois-panel`: the container with a whole-card link, the hover preview, and the persistent secondary pane.
 
 - Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog` and `vois-command`.
+- The inspector controls: `vois-slider` (Slider for a continuous value, StepSlider for a short named scale, both on a native range input), `vois-inspector` (the sections, label and control rows, control groups and toggle inside a properties pane, for `vois-panel`) and `vois-swatch-picker` (one color from a fixed set).
 
 Phase 1 is complete. Next are the AI components, in waves (Wave 1 builds on the Wave 0 primitives).
 
@@ -30,7 +31,7 @@ The built files are not committed. Build them, then add the items from the build
 
 ```bash
 cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
-cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-panel.json <path to>/registry/public/r/vois-button-group.json <path to>/registry/public/r/vois-collapsible.json <path to>/registry/public/r/vois-scroll-area.json <path to>/registry/public/r/vois-dropdown-menu.json <path to>/registry/public/r/vois-dialog.json <path to>/registry/public/r/vois-command.json
+cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-panel.json <path to>/registry/public/r/vois-button-group.json <path to>/registry/public/r/vois-collapsible.json <path to>/registry/public/r/vois-scroll-area.json <path to>/registry/public/r/vois-dropdown-menu.json <path to>/registry/public/r/vois-dialog.json <path to>/registry/public/r/vois-command.json <path to>/registry/public/r/vois-slider.json <path to>/registry/public/r/vois-inspector.json <path to>/registry/public/r/vois-swatch-picker.json
 ```
 
 Where the built registry is hosted (so you can install by URL) is not decided yet.
@@ -45,7 +46,7 @@ Then import them right after Tailwind, tokens first:
 @import "./styles/vois-theme.css";
 ```
 
-`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-dialog` imports `vois-button`, `vois-command` imports `vois-dialog` (for `CommandDialog`), and `vois-button-group` is meant for `vois-button`. `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`.
+`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-dialog` imports `vois-button`, `vois-command` imports `vois-dialog` (for `CommandDialog`), and `vois-button-group` is meant for `vois-button`. `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`. `vois-inspector` imports `vois-collapsible`, and `vois-swatch-picker` imports the Input's field classes (add `vois-input`).
 
 ## Where the values come from
 

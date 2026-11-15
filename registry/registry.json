@@ -561,6 +561,61 @@
           "target": "components/ui/command.tsx"
         }
       ]
+    },
+    {
+      "name": "vois-slider",
+      "type": "registry:ui",
+      "title": "Vois Slider",
+      "description": "Two sliders on a native range input: Slider for a continuous value (a 4px track and a 20 thumb on the Control tokens) and StepSlider for a short named scale (the Segments geometry with stop dots and the step's label in the thumb). Keyboard, touch and the slider role come from the browser.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/slider/slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-inspector",
+      "type": "registry:ui",
+      "title": "Vois Inspector",
+      "description": "The inside of a properties pane: collapsible sections of label and control rows, joined control groups and a 32 toggle button. Put it in vois-panel. Install vois-collapsible with it: the sections import it.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/inspector/inspector.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/inspector.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-swatch-picker",
+      "type": "registry:ui",
+      "title": "Vois Swatch Picker",
+      "description": "Picks one color from a fixed set, with an optional None: a field trigger that shows the swatch and its name, and a popover of swatch groups that is one radio group. Install vois-input with it: the trigger imports its field classes.",
+      "dependencies": [
+        "class-variance-authority",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/swatch-picker/swatch-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/swatch-picker.tsx"
+        }
+      ]
     }
   ]
 }
