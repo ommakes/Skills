@@ -2,6 +2,14 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-15 (slider, inspector, swatch picker, registry 0.15.0)
+
+- **Selectors page**, frame "Sliders (registry)" (`8166:3534`): `Slider` (`8166:3469`, State Resting, Focus, Disabled), `Step Slider Stop` (`8166:3480`, Selected No or Yes by state, with a Label text property) and `Step Slider` (`8166:3533`, Steps 4 or 8 by Resting or Disabled). Every fill, stroke, radius and size is bound to an existing variable; no new variables, so the export checksum is unchanged.
+- **Components page**, frame "Inspector and Swatch Picker (registry)" (`8167:867`) under the Panel set: `Inspector Toggle` (`8167:794`), `Inspector Section Header` (`8167:801`, Open Yes or No, Title property), `Inspector Row` (`8167:802`, Label property and a Control instance swap), `Swatch` (`8167:825`), `Swatch Picker Trigger` (`8167:839`), `Swatch Picker Popup` (`8167:840`), and a light and dark inspector built from instances (`8167:873`).
+  - Open: the older draft `Slider` (`7720:3355`), `Progress+ Handle` (`7722:14238`) and `Frame 1` (`7722:14274`) near Survey Options on the Selectors page have hardcoded fills and match neither code part. Delete them, or point Survey Options at the new sets.
+  - Open: in Figma the Step Slider's dot slots share the free width, so on an 8-step slider the dots sit within a few px of where code puts them, not exactly. Code spreads stop centers evenly over the thumb's travel.
+  - Open: the Slider and Step Slider thumbs use `Elevation/Small` and `Elevation/Base`, which have no `Dark/` twin, so a Dark-mode frame keeps the light shadow (as for the other components).
+
 ## Done on 2026-11-15 (popup fill, registry 0.13.0)
 
 - **`Component/Elevation/Surface-Popup`** (`--elevation-surface-popup`): Light Gray/White, Dark Warm Gray-8, scopes frame fill, shape fill and effect color. Export checksum `c01e04df` (891 tokens).
