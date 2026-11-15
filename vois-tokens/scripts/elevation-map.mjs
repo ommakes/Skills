@@ -55,9 +55,18 @@ export function validate(schema, value, root = schema, path = "$") {
 }
 
 const idx = (t) => LADDER.indexOf(t);
+const NO_EXPORT = "a docked element cannot be checked without registry/source/figma-export.json (its shadow tokens)";
+
+// The shadow tokens that exist in light and in dark. Malformed input gives null (so the check fails closed), never an empty pass.
+export function lightAndDarkShadows(x) {
+  if (!x || typeof x !== "object" || !x.shadows || typeof x.shadows !== "object" || Array.isArray(x.shadows)) return null;
+  if (!x.darkShadows || typeof x.darkShadows !== "object" || Array.isArray(x.darkShadows)) return null;
+  return new Set(Object.keys(x.shadows).filter((k) => Object.hasOwn(x.darkShadows, k)));
+}
 
 // Rules a schema cannot say. `readComponent(name)` returns a registry component's source, or null.
-export function semanticProblems(data, { readComponent = () => null, registryItems = null } = {}) {
+// `shadowTokens` is the set of shadow token names that exist in both light and dark (docked panels need one per side).
+export function semanticProblems(data, { readComponent = () => null, registryItems = null, shadowTokens = null } = {}) {
   const out = [];
   if (!data || typeof data !== "object" || Array.isArray(data)) return out; // the schema reports it
   // The ladder is the tier order every other rule leans on. Changing it changes what "one step up" means.
@@ -102,6 +111,15 @@ export function semanticProblems(data, { readComponent = () => null, registryIte
     if (e.dragged && idx(e.dragged) < idx(e.rest)) out.push(`${at}: a dragged item cannot sit lower than rest`);
     // A docked element lives on an overlay or modal layer, where the directional shadow applies (DS-ELEVATION-006).
     if (e.dock && e.dock !== "none" && !["overlay", "modal"].includes(e.layer)) out.push(`${at}: dock ${e.dock} is only for an overlay or modal element`);
+    // A docked element casts its shadow away from the dock edge, which needs a directional token for each tier it uses
+    // (--shadow-large-right and so on), in light and in dark (DS-ELEVATION-006). Centered elements use the plain tier token.
+    if (["right", "left", "bottom", "top"].includes(e.dock)) {
+      for (const t of new Set([e.rest, e.hover, e.pressed, e.disabled, e.dragged].filter((x) => x && x !== "none"))) {
+        const token = `--shadow-${t}-${e.dock}`;
+        if (!shadowTokens) { if (!out.includes(NO_EXPORT)) out.push(NO_EXPORT); }
+        else if (!shadowTokens.has(token)) out.push(`${at}: a ${e.dock}-docked element at ${t} needs ${token}, in light and in dark`);
+      }
+    }
     // Built rows name a real registry component, proposed rows do not.
     if (e.status === "built") {
       if (!e.component) out.push(`${at}: a built element must name its registry component`);
@@ -113,9 +131,11 @@ export function semanticProblems(data, { readComponent = () => null, registryIte
         if (src === null) { if (registryItems) out.push(`${at}: could not read the source of ${e.component}`); }
         else {
           // The source must use the token for every non-flat tier the map names (comments ignored). It does not check which state uses it.
+          // A side-docked element must use the directional token, not the all-sides one (DS-ELEVATION-006).
+          const side = ["right", "left", "bottom", "top"].includes(e.dock) ? `-${e.dock}` : "";
           for (const k of ["rest", "hover", "pressed", "dragged"]) {
             const t = e[k];
-            if (t && t !== "none" && !new RegExp(`--shadow-${t}(?![\\w-])`).test(src)) out.push(`${at}.${k}: ${e.component} never uses --shadow-${t}`);
+            if (t && t !== "none" && !new RegExp(`--shadow-${t}${side}(?![\\w-])`).test(src)) out.push(`${at}.${k}: ${e.component} never uses --shadow-${t}${side}`);
           }
         }
       }
@@ -134,15 +154,22 @@ export function loadAll(skill = SKILL, repo = REPO) {
     const p = join(repo, "registry", "vois", short, `${short}.tsx`);
     return existsSync(p) ? readFileSync(p, "utf8") : null;
   };
-  return { schema, data, registryItems, readComponent };
+  const expPath = join(repo, "registry", "source", "figma-export.json");
+  let shadowTokens = null;
+  if (existsSync(expPath)) {
+    try { shadowTokens = lightAndDarkShadows(JSON.parse(readFileSync(expPath, "utf8"))); } catch { shadowTokens = null; }
+  }
+  return { schema, data, registryItems, readComponent, shadowTokens };
 }
 
 export function checkAll(opts) {
-  const { schema, data, registryItems, readComponent } = loadAll(opts?.skill, opts?.repo);
+  const { schema, data, registryItems, readComponent, shadowTokens } = loadAll(opts?.skill, opts?.repo);
   const s = validate(schema, data);
   // Fail closed: without the registry the map cannot be checked against the components it describes.
   const missing = registryItems ? [] : ["registry/registry.json is missing, so the map cannot be checked against the components"];
-  return [...s, ...missing, ...semanticProblems(data, { registryItems, readComponent })];
+  const noExport = shadowTokens ? [] : ["registry/source/figma-export.json is missing or unreadable, so docked shadows cannot be checked"];
+  const rest = semanticProblems(data, { registryItems, readComponent, shadowTokens }).filter((p) => !(noExport.length && p === NO_EXPORT));
+  return [...s, ...missing, ...noExport, ...rest];
 }
 
 const isEntry = (() => { try { return !!process.argv[1] && realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1]); } catch { return true; } })();

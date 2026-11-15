@@ -132,6 +132,25 @@ export function cssValue(v, names, name = "") {
 // A value is one value for both modes, or [light, dark].
 const modes = (v) => (Array.isArray(v) ? (v.length === 2 ? v : (() => { throw new Error(`[light, dark] must have two values, got ${v.length}`); })()) : [v, v]);
 
+// Docked-panel shadows (DS-ELEVATION-006): --shadow-large-<side>. A layer falls away from the dock edge: right is x negative, left x positive,
+// bottom y negative, top y positive, the other axis 0, and the spread is half the blur pulled in (rounded down), so nothing leaks along the sides.
+export const DOCK_SIGN = { right: [-1, 0], left: [1, 0], bottom: [0, -1], top: [0, 1] };
+export function dockedShadowProblems(name, layers) {
+  const m = /^--shadow-[a-z]+-(right|left|bottom|top)$/.exec(name);
+  if (!m || !Array.isArray(layers)) return [];
+  const [sx, sy] = DOCK_SIGN[m[1]];
+  const out = [];
+  for (const l of layers) {
+    if (!Array.isArray(l) || l.length !== 5) continue; // the layer shape is reported by shadowCss
+    const [x, y, blur, spread] = l;
+    const along = sx !== 0 ? x * sx : y * sy, across = sx !== 0 ? y : x;
+    if (!(along > 0)) out.push(`${name}: a layer moves ${sx !== 0 ? "x" : "y"} by ${sx !== 0 ? x : y}, but a ${m[1]}-docked shadow must fall away from the ${m[1]} edge`);
+    if (across !== 0) out.push(`${name}: a layer moves across the dock edge (${x}, ${y})`);
+    if (spread !== -Math.floor(blur / 2)) out.push(`${name}: spread ${spread} must be minus half the blur, rounded down (blur ${blur})`);
+  }
+  return out;
+}
+
 // Tiers that draw no shadow in dark, and the value that stands in for it.
 export const FLAT_IN_DARK = ["--shadow-base", "--shadow-small"];
 export const NO_SHADOW = "0 0 0 0 oklch(0 0 0 / 0)";
@@ -274,6 +293,8 @@ export function buildFiles(exportJson, brandJson, { brandLabel = "registry/sourc
   for (const [k, layers] of Object.entries(shadows)) {
     if (!/^--[a-z0-9]+(?:-[a-z0-9]+)*$/.test(k)) throw new Error(`not a shadow token name: ${k}`);
     if (names.has(k)) throw new Error(`shadow ${k} has the same name as a token`);
+    const bad = dockedShadowProblems(k, layers);
+    if (bad.length) throw new Error(bad[0]);
     light.push(`  ${k}: ${shadowCss(layers)};`);
   }
 
@@ -292,6 +313,8 @@ export function buildFiles(exportJson, brandJson, { brandLabel = "registry/sourc
     // 1px ring, which --elevation-hairline draws. Anything else means the two sets have drifted apart.
     const isRing = (l) => Array.isArray(l) && l[0] === 0 && l[1] === 0 && l[2] === 0 && l[3] === 1;
     for (const [k, layers] of Object.entries(darkShadows)) {
+      const bad = dockedShadowProblems(k, layers);
+      if (bad.length) throw new Error(`dark ${bad[0]}`);
       const want = shadows[k].filter((l) => !isRing(l));
       const geometry = (ls) => JSON.stringify(Array.isArray(ls) ? ls.map((l) => (Array.isArray(l) ? l.slice(0, 4) : l)) : ls);
       if (geometry(layers) !== geometry(want)) throw new Error(`dark shadow ${k} must have the layers of the light one without its 1px ring (${geometry(want)}), got ${geometry(layers)}`);

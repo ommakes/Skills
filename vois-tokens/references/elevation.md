@@ -10,9 +10,9 @@ The ladder runs: none, Base, Small, Medium, Large, XLarge.
 
 | Tier | Token | Built elements that use it |
 |---|---|---|
-| none | | Pressed Card, disabled elements, static sections that only group content |
+| none | | Pressed Card and Choice Card, disabled elements, static sections that only group content |
 | Base | `--shadow-base` | Card, Choice Card and the Segmented Control indicator at rest |
-| Small | `--shadow-small` | Card on hover, the Switch knob, Hover Card |
+| Small | `--shadow-small` | Card and resting Choice Card on hover, the Switch knob, Hover Card |
 | Medium | `--shadow-medium` | Dropdown menus and select lists |
 | Large | `--shadow-large` | Dialog, Tooltip |
 | XLarge | `--shadow-xlarge` | Nothing at rest. Only a dragged item or a full-screen surface |
@@ -53,8 +53,8 @@ Pair it with `references/components.md`'s modal section (`inert`, `overscroll-be
 
 | State | Rule |
 |---|---|
-| Hover | Up one tier at most. Never down. |
-| Pressed | Down one tier, or to none. Never up. A card may drop to none. |
+| Hover | Up one tier at most. Never down. The Card and the resting Choice Card go from Base to Small. |
+| Pressed | Down one tier, or to none. Never up. A card may drop to none: the Card and the resting Choice Card do. |
 | Dragged | A high tier (Large). Never lower than rest. |
 | Disabled | None, or unchanged. |
 | Focus | No change. The focus ring is the indicator (`DS-A11Y-018`). |
@@ -92,17 +92,17 @@ Dark text (4.5:1) and control edges (3:1) are tested on every fill, and text on 
 
 ## Docked panels `[DS-ELEVATION-006]`
 
-A panel docked to an edge casts its shadow away from that edge, with a negative spread so it does not leak past the panel.
+A panel docked to an edge casts its shadow away from that edge, with a negative spread so it does not leak along the panel's sides.
 
-| Dock | Shadow offset |
-|---|---|
-| Right | x negative |
-| Left | x positive |
-| Bottom | y negative |
-| Top | y positive |
-| Centered | x is 0 |
+| Dock | Token | Shadow offset |
+|---|---|---|
+| Right | `--shadow-large-right` | x negative |
+| Left | `--shadow-large-left` | x positive |
+| Bottom | `--shadow-large-bottom` | y negative |
+| Top | `--shadow-large-top` | y positive |
+| Centered | `--shadow-large` | x is 0 |
 
-The map has a `dock` field for each overlay. Directional tokens arrive in a later release. Until then use the tier token.
+Each is the Large tier's layers (without the 1px ring) moved along one axis by the layer's depth, with the spread pulled in by half its blur (rounded down, so the 1px layer has none). Light and dark both exist (`Elevation/Large/<Side>` and `Elevation/Dark/Large/<Side>` in Figma). Only Large has directional tokens: a Sheet or Drawer is a modal-layer element. The map's `dock` field says which side, and `scripts/elevation-map.mjs` fails if a docked element names a tier with no token for its side. A tier other than Large would need its own styles first.
 
 ## Guardrails
 

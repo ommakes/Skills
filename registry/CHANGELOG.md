@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.0] - 2026-11-15
+
+- **Docked-panel shadows.** Figma first: `Elevation/Large/Right`, `Left`, `Bottom`, `Top` and `Elevation/Dark/Large/<Side>`, the Large layers without the ring, moved along one axis by their depth with the spread pulled in by half the blur, rounded down. Export checksum `2a6b12f8` (890 tokens, 9 shadows, 7 dark shadows). The generator writes `--shadow-large-right`, `-left`, `-bottom`, `-top` in `:root` and `.dark`. Nothing uses them yet: there is no Sheet or Drawer.
+- **Choice Card states.** Figma first: the Hover variants of Radio Card and Checkbox Card use `Elevation/Small`. `vois-choice-card`: a resting card goes Base to Small on hover and drops its shadow when pressed (edge only), as the Card already did (`DS-ELEVATION-003`). Checked, negative and disabled cards keep Base. In dark the Small shadow draws nothing, so only the edge changes.
+- `build-tokens.test.mjs` checks the sign rule on every layer of every docked shadow, in light and in dark (right x negative, left x positive, bottom y negative, top y positive, the other axis 0, a negative spread), that the layers match Large's depths and blurs, and that a centered shadow has x = 0.
+
 ## [0.11.0] - 2026-11-15
 
 - **Dark elevation.** Figma first: `Elevation/Dark/Medium`, `Large` and `XLarge` effect styles (black at 16, 20 and 24% per layer, the same layers as the light tier without the 1px ring), a new `Global/Black Alpha/Black-A0` (transparent), and three Colors variables: `Component/Elevation/Surface-Small`, `Surface-Raised` and `Hairline`. Export checksum `7f179f8c` (890 tokens, 3 dark shadows).

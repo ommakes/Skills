@@ -113,6 +113,10 @@ Light shadows are 4 to 5% black, which cannot be seen on a dark surface (`DS-ELE
 
 Three color tokens carry the fills and the edge: `--elevation-surface-small` (dark `--warm-gray-10`), `--elevation-surface-raised` (dark `--warm-gray-9`) and `--elevation-hairline` (transparent in light, `--white-a3` in dark). In light the first two are the same white as `--bg-card`. The Hover Card and the Card on hover use the Small fill. The Dropdown Menu, the Select list and the Dialog use the Raised fill, and `CommandDialog` lets the Dialog fill show. The hairline is not used by a built component yet, because each one already has an edge. It is there for the next ones (Sheet, Toast).
 
+### Docked panels
+
+`--shadow-large-right`, `-left`, `-bottom` and `-top` are the Large shadow for a panel docked to that edge (`DS-ELEVATION-006`). The shadow falls away from the edge: right is x negative, left x positive, bottom y negative, top y positive, with a negative spread so it does not leak along the sides. Light and dark both exist. No built component uses them yet; the Sheet and Drawer will.
+
 ### Shape roles (`shape-tokens.css`)
 
 Corners are a behavior, not only a number (vois-tokens `DS-SHAPE-001`). `source/shape.json` holds each role as a structured definition, and the generator writes `shape-tokens.css`. These live in code because Figma radius variables can only hold numbers. The fixed roles point at the Figma radius roles, so they still follow Figma.
@@ -375,7 +379,7 @@ Marks use `--label-on-solid-text-on-dark`, because Figma's white is under 3:1 on
 
 Descriptions are 12/16 `--text-state-resting` (`--text-auxiliary` on aux rows), 4.5:1 or more. Disabled wins over negative, then checked, pressed, hover and resting.
 
-`vois/choice-card/choice-card.tsx` exports `ChoiceCardItem`, a card with a label, a description and a radio or checkbox on the right, from the Figma Radio Card and Checkbox Card sets. It uses the groups from `vois-choice-list`, so install the two together. `--bg-card` with `--shadow-base`, `--radius-selectors`, a 1px `--border-default` edge, 1px `--border-state-hover` on hover, 2px `--border-state-active` when checked, and 2px `--border-state-focus` when the control has keyboard focus. Label 16/24 semibold, description 14/20 `--text-state-resting`. Children show under the label row and must not be interactive. In Figma, the Radio Card and Checkbox Card sets have a `Body` slot there, off by default (turn on `Show content` in an instance).
+`vois/choice-card/choice-card.tsx` exports `ChoiceCardItem`, a card with a label, a description and a radio or checkbox on the right, from the Figma Radio Card and Checkbox Card sets. It uses the groups from `vois-choice-list`, so install the two together. `--bg-card` with `--shadow-base`, `--radius-selectors`, a 1px `--border-default` edge, 1px `--border-state-hover` and a step up to `--shadow-small` on hover (resting card only; pressed, the edge stays and the shadow goes, as in the Card), 2px `--border-state-active` when checked, and 2px `--border-state-focus` when the control has keyboard focus. Label 16/24 semibold, description 14/20 `--text-state-resting`. Children show under the label row and must not be interactive. In Figma, the Radio Card and Checkbox Card sets have a `Body` slot there, off by default (turn on `Show content` in an instance).
 
 ### `vois-card`
 

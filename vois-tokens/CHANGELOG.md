@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.37.0] - 2026-11-15
+
+### Added
+- Docked-panel shadows (registry 0.12.0): `--shadow-large-right`, `-left`, `-bottom`, `-top`, light and dark. `DS-ELEVATION-006` names them. The element map checks that a docked element has a token for its side and tier, in light and in dark, and fails closed without the registry export (23 tests).
+
+### Changed
+- `data/elevation-map.json`: the Choice Card is Base at rest, Small on hover and flat when pressed (resting card only). The Sheet rows name their tokens.
+
 ## [1.36.0] - 2026-11-15
 
 ### Added

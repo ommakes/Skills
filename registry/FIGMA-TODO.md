@@ -2,6 +2,12 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-15 (docked shadows and Choice Card hover, registry 0.12.0)
+
+- **Docked shadows.** New effect styles `Elevation/Large/Right`, `Left`, `Bottom`, `Top` (black at 5% per layer) and `Elevation/Dark/Large/<Side>` (20%). Five layers each, at depths 1, 2, 4, 8 and 16 along the axis away from the dock edge, spread 0, -1, -2, -4, -8. Checked on a specimen: right and bottom fall away from their edge, as do left and top. Export checksum `2a6b12f8`.
+- **Radio Card and Checkbox Card, State=Hover** (`5839:5173`, `5839:5190`) now use `Elevation/Small`.
+  - Open: the Radio Card's resting variants use a different effect style (six layers) from Checkbox Card's `Elevation/Base`. They look alike, but it is not the Base style the code names.
+
 ## Done on 2026-11-15 (dark elevation, registry 0.11.0)
 
 - **Dark elevation.** New `Global/Black Alpha/Black-A0` (`--black-a0`, transparent, same scopes as its siblings). New Colors variables `Component/Elevation/Surface-Small` (Light white, Dark Warm Gray-10), `Surface-Raised` (Light white, Dark Warm Gray-9) and `Hairline` (Light Black-A0, Dark White-A3), Web syntax `--elevation-surface-small`, `--elevation-surface-raised`, `--elevation-hairline`. New effect styles `Elevation/Dark/Medium`, `Large`, `XLarge` (black at 16, 20 and 24%). Export checksum `7f179f8c` (890 tokens).

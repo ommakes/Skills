@@ -10,7 +10,9 @@
 //   Text: label 16/24 semibold --text-primary; optional description 14/20 medium --text-state-resting, right under it
 //     (no gap, as in the Radio Card: 84 tall with both lines).
 //   Body: optional children, shown under the label row. Keep it non-interactive: it sits inside the label.
-//   Resting: 1px --border-default inside edge. Hover: 1px --border-state-hover.
+//   Resting: 1px --border-default inside edge. Hover: 1px --border-state-hover and the shadow steps up to --shadow-small.
+//   Pressed (resting card): the edge stays --border-state-hover and the shadow goes (DS-ELEVATION-003). Checked, negative and
+//   disabled cards keep --shadow-base.
 //   Active (checked): 2px --border-state-active.
 //   Focus (the control has keyboard focus): 2px --border-state-focus on the card, as in Figma, and the
 //     control keeps its own ring.
@@ -40,7 +42,7 @@ const choiceCardVariants = cva(
     variants: {
       state: {
         resting:
-          "cursor-pointer shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)] hover:shadow-[inset_0_0_0_1px_var(--border-state-hover),var(--shadow-base)] has-[[data-choice-control]:focus-visible]:shadow-[inset_0_0_0_2px_var(--border-state-focus),var(--shadow-base)]",
+          "cursor-pointer shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)] hover:shadow-[inset_0_0_0_1px_var(--border-state-hover),var(--shadow-small)] active:shadow-[inset_0_0_0_1px_var(--border-state-hover)] has-[[data-choice-control]:focus-visible]:shadow-[inset_0_0_0_2px_var(--border-state-focus),var(--shadow-base)]",
         checked:
           "cursor-pointer shadow-[inset_0_0_0_2px_var(--border-state-active),var(--shadow-base)] has-[[data-choice-control]:focus-visible]:shadow-[inset_0_0_0_2px_var(--border-state-focus),var(--shadow-base)]",
         invalid:

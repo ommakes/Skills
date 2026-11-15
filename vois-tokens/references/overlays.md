@@ -33,4 +33,4 @@ Radix gives most of this for free when you use its parts. Use them.
 
 ## Not covered yet
 
-Directional shadows for docked panels and the elevation tier for each overlay (see the elevation phase). The "peek" sheet, which has no scrim and does not trap focus, is in `vois-components` (`JOB-OVERLAY-INTERACTION`). Its modal rules (`inert`, scroll lock) do not apply to it.
+The elevation tier for each overlay beyond the built ones (see `references/elevation.md`). Directional shadows for docked panels exist (`--shadow-large-right`, `-left`, `-bottom`, `-top`, `DS-ELEVATION-006`), and no Sheet or Drawer uses them yet. The "peek" sheet, which has no scrim and does not trap focus, is in `vois-components` (`JOB-OVERLAY-INTERACTION`). Its modal rules (`inert`, scroll lock) do not apply to it.
