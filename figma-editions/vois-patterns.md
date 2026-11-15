@@ -1,12 +1,12 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.20.0
+version: 1.23.0
 ---
 
 # Vois Patterns Skill
 
-> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-patterns/SKILL.md. The full version adds the machine-readable page templates (`data/page-templates.json`, with Mobbin references) and the long motion references. This edition condenses the page templates and the motion decision rules into sections below.
+> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-patterns/SKILL.md. The full version adds the machine-readable page templates (`data/page-templates.json`, with Mobbin references) and the long motion references. This edition condenses the page templates, the motion decision rules, the dialog ladder, the native phone rules (without their Mobbin links) and the questionnaire rules into sections below. The full version also has the question schema, a check script and a question-picking engine for questionnaires.
 
 You are building the *structure* of pages and containers for a design system. This skill defines the architectural decisions that come *before* implementation (tokens, components, styling).
 
@@ -42,7 +42,7 @@ START: What is the user trying to accomplish?
 │  ├─ IF: 7–15 fields            → [PATH-C-MEDIUM]
 │  └─ IF: 15+ fields / complex   → [PATH-C-COMPLEX]
 │
-├─ PATH D: Quick input, confirmation, or selection        [PATH-D]
+├─ PATH D: Pick the container for a task: confirm, form dialog, large dialog, side peek or page   [PATH-D]
 │
 ├─ PATH E: View details of a single item (read-only)      [PATH-E]
 │
@@ -53,7 +53,9 @@ START: What is the user trying to accomplish?
 │  ├─ IF: seat fee + included usage            → [PATH-F-HYBRID]
 │  └─ IF: consumer subscription                → [PATH-F-CONSUMER-WEB] / [PATH-F-CONSUMER-PAYWALL]
 │
-└─ PATH G: Show what a product or business offers to people not yet using it (landing page, homepage)   [PATH-G]
+├─ PATH G: Show what a product or business offers to people not yet using it (landing page, homepage)   [PATH-G]
+│
+└─ PATH H: Someone answers questions another person wrote (survey, intake form, quiz, poll)   [PATH-H]
 
 PAGE: The task is a whole page or screen layout, not one container (regions, order, behavior at each width)
    └─ → see Page Templates below   [PATH-PAGE]
@@ -152,23 +154,30 @@ MOTION: A state change should move (button, label, icon, number, panel, list, ch
 - **Text areas and chat.** A multi-line field grows with its content using CSS `field-sizing: content`, never JavaScript; it starts at `--textarea-min-lines`, stops at `--textarea-max-lines`, and scrolls inside after that `[PATH-FIELD-TEXTAREA-AUTOSIZE]`. An AI chat input uses the same pattern with the chat line tokens, is anchored to the bottom of the thread so growth pushes upward, fills its container, and the chat container uses `dvh` `[PATH-FIELD-CHAT-INPUT]`.
 - **One-time code.** InputOTP with one cell per character that behaves as one field: one tab stop, paste fills every cell, backspace moves back, `autocomplete="one-time-code"`, a numeric keypad for digit codes, and a visible label. Cells share the row with `gap-2`, cap at `size-12`, and the group caps at `--width-field-max` and is one hit area of at least `--hit-area-min` `[PATH-FIELD-OTP-INPUT]`.
 
-**Mobile:** active input field stays visible while the keyboard is present; `--width-field-max` on inputs/dropdowns; dropdowns become action sheets (see PATH D).
+**Mobile:** active input field stays visible while the keyboard is present; `--width-field-max` on inputs/dropdowns; dropdowns become bottom sheets (see PATH D).
 
-### PATH D — Dialog / Action Sheet
+### PATH D — Dialog / Bottom Sheet
 
-**When to use:** a single quick input (amount, selection, confirmation), a simple yes/no confirmation, or a dropdown selection — especially on mobile.
+**When to use:** a single quick input (amount, selection, confirmation), a yes/no confirmation, a dropdown selection, or choosing which container a task needs (the ladder below).
 
-**Breakpoint behavior:** desktop → centered modal dialog with a dimming backdrop. Mobile → action sheet that slides up from the bottom (one-hand operation); multi-step content covers 80–90% of screen height.
+**Breakpoint behavior:** desktop → centered modal dialog with a dimming backdrop. Phone → bottom sheet that slides up from the bottom (one-hand operation), at most 90dvh, a stacked footer with the primary button on top, and a visible way to close (`DS-RESPONSIVE-008`). A short list of choices that ends in a separate Cancel is an action sheet: the same bottom sheet, one row per choice. More than one step is not a sheet (`PATH-D-5`).
 
-**Never use an action sheet if text input/keyboard is required** — that needs a full modal. Action sheets are for number input (spinner/quantity control), sliders, dropdown selection, and binary confirmation only.
+**Never use a bottom sheet if text input/keyboard is required.** Text input is a full-screen form on phone (`DS-RESPONSIVE-009`). Sheets are for number input (spinner/quantity control), sliders, dropdown selection, and binary confirmation only.
 
-**Structure:** header (H2 title, optional description, close button top right on desktop / top center on mobile) → body (single input field or simple content, max width per breakpoint) → sticky footer (button group, right-aligned on desktop / stacked on mobile: primary on the right, secondary `gap-5` (20px) to its left, optional tertiary/ghost link on the far left).
+**The container ladder.** Walk these in order and take the first that fits. The field counts follow `vois-components` `JOB-OVERLAY-INTERACTION`.
+1. **Confirm** `[PATH-D-1]`: one yes or no, a destructive or consequential confirmation, or one pick, with nothing else needed from the page → AlertDialog if destructive or consequential, otherwise a small Dialog. Phone: bottom sheet.
+2. **Form dialog** `[PATH-D-2]`: one task, one to four stacked fields, no need for the page behind it → small Dialog. Phone: full-screen form.
+3. **Large dialog** `[PATH-D-3]`: one task whose content needs the width (a textarea or a short list), still one column → large Dialog. Phone: full-screen form.
+4. **Side peek** `[PATH-D-4]`: five to eight fields, or the user needs the page behind it (compare, copy, pick rows) → right-anchored Sheet. As a peek it has no scrim and no inert background, so the page stays usable. Phone: full screen.
+5. **Page** `[PATH-D-5]`: more than eight fields, tabs, a timeline, related records, a long form, or more than one step → a full page, opened from an Open action in the overlay.
 
-**Dialog width** `[PATH-D-SIZE]` (desktop; both widths are maximums set by tokens, and every dialog is one column): small, `--width-dialog-sm`, for confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields; large, `--width-dialog-lg`, for content that needs the extra width, such as a textarea or a short list. Pick by what the content needs, not by whether it contains an input. Two-column layouts go on pages, not in dialogs, and a flow that needs steps or more room becomes a page. On mobile, dialogs that take text input are full modals at the viewport width. Destructive confirmations follow `JOB-CONFIRM-DESTRUCTIVE`; deleting a workspace, team, or account adds typed confirmation (see Settings interactions).
+Never stack dialogs: a second step replaces the content of the same dialog (a pushed view with a Back control), or becomes a page. Never use a dialog for navigation (`DS-MODAL-006`, `DS-MODAL-007`).
 
-**Confirmation dialog example:** Title "Delete invoice?" / Description "This can't be undone. All associated records will be removed." / Secondary button "Cancel" / Primary destructive button "Delete invoice."
+**Structure:** header (H2 title, optional description, close button top right on desktop / top center on mobile) → body (single input field or simple content) → sticky footer (button group, right-aligned on desktop / stacked on mobile: primary on the right, secondary `gap-5` (20px) to its left, optional tertiary/ghost link on the far left). At most two buttons in a footer (`DS-MODAL-005`).
 
-**Selection dialog example:** Title "Select payment source" / dropdown or list of options / Secondary "Cancel" / Primary "Continue."
+**Dialog width** `[PATH-D-SIZE]` (desktop; both widths are maximums set by tokens, and every dialog is one column): small, `--width-dialog-sm`, for confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields; large, `--width-dialog-lg`, for content that needs the extra width, such as a textarea or a short list. Pick by what the content needs, not by whether it contains an input. Two-column layouts go on pages, not in dialogs. On mobile, dialogs that take text input are full modals at the viewport width. Destructive confirmations follow `JOB-CONFIRM-DESTRUCTIVE`; deleting a workspace, team, or account adds typed confirmation (see Settings interactions).
+
+**Examples:** confirmation: title "Delete invoice?" / description "This can't be undone. All associated records will be removed." / "Cancel" / destructive "Delete invoice." Selection: title "Select payment source" / options / "Cancel" / "Continue."
 
 ### PATH E — Detail Page (Read-Only / View State)
 
@@ -222,6 +231,32 @@ MOTION: A state change should move (button, label, icon, number, panel, list, ch
 
 **Before shipping:** each section has one heading, one block, and one link; no row has more than three blocks; no dividers; section gaps are at least 4x the heading-to-content gap; no more than two primary calls to action; left-aligned except the closing call to action; long lists show a taste and link out.
 
+### PATH H — Questionnaire (survey, intake form, quiz, poll) `[PATH-H]`
+
+**When to use:** someone answers questions another person wrote: surveys, intake forms, assessments, feedback. If the user edits their own record, use PATH C; dense desktop forms stay in PATH C. Card sort goes to a research tool. Component picks are `vois-components` jobs 22 to 24, and copy for every state goes to Righter.
+
+- **Layout** `[PATH-H-1]`: one question per screen. Group 2 to 3 simple questions on one page only when the survey has 10 questions or fewer. Next is a full-width button in a sticky bar at the bottom. From 768px, centre the content at 640px max. The 56px option row is an accepted exception to compact density, inside questionnaires only (`DS-RESPONSIVE-013`).
+- **Pick the component** `[PATH-H-2]`, first match wins: 1 long answer over 120 characters → LongTextbox. 2 short answer → OpenText (a typed value such as email, phone or number goes to `vois-fields`). 3 several statements on one scale → Accordion, one at a time, 5 per group at most. 4 eleven points (0 to 10) → Slider with word labels. 5 five points → Likert horizontal, seven points → Likert vertical. 6 order matters → Rank (6 or fewer rank all, 7 to 12 top 3, over 12 do not rank). 7 several answers → CheckboxCard. 8 one answer → RadioCard up to 7, RadioListRow for 8 to 12, a searchable list over 12.
+  - **Single select:** one column on mobile, the row is the target, native radio in a fieldset with a legend, never a native select as the main mobile control. "Other" is last and opens a short field inline. **Multiple:** state the rule first ("Select up to 3", "2 of 3 selected"). At the max disable the rest and say why, never drop an earlier pick. "None of the above" clears the others. Never auto-advance.
+  - **Likert:** 5 points by default, 7 only when the construct needs it, never mix them, never flip direction. Label every point (endpoint labels only for a 5-point numeric scale). A battery is an accordion, never a grid below 1024px.
+  - **Rank:** one list. Press and hold (200ms) to drag, rows shift live. Keyboard: Space picks up, arrows move, Space drops, Escape cancels. Up and down buttons are always there (`DS-A11Y-023`, WCAG 2.5.7). The answer is empty until the person moves an item or taps "Keep this order". For top 3, show a cutoff under row 3. Announce each move ("Battery life, moved to position 2 of 6").
+  - **Open text:** the placeholder is an example, never the instruction. Long text starts at 3 rows and stops at 8 on mobile or 12 on desktop, then scrolls inside. The counter shows from the first character. Enter adds a line.
+- **Flow and progress** `[PATH-H-3]`: a 4px bar plus "Question 3 of 12", never a bare percentage and never 100% before Submit. Count answered required over required on the path, or use section progress if branching changes the total. Back restores the answer and its prefill badge. Changing a branch answer clears only the answers it makes invalid, with a notice. Save on change with a quiet "Saved", never a modal. A Review screen lists every answer with its source and an Edit link. Submit leads to a loading state and a confirmation that says what was received and what happens next. Logic-skipped answers are stored as `skipped_by_logic` and show as removed on Review.
+- **Required and errors** `[PATH-H-4]`: mark every question "Required" or "Optional" in words. After a failed Next: a top banner ("2 things to check") with links, a specific inline error above the input under each bad question ("Select at least 2. You selected 1."), a 2px error border, and focus on the first error.
+- **Prefill and drafts** `[PATH-H-5]`: verified high-confidence profile data is prefilled with a badge and a source line. A previous answer shows "Last time you said: X" with Keep and Change. A link parameter is prefilled, marked "From your invitation", one tap to clear. An AI guess at low or medium confidence is a suggestion chip under a blank field. Every answer carries its origin. AI follow-up questions are labelled, optional, capped at 1 to 2 per trigger, and never built from an unconfirmed prefill.
+- **Poll and quiz results** `[PATH-H-6]`, single and multi select only (scales and rankings need a distribution chart): set `reveal` to `poll` or `quiz`. Reveal after the answer, never before. Keep the option order, never re-sort by votes. Each row is the 56px option row with the percent on the right and a bar behind the label. Mark the correct answer with a check icon and the words "Correct answer", and the respondent's pick with "Your answer"; colour alone is not enough (`DS-A11Y-027`). Round single-choice percents to add to 100 (largest remainder). Multi-select rows are each their own share and add up to more than 100%, with one line saying so. Under 10 votes show no percents and no counts, and still mark the correct answer in a quiz. Live results update in place with no re-order and no announcement beyond the first reveal (`DS-A11Y-028`). Never show who chose what. A quiz needs the correct option ids, and a poll must not have them.
+- **Before you call it done:** a real phone with one thumb and 10 questions, no mis-tap, and the keyboard never covers a field. 320px wide with no horizontal scroll. The whole survey by keyboard. Screen readers announce label, type, required state, counts, moves, errors and prefill source. No critical axe issue. Targets (44px, 48px, 24px floor) follow Apple, Material and WCAG, the 56px row is decided, and the 52px buttons and 640px width are proposals.
+
+## Native Phone Behavior (iOS observed, Android not)
+
+Six rules for sheets, form modals, swipe, back and refresh on a phone, written from iOS screens. They sit above the web rules `DS-MODAL-001` to `DS-MODAL-003` (focus, scroll, layout shift) and add to `PATH-PAGE-OVERLAY` and `PATH-D`. Mobbin has no Android filter, so Android is unobserved.
+- `[PATH-NATIVE-SHEET-KIND]`: if the user still needs the page behind it, open a nonmodal sheet with detents and no scrim. If not (a form, a confirmation, a pick), open a modal sheet or an alert with a scrim. A long task, or one with its own URL, is a full screen. From tablet up a nonmodal sheet is a side panel and a modal sheet a dialog or popover. Nothing opens over a popover except an alert.
+- `[PATH-NATIVE-FORM-SHEET]`: a form is a tall modal sheet. Centered title in a top bar, Close or Cancel on the left, a named commit (Add, Create, Save) on the right, disabled until the form can be saved. Never an action sheet.
+- `[PATH-NATIVE-DISMISS]`: every sheet shows a visible close or Cancel. Swiping down is extra. A sheet with unsaved edits ignores the swipe and asks to discard. A nonmodal sheet keeps its close control at every detent.
+- `[PATH-NATIVE-SWIPE-ROW]`: at most one trailing swipe action, red with a text label if it deletes or removes. Never the only path: the action is also on a visible menu or the detail screen. Keep swipe handlers off the screen edges, and none inside a horizontal scroller.
+- `[PATH-NATIVE-BACK]`: drill-down pushes a level with a back control at the top left. Never replace the system back gesture. A full-screen modal shows a close at the top left, not a back. The bottom tab bar may stay on a detail screen.
+- `[PATH-NATIVE-REFRESH]`: pull to refresh only at the top of a list sorted by recent content, never on a map or canvas. Always give fine pointers a visible refresh control, and show the result briefly (a toast or a pill).
+
 ## Permissions, Visibility, and Conditional Logic
 
 Cross-cutting rules that apply across every container type above.
@@ -258,6 +293,8 @@ How much breathing room a screen should have is a decision, not a default — pi
 - **Standard** — the default for most product surfaces: forms, settings pages, typical list/detail views. Mid spacing scale (24px between fields, 40px between sections) — this is correct absent a specific reason to reach for dense or spacious.
 - **Spacious** — low-frequency, high-stakes, or attention-focusing moments: onboarding/first-run, empty states, a destructive-confirmation dialog, marketing/landing surfaces (see PATH G). Looser spacing, fewer things visible at once, more whitespace around the one thing that matters — optimizing for focus, not efficiency.
 
+**Product setting** `[PATH-DENSITY-PRODUCT]`: a product sets `workbench` (Standard pages move to Dense) or `relaxed` (Dense pages move to Standard). Spacious never moves. A product that sets nothing keeps the template tier, and the touch rule applies after it.
+
 This is a different decision from the card-ification anti-pattern (wrapping every static section in an unearned bordered card, see `vois-tokens`) — density is about spacing and information-per-screen, independent of which container is used.
 
 ## Page Templates `[PATH-PAGE]`
@@ -270,13 +307,13 @@ Whole-page skeletons for consumer and SaaS web products, in five levels. This is
 
 ### Cross-cutting rules
 
-- **Page widths** `[PATH-PAGE-BREAKPOINTS]`: phone is below md (768px), tablet is md up to lg (768px to 1023px), desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px too. Grid and panel rules are in `vois-tokens` (`DS-GRID-*`, `DS-PANEL-*`).
+- **Page widths** `[PATH-PAGE-BREAKPOINTS]`: phone is below md (768px), tablet is md up to lg (768px to 1023px), desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px too. For native Android layouts, `expanded` (840px) is one extra check. Grid and panel rules are in `vois-tokens` (`DS-GRID-*`, `DS-PANEL-*`).
 - **App shell navigation** `[PATH-PAGE-NAV]`: desktop has a labeled sidebar, tablet an icon rail, phone a bottom tab bar with at most five slots, the last being More. The settings section menu is separate and follows PATH-A. A marketing top bar shows its links at the lg class and up and folds them into one menu control below that. The signup button stays visible at every width.
-- **Density by page** `[PATH-PAGE-DENSITY-MAP]`: marketing and landing pages are Spacious, always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists are Standard. Dashboards, analytics tables, data grids and inboxes are Dense on desktop.
-- **Dense is for pointers only** `[PATH-PAGE-DENSITY-TOUCH]`: on touch widths rows go back to regular height, targets reach `--hit-area-min`, and gaps between blocks go up one step. Fewer rows fit and that is accepted. A SaaS screen is tighter on desktop than on a phone, never the other way round.
-- **Which overlay opens** `[PATH-PAGE-OVERLAY]`: a yes or no, or a pick, is a modal on desktop and an action sheet on phone. Any text field is a modal on desktop and full screen on phone, never an action sheet. Editing or previewing a row, or filters, is a right panel on tablet and desktop and full screen on phone. Notifications are a right panel. Always keep a visible way back. Escape or the scrim closes it on desktop.
+- **Density by page** `[PATH-PAGE-DENSITY-MAP]`: marketing and landing pages are Spacious, always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists are Standard. Dashboards, analytics tables, data grids and inboxes are Dense with a fine pointer.
+- **Dense is for pointers only** `[PATH-PAGE-DENSITY-TOUCH]`: it keys on input, not width. When the primary input is not a fine pointer (`(pointer: fine)` does not match), at any width, rows go back to regular height, targets reach `--hit-area-min`, and gaps between blocks go up one step. Fewer rows fit and that is accepted. Unknown input counts as touch, and an iPad with a trackpad reports touch, so it stays at regular rows. A SaaS screen is tighter on desktop than on a phone, never the other way round.
+- **Which overlay opens** `[PATH-PAGE-OVERLAY]`: a yes or no, or a pick, is a modal on desktop and a bottom sheet on phone. Any text field is a modal on desktop and full screen on phone, never a bottom sheet. A tall iOS modal sheet counts as that full screen overlay. Editing or previewing a row, or filters, is a right panel on tablet and desktop and full screen on phone. Notifications are a right panel. Always keep a visible way back. Escape or the scrim closes it on desktop.
 - **Button order** `[PATH-PAGE-BUTTON-ORDER]`: primary is rightmost, secondary to its left, then tertiary or ghost. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer and the buttons on the right follow the same order (Skip, then primary). Buttons in a footer or sticky bar are right-aligned with the 20px gap step between them (16 to 24px allowed), never spread to the two edges or stretched to fill the bar.
-- **View to edit on the same page** `[PATH-PAGE-VIEW-EDIT]`: open in view state. Edit is an explicit action that swaps the same fields to inputs in place, and Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (action sheet on phone). On phone Save sits in a sticky bar.
+- **View to edit on the same page** `[PATH-PAGE-VIEW-EDIT]`: open in view state. Edit is an explicit action that swaps the same fields to inputs in place, and Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (bottom sheet on phone). On phone Save sits in a sticky bar.
 - **Tables at narrow widths** `[PATH-PAGE-TABLE-WIDTH]`: do not hide columns. Follow PATH-B-NARROW: four columns or fewer stack as list rows, more scroll sideways inside the table with the first column and header pinned. The page itself never scrolls sideways.
 - **Sort and filter position** `[PATH-PAGE-SORT-FILTER]`: pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen panel on phone. Where a layout has a persistent filter sidebar, Filter still sits top right and shows or hides the sidebar. The Sort button must always exist, because stacked rows and card grids have no column headers (a sortable header may also sort, `[PATH-TABLE-SORT]`). A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.
 
@@ -305,7 +342,7 @@ Each template below ends with its layout. `shell` is `app` (bottom bar, then rai
 - The landing page inside a SaaS product. It answers what changed and what needs attention. Navigation: Left sidebar with labels on desktop, an icon rail on tablet, a bottom tab bar on phones. Search and account sit in the top bar.
 - Phone: Sidebar becomes a bottom bar with four tabs and More. Metrics go two across. Chart and activity stack. The table turns into stacked rows: name as the title, with status and the other values under it. Nothing is dropped. Tablet: Icon rail. Metrics two across. Chart takes the full width with activity underneath. The table keeps all its columns. Desktop: Full sidebar. Four metrics in a row. Chart takes two thirds with activity beside it. Full table.
 - Layout: shell app, frame fill; regions chart 2fr from lg, activity 1fr from lg; grids metrics --item-min-card up to 2/2/2/4; panels notifications overlay --panel-overlay-sm from md, below it fullscreen.
-- View all goes to the Records section, then a row goes to the record. A table row on the dashboard skips the section and jumps straight to the record. That shortcut is fine, but the breadcrumb on the record should still show where it lives. The bell opens a side panel and Create opens a modal. Dense on desktop for scanning many metrics. On touch widths the same screen gets regular rows and more space between blocks.
+- View all goes to the Records section, then a row goes to the record. A table row on the dashboard skips the section and jumps straight to the record. That shortcut is fine, but the breadcrumb on the record should still show where it lives. The bell opens a side panel and Create opens a modal. Dense with a fine pointer, for scanning many metrics. With touch input the same screen gets regular rows and more space between blocks.
 
 **`[PATH-PAGE-COLLECTION]` Collection table** (level 2 Index, saas, Standard; routes to `PATH-B`, `PATH-B-SIMPLE`, `PATH-B-NARROW`, `PATH-B-ROW-OPEN`)
 - A list of records people scan, filter, and act on in bulk. Navigation: Same sidebar shell. Search sits left in the toolbar above the table. Filter and Sort are pinned top right. A row opens a preview panel on desktop and a full detail page on smaller screens.
@@ -342,42 +379,22 @@ Each template below ends with its layout. `shell` is `app` (bottom bar, then rai
 - Layout: shell site, frame contained; grids plans --item-min-plan up to 1/1/2/4.
 - Pricing is a landing page that has to be compared, so it sits at Standard, not Spacious.
 
-**`[PATH-PAGE-FEATURE]` Feature page** (level 1 Hub, marketing, Spacious; routes to `PATH-G`)
-- Explains one part of the product in depth. It sits between the home page and the signup. Navigation: Same marketing header. The page is one long scroll. Each section ends in a soft link, and the closing band holds the main action.
-- Phone: Everything stacks. Each feature row shows its screenshot first, then the text. Integrations show four across. Tablet: Feature rows stay stacked. Benefits go three across and integrations six across. Desktop: Feature rows alternate screenshot and text side by side. Integrations eight across.
-- Layout: shell site, frame contained; regions feature-text 1fr from lg, feature-media 1fr from lg; grids integrations --item-min-icon-tile up to 4/6/6/8. Benefits go three across on tablet. Not listed in collections because no item token is set for them yet.
+**Marketing page templates** (all shell site, frame contained, routed to `PATH-G` unless noted; tablet and desktop splits start at the md and lg classes):
 
-**`[PATH-PAGE-CUSTOMERS]` Customer stories** (level 2 Index, marketing, Spacious; routes to `PATH-G`)
-- The proof page. It collects testimonials and case studies so visitors can find one that looks like them. Navigation: Same marketing header. Industry chips sit on the left and Filter and Sort are pinned top right of the story grid. Each card links to a full case study.
-- Phone: Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row. Tablet: Story cards and quotes go two across. The featured story keeps the image above the text. Desktop: Hero text beside a stat list. Featured story split into image and text. Story grid three across. Quote wall two across.
-- Layout: shell site, frame contained; regions hero-text 1fr from lg, hero-stats 1fr from lg; grids stories --item-min-story up to 1/2/2/3, quotes --item-min-story up to 1/2/2/2.
-
-**`[PATH-PAGE-BLOG-INDEX]` Blog index** (level 2 Index, marketing, Spacious; routes to `PATH-G`)
-- Lists articles and helps readers find the ones they care about. Also grows the newsletter. Navigation: Same marketing header. Category chips sit on the left and Filter and Sort are pinned top right of the post grid. Search sits beside the title on tablet and desktop and moves into the menu on phones.
-- Phone: Featured post on top, then the New list, then one post per row. Chips scroll sideways. Newsletter signup stacks. Tablet: Posts go two across. The New list sits under the featured post. Desktop: Featured post takes two thirds with the New list beside it. Posts three across.
-- Layout: shell site, frame contained; regions featured 2fr from lg, new-list 1fr from lg; grids posts --item-min-story up to 1/2/2/3.
-
-**`[PATH-PAGE-CASE-STUDY]` Case study** (level 3 Detail, marketing, Spacious; routes to `PATH-G`)
-- One customer story told as a problem, a fix, and a result. Numbers go first. Navigation: Breadcrumb back to Customer stories. Company facts sit on the left on desktop. The closing band and more stories keep the visitor moving.
-- Phone: Breadcrumb hides. Stats stack one per row. Company facts fold into a two by two block above the story. Tablet: Stats three across. Company facts fold into a four across row above the story. Desktop: Header text beside a photo. Three stats in a row. Company facts in a left column and the story capped near 680px.
-- Layout: shell site, frame contained; regions company-facts --region-company-facts from lg, story --measure-article from lg. The three stats go three across on tablet and desktop. Not listed in collections because no item token is set for them yet.
-
-**`[PATH-PAGE-ARTICLE]` Blog post** (level 3 Detail, marketing, Spacious; routes to `PATH-G`)
-- One long read. Built for comfortable reading, then a next step. Navigation: Same marketing header. A contents list helps readers jump around. Related posts and the closing band follow the article.
-- Phone: Header and hero image full width. Contents fold into one row at the top. Share icons move under the article. Tablet: Same as phone with a wider reading column. Contents stay folded. Desktop: Share icons on the left, article in the middle at about 680px, contents and tags on the right.
-- Layout: shell site, frame contained; regions share auto from lg, article --measure-article from lg, contents --region-contents from lg.
-- Reading pages get the widest margins and the most line space.
-
-**`[PATH-PAGE-CONTACT]` Contact sales** (level 4 Utility, marketing, Standard; routes to `PATH-G`, `PATH-C-SIMPLE`)
-- A short form for people ready to talk to a person. It should feel safe and quick. Navigation: Same marketing header and footer. No competing links in the body. The form is the only action.
-- Phone: Heading, then the form, then the reasons to trust you. Fields are one column. Tablet: Heading and form side by side. Name and company fields go two across. Desktop: Heading, benefits, and trust badges on the left. Form card on the right.
-- Layout: shell site, frame contained; regions intro 1fr from md, form 1fr from md.
+| Template | Level, density | What it is, and how it changes by width |
+|---|---|---|
+| `[PATH-PAGE-FEATURE]` Feature page | 1 Hub, Spacious | One part of the product in depth, one long scroll, each section ending in a soft link and the closing band holding the main action. Phone: everything stacks, screenshot first then text, integrations four across. Tablet: feature rows stay stacked, benefits three across, integrations six. Desktop: rows alternate screenshot and text, integrations eight. Layout: regions feature-text and feature-media 1fr from lg; grids integrations --item-min-icon-tile up to 4/6/6/8 |
+| `[PATH-PAGE-CUSTOMERS]` Customer stories | 2 Index, Spacious | The proof page: testimonials and case studies. Industry chips on the left, Filter and Sort pinned top right of the story grid, each card linking to a case study. Phone: hero stats under the heading, chips scroll sideways, stories and quotes one per row. Tablet: stories and quotes two across, the featured story keeps image above text. Desktop: hero text beside a stat list, featured story split, story grid three across, quote wall two. Layout: regions hero-text and hero-stats 1fr from lg; grids stories --item-min-story up to 1/2/2/3, quotes up to 1/2/2/2 |
+| `[PATH-PAGE-BLOG-INDEX]` Blog index | 2 Index, Spacious | Lists articles and grows the newsletter. Category chips on the left, Filter and Sort pinned top right of the post grid, search beside the title on tablet and desktop and in the menu on phones. Phone: featured post, then the New list, then one post per row, newsletter stacks. Tablet: posts two across, New list under the featured post. Desktop: featured post two thirds with the New list beside it, posts three across. Layout: regions featured 2fr and new-list 1fr from lg; grids posts --item-min-story up to 1/2/2/3 |
+| `[PATH-PAGE-CASE-STUDY]` Case study | 3 Detail, Spacious | One customer story as a problem, a fix and a result, numbers first. Breadcrumb back to Customer stories. Phone: breadcrumb hides, stats one per row, company facts fold into a two by two block above the story. Tablet: stats three across, facts a four across row. Desktop: header text beside a photo, three stats in a row, facts in a left column, story capped near 680px. Layout: regions company-facts --region-company-facts and story --measure-article from lg |
+| `[PATH-PAGE-ARTICLE]` Blog post | 3 Detail, Spacious | One long read with the widest margins and the most line space, then related posts and the closing band. Phone: full-width header and image, contents fold into one row at the top, share icons under the article. Tablet: same with a wider column. Desktop: share icons left, article about 680px in the middle, contents and tags right. Layout: regions share auto, article --measure-article, contents --region-contents from lg |
+| `[PATH-PAGE-CONTACT]` Contact sales | 4 Utility, Standard; also `PATH-C-SIMPLE` | A short form for people ready to talk to a person. No competing links in the body, the form is the only action. Phone: heading, form, then reasons to trust you, one column. Tablet: heading and form side by side, name and company two across. Desktop: heading, benefits and trust badges left, form card right. Layout: regions intro and form 1fr from md |
 
 **`[PATH-PAGE-DATAGRID]` Data grid** (level 2 Index, saas, Dense; routes to `PATH-B-COMPLEX`, `PATH-B-NARROW`, `PATH-TABLE-DENSITY`)
 - A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks. Navigation: Same app shell. View tabs sit above the toolbar. Selecting rows swaps in a bulk action bar. Rows open a detail page, not a panel, because the grid already uses the width.
 - Phone: The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort stay pinned top right as two buttons. Selecting rows shows a bar above the list with one Actions button. Tablet: All columns stay and the grid scrolls sideways with the name pinned. Toolbar keeps search on the left with Filter and Sort pinned top right, under one view tab row. Desktop: All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned.
 - Layout: shell app, frame fill; panels filter overlay --panel-overlay-sm from md, below it fullscreen.
-- Checking rows swaps in the bulk bar. Delete asks for confirmation in a modal that names the count. Filter opens a side panel and keeps the grid on screen. A row click leaves the grid for the record page. The densest template here. Desktop rows use the dense height. On touch widths rows return to regular height.
+- Checking rows swaps in the bulk bar. Delete asks for confirmation in a modal that names the count. Filter opens a side panel and keeps the grid on screen. A row click leaves the grid for the record page. The densest template here. Rows use the dense height with a fine pointer, and return to regular height with touch input.
 
 **`[PATH-PAGE-TEAM]` Members table** (level 4 Utility, saas, Standard; routes to `PATH-B-SIMPLE`, `PATH-B-NARROW`, `PATH-D`)
 - A short table inside settings. People are here to invite someone, change a role, or remove someone. Navigation: Settings has its own sub-nav: a column on desktop, tabs on tablet, and a drill-in list on phones where tapping Members opens this page with a back arrow.
@@ -433,25 +450,13 @@ Read this when a button, label or icon changes meaning after the user acts, an e
 
 **Reduced motion fallbacks.** Label, icon, number, typed input, reorder, collapse to indicator and small state changes swap instantly. Shared element and grow-from-trigger fade in place with no travel. Directional and chart range change crossfade. Tray resizes at once and crossfades the content. Status button changes fill and icon at once and the done state still holds. Reduced motion removes movement, never information.
 
-**Examples.** "Save" to "Saved": keep "Save" in place, animate only the added "d". "Review order" to "Submit order": keep " order" and animate the first word, in one move. "Craft" to "Creative": shared letters slide to their new places while the others arrive and leave. Status button: "Book now", a spinner, then a check crossfade in the same spot, the button keeps its size, and the check holds half a second at most. Number ticker: only the digits that changed move, and screen readers hear the final value once. Chart "1D" to "1W": the line morphs, the selected pill slides, and the figures roll in about a tenth of a second.
-
-**Frequency and emphasis.** Delight scales inversely with how often something happens. Daily actions are small, quick and quiet. Rare, important moments get more room, still inside the duration caps. Polish has to be even: a rarely used screen that is static beside a smooth one looks neglected. Use the lightest morph that fits, not zero.
-
-| Tier | Met | Examples | Rules |
-|---|---|---|---|
-| T1 detail | Daily | Commas gliding as a number is typed | Duration tokens only, under 300ms. Nothing that repeats on the tenth use |
-| T2 moment | Weekly or less | A selection stack dropping into a bin, a shimmer on a hidden balance | The entrance may use the slow token. A loop only as an ambient sign of a mode, never decoration |
-| T3 occasion | Rare and important | Confetti on finishing a backup | May run longer than the slow token. Plays once. Can be skipped |
-
-Every tier never gates the task, carries the same meaning in a still frame, pauses loops under reduced motion and while the page is hidden, and is absent (not swapped) under reduced motion if it is an easter egg (`DS-MOTION-007`). Text inside an easter egg goes through Righter, and humor never appears in an error. If your workspace uses a MOTION dial, a low setting (1 to 3) allows only crossfades and instant swaps.
+**Examples and tiers.** "Save" to "Saved": keep "Save" in place, animate only the added "d". "Review order" to "Submit order": keep " order" and animate the first word, in one move. Status button: "Book now", a spinner, then a check in the same spot at the same size, the check holding half a second at most. Number ticker: only the digits that changed move, and screen readers hear the final value once. Delight scales inversely with how often something happens, and polish has to be even: use the lightest morph that fits, not zero. T1 detail (daily, such as commas gliding as a number is typed): duration tokens only, under 300ms, nothing that repeats on the tenth use. T2 moment (weekly or less): the entrance may use the slow token, a loop only as an ambient sign of a mode. T3 occasion (rare and important, such as confetti on a finished backup): may run longer than the slow token, plays once, can be skipped. No tier gates the task, every tier carries the same meaning in a still frame and pauses loops under reduced motion and while the page is hidden, and an easter egg is absent under reduced motion (`DS-MOTION-007`). Text inside one goes through Righter, and humor never appears in an error. A low MOTION dial (1 to 3) allows only crossfades and instant swaps.
 
 **Accessibility, required for every morph.** Respect `prefers-reduced-motion`. No meaning in motion alone: the final state must read from a still frame. Screen readers get the final state once, never intermediate frames. Input is never blocked: an interruption resolves to the newest state and continues from where the motion was. Focus stays put: a morphing button keeps focus, and a tray moves focus to the new step after the swap ends and back to the trigger when it closes. Nothing user-blocking runs longer than the slow duration token. Nothing flashes more than three times a second. A keyboard-triggered change does not slide (`DS-ANIMATION-003`).
 
 **Anti-patterns.** Duplicating an element during a transition (one fades out while a copy fades in). Motion for its own sake. Teleporting persistent elements. Slow confirmation: a morph that delays a payment, a delete or a submit (the one exception is the status button's done hold, capped at 500ms). Out, then in: animating the old value away and only then the new one in, which breaks the duration cap (`DS-MOTION-003`). Per-letter animation on every label. Bounce on destructive or financial actions. Inconsistent timing between similar transitions. Rewriting copy only so an animation looks better. A tray that remounts on each step (`DS-MOTION-004`). Blur on the traveller (`DS-MOTION-005`). Replaying a chart on refetch. Delight the user has to wait for (`DS-MOTION-007`).
 
-**Label pairs.** Righter approves each label pair before a component builds a morph (see Label Pairs for Motion Morphs in the Righter edition). An unapproved pair crossfades or swaps instantly.
-
-**Remove the motion.** Take the animation out of a flow and see what is lost. If the user still knows what changed, where it went and what to do next, the motion is decoration: cut it or move it down a tier. If not, name its job: orientation, continuity, confirmation or causality. On a payment, delete or send, a missing motion that hides what happened is a finding.
+**Label pairs and the removal test.** Righter approves each label pair before a component builds a morph (see Label Pairs for Motion Morphs in the Righter edition); an unapproved pair crossfades or swaps instantly. To test a flow, take the animation out: if the user still knows what changed, where it went and what to do next, the motion is decoration, so cut it or move it down a tier. If not, name its job (orientation, continuity, confirmation or causality). On a payment, delete or send, a missing motion that hides what happened is a finding.
 
 ## Spacing Quick Reference
 
@@ -467,14 +472,14 @@ For exact class names and token values, see `vois-tokens`.
 
 ## Quick Checklist Before Implementation
 
-- [ ] Container type selected (settings / table / form / dialog / detail / pricing / marketing) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
+- [ ] Container type selected (settings / table / form / dialog / detail / pricing / marketing / questionnaire) — or, if the brief didn't map directly, checked the Composing Existing Primitives section for a fit or combination first
 - [ ] If the task is a whole page: template picked from Page Templates, checked at phone, tablet and desktop (`[PATH-PAGE-BREAKPOINTS]`)
 - [ ] Content density tier picked deliberately (dense / standard / spacious), not defaulted to whatever mid-range spacing produces
 - [ ] Page structure sketched (what sections, what's visible, what's hidden by role)
 - [ ] Permissions applied (hide/disable rules — see Permissions section above), and personal data masked and kept out of URLs, titles, and analytics
 - [ ] All copy written with Righter (or the fallback conventions), not guessed
 - [ ] Ready to apply `vois-components` then `vois-tokens` for components, tokens, and spacing
-- [ ] Mobile breakpoint behavior defined (action sheets vs. dialogs, sidebar vs. hamburger, etc.)
+- [ ] Mobile breakpoint behavior defined (bottom sheets vs. dialogs, sidebar vs. hamburger, etc.)
 - [ ] If a state change moves: the decision test run, a reduced-motion fallback defined, and the remove-the-motion check done
 
 ## Relationship to Other Skills
