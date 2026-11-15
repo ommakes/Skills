@@ -478,7 +478,7 @@ Use it instead of a spinning icon (`LOOKALIKE-002`).
 
 ### `vois-theme`
 
-`vois/theme/vois-theme.css` points every shadcn variable in `DS-TOKEN-005` at its Vois token. For example, `--background` is `var(--bg-background)`, `--primary` is `var(--action-primary-resting)`, and `--radius` is `var(--radii-8)`, so shadcn's `rounded-md`, `-lg` and `-xl` land on Vois's 6, 8 and 12. It ships no values.
+`vois/theme/vois-theme.css` points every shadcn variable in `DS-TOKEN-005` at its Vois token. For example, `--background` is `var(--bg-background)`, `--primary` is `var(--action-primary-resting)`, `--popover` is `var(--elevation-surface-popup)` (so a stock popover, menu or select list is one step above a Dialog in dark, as the Vois menus are), and `--radius` is `var(--radii-8)`, so shadcn's `rounded-md`, `-lg` and `-xl` land on Vois's 6, 8 and 12. It ships no values.
 
 Its selector, `:root:root, .dark.dark`, outranks shadcn's `:root` and `.dark`. So the import sits at the top like any import, and the mapping holds on the whole page and in a dark section of a light page. It does not reach components inside a shadow root.
 

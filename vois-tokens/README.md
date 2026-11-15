@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.39.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.40.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.40.0**: `DS-TOKEN-005` maps shadcn `popover` to `--elevation-surface-popup`, so a stock popover, menu or select list matches the Vois menus in dark.
 - **1.39.0**: A fourth dark fill step for popups, `--elevation-surface-popup`, one step above a Dialog. `DS-ELEVATION-005` names it.
 - **1.38.0**: Detectors for `DS-ELEVATION-007` (a raw shadow with blur) and `DS-ELEVATION-006` (a docked panel without the directional shadow). Both warn, neither blocks.
 - **1.37.0**: Docked-panel shadow tokens (`--shadow-large-right`, `-left`, `-bottom`, `-top`, light and dark) and the Choice Card hover and press deltas. `DS-ELEVATION-006` names the tokens.

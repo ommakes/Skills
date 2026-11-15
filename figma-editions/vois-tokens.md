@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, elevation, shape, component architecture, overlays, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.39.0
+version: 1.40.0
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -26,7 +26,7 @@ Four layers: Global palettes, Base, System, Component. Use the most specific lay
 
 The Base layer sets the brand: `--base-brand`, `--base-accent-solid`, `--base-accent-soft`. Because the primary action states and the accent System tokens point at palette steps, 13 color tokens carry the brand (those three, `--action-primary-resting|hover|focus|pressed|disabled|text`, `--bg-accent`, `--text-accent`, `--icon-accent`, `--border-accent`), plus four font families (`--font-family-brand|system|written|mono`). A brand theme overrides these 17 and nothing else `[DS-TOKEN-004]`.
 
-**shadcn/ui mapping** `[DS-TOKEN-005]`: `background` is `--bg-background`. `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` are `--text-primary`. `card` and `popover` are `--bg-card`. `primary` is `--action-primary-resting`, `primary-foreground` is `--action-primary-text`, `secondary` is `--action-secondary-resting`. `muted` is `--bg-subtle`, `muted-foreground` is `--text-secondary`, `accent` is `--bg-hover`. `destructive` is `--base-negative`. `border` is `--border-pretty`, `input` is `--input-border`, `ring` is `--border-state-focus`. `radius` is `--radii-8`, so shadcn's derived steps land on 6 (`md`), 8 (`lg`) and 12 (`xl`).
+**shadcn/ui mapping** `[DS-TOKEN-005]`: `background` is `--bg-background`. `foreground`, `card-foreground`, `popover-foreground`, `secondary-foreground` and `accent-foreground` are `--text-primary`. `card` is `--bg-card`. `popover` is `--elevation-surface-popup`, the popup fill, so a stock Popover matches the Vois menus (it needs the project's `@theme inline { --color-popover: var(--popover) }` alias). `primary` is `--action-primary-resting`, `primary-foreground` is `--action-primary-text`, `secondary` is `--action-secondary-resting`. `muted` is `--bg-subtle`, `muted-foreground` is `--text-secondary`, `accent` is `--bg-hover`. `destructive` is `--base-negative`. `border` is `--border-pretty`, `input` is `--input-border`, `ring` is `--border-state-focus`. `radius` is `--radii-8`, so shadcn's derived steps land on 6 (`md`), 8 (`lg`) and 12 (`xl`).
 
 ## Pre-Submit Checklist
 

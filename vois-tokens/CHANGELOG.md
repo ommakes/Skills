@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.40.0] - 2026-11-15
+
+### Changed
+- `DS-TOKEN-005`: shadcn `popover` maps to `--elevation-surface-popup` instead of `--bg-card`, so a stock shadcn popover, menu or select list gets the dark popup fill (one step above a Dialog). `card` stays on `--bg-card`. The table in `references/figma-variables.md` and the rule text in `vois-rules.json` say the same, and `registry/scripts/check-registry.mjs` fails if they drift. `references/elevation.md` no longer lists this as an open decision.
+
 ## [1.39.0] - 2026-11-15
 
 ### Added

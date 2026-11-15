@@ -558,3 +558,14 @@ test("token reads: Radix runtime properties pass by exact prefix, lookalikes fai
   assert.deepEqual(refs("max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width)"), []);
   for (const t of ["w-(--radixselect-width)", "w-(--Radix-select-width)", "w-(--x-radix-select)", "w-(--radix_select)", "w-(--radix-select-trigger-widht)", "w-(--radix-select-trigger-width-x)", "w-(--radix-popover-trigger-width)"]) assert.equal(refs(t).length, 1, t);
 });
+
+test("shadcn popover maps to the popup fill, so a stock popover, menu or select list matches the Vois menus", () => {
+  assert.equal(MAPPINGS.popover.token, "--elevation-surface-popup");
+  assert.equal(MAPPINGS.card.token, "--bg-card", "the card keeps the card fill");
+  const theme = readFileSync(join(repo, "registry", "vois", "theme", "vois-theme.css"), "utf8");
+  assert.match(theme, /--popover:\s*var\(--elevation-surface-popup\);/);
+  assert.doesNotMatch(theme, /--popover:\s*var\(--bg-card\)/);
+  // The token the theme points at is generated, in light and in dark.
+  const tokens = readFileSync(join(repo, "registry", TOKENS_FILE), "utf8");
+  assert.equal((tokens.match(/--elevation-surface-popup:/g) || []).length, 2, "defined once in :root and once in .dark");
+});
