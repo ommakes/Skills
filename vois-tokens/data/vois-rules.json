@@ -762,7 +762,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "Use the five elevation tiers from Figma, `--shadow-base` to `--shadow-xlarge`, and match each element to the tier in `data/elevation-map.json`. Card, Choice Card and the segmented indicator rest at Base. Card hover, Switch knob and Hover Card are Small. Menus and select lists are Medium and pair with the dropdown z-index. Dialog and Tooltip are Large and pair with the overlay or modal z-index. XLarge is only for a dragged item or a full-screen surface. Layers run in role order (page, dropdown, overlay, modal), so don't put a heavier shadow on a lower layer than on the one above it. The exception is a popup opened from a dialog (menu, select, hover card, tooltip): it stacks above the modal and keeps its own lighter tier.",
+      "rule": "Use the five elevation tiers from Figma, `--shadow-base` to `--shadow-xlarge`, and match each element to the tier in `data/elevation-map.json`. Card, Choice Card and the segmented indicator rest at Base. Card hover, resting Choice Card hover, Switch knob and Hover Card are Small. Menus and select lists are Medium and pair with the dropdown z-index. Dialog and Tooltip are Large and pair with the overlay or modal z-index. XLarge is only for a dragged item or a full-screen surface. Layers run in role order (page, dropdown, overlay, modal), so don't put a heavier shadow on a lower layer than on the one above it. The exception is a popup opened from a dialog (menu, select, hover card, tooltip): it stacks above the modal and keeps its own lighter tier.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -802,7 +802,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "A panel docked to an edge casts its shadow away from that edge, not on all sides. Right-docked: negative x. Left-docked: positive x. Bottom-docked: negative y. Top-docked: positive y. Centered: x is 0. Use a negative spread so the shadow does not leak past the panel. The shadow tokens have spread 0 today, so the negative spread and directional offsets come with the directional tokens. Until then, use the tier token and record the side in the map's `dock` field.",
+      "rule": "A panel docked to an edge casts its shadow away from that edge, not on all sides. Right-docked: negative x. Left-docked: positive x. Bottom-docked: negative y. Top-docked: positive y. Centered: x is 0. Use a negative spread so the shadow does not leak past the panel. Use the directional token for the side: `--shadow-large-right`, `-left`, `-bottom` or `-top` (Large only today), and record the side in the map's `dock` field.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"

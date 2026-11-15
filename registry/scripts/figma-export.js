@@ -5,7 +5,7 @@
 //
 // What it exports: every variable that has Web code syntax (its CSS name). A value is a color
 // (#rrggbb or #rrggbbaa), a number (no unit: build-tokens.mjs adds px, or ms, or none) or an alias ("=--name"). When Light and Dark differ the value is
-// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers, and the Elevation/Dark/* styles (Medium, Large, XLarge) as `darkShadows`: the same shape, for .dark.
+// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers, and the Elevation/Dark/* styles (Medium, Large, XLarge) as `darkShadows`: the same shape, for .dark. Elevation/Large/<Right|Left|Bottom|Top> and Elevation/Dark/Large/<side> are the docked-panel shadows.
 // The seventeen brand slots (DS-TOKEN-004: thirteen colors, four font families) are written as null: a product's brand never leaves Figma here.
 
 const BRAND_SLOTS = [
@@ -15,8 +15,12 @@ const BRAND_SLOTS = [
   // The font families carry the brand too (DS-TOKEN-004).
   "--font-family-brand", "--font-family-system", "--font-family-written", "--font-family-mono",
 ];
+// Docked panels (DS-ELEVATION-006): Large, cast away from the dock edge. Light and dark, four sides.
+const DOCKS = ["Right", "Left", "Bottom", "Top"];
 const DARK_SHADOW_NAMES = { "Elevation/Dark/Medium": "--shadow-medium", "Elevation/Dark/Large": "--shadow-large", "Elevation/Dark/XLarge": "--shadow-xlarge" };
+for (const d of DOCKS) DARK_SHADOW_NAMES[`Elevation/Dark/Large/${d}`] = `--shadow-large-${d.toLowerCase()}`;
 const SHADOW_NAMES = { "Elevation/Base": "--shadow-base", "Elevation/Small": "--shadow-small", "Elevation/Medium": "--shadow-medium", "Elevation/Large": "--shadow-large", "Elevation/XLarge": "--shadow-xlarge" };
+for (const d of DOCKS) SHADOW_NAMES[`Elevation/Large/${d}`] = `--shadow-large-${d.toLowerCase()}`;
 
 const hex = (c) => {
   const h = (x) => Math.round(x * 255).toString(16).padStart(2, "0");

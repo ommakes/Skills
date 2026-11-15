@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { build, buildFiles, buildShape, applyPending, pendingDuplicates, readPending, cssValue, hexToOklch, oklchToSrgb, parseHex, shadowCss, fnv1a } from "./build-tokens.mjs";
+import { build, buildFiles, buildShape, applyPending, pendingDuplicates, readPending, cssValue, hexToOklch, oklchToSrgb, parseHex, shadowCss, fnv1a, dockedShadowProblems } from "./build-tokens.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const read = (p) => readFileSync(join(registryDir, p), "utf8");
@@ -469,8 +469,8 @@ test("dark shadows fail closed: no light twin, a flat tier given a shadow, a tie
   assert.throws(() => build(withDark({ "--shadow-medium": [[0, 0, 0, 1, "#00000029"], [0, 2, 2, 0, "#00000029"]] }, ringed), brand()), /must have the layers of the light one/);
 });
 
-test("dark shadows: the committed export has exactly Medium, Large and XLarge, each heavier than its light twin", () => {
-  assert.deepEqual(Object.keys(realExport.darkShadows), ["--shadow-medium", "--shadow-large", "--shadow-xlarge"]);
+test("dark shadows: the committed export has Medium, Large, XLarge and the four docked Large shadows, each heavier than its light twin", () => {
+  assert.deepEqual(Object.keys(realExport.darkShadows), ["--shadow-medium", "--shadow-large", "--shadow-xlarge", "--shadow-large-right", "--shadow-large-left", "--shadow-large-bottom", "--shadow-large-top"]);
   const alpha = (hex) => parseInt(hex.slice(7, 9) || "ff", 16);
   for (const [k, layers] of Object.entries(realExport.darkShadows)) {
     const lightA = Math.max(...realExport.shadows[k].map((l) => alpha(l[4])));
@@ -529,4 +529,77 @@ test("dark fills: the built components read the new fills, never --bg-card on an
   }
   assert.match(read("vois/card/card.tsx"), /hover:bg-\[color:var\(--elevation-surface-small\)\]/);
   assert.match(read("vois/command/command.tsx"), /\[&_\[data-slot=command\]\]:bg-transparent/, "CommandDialog must let the Dialog fill show");
+});
+
+// ---- Docked panels (DS-ELEVATION-006) ---------------------------------------------------------------
+
+// The sign rule: a panel docked to an edge casts its shadow away from that edge. Right-docked is negative x, left-docked is
+// positive x, bottom-docked is negative y, top-docked is positive y. The other axis is 0 and the spread is negative, so the
+// shadow does not leak along the panel's sides. A centered element (the Dialog) has x = 0.
+const DOCK_SIGN = { right: [-1, 0], left: [1, 0], bottom: [0, -1], top: [0, 1] };
+
+test("docked shadows: the committed export passes the sign rule on every layer, in light and in dark", () => {
+  for (const [source, name] of [[realExport.shadows, "light"], [realExport.darkShadows, "dark"]]) {
+    for (const dock of Object.keys(DOCK_SIGN)) {
+      const layers = source[`--shadow-large-${dock}`];
+      assert.ok(Array.isArray(layers) && layers.length > 0, `${name} --shadow-large-${dock} is missing`);
+      assert.deepEqual(dockedShadowProblems(`--shadow-large-${dock}`, layers), [], `${name} ${dock}`);
+    }
+  }
+});
+
+test("docked shadows: the generator refuses a wrong side, a layer across the edge and a spread that is not minus half the blur", () => {
+  const base = { "--shadow-base": [[0, 0, 1, 1, "#0000000a"]], "--shadow-small": [[0, 1, 1, 0, "#0000000a"]], "--shadow-large-right": [[-2, 0, 2, -1, "#0000000d"]] };
+  const dark = { "--shadow-large-right": [[-2, 0, 2, -1, "#00000033"]] };
+  const fine = (sh, dk) => build(mini({ shadows: sh, top: { darkShadows: dk } }), brand());
+  assert.doesNotThrow(() => fine(base, dark));
+  for (const [label, layers, re] of [
+    ["flipped", [[2, 0, 2, -1, "#0000000d"]], /must fall away from the right edge/],
+    ["zero offset", [[0, 0, 2, -1, "#0000000d"]], /must fall away/],
+    ["across the edge", [[-2, 1, 2, -1, "#0000000d"]], /moves across the dock edge/],
+    ["no spread", [[-2, 0, 2, 0, "#0000000d"]], /spread 0 must be minus half the blur/],
+    ["too much spread", [[-2, 0, 2, -2, "#0000000d"]], /spread -2 must be minus half the blur/],
+  ]) assert.throws(() => fine({ ...base, "--shadow-large-right": layers }, dark), re, `light ${label}`);
+  assert.throws(() => fine(base, { "--shadow-large-right": [[2, 0, 2, -1, "#00000033"]] }), /dark --shadow-large-right/, "dark flipped");
+  for (const [dock, ok, bad] of [["left", [2, 0, 2, -1], [-2, 0, 2, -1]], ["bottom", [0, -2, 2, -1], [0, 2, 2, -1]], ["top", [0, 2, 2, -1], [0, -2, 2, -1]]]) {
+    const name = `--shadow-large-${dock}`;
+    assert.deepEqual(dockedShadowProblems(name, [[...ok, "#0000000d"]]), [], dock);
+    assert.ok(dockedShadowProblems(name, [[...bad, "#0000000d"]]).length > 0, `${dock} flipped`);
+  }
+  // Names that are not docked shadows are not touched.
+  assert.deepEqual(dockedShadowProblems("--shadow-large", [[5, 5, 2, 9, "#0000000d"]]), []);
+  assert.deepEqual(dockedShadowProblems("--shadow-large-right", "x"), []);
+});
+
+test("docked shadows: the same layers as Large without its ring, in the same depths, light and dark alike", () => {
+  const depth = (ls, dock) => ls.map((l) => Math.abs(DOCK_SIGN[dock][0] !== 0 ? l[0] : l[1]));
+  const large = realExport.shadows["--shadow-large"].filter((l) => !(l[0] === 0 && l[1] === 0 && l[2] === 0 && l[3] === 1));
+  for (const dock of Object.keys(DOCK_SIGN)) {
+    for (const source of [realExport.shadows, realExport.darkShadows]) assert.deepEqual(depth(source[`--shadow-large-${dock}`], dock), large.map((l) => l[1]), dock);
+    assert.deepEqual(realExport.shadows[`--shadow-large-${dock}`].map((l) => l[2]), large.map((l) => l[2]), `${dock} blur`);
+  }
+  // A centered element casts straight down, x = 0 (the Dialog).
+  for (const layers of [realExport.shadows["--shadow-large"], realExport.darkShadows["--shadow-large"]]) for (const l of layers) assert.equal(l[0], 0, "a centered shadow has x = 0");
+});
+
+test("docked shadows: the generator writes all eight, and dark docked shadows are blacker", () => {
+  const css = read("vois/tokens/vois-tokens.css");
+  const maxA = (block, name) => Math.max(...[...new RegExp(`${name}: ([^;]*);`).exec(block)[1].matchAll(/\/ ([0-9.]+)\)/g)].map((m) => +m[1]));
+  for (const dock of Object.keys(DOCK_SIGN)) assert.ok(maxA(darkBlock(css), `--shadow-large-${dock}`) > maxA(lightBlock(css), `--shadow-large-${dock}`), `${dock}: dark is not blacker than light`);
+  for (const dock of Object.keys(DOCK_SIGN)) {
+    assert.match(lightBlock(css), new RegExp(`--shadow-large-${dock}: `));
+    assert.match(darkBlock(css), new RegExp(`--shadow-large-${dock}: `));
+  }
+});
+
+test("choice card: a resting card steps up to Small on hover and drops its shadow when pressed; the other states keep Base", () => {
+  const src = read("vois/choice-card/choice-card.tsx").replace(/^\s*\/\/.*$/gm, "");
+  const resting = /resting:\s*\n?\s*"([^"]*)"/.exec(src)?.[1] ?? "";
+  assert.match(resting, /hover:shadow-\[inset_0_0_0_1px_var\(--border-state-hover\),var\(--shadow-small\)\]/);
+  assert.match(resting, /active:shadow-\[inset_0_0_0_1px_var\(--border-state-hover\)\]/, "pressed drops the shadow");
+  for (const state of ["checked", "invalid", "disabled"]) {
+    const cls = new RegExp(`${state}:\\s*\\n?\\s*"([^"]*)"`).exec(src)?.[1] ?? "";
+    assert.ok(cls.length > 0, `${state} classes not found`);
+    assert.doesNotMatch(cls, /--shadow-small/, `${state} must keep Base`);
+  }
 });

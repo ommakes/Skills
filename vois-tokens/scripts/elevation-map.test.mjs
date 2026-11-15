@@ -5,11 +5,11 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { validate, semanticProblems, loadAll, checkAll } from "./elevation-map.mjs";
+import { validate, semanticProblems, loadAll, checkAll, lightAndDarkShadows } from "./elevation-map.mjs";
 
-const { schema, data: realData, registryItems, readComponent } = loadAll();
+const { schema, data: realData, registryItems, readComponent, shadowTokens } = loadAll();
 const real = () => structuredClone(realData);
-const ctx = { registryItems, readComponent };
+const ctx = { registryItems, readComponent, shadowTokens };
 const all = (d) => [...validate(schema, d), ...semanticProblems(d, ctx)];
 const el = (d, id) => d.elements.find((e) => e.id === id);
 
@@ -132,6 +132,59 @@ test("run as a script through a symlink still checks", async () => {
     const r = spawnSync(process.execPath, [link], { encoding: "utf8" });
     assert.match(r.stdout + r.stderr, /elevation-map: OK|problem/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("docked: a side-docked element needs a directional token for every tier it uses, in light and in dark", () => {
+  let d = real(); assert.ok(shadowTokens.has("--shadow-large-right"));
+  d = real(); el(d, "sheet-right").dock = "left"; assert.deepEqual(all(d), [], "left has its own token too");
+  d = real(); el(d, "sheet-right").rest = "medium"; el(d, "sheet-right").hover = "medium"; el(d, "sheet-right").pressed = "medium"; el(d, "sheet-right").disabled = "medium";
+  assert.match(all(d).join("\n"), /needs --shadow-medium-right/);
+  // A token that exists only in light is not enough: dark needs it too.
+  const lightOnly = new Set([...shadowTokens].filter((t) => t !== "--shadow-large-bottom"));
+  assert.match(semanticProblems(real(), { registryItems, readComponent, shadowTokens: lightOnly }).join("\n"), /needs --shadow-large-bottom/);
+  // No export: fail closed, never skip.
+  assert.match(semanticProblems(real(), { registryItems, readComponent, shadowTokens: null }).join("\n"), /cannot be checked without registry\/source\/figma-export\.json/);
+  // A centered element needs no directional token.
+  assert.deepEqual(semanticProblems(real(), { registryItems, readComponent, shadowTokens: new Set() }).filter((p) => /dialog/.test(p)), []);
+});
+
+test("docked: a built side-docked element must use the directional token, not the all-sides one", () => {
+  const d = real();
+  Object.assign(el(d, "sheet-right"), { status: "built", component: "vois-dialog" });
+  const dialogSrc = readComponent("vois-dialog");
+  const problems = semanticProblems(d, { registryItems, readComponent: () => dialogSrc, shadowTokens });
+  assert.match(problems.join("\n"), /sheet-right\]\.rest: vois-dialog never uses --shadow-large-right/);
+  const ok = semanticProblems(d, { registryItems, readComponent: () => "x { box-shadow: var(--shadow-large-right); }", shadowTokens });
+  assert.deepEqual(ok.filter((p) => /sheet-right/.test(p)), []);
+});
+
+test("lightAndDarkShadows: only tokens in both blocks count, and malformed input is null", () => {
+  assert.deepEqual([...lightAndDarkShadows({ shadows: { "--a": [], "--b": [] }, darkShadows: { "--b": [], "--c": [] } })], ["--b"]);
+  for (const bad of [null, [], "x", {}, { shadows: [] , darkShadows: {} }, { shadows: {}, darkShadows: "x" }, { shadows: {} }, { darkShadows: {} }, { shadows: { "--a": [] }, darkShadows: [] }]) assert.equal(lightAndDarkShadows(bad), null, JSON.stringify(bad));
+  assert.ok(shadowTokens instanceof Set && shadowTokens.has("--shadow-large-left"), "the committed export gives all eight");
+});
+
+test("a missing export is reported once, not once per tier", () => {
+  const root = mkdtempSync(join(tmpdir(), "elev3-"));
+  try {
+    mkdirSync(join(root, "vois-tokens", "data"), { recursive: true }); mkdirSync(join(root, "registry"), { recursive: true });
+    for (const f of ["elevation-map.json", "elevation-map.schema.json"]) cpSync(new URL("../data/" + f, import.meta.url), join(root, "vois-tokens", "data", f));
+    cpSync(new URL("../../registry/registry.json", import.meta.url), join(root, "registry", "registry.json"));
+    const problems = checkAll({ skill: join(root, "vois-tokens"), repo: root }).filter((p) => /figma-export|docked element/.test(p));
+    assert.equal(problems.length, 1, problems.join("\n"));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test("fail closed: without registry/source/figma-export.json the docked check reports a problem", () => {
+  const root = mkdtempSync(join(tmpdir(), "elev2-"));
+  try {
+    mkdirSync(join(root, "vois-tokens", "data"), { recursive: true });
+    mkdirSync(join(root, "registry"), { recursive: true });
+    cpSync(new URL("../data/elevation-map.json", import.meta.url), join(root, "vois-tokens", "data", "elevation-map.json"));
+    cpSync(new URL("../data/elevation-map.schema.json", import.meta.url), join(root, "vois-tokens", "data", "elevation-map.schema.json"));
+    cpSync(new URL("../../registry/registry.json", import.meta.url), join(root, "registry", "registry.json"));
+    assert.match(checkAll({ skill: join(root, "vois-tokens"), repo: root }).join("\n"), /figma-export\.json is missing or unreadable/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
 test("malformed input never throws", () => {
