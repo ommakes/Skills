@@ -59,29 +59,36 @@ function collectTags(files, pattern) {
 }
 
 /**
- * Bracketed text that looks like a rule tag but is not one the strict patterns
- * above can read: wrong case ([ds-modal-005]) or a DS number that is not exactly
- * three digits ([DS-MODAL-5], [DS-MODAL-0055]). The strict patterns skip these,
- * so without this scan a typo is silently ignored. Category tags such as
- * [DS-A11Y] have no numeric suffix and are fine.
+ * Bracketed text that starts like a rule tag ("DS-", "DS_", "DS ", "PATH-" ...) but is
+ * not exactly one: wrong case ([ds-modal-005]), padding or underscores ([DS_MODAL_005],
+ * [DS-MODAL-005 ]), doubled or trailing hyphens ([DS-MODAL--005], [DS-]), or a DS number
+ * that is not three digits ([DS-MODAL-5], [DS-MODAL-0055]). The strict patterns skip these,
+ * so without this scan a typo is silently ignored. Category tags such as [DS-A11Y] and
+ * [DS-V2] are well formed. Text with other characters (like "[DS-*]") is prose, not a tag.
  */
-const TAG_LOOKALIKE = /\[((?:DS|PATH)-[A-Za-z0-9-]*)\]/gi;
+const BRACKET_TEXT = /\[([^\[\]\n]{1,80})\]/g;
+const TAG_START = /^\s*(?:DS|PATH)[-_ ]/i;
+const TAG_CHARS = /^[A-Za-z0-9_ -]+$/;
+const WELL_FORMED = /^(?:DS|PATH)-[A-Z0-9]+(?:-[A-Z0-9]+)*$/;
+function isMalformedTag(inner) {
+  if (!TAG_START.test(inner) || !TAG_CHARS.test(inner)) return false;
+  if (!WELL_FORMED.test(inner)) return true;
+  // A DS id whose last segment is all digits must have exactly three.
+  return inner.startsWith("DS-") && /-\d+$/.test(inner) && !/-\d{3}$/.test(inner);
+}
 function malformedTags(files) {
   const bad = new Map();
   for (const { file, text } of files) {
-    const re = new RegExp(TAG_LOOKALIKE.source, TAG_LOOKALIKE.flags);
+    const re = new RegExp(BRACKET_TEXT.source, BRACKET_TEXT.flags);
     let m;
     while ((m = re.exec(text)) !== null) {
-      const id = m[1];
-      const wrongCase = id !== id.toUpperCase();
-      const dsNumber = /^DS-/i.test(id) && /-\d+$/.test(id) && !/-\d{3}$/.test(id);
-      if (!wrongCase && !dsNumber) continue;
-      if (!bad.has(id)) bad.set(id, new Set());
-      bad.get(id).add(file);
+      if (!isMalformedTag(m[1])) continue;
+      if (!bad.has(m[1])) bad.set(m[1], new Set());
+      bad.get(m[1]).add(file);
     }
   }
   return [...bad].map(
-    ([id, fs]) => `"[${id}]" in ${[...fs].join(", ")} looks like a rule tag but is malformed (use upper case, and exactly three digits for a DS number), so it was not checked.`
+    ([id, fs]) => `"[${id}]" in ${[...fs].join(", ")} looks like a rule tag but is malformed (upper case, hyphens only, no padding, and exactly three digits for a DS number), so it was not checked.`
   );
 }
 
