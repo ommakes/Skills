@@ -459,6 +459,171 @@
         { "question": "Why not a one-bar chart or a 2-slice pie for a single value?", "answer": "The number is the chart. A stat tile with a delta says it faster and more precisely." },
         { "question": "Why hand off to vois-dataviz instead of picking a chart type here?", "answer": "Chart choice depends on the viewer's job, the audience, the series count and honesty rules (baseline, axes, partial periods) that this skill doesn't cover. vois-dataviz owns that tree and the chart-specific do's and don'ts." }
       ]
+    },
+    {
+      "id": "JOB-ANSWER-CHOICE-QUESTION",
+      "number": 22,
+      "title": "Let a respondent choose from options",
+      "source_file": "vois-components/SKILL.md",
+      "framing": "A questionnaire asks the respondent to pick one or more options.",
+      "decision_tree": [
+        {
+          "condition": "One answer",
+          "sub_branches": [
+            {
+              "condition": "7 options or fewer",
+              "recommendation": "RadioGroup as whole-row cards (RadioCard)"
+            },
+            {
+              "condition": "8 to 12 options",
+              "recommendation": "RadioGroup as rows in a scrolling list"
+            },
+            {
+              "condition": "More than 12 options",
+              "recommendation": "Command-style searchable list with an announced result count"
+            }
+          ]
+        },
+        {
+          "condition": "More than one answer",
+          "sub_branches": [
+            {
+              "condition": "12 options or fewer",
+              "recommendation": "Checkbox as whole-row cards (CheckboxCard). State the min and max before the answer. At the max, disable the rest and say why"
+            },
+            {
+              "condition": "More than 12 options",
+              "recommendation": "Searchable checkbox list"
+            }
+          ]
+        },
+        {
+          "condition": "The respondent needs a free answer too",
+          "recommendation": "Make 'Other' the last option. It opens a short field inline in the same question"
+        }
+      ],
+      "rationale": [
+        {
+          "question": "Why not a Select?",
+          "answer": "On mobile the respondent has to tap and scroll to see the options. A vertical list shows them all."
+        },
+        {
+          "question": "Why disable at the max and not drop an earlier pick?",
+          "answer": "Dropping a pick silently changes the answer without the respondent knowing."
+        },
+        {
+          "question": "Why no auto-advance?",
+          "answer": "A mis-tap cannot be corrected. Next is explicit and a Review screen follows."
+        }
+      ]
+    },
+    {
+      "id": "JOB-ANSWER-SCALE-OR-RANK",
+      "number": 23,
+      "title": "Let a respondent rate or rank",
+      "source_file": "vois-components/SKILL.md",
+      "framing": "A questionnaire asks the respondent to rate on a scale, rate several statements, or put items in order.",
+      "decision_tree": [
+        {
+          "condition": "Rate one statement",
+          "sub_branches": [
+            {
+              "condition": "5 points",
+              "recommendation": "ToggleGroup as a Likert row. 48px points, every point labelled. Vertical if a point would drop below 44px"
+            },
+            {
+              "condition": "7 points",
+              "recommendation": "RadioGroup as full-width Likert rows. Every point labelled"
+            },
+            {
+              "condition": "11 points (0 to 10)",
+              "recommendation": "Slider (native range) with word labels on both ends and aria-valuetext"
+            }
+          ]
+        },
+        {
+          "condition": "Rate several statements on the same scale",
+          "recommendation": "Accordion, one statement at a time, 5 per group at most. No grid below 1024px"
+        },
+        {
+          "condition": "Put items in order",
+          "sub_branches": [
+            {
+              "condition": "6 items or fewer",
+              "recommendation": "Drag-sort list, rank all. Press and hold to drag. Up and down buttons always"
+            },
+            {
+              "condition": "7 to 12 items",
+              "recommendation": "Drag-sort list, top 3 count"
+            },
+            {
+              "condition": "More than 12 items",
+              "recommendation": "Do not rank. Ask for a top 3 pick, or use MaxDiff"
+            }
+          ]
+        }
+      ],
+      "rationale": [
+        {
+          "question": "Why is there no ranking component in shadcn?",
+          "answer": "There is none. Build TapToRank on a sortable list library (dnd-kit does hold timing, keyboard moves and announcements). Keep the up and down buttons so a person can rank without dragging, which WCAG 2.5.7 asks for."
+        },
+        {
+          "question": "Why 5 points by default?",
+          "answer": "It is the lowest burden that still separates opinions. Use 7 only when the construct needs finer steps. Never mix 5 and 7 for one construct."
+        },
+        {
+          "question": "Why not a matrix grid?",
+          "answer": "On a phone it forces horizontal scroll or tiny targets. An accordion shows one statement at a time."
+        }
+      ]
+    },
+    {
+      "id": "JOB-SHOW-POLL-RESULTS",
+      "number": 24,
+      "title": "Show how others answered a choice question",
+      "source_file": "vois-components/SKILL.md",
+      "framing": "After a respondent answers a choice question, show how many people chose each option and, in a quiz, which option is correct.",
+      "decision_tree": [
+        {
+          "condition": "The question has a right answer",
+          "recommendation": "Quiz mode. Result rows with a check icon and the words 'Correct answer' on the right option, and 'Your answer' on the respondent's pick"
+        },
+        {
+          "condition": "The question has no right answer",
+          "recommendation": "Poll mode. Result rows with the respondent's pick marked and the most chosen option emphasised"
+        },
+        {
+          "condition": "Fewer than 10 votes",
+          "recommendation": "No percents and no counts. Say there are too few votes yet. Still mark the correct answer in a quiz"
+        },
+        {
+          "condition": "The question is multi-select",
+          "recommendation": "Each row is its share of respondents. Rows add up to more than 100%. Say so in one line"
+        },
+        {
+          "condition": "The question is a scale or a ranking",
+          "recommendation": "Out of scope here. Use a distribution chart (see the chart skill)"
+        }
+      ],
+      "rationale": [
+        {
+          "question": "Why reveal only after the answer?",
+          "answer": "Seeing the crowd first changes what people pick."
+        },
+        {
+          "question": "Why keep the option order?",
+          "answer": "Rows that re-sort by votes make people lose their place, and live updates make it worse."
+        },
+        {
+          "question": "Why an icon and words for the correct answer?",
+          "answer": "Colour alone fails for colour blind users and screen readers."
+        },
+        {
+          "question": "Why hide numbers under 10 votes?",
+          "answer": "With a handful of votes, a percent or a count can point at one person."
+        }
+      ]
     }
   ],
   "lookalikes": {

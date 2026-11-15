@@ -1,0 +1,252 @@
+{
+  "id": "product-feedback",
+  "title": "Product feedback",
+  "progress": {
+    "mode": "question"
+  },
+  "questions": [
+    {
+      "id": "role",
+      "type": "single_select",
+      "title": "What best describes your role?",
+      "helper": null,
+      "required": true,
+      "requirement_label": "Required",
+      "options": [
+        {
+          "id": "design",
+          "label": "Design"
+        },
+        {
+          "id": "engineering",
+          "label": "Engineering"
+        },
+        {
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "id": "other",
+          "label": "Other"
+        }
+      ],
+      "reveal": {
+        "mode": "poll",
+        "show": "after_answer",
+        "order": "keep",
+        "correct_marker": "icon_and_word",
+        "min_votes_for_percent": 10,
+        "show_counts": true,
+        "update": "on_load"
+      }
+    },
+    {
+      "id": "leap-year",
+      "type": "single_select",
+      "title": "How many days are in a leap year?",
+      "helper": null,
+      "required": false,
+      "requirement_label": "Optional",
+      "options": [
+        {
+          "id": "d365",
+          "label": "365"
+        },
+        {
+          "id": "d366",
+          "label": "366"
+        },
+        {
+          "id": "d364",
+          "label": "364"
+        },
+        {
+          "id": "d367",
+          "label": "367"
+        }
+      ],
+      "reveal": {
+        "mode": "quiz",
+        "show": "after_answer",
+        "order": "keep",
+        "correct_marker": "icon_and_word",
+        "correct_option_ids": [
+          "d366"
+        ],
+        "min_votes_for_percent": 10,
+        "show_counts": false,
+        "update": "on_load"
+      }
+    },
+    {
+      "id": "features",
+      "type": "multi_select",
+      "title": "Which features do you use?",
+      "helper": "Select up to 3",
+      "required": true,
+      "requirement_label": "Required",
+      "options": [
+        {
+          "id": "search",
+          "label": "Search"
+        },
+        {
+          "id": "export",
+          "label": "Export"
+        },
+        {
+          "id": "share",
+          "label": "Sharing"
+        },
+        {
+          "id": "none",
+          "label": "None of these",
+          "exclusive": true
+        }
+      ],
+      "validation": {
+        "min_select": 1,
+        "max_select": 3
+      }
+    },
+    {
+      "id": "ease",
+      "type": "likert",
+      "title": "How easy was it to get started?",
+      "helper": null,
+      "required": true,
+      "requirement_label": "Required",
+      "scale": {
+        "points": 5,
+        "labels_mode": "full",
+        "direction": "negative_to_positive",
+        "labels": [
+          "Very difficult",
+          "Difficult",
+          "Neither",
+          "Easy",
+          "Very easy"
+        ]
+      },
+      "orientation_sm": "horizontal"
+    },
+    {
+      "id": "support-quality",
+      "type": "likert",
+      "title": "How satisfied are you with support?",
+      "helper": null,
+      "required": false,
+      "requirement_label": "Optional",
+      "scale": {
+        "points": 7,
+        "labels_mode": "full",
+        "direction": "negative_to_positive",
+        "labels": [
+          "Very dissatisfied",
+          "Dissatisfied",
+          "Slightly dissatisfied",
+          "Neutral",
+          "Slightly satisfied",
+          "Satisfied",
+          "Very satisfied"
+        ]
+      },
+      "orientation_sm": "vertical"
+    },
+    {
+      "id": "recommend",
+      "type": "nps",
+      "title": "How likely are you to recommend us?",
+      "helper": null,
+      "required": true,
+      "requirement_label": "Required",
+      "scale": {
+        "points": 11,
+        "labels_mode": "endpoints",
+        "labels": [
+          "Not at all likely",
+          "Extremely likely"
+        ]
+      }
+    },
+    {
+      "id": "priorities",
+      "type": "rank",
+      "title": "Rank what matters most to you",
+      "helper": "Press and hold an item, then drag it into place. Your top 3 count.",
+      "required": true,
+      "requirement_label": "Required",
+      "options": [
+        {
+          "id": "speed",
+          "label": "Speed"
+        },
+        {
+          "id": "price",
+          "label": "Price"
+        },
+        {
+          "id": "support",
+          "label": "Support"
+        },
+        {
+          "id": "design",
+          "label": "Design"
+        },
+        {
+          "id": "security",
+          "label": "Security"
+        },
+        {
+          "id": "integrations",
+          "label": "Integrations"
+        },
+        {
+          "id": "reporting",
+          "label": "Reporting"
+        }
+      ],
+      "rank": {
+        "mode": "top_n",
+        "top_n": 3,
+        "drag": true,
+        "move_buttons": true
+      }
+    },
+    {
+      "id": "company",
+      "type": "open_text",
+      "title": "Where do you work?",
+      "helper": null,
+      "required": false,
+      "requirement_label": "Optional",
+      "text": {
+        "maxlength": 120,
+        "inputmode": "text",
+        "autocomplete": "organization",
+        "enterkeyhint": "next"
+      },
+      "prefill": {
+        "source": "profile",
+        "confidence": "high",
+        "show_as": "prefilled"
+      }
+    },
+    {
+      "id": "comments",
+      "type": "long_text",
+      "title": "What should we change first?",
+      "helper": null,
+      "required": false,
+      "requirement_label": "Optional",
+      "text": {
+        "maxlength": 1000,
+        "soft_limit": true,
+        "rows_start": 3,
+        "rows_max": 8,
+        "enter_submits": false,
+        "enterkeyhint": "done"
+      }
+    }
+  ]
+}

@@ -25,6 +25,11 @@ jobs:
       - name: Grid and panel maths (vois-tokens)
         run: node vois-tokens/scripts/grid.test.mjs
 
+      - name: Questionnaire data (vois-patterns)
+        run: |
+          npm i --no-save --no-package-lock ajv
+          node vois-patterns/scripts/check-questions.mjs
+
       - name: Elevation map and rules (vois-tokens)
         run: |
           node vois-tokens/scripts/elevation-map.test.mjs

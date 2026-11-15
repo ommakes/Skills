@@ -2539,6 +2539,69 @@
       "outcome": "Repeat the nav as large links at h2 size plus the wordmark. Small print stays small."
     },
     {
+      "id": "PATH-H",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Questionnaire",
+      "condition": "The user answers a series of questions that someone else wrote (survey, intake, assessment, feedback form). They are not editing their own records.",
+      "outcome": "Read references/questionnaires.md. Show one question per screen. Apply PATH-H-1 to PATH-H-5. Dense desktop forms stay in PATH-C."
+    },
+    {
+      "id": "PATH-H-1",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Layout",
+      "condition": "Choosing how many questions to show at once.",
+      "outcome": "One question per screen. Group 2 to 3 simple questions on one page only when the survey has 10 questions or fewer. Put a full-width Next in a sticky bar in the thumb zone. Centre the content at 640px max from 768px up. A grid of questions is never the default."
+    },
+    {
+      "id": "PATH-H-2",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Component by question properties",
+      "condition": "A question needs a component. Check these properties in order. The first match wins.",
+      "outcome": "1. Long answer over 120 characters: LongTextbox. 2. Short answer: OpenText. For a typed value (email, phone, number) use vois-fields. 3. Several statements share one scale: accordion, one statement at a time, 5 per group at most. 4. 11 points (0 to 10): slider with word labels. 5. 5 points: Likert, horizontal. 7 points: Likert, vertical. 6. Order matters: rank (press and hold drag sort, with up and down buttons). 6 items or fewer rank all. 7 to 12 rank the top 3. Over 12, do not rank. 7. Multiple answers: CheckboxCard. 8. Single answer: RadioCard up to 7 options, RadioListRow for 8 to 12, searchable list over 12."
+    },
+    {
+      "id": "PATH-H-3",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Flow and progress",
+      "condition": "Moving through the questions.",
+      "outcome": "Next is explicit. Never auto-advance. Show a 4px bar plus text such as Question 3 of 12. Progress counts required questions on the respondent's path. If branching would change the total, use section progress. Back restores answers. Save each answer on change and show a quiet Saved state. End with a Review screen that lists every answer with an Edit link."
+    },
+    {
+      "id": "PATH-H-4",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Required and errors",
+      "condition": "A question is required, optional, or fails a check.",
+      "outcome": "Mark every question Required or Optional in words. After a failed Next show a top banner with links, a specific inline error under each bad question, a 2px error border, and move focus to the first error. Fix clears the error at once. Put the error above the input so the keyboard cannot cover it."
+    },
+    {
+      "id": "PATH-H-5",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Prefill and drafts",
+      "condition": "A question has a value from a profile, an earlier answer, a link, or an AI guess.",
+      "outcome": "Follow FIELD-PREFILL in vois-fields. Show prefill with its source and let the respondent edit it. A low confidence or AI guess is a suggestion chip under a blank field, never a filled value. Never submit a prefilled value the respondent did not see. A link that would overwrite a saved draft asks first."
+    },
+    {
+      "id": "PATH-H-6",
+      "node_type": "sub_decision",
+      "parent": "PATH-H",
+      "source_file": "vois-patterns/references/questionnaires.md",
+      "pattern_name": "Poll and quiz results",
+      "condition": "The respondent should see how others answered a choice question, or whether their answer was correct.",
+      "outcome": "Set reveal on a single_select or multi_select question. Show results only after the answer. Keep option order. Mark the correct option with an icon and words. Round single-choice percents to 100. Hide numbers under 10 votes. See PATH-H-6 in references/questionnaires.md."
+    },
+    {
       "id": "PATH-PAGE",
       "node_type": "top_level_pattern",
       "parent": null,

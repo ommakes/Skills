@@ -6,6 +6,13 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.0] - 2026-11-15
+
+### Added
+- `PATH-H` (7 nodes) and `references/questionnaires.md`: surveys, intake forms, quizzes and polls. One question per screen, component per question type, Likert, rank by drag, multi-select limit, progress, required and errors, prefill, poll and quiz results.
+- `data/question.schema.json`, `examples/survey-good.json`, `scripts/question-engine.mjs` and `scripts/check-questions.mjs` (checks the schema, the example, the engine, the PATH-H nodes, the tokens and the righter copy ids).
+- `docs/questionnaire-explainer.html`, an interactive explainer.
+
 ## [1.22.0] - 2026-11-15
 
 ### Added

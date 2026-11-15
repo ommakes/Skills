@@ -2166,6 +2166,86 @@
       "enforcement": "advisory",
       "verification": "judgment",
       "applies_when": "a soft or responsive-shape surface where smoother corners are wanted"
+    },
+    {
+      "id": "DS-A11Y-024",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Mark every question \"Required\" or \"Optional\" in words, not with an asterisk alone. Set `aria-required` on required questions. After a failed check set `aria-invalid`, put a specific error under the question, and move focus to the first error.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-025",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a one-question-per-screen flow, moving to another question moves focus to the new question title and announces it. This holds for Next and for Back.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-026",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a questionnaire, honour `prefers-reduced-motion` and also offer a visible Reduce motion control. Between questions use no slide or scale. An instant swap or a fade of 150ms or less is fine.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-027",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "A poll or quiz result never relies on colour alone. The correct option carries a check icon and the words 'Correct answer'. The respondent's own pick carries the words 'Your answer'. Each row reads as text: label, percent, and count when shown. Bars are decorative (aria-hidden) and the bar fill has 3:1 contrast against its track.",
+      "severity": "required",
+      "enforcement": "lint",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-028",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "When results appear, announce one short summary in a polite live region and move focus to the results heading. Do not announce every bar or every live update. Bars may animate for 400ms or less, and not at all with reduced motion (DS-A11Y-026).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-011",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a questionnaire put the primary action in a sticky bar inside the scrolling container, not `position: fixed`, because the on-screen keyboard covers a fixed bar. Add `padding-bottom: calc(12px + env(safe-area-inset-bottom))`. Put errors above the input, between the label and the field.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-012",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Below 360px a 5-point Likert goes vertical if a point would be under 44px, rank keeps its drag handle and arrow buttons at 44px and the label wraps, and padding shrinks. Text stays 16px. There is no horizontal scroll at 320px.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-013",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Option rows inside a questionnaire (radio, checkbox, and poll result rows) are 56px minimum at every width. This is an accepted exception to the compact density spec. It applies inside PATH-H only. Dense agent tools keep their own row height.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
     }
   ]
 }

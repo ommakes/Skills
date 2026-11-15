@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.26.0] - 2026-11-15
+
+### Added
+- `JOB-ANSWER-CHOICE-QUESTION`, `JOB-ANSWER-SCALE-OR-RANK` and `JOB-SHOW-POLL-RESULTS` (jobs 22 to 24). The job count is now 24.
+
 ## [1.25.0] - 2026-11-15
 
 ### Changed

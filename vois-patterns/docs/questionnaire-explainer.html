@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questionnaire Picker</title>
+<style>
+:root{--paper:#f4f3ef;--panel:#ffffff;--ink:#1c1a17;--accent:#8a3b12;--muted:#5d5850;--line:#d9d5cb;--wash:#ebe8df;--accent-ink:#fff;--ring:#1d5fd0;--bad:#a12a1a;
+ --font-display:Georgia,"Iowan Old Style","Times New Roman",serif;--font-body:system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#121212;--panel:#1e1e1e;--ink:#ece8e0;--accent:#f0a878;--muted:#a8a298;--line:#333;--wash:#262626;--accent-ink:#1a1008;--ring:#7fb0ff;--bad:#ff9a8a;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#121212;--panel:#1e1e1e;--ink:#ece8e0;--accent:#f0a878;--muted:#a8a298;--line:#333;--wash:#262626;--accent-ink:#1a1008;--ring:#7fb0ff;--bad:#ff9a8a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--font-body)}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 16px 72px;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(30px,6vw,46px)}h2{font-size:24px}h3{font-size:16px;font-family:var(--font-body);font-weight:600}
+p{margin:0;max-width:65ch}code{font-family:var(--font-mono);font-size:.86em}
+.lede{color:var(--muted);font-size:18px}.note{font-size:14px;color:var(--muted)}
+.eyebrow{font:500 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+section,.sh{display:flex;flex-direction:column;gap:16px}.sh{gap:6px}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+@media(max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.f{display:flex;flex-direction:column;gap:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.opt,.btn{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:400 15px var(--font-body);cursor:pointer;text-align:left}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--wash);box-shadow:inset 0 0 0 1px var(--accent)}
+.btn:disabled,.opt:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+input[type=number]{min-height:44px;font:400 16px var(--font-body);padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);width:100%}
+pre{margin:0;background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:12px;font:12px/1.5 var(--font-mono);overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.result{display:flex;flex-direction:column;gap:10px}
+.big{font:600 28px var(--font-display)}
+.ids{display:flex;flex-wrap:wrap;gap:6px}.ids code{background:var(--wash);padding:2px 8px;border-radius:6px;font-size:12px}
+ul.n{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.phone{margin:0 auto;border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:16px;display:flex;flex-direction:column;gap:12px;transition:width .15s}
+@media (prefers-reduced-motion: reduce){.phone{transition:none}}
+.q{font:600 18px var(--font-display)}
+.helper{font-size:14px;color:var(--muted)}
+.row{display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-size:16px;width:100%;text-align:left;color:var(--ink);font-family:var(--font-body)}
+.row[aria-checked="true"],.row[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--wash)}
+.row[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.mark{width:22px;height:22px;border:2px solid var(--muted);border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;line-height:1}
+.mark.sq{border-radius:5px}
+.row[aria-checked="true"] .mark{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.scale{display:flex;gap:6px}.scale.v{flex-direction:column}
+.pt{flex:1;min-height:48px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;color:var(--ink);font:400 15px var(--font-body);padding:4px}
+.scale.v .pt{flex-direction:row;justify-content:flex-start;gap:10px;padding:8px 12px;min-height:48px;text-align:left}
+.pt[aria-checked="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--wash)}
+.pt small{font-size:11px;color:var(--muted);text-align:center;overflow-wrap:anywhere}
+.scale.v .pt small{font-size:15px;color:var(--ink);text-align:left}
+.rk{display:flex;align-items:center;gap:8px;min-height:64px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.rk .pos{width:28px;height:28px;border-radius:50%;background:var(--wash);display:grid;place-items:center;font:600 14px var(--font-mono);flex:none}
+.rk.ranked .pos{background:var(--accent);color:var(--accent-ink)}
+.rk .lab{flex:1;min-width:0;overflow-wrap:anywhere}
+.mv{width:44px;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:18px;cursor:pointer}
+.mv:disabled{opacity:.35;cursor:not-allowed}
+.err{color:var(--bad);font-size:14px}
+
+.res{position:relative;display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.res .bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--wash);border-right:1px solid var(--line)}
+.res.lead .bar{background:color-mix(in srgb,var(--accent) 22%,var(--panel))}
+.res.ok{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.res.ok .bar{background:color-mix(in srgb,var(--ok) 26%,var(--panel));border-right-color:var(--ok)}
+.res > *:not(.bar){position:relative}
+.res .lab{flex:1;min-width:0;overflow-wrap:anywhere}
+.res .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{font:600 12px var(--font-body);padding:1px 8px;border-radius:999px;border:1px solid var(--line);background:var(--paper)}
+.tag.ok{border-color:var(--ok);color:var(--ok)}
+.res .num{font:600 16px var(--font-mono);white-space:nowrap;text-align:right}
+.res .num small{display:block;font:400 12px var(--font-body);color:var(--muted)}
+.bar{transition:width .4s ease}
+@media (prefers-reduced-motion: reduce){.bar{transition:none}}
+.noreduce .bar{transition:none}
+:root{--ok:#1b6b3a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ok:#7fd69b}}
+:root[data-theme="dark"]{--ok:#7fd69b}
+.sr{position:absolute;left:-9999px}
+.sticky{display:flex;gap:8px}.sticky .btn{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="sh">
+<span class="eyebrow">Vois / vois-patterns / PATH-H</span>
+<h1>Questionnaire Picker</h1>
+<p class="lede">Someone else wrote the questions. The respondent answers them one per screen. Describe a question, and this page picks the component and shows how it behaves.</p>
+<div class="seg" role="group" aria-label="Theme"><button class="btn" data-theme-set="auto" aria-pressed="true">Auto</button><button class="btn" data-theme-set="light" aria-pressed="false">Light</button><button class="btn" data-theme-set="dark" aria-pressed="false">Dark</button></div>
+</header>
+
+<section aria-labelledby="h-pick">
+<div class="sh"><h2 id="h-pick">1. Pick a component</h2><p class="note">This runs the same code as <code>question-engine.mjs</code>. The first rule that matches wins. Rule numbers are PATH-H-2.</p></div>
+<div class="cols">
+<div class="card" id="controls"></div>
+<div class="card" aria-live="polite"><div id="out" class="result"></div></div>
+</div>
+</section>
+
+<section aria-labelledby="h-likert">
+<div class="sh"><h2 id="h-likert">2. Likert: 5 points sit side by side, 7 stack</h2><p class="note">Every point has a word label. A 7 point scale is always vertical, because seven labelled points cannot fit across a phone and stay at 44px or more.</p></div>
+<div class="card">
+<div class="seg" role="group" aria-label="Scale points"><button class="btn" data-lp="5" aria-pressed="true">5 points</button><button class="btn" data-lp="7" aria-pressed="false">7 points</button></div>
+<div class="seg" role="group" aria-label="Screen width"><button class="btn" data-lw="360" aria-pressed="true">Phone 360px</button><button class="btn" data-lw="720" aria-pressed="false">Tablet 720px</button></div>
+<div class="phone" id="likertPhone"></div>
+<p class="note" id="likertNote"></p>
+</div>
+</section>
+
+<section aria-labelledby="h-rank">
+<div class="sh"><h2 id="h-rank">3. Rank: press and hold to drag, or use the arrows</h2><p class="note">Every item is in the list from the start. Hold a row for 200ms, then drag. Rows shift as you move. The arrows are the no-drag way. The answer stays empty until you move something or keep the order. Up to 6 items, rank all. From 7 to 12, the top 3 count. Above 12, do not rank.</p></div>
+<div class="card">
+<div class="seg" role="group" aria-label="Rank mode"><button class="btn" data-rm="all" aria-pressed="true">6 items, rank all</button><button class="btn" data-rm="top" aria-pressed="false">8 items, top 3</button></div>
+<div class="phone" id="rankPhone" style="width:min(100%,380px)"></div>
+<p class="sr" id="rankLive" aria-live="polite"></p>
+<p class="note" id="rankSay"></p>
+</div>
+</section>
+
+<section aria-labelledby="h-multi">
+<div class="sh"><h2 id="h-multi">4. Multi-select: the limit disables, it never drops a pick</h2><p class="note">Say the rule before the answer. Show a live count. At the maximum, disable the rest and say why.</p></div>
+<div class="card"><div class="phone" id="multiPhone" style="width:min(100%,380px)"></div></div>
+</section>
+
+<section aria-labelledby="h-poll">
+<div class="sh"><h2 id="h-poll">5. Poll and quiz results</h2><p class="note">Results show only after the respondent answers. Rows keep their order. The correct answer has a check and the words, not just a color. Under 10 votes, no numbers show.</p></div>
+<div class="card">
+<div class="seg" role="group" aria-label="Mode"><button class="btn" data-pm="quiz" aria-pressed="true">Quiz (has a right answer)</button><button class="btn" data-pm="poll" aria-pressed="false">Poll</button></div>
+<div class="seg" role="group" aria-label="Choice type"><button class="btn" data-pt="single" aria-pressed="true">One answer</button><button class="btn" data-pt="multi" aria-pressed="false">Several answers</button></div>
+<div class="seg" role="group" aria-label="Group size"><button class="btn" data-pg="120" aria-pressed="true">Many votes</button><button class="btn" data-pg="6" aria-pressed="false">6 votes</button></div>
+<div class="phone" id="pollPhone" style="width:min(100%,380px)"></div>
+<p class="note" id="pollSay"></p>
+</div>
+</section>
+
+<section aria-labelledby="h-yaml">
+<div class="sh"><h2 id="h-yaml">6. The question as data</h2><p class="note">This is the object the schema checks. It is built from your choices in step 1.</p></div>
+<div class="card"><pre id="yaml"></pre><div class="ids" id="ids"></div></div>
+</section>
+
+</div>
+<script>
+// Picks a questionnaire component from question properties. PATH-H-2.
+// First matching rule wins. No dependency.
+//
+//   pickQuestionComponent({ textLength: "none", cardinality: "single", optionCount: 5 })
+//   -> { component: "RadioCard", rule: 8, pathNode: "PATH-H-2", notes: [...] }
+//
+// props:
+//   textLength   "none" | "short" | "long"     long means over 120 characters
+//   typedValue   boolean                       a short answer that is an email, phone, number, and so on
+//   cardinality  "single" | "multiple"
+//   scalePoints  null | 5 | 7 | 11
+//   battery      boolean                       several statements share one scale
+//   ordered      boolean                       the respondent ranks items
+//   grouping     boolean                       card sort, out of scope
+//   optionCount  number
+
+function pickQuestionComponent(p) {
+  const n = p.optionCount ?? 0;
+  const base = { pathNode: "PATH-H-2" };
+
+  if (p.grouping) {
+    return { ...base, component: null, rule: 0, notes: ["Card sort is out of scope. Use a research tool."] };
+  }
+  if (p.textLength === "long") {
+    return { ...base, component: "LongTextbox", rule: 1, notes: ["3 rows to start, 8 max on mobile, 12 on desktop, then scroll inside.", "Counter shows from the first character.", "Enter adds a new line."] };
+  }
+  if (p.textLength === "short") {
+    return { ...base, component: "OpenText", rule: 2, fieldsSkill: !!p.typedValue, notes: p.typedValue ? ["A typed value gets its type, inputmode, and autocomplete from vois-fields."] : ["Placeholder is an example, never the instruction.", "16px font so iOS does not zoom."] };
+  }
+  if (p.battery) {
+    if (![5, 7].includes(p.scalePoints)) return { ...base, component: null, rule: 3, error: "A battery needs a 5 or 7 point scale." };
+    return { ...base, component: "LikertAccordion", rule: 3, notes: ["One statement at a time.", "5 statements per group at most.", "No grid below 1024px."] };
+  }
+  if (p.scalePoints === 11) {
+    return { ...base, component: "Slider", rule: 4, notes: ["Native range input.", "aria-valuetext carries the word label.", "Label both ends."] };
+  }
+  if (p.scalePoints === 5) {
+    return { ...base, component: "LikertHorizontal", rule: 5, notes: ["Points are 48px. Go vertical if a point would drop below 44px or labels are long.", "Label every point."] };
+  }
+  if (p.scalePoints === 7) {
+    return { ...base, component: "LikertVertical", rule: 5, notes: ["Full-width rows. Label every point.", "Horizontal only from 768px with labels of 12 characters or fewer."] };
+  }
+  if (p.ordered) {
+    if (n > 12) return { ...base, component: null, rule: 6, error: "Over 12 items: do not rank. Ask for a top 3 pick, or use MaxDiff." };
+    if (n > 6) return { ...base, component: "TapToRank", rule: 6, mode: "top_n", topN: 3, notes: ["Rank the top 3 only.", "Press and hold to drag. Up and down buttons always.", "Answer stays empty until the person moves an item or keeps the order."] };
+    return { ...base, component: "TapToRank", rule: 6, mode: "rank_all", notes: ["Rank all items.", "Press and hold to drag. Up and down buttons always.", "Answer stays empty until the person moves an item or keeps the order."] };
+  }
+  if (p.cardinality === "multiple") {
+    if (n > 12) return { ...base, component: "SearchableCheckboxList", rule: 7, notes: ["Announce the result count.", "Show min and max before the answer."] };
+    return { ...base, component: "CheckboxCard", rule: 7, notes: ["Say the rule before the answer. Show a live count.", "At the max, disable the rest and say why.", "None of the above is exclusive.", "Never auto-advance."] };
+  }
+  if (p.cardinality === "single") {
+    if (n > 12) return { ...base, component: "SearchableList", rule: 8, notes: ["Announce the result count."] };
+    if (n > 7) return { ...base, component: "RadioListRow", rule: 8, notes: ["The list scrolls inside the question area. The sticky bar stays visible."] };
+    return { ...base, component: "RadioCard", rule: 8, notes: ["Whole row is the target.", "Never a native select as the main mobile control."] };
+  }
+  return { ...base, component: null, rule: -1, error: "No property matched. Set cardinality, scalePoints, or textLength." };
+}
+
+// Builds the rows of a poll or quiz result. PATH-H-6.
+//
+//   pollResultRows({
+//     options: [{ id, label }],
+//     votes: { optionId: count },     counts per option
+//     respondents: 120,               people who answered. Single choice: the sum of votes
+//     selected: ["a"],                the current respondent's pick(s)
+//     correct: ["b"],                 quiz mode only. Empty for a poll
+//     multi: false,
+//     minVotes: 10,
+//   })
+//
+// Rows keep the option order. Single choice percents add up to 100 (largest remainder).
+// Multi-select percents are each option's share of respondents, so they add up to more than 100.
+// Under minVotes, percent and count are null and showNumbers is false.
+function pollResultRows(p) {
+  const minVotes = Math.max(10, p.minVotes ?? 10);
+  const votes = p.votes || {};
+  const sum = p.options.reduce((a, o) => a + (votes[o.id] || 0), 0);
+  const respondents = p.multi ? (p.respondents ?? 0) : (p.respondents ?? sum);
+  const showNumbers = respondents >= minVotes;
+  const selected = new Set(p.selected || []);
+  const correct = new Set(p.correct || []);
+
+  let pct = p.options.map(() => null);
+  if (showNumbers && respondents > 0) {
+    if (p.multi) {
+      pct = p.options.map((o) => Math.round(((votes[o.id] || 0) / respondents) * 100));
+    } else {
+      const raw = p.options.map((o) => ((votes[o.id] || 0) / sum) * 100);
+      const floor = raw.map(Math.floor);
+      let left = 100 - floor.reduce((a, b) => a + b, 0);
+      const order = raw.map((r, i) => ({ i, f: r - Math.floor(r) })).sort((a, b) => b.f - a.f || a.i - b.i);
+      for (const { i } of order) { if (left <= 0) break; floor[i] += 1; left -= 1; }
+      pct = floor;
+    }
+  }
+  const top = showNumbers ? Math.max(...pct) : null;
+  const rows = p.options.map((o, i) => ({
+    id: o.id,
+    label: o.label,
+    count: showNumbers ? (votes[o.id] || 0) : null,
+    percent: pct[i],
+    isYours: selected.has(o.id),
+    isCorrect: correct.has(o.id),
+    isLeading: showNumbers && pct[i] === top && top > 0,
+  }));
+  const quiz = correct.size > 0;
+  const yourAnswerCorrect = !quiz ? null : [...selected].length > 0 && [...selected].every((s) => correct.has(s)) && [...correct].every((c) => selected.has(c));
+  return { rows, respondents, showNumbers, quiz, yourAnswerCorrect, sumsTo100: !p.multi && showNumbers };
+}
+
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Theme
+document.querySelectorAll("[data-theme-set]").forEach((b) => b.addEventListener("click", () => {
+  const v = b.dataset.themeSet;
+  if (v === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", v);
+  document.querySelectorAll("[data-theme-set]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+}));
+
+// 1. Picker
+const state = { kind: "choice", cardinality: "single", scale: 5, battery: false, optionCount: 5, ordered: false, text: "short", typed: false };
+const KINDS = [["choice", "Pick from options"], ["scale", "Rate on a scale"], ["rank", "Put in order"], ["text", "Type an answer"]];
+function seg(label, key, opts) {
+  return `<div class="f"><h3>${label}</h3><div class="seg" role="group" aria-label="${label}">${opts.map(([v, t]) => `<button class="opt" data-k="${key}" data-v="${v}" aria-pressed="${String(state[key]) === String(v)}">${t}</button>`).join("")}</div></div>`;
+}
+function controls() {
+  let h = seg("What does the respondent do?", "kind", KINDS);
+  if (state.kind === "choice") h += seg("How many answers?", "cardinality", [["single", "One"], ["multiple", "Several"]]);
+  if (state.kind === "scale") {
+    h += seg("Scale points", "scale", [[5, "5"], [7, "7"], [11, "0 to 10"]]);
+    if (state.scale !== 11) h += seg("Several statements share this scale?", "battery", [[false, "No"], [true, "Yes"]]);
+  }
+  if (state.kind === "text") {
+    h += seg("How long is the answer?", "text", [["short", "Short"], ["long", "Over 120 characters"]]);
+    if (state.text === "short") h += seg("Is it a typed value (email, phone, number)?", "typed", [[false, "No"], [true, "Yes"]]);
+  }
+  if (state.kind === "choice" || state.kind === "rank") h += `<div class="f"><h3><label for="oc">Number of options</label></h3><input id="oc" type="number" min="2" max="40" value="${state.optionCount}"></div>`;
+  $("#controls").innerHTML = h;
+  document.querySelectorAll("#controls [data-k]").forEach((b) => b.addEventListener("click", () => {
+    const k = b.dataset.k; let v = b.dataset.v;
+    if (v === "true") v = true; else if (v === "false") v = false; else if (/^\d+$/.test(v)) v = Number(v);
+    state[k] = v;
+    if (k === "kind" && v === "rank") state.optionCount = Math.max(state.optionCount, 5);
+    render();
+  }));
+  const oc = $("#oc"); if (oc) oc.addEventListener("input", () => { state.optionCount = Math.max(2, Number(oc.value) || 2); renderOut(); });
+}
+function props() {
+  const p = { optionCount: state.optionCount };
+  if (state.kind === "choice") p.cardinality = state.cardinality;
+  if (state.kind === "scale") { p.scalePoints = state.scale; p.battery = state.battery && state.scale !== 11; }
+  if (state.kind === "rank") p.ordered = true;
+  if (state.kind === "text") { p.textLength = state.text; p.typedValue = state.typed; }
+  return p;
+}
+function schemaType(r) {
+  return { LongTextbox: "long_text", OpenText: "open_text", LikertAccordion: "likert_battery", Slider: "nps", LikertHorizontal: "likert", LikertVertical: "likert", TapToRank: "rank", CheckboxCard: "multi_select", SearchableCheckboxList: "multi_select", RadioCard: "single_select", RadioListRow: "single_select", SearchableList: "single_select" }[r.component];
+}
+function renderOut() {
+  const r = pickQuestionComponent(props());
+  if (!r.component) { $("#out").innerHTML = `<div class="big">No component</div><p class="err">${esc(r.error || (r.notes || []).join(" "))}</p><div class="note">Rule ${r.rule}, ${r.pathNode}</div>`; $("#yaml").textContent = "# no valid question for these properties"; $("#ids").innerHTML = ""; return; }
+  $("#out").innerHTML = `<div class="big">${r.component}</div><div class="note">PATH-H-2, rule ${r.rule}${r.mode ? ", mode " + r.mode : ""}${r.fieldsSkill ? ", details from vois-fields" : ""}</div><ul class="n">${r.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
+  const t = schemaType(r);
+  let y = `id: my-question\ntype: ${t}\ntitle: "..."\nhelper: ${t === "multi_select" ? '"Select up to 3"' : t === "rank" ? '"Press and hold an item, then drag it into place."' : "null"}\nrequired: true\nrequirement_label: Required\n`;
+  if (["single_select", "multi_select"].includes(t)) y += `options: [${state.optionCount} items]\n` + (t === "multi_select" ? "validation: { min_select: 1, max_select: 3 }\n" : "");
+  if (t === "likert") y += `scale: { points: ${state.scale}, labels_mode: full }\norientation_sm: ${state.scale === 7 ? "vertical" : "horizontal"}\n`;
+  if (t === "likert_battery") y += `statements: [2 to 5 items]\nscale: { points: ${state.scale}, labels_mode: full }\nrender: accordion\n`;
+  if (t === "nps") y += `scale: { points: 11, labels_mode: endpoints }\n`;
+  if (t === "rank") y += `options: [${state.optionCount} items]\nrank: { mode: ${r.mode}, ${r.mode === "top_n" ? "top_n: 3, " : ""}drag: true, move_buttons: true }\n`;
+  if (t === "long_text") y += `text: { maxlength: 1000, rows_start: 3, rows_max: 8, enter_submits: false }\n`;
+  if (t === "open_text") y += `text: { maxlength: 120${state.typed ? ", inputmode: ..., autocomplete: ..." : ""} }\n`;
+  $("#yaml").textContent = y;
+  $("#ids").innerHTML = ["PATH-H", "PATH-H-2", "PATH-H-4", "DS-A11Y-024", "DS-RESPONSIVE-011"].map((i) => `<code>${i}</code>`).join("");
+}
+function render() { controls(); renderOut(); }
+render();
+
+// 2. Likert
+const L5 = ["Very difficult", "Difficult", "Neither", "Easy", "Very easy"];
+const L7 = ["Very dissatisfied", "Dissatisfied", "Slightly dissatisfied", "Neutral", "Slightly satisfied", "Satisfied", "Very satisfied"];
+const lk = { pts: 5, w: 360, val: null };
+function likert() {
+  const labels = lk.pts === 5 ? L5 : L7;
+  const vertical = lk.pts === 7 || lk.w < 360;
+  const ph = $("#likertPhone"); ph.style.width = Math.min(lk.w, ph.parentElement.clientWidth - 36) + "px";
+  ph.innerHTML = `<div class="q">${lk.pts === 5 ? "How easy was it to get started?" : "How satisfied are you with support?"}</div><div class="helper">Required</div>
+  <div class="scale ${vertical ? "v" : ""}" role="radiogroup" aria-label="Answer">${labels.map((l, i) => `<button class="pt" role="radio" aria-checked="${lk.val === i}" data-i="${i}"><span>${i + 1}</span><small>${l}</small></button>`).join("")}</div>`;
+  ph.querySelectorAll(".pt").forEach((b) => b.addEventListener("click", () => { lk.val = Number(b.dataset.i); likert(); }));
+  const pt = ph.querySelector(".pt"); const w = pt ? Math.round(pt.getBoundingClientRect().width) : 0;
+  $("#likertNote").textContent = vertical ? "Vertical. Each row is full width and 48px or taller." : `Horizontal. Each point is about ${w}px wide and 48px tall. Short labels sit under the number.`;
+}
+document.querySelectorAll("[data-lp]").forEach((b) => b.addEventListener("click", () => { lk.pts = Number(b.dataset.lp); lk.val = null; document.querySelectorAll("[data-lp]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); likert(); }));
+document.querySelectorAll("[data-lw]").forEach((b) => b.addEventListener("click", () => { lk.w = Number(b.dataset.lw); document.querySelectorAll("[data-lw]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); likert(); }));
+addEventListener("resize", likert);
+likert();
+
+// 3. Rank
+const ITEMS = ["Battery life", "Screen", "Camera", "Price", "Storage", "Weight", "Speakers", "Ports"];
+const rk = { mode: "all", order: [], total: 6 };
+function rank() {
+  const total = rk.mode === "all" ? 6 : 8, limit = rk.mode === "all" ? 6 : 3;
+  if (!rk.order.length || rk.order.length !== total) { rk.order = ITEMS.slice(0, total); rk.touched = false; }
+  const order = rk.order, ph = $("#rankPhone");
+  const say = (m) => { $("#rankLive").textContent = m; $("#rankSay").textContent = "Screen reader says: " + m; };
+  const row = (n, i) => `<div class="rk ${rk.touched && i < limit ? "ranked" : ""}" data-n="${esc(n)}"><button class="mv" data-grip="${i}" aria-label="Reorder ${esc(n)}. Position ${i + 1} of ${total}.">⋮⋮</button><span class="pos">${i + 1}</span><span class="lab">${esc(n)}</span><button class="mv" data-up="${i}" aria-label="Move ${esc(n)} up" ${i === 0 ? "disabled" : ""}>↑</button><button class="mv" data-down="${i}" aria-label="Move ${esc(n)} down" ${i === total - 1 ? "disabled" : ""}>↓</button></div>` + (rk.mode === "top" && i === limit - 1 ? `<div class="helper">Your top ${limit} end here. Items below are not ranked.</div>` : "");
+  ph.innerHTML = `<div class="q">What matters most in a phone?</div><div class="helper">Press and hold an item, then drag it into place.${rk.mode === "top" ? " Your top 3 count." : ""}</div>` + order.map(row).join("") +
+    (rk.touched ? "" : `<div class="helper">Not set yet. Move an item or keep this order.</div><button class="btn" id="keepOrder">Keep this order</button>`);
+  const mv = (i, d) => { const j = i + d; if (j < 0 || j >= total) return; const n = order[i]; order.splice(i, 1); order.splice(j, 0, n); rk.touched = true; rank(); say(`${n}, moved to position ${j + 1} of ${total}`); };
+  ph.querySelectorAll("[data-up]").forEach((b) => b.addEventListener("click", () => mv(Number(b.dataset.up), -1)));
+  ph.querySelectorAll("[data-down]").forEach((b) => b.addEventListener("click", () => mv(Number(b.dataset.down), 1)));
+  const keep = $("#keepOrder"); if (keep) keep.addEventListener("click", () => { rk.touched = true; rank(); say("Order kept"); });
+  // Keyboard on the grip: Space lifts, arrows move, Space drops, Escape cancels.
+  ph.querySelectorAll("[data-grip]").forEach((g) => {
+    let lifted = false, from = 0;
+    g.addEventListener("keydown", (e) => {
+      const i = Number(g.dataset.grip);
+      if (e.key === " ") { e.preventDefault(); if (!lifted) { lifted = true; from = i; say(`Picked up ${order[i]}. Position ${i + 1} of ${total}.`); } else { lifted = false; say(`Dropped ${order[i]} at position ${i + 1} of ${total}.`); } }
+      else if (lifted && (e.key === "ArrowUp" || e.key === "ArrowDown")) { e.preventDefault(); const d = e.key === "ArrowUp" ? -1 : 1, j = i + d; if (j < 0 || j >= total) return; const n = order[i]; order.splice(i, 1); order.splice(j, 0, n); rk.touched = true; rank(); ph.querySelector(`[data-grip="${j}"]`).focus(); lifted = true; ph.querySelector(`[data-grip="${j}"]`).dispatchEvent(new CustomEvent("relift")); say(`${n} is now at position ${j + 1} of ${total}.`); }
+      else if (lifted && e.key === "Escape") { lifted = false; say(`Move cancelled. ${order[i]} is back where it was.`); }
+    });
+    g.addEventListener("relift", () => { lifted = true; });
+  });
+  // Pointer: press and hold 200ms, then drag. Rows shift live. Scroll works before the hold ends.
+  ph.querySelectorAll(".rk").forEach((el) => {
+    let timer = null, drag = false, sy = 0, startIdx = 0;
+    const rows = () => [...ph.querySelectorAll(".rk")];
+    el.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button.mv[data-up],button.mv[data-down]")) return;
+      sy = e.clientY; startIdx = rows().indexOf(el);
+      timer = setTimeout(() => { drag = true; el.setPointerCapture(e.pointerId); el.style.cssText += ";position:relative;z-index:2;box-shadow:var(--shadow-md,0 4px 12px rgba(0,0,0,.18));touch-action:none"; say(`Picked up ${el.dataset.n}. Position ${startIdx + 1} of ${total}.`); }, 200);
+    });
+    el.addEventListener("pointermove", (e) => {
+      if (!drag) { if (timer && Math.abs(e.clientY - sy) > 8) { clearTimeout(timer); timer = null; } return; }
+      const rs = rows(), cur = rs.indexOf(el), dy = e.clientY - sy; el.style.transform = `translateY(${dy}px)`;
+      const mid = el.getBoundingClientRect(); const cy = mid.top + mid.height / 2;
+      const target = rs.findIndex((r, i) => i !== cur && (i < cur ? cy < r.getBoundingClientRect().top + r.getBoundingClientRect().height / 2 : cy > r.getBoundingClientRect().top + r.getBoundingClientRect().height / 2));
+      if (target > -1 && Math.abs(target - cur) === 1 || (target > -1 && target !== cur)) {
+        const j = cur < target ? Math.min(cur + 1, total - 1) : Math.max(cur - 1, 0);
+        const n = order[cur]; order.splice(cur, 1); order.splice(j, 0, n);
+        const ref = rs[j]; if (j > cur) ref.after(el); else ref.before(el); sy += (j > cur ? 1 : -1) * ref.getBoundingClientRect().height; el.style.transform = `translateY(${e.clientY - sy}px)`;
+        say(`${n} is now at position ${j + 1} of ${total}.`);
+      }
+    });
+    const end = () => { clearTimeout(timer); timer = null; if (drag) { drag = false; rk.touched = true; const n = el.dataset.n; rank(); say(`Dropped ${n} at position ${order.indexOf(n) + 1} of ${total}.`); } };
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  });
+}
+document.querySelectorAll("button[data-rm='all'],button[data-rm='top']").forEach((b) => b.addEventListener("click", () => { rk.mode = b.dataset.rm; rk.order = []; document.querySelectorAll("button[data-rm='all'],button[data-rm='top']").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); rank(); $("#rankSay").textContent = ""; }));
+rank();
+
+// 4. Multi-select
+const MS = ["Search", "Export", "Sharing", "Comments", "None of these"];
+const ms = { sel: new Set(), max: 3 };
+function multi() {
+  const full = ms.sel.size >= ms.max, none = ms.sel.has("None of these");
+  $("#multiPhone").innerHTML = `<div class="q">Which features do you use?</div><div class="helper">Select up to ${ms.max}. ${ms.sel.size} of ${ms.max} selected</div>` +
+    MS.map((o) => { const on = ms.sel.has(o), exclusive = o === "None of these", dis = !on && full && !exclusive; return `<button class="row" role="checkbox" aria-checked="${on}" ${dis ? 'aria-disabled="true"' : ""} data-o="${o}"><span class="mark sq">${on ? "✓" : ""}</span>${o}</button>`; }).join("") +
+    (full ? `<div class="helper" role="status">Maximum reached. Deselect one to choose another.</div>` : "") + `<div class="helper">Choosing "None of these" clears your other choices.</div>`;
+  $("#multiPhone").querySelectorAll(".row").forEach((b) => b.addEventListener("click", () => {
+    const o = b.dataset.o; if (b.getAttribute("aria-disabled") === "true") return;
+    if (ms.sel.has(o)) ms.sel.delete(o); else if (o === "None of these") { ms.sel.clear(); ms.sel.add(o); } else { ms.sel.delete("None of these"); ms.sel.add(o); }
+    multi();
+  }));
+}
+multi();
+
+// 5. Poll and quiz results
+const PD = {
+  "quiz-single": { title: "How many days are in a leap year?", options: [["a", "365"], ["b", "366"], ["c", "364"], ["d", "367"]], votes: { a: 30, b: 74, c: 6, d: 10 }, correct: ["b"], resp: 120, multi: false },
+  "poll-single": { title: "How long should a survey take?", options: [["a", "1 minute"], ["b", "3 minutes"], ["c", "5 minutes"], ["d", "10 minutes"]], votes: { a: 48, b: 52, c: 14, d: 6 }, correct: [], resp: 120, multi: false },
+  "quiz-multi": { title: "Which of these are prime numbers?", options: [["a", "2"], ["b", "4"], ["c", "5"], ["d", "9"]], votes: { a: 88, b: 20, c: 70, d: 12 }, correct: ["a", "c"], resp: 100, multi: true },
+  "poll-multi": { title: "Which devices do you use every day?", options: [["a", "Phone"], ["b", "Laptop"], ["c", "Tablet"], ["d", "Watch"]], votes: { a: 92, b: 64, c: 31, d: 18 }, correct: [], resp: 100, multi: true },
+};
+const pl = { mode: "quiz", type: "single", group: 120, sel: new Set(), revealed: false };
+function poll() {
+  const d = PD[pl.mode + "-" + pl.type];
+  const ph = $("#pollPhone");
+  if (!pl.revealed) {
+    ph.innerHTML = `<div class="q" tabindex="-1">${d.title}</div><div class="helper">${d.multi ? "Select all that apply." : "Choose one."}</div>` +
+      d.options.map(([id, l]) => `<button class="row" role="${d.multi ? "checkbox" : "radio"}" aria-checked="${pl.sel.has(id)}" data-o="${id}"><span class="mark ${d.multi ? "sq" : ""}">${pl.sel.has(id) ? (d.multi ? "✓" : "●") : ""}</span>${l}</button>`).join("") +
+      `<div class="sticky"><button class="btn pri" id="pSubmit" ${pl.sel.size ? "" : "disabled"}>Submit answer</button></div>`;
+    ph.querySelectorAll(".row").forEach((b) => b.addEventListener("click", () => {
+      const id = b.dataset.o;
+      if (d.multi) { pl.sel.has(id) ? pl.sel.delete(id) : pl.sel.add(id); } else { pl.sel = new Set([id]); }
+      poll();
+    }));
+    $("#pSubmit").addEventListener("click", () => { pl.revealed = true; poll(); });
+    $("#pollSay").textContent = "Results are hidden until the respondent submits.";
+    return;
+  }
+  // scale the votes down for the small group so they sum to the group size
+  let votes = d.votes, resp = d.resp;
+  if (pl.group === 6) { votes = { a: 3, b: 2, c: 1, d: 0 }; resp = 6; }
+  const r = pollResultRows({ options: d.options.map(([id, label]) => ({ id, label })), votes, respondents: resp, selected: [...pl.sel], correct: d.correct, multi: d.multi, minVotes: 10 });
+  const word = (n) => `${n} ${n === 1 ? "vote" : "votes"}`;
+  const showCounts = pl.mode === "poll";
+  const rows = r.rows.map((x) => {
+    const cls = ["res"]; if (x.isCorrect) cls.push("ok"); else if (x.isLeading && !r.quiz) cls.push("lead");
+    const tags = [x.isCorrect ? '<span class="tag ok">✓ Correct answer</span>' : "", x.isYours ? '<span class="tag">Your answer</span>' : ""].join("");
+    const num = r.showNumbers ? `<span class="num">${x.percent}%${showCounts ? `<small>${word(x.count)}</small>` : ""}</span>` : "";
+    return `<div class="${cls.join(" ")}" role="group" aria-label="${esc(x.label)}${x.isCorrect ? ", correct answer" : ""}${x.isYours ? ", your answer" : ""}${r.showNumbers ? ", " + x.percent + " percent" : ""}"><span class="bar" aria-hidden="true" data-w="${r.showNumbers ? x.percent : 0}"></span><span class="lab">${esc(x.label)}<span class="tags">${tags}</span></span>${num}</div>`;
+  }).join("");
+  const right = d.options.filter(([id]) => d.correct.includes(id)).map(([, l]) => l).join(" and ");
+  let say;
+  if (r.quiz) say = r.yourAnswerCorrect ? "Correct." + (r.showNumbers ? ` ${r.rows.filter((x) => x.isYours).map((x) => x.percent)[0]}% of people chose this.` : "") : `Not quite. The correct answer is ${right}.`;
+  else say = r.showNumbers ? `Results are in. ${r.respondents} people answered.` : "Too few votes to show results yet.";
+  ph.innerHTML = `<h3 class="q" id="pTitle" tabindex="-1" style="font-size:18px">How others answered</h3><div class="helper">${d.title}</div>${rows}` +
+    (!r.showNumbers ? `<div class="helper">Too few votes to show results yet.</div>` : "") +
+    (d.multi && r.showNumbers ? `<div class="helper">Each percent is out of everyone who answered. They add up to more than 100%.</div>` : "") +
+    `<div class="helper" role="status">${esc(say)}</div><button class="btn" id="pAgain">Try again</button>`;
+  requestAnimationFrame(() => ph.querySelectorAll(".bar").forEach((b) => { b.style.width = b.dataset.w + "%"; }));
+  $("#pTitle").focus({ preventScroll: true });
+  $("#pAgain").addEventListener("click", () => { pl.revealed = false; pl.sel = new Set(); poll(); });
+  $("#pollSay").textContent = "Screen reader says: " + say;
+}
+[["pm", "mode"], ["pt", "type"], ["pg", "group"]].forEach(([a, k]) => document.querySelectorAll(`[data-${a}]`).forEach((b) => b.addEventListener("click", () => {
+  const v = b.dataset[a]; pl[k] = k === "group" ? Number(v) : v; pl.sel = new Set(); pl.revealed = false;
+  document.querySelectorAll(`[data-${a}]`).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); poll();
+})));
+poll();
+</script>
+</body>
+</html>

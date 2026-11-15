@@ -4,6 +4,12 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.36.0] - 2026-11-15
+
+### Added
+- `references/questionnaire-ui.md` with `DS-A11Y-024` to `-028` and `DS-RESPONSIVE-011` to `-013`: required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows (an exception to the density specs), poll and quiz results.
+- `data/tokens.questionnaire.json`: target sizes, font minimum and result bar timing.
+
 ## [1.35.0] - 2026-11-15
 
 ### Added
