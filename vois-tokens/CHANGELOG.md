@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.38.0] - 2026-11-15
+
+### Added
+- Detectors for `DS-ELEVATION-007` and `DS-ELEVATION-006` (`scripts/elevation-checks.mjs`, with helpers in `scripts/check-utils.mjs`; regex level like the grid checks). `-007` flags a shadow layer with blur that is not a tier token: `box-shadow` (also `-webkit-` and `-moz-`), a `boxShadow` key (also quoted, in a ternary, in a StyleX conditional object, or assigned on `el.style`), `shadow-[...]` and `inset-shadow-[...]`, and Tailwind's `shadow-2xs` to `shadow-2xl` inside `@apply` or a string. Zero-blur rings, tokens, `none`, custom property definitions, selectors, `text-shadow-*` and `drop-shadow-*` pass. `-006` flags a panel fixed to one edge, in one class string, whose resting shadow is the token for another edge or the all-sides Large or XLarge. Base, Small and Medium are not flagged, so a fixed app bar is left alone. Both are `quality`, so they warn and do not block.
+- 11 new tests in `scripts/detect.test.mjs` (173 to 184), three of them the per-rule fixture checks: each syntax, and inputs from the other side (a ring, a token, a corner, `inset-0`, a conditional dock or shadow, a different property, an app bar, a comment, a string with `/*` in it, a value that never closes, a very long file). Guards were removed one by one in a copy, and each guard that does anything has a test that fails without it. Several guards turned out to be redundant (another check already covered them) and were removed. The built registry components and the generated token file raise no elevation finding.
+
+### Changed
+- `DS-ELEVATION-006` and `-007` now say `verification: detector`. `DS-ELEVATION-007`'s text names the three forms it reads. `references/hooks.md` has a row for each with its known gaps. `references/elevation.md` no longer says there is no detector.
+
 ## [1.37.0] - 2026-11-15
 
 ### Added

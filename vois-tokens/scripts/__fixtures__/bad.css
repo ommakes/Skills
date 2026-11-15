@@ -45,3 +45,5 @@
 .side-panel {
   width: 320px; /* DS-PANEL-008 */
 }
+
+.raw-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } /* DS-ELEVATION-007 */

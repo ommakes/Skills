@@ -18,6 +18,7 @@ import { BASE_PARAMS, limitNote } from "./team-overrides.mjs";
 import { openingTags } from "./jsx-tags.mjs";
 import { cssBlocks } from "./css-blocks.mjs";
 import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs";
+import { rawShadow, dockedShadow } from "./elevation-checks.mjs";
 
 export { cssBlocks };
 
@@ -577,6 +578,22 @@ export const RULES = [
       }
       return findings;
     },
+  },
+  {
+    id: "DS-ELEVATION-007",
+    title: "Raw shadow with blur instead of a tier token",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Use a tier token, var(--shadow-base) to var(--shadow-xlarge). A zero-blur ring such as 0 0 0 1px var(--border-default) is fine.",
+    check: rawShadow,
+  },
+  {
+    id: "DS-ELEVATION-006",
+    title: "Docked panel with a shadow that is not directional",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: "A panel fixed to one edge uses the shadow for that edge: --shadow-large-right, -left, -bottom or -top.",
+    check: dockedShadow,
   },
   {
     id: "DS-ICON-001",

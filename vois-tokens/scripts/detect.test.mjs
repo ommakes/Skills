@@ -24,7 +24,7 @@ const badCssFindings = findingsFor("bad.css");
 const goodTsxFindings = findingsFor("good.tsx");
 
 const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-003", "DS-CSS-007"]);
-const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
+const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-ELEVATION-006", "DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
 
 for (const rule of RULES) {
   if (CSS_EXT_ONLY_RULE_IDS.has(rule.id)) {
@@ -1314,4 +1314,194 @@ test("DS-ANIMATION-004: Tailwind motion-reduce: and motion-safe: count as reduce
   assert.equal(has('<svg className="motion-safe:animate-spin" />'), false);
   assert.equal(has('<svg className="animate-spin" data-x="motion-reducer" />'), true, "motion-reducer is not the variant");
   assert.equal(has('<svg className="animate-spin" />\n/* prefers-reduced-motion */'), false, "the literal query still counts");
+});
+
+// ---- DS-ELEVATION-007 (raw shadow with blur) and DS-ELEVATION-006 (docked shadow) -----------------------------
+
+const elevHits = (rule, code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === rule);
+
+test("DS-ELEVATION-007 flags a blurred shadow in every syntax it reads", () => {
+  for (const code of [
+    '<div className="shadow-[0_4px_12px_rgba(0,0,0,0.2)]" />',
+    '<div className="hover:shadow-[0_1px_2px_#0003]" />',
+    '<div className="dark:md:inset-shadow-[0_2px_4px_black]" />',
+    '<div style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }} />',
+    '<div style={{ boxShadow: "0 0 1e1px red" }} />', // an exponent length
+    'const g = "src/*.ts"; const s = { boxShadow: "0 4px 12px red" }; /* end */', // "/*" inside a string is not a comment
+    '<div style={{ "boxShadow": "0 4px 12px red" }} />',
+    "<div style={{ 'box-shadow': '0 4px 12px red' }} />",
+    '<div style={{ boxShadow: open ? "0 4px 12px red" : "none" }} />', // a ternary
+    '<div style={{ boxShadow: open ? "none" : "0 4px 12px red" }} />',
+    'el.style.boxShadow = "0 4px 12px red";',
+    'el.style["boxShadow"] = "0 4px 12px red";',
+    'const s = stylex.create({ a: { boxShadow: { default: "0 4px 12px red", ":hover": "var(--shadow-medium)" } } });', // StyleX conditional values
+    'const s = stylex.create({ a: { boxShadow: { default: "var(--shadow-small)", ":hover": "0 8px 16px red" } } });', // one raw value
+    '<div style={{ boxShadow: "0 0 var(--b) 2px red, 0 4px 12px red" }} />', // the second layer is raw
+    "<div style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }} />",
+    "const s = { boxShadow: `0px 2px 8px oklch(0 0 0 / .1)` };",
+    '<div className="shadow-md" />',
+    '<div className="lg:shadow-2xl" />',
+    '<div className="shadow-[0_0_0_1px_red,0_4px_8px_red]" />', // the second layer is raw
+    '<div className="shadow-[red_0_4px_8px]" />', // a color may come first
+  ]) assert.equal(elevHits("DS-ELEVATION-007", code).length, 1, code);
+  for (const [css, file] of [
+    [".a { box-shadow: 0 4px 12px rgba(0,0,0,.2); }", "a.css"],
+    [".a { box-shadow: 0 4px 12px rgba(0,0,0,.2); }", "a.scss"],
+    [".a { -webkit-box-shadow: 0 4px 12px red; }", "a.css"],
+    [".a { -moz-box-shadow: 0 4px 12px red; }", "a.css"],
+    [".a {\n  box-shadow:\n    0 0 0 1px red,\n    0 2px 6px red;\n}", "a.css"], // a multi-line value
+    [".a { BOX-SHADOW: 0 4px 12px red }", "a.css"],
+    [".a { box-shadow: inset 0 1px 3px red; }", "a.css"],
+    [".a { box-shadow: 0 .5rem 1rem red; }", "C:\\x\\A.CSS"],
+    ["const css = `a { box-shadow: 0 4px 12px red; }`;", "a.tsx"],
+  ]) assert.equal(elevHits("DS-ELEVATION-007", css, file).length, 1, css);
+  assert.equal(elevHits("DS-ELEVATION-007", '<div className="shadow-sm shadow-lg" />').length, 2, "one finding per class");
+  assert.equal(elevHits("DS-ELEVATION-007", '<div style={{ boxShadow: { default: "0 4px 12px red", ":hover": "0 8px 16px red" } }} />').length, 2, "one finding per conditional value");
+  assert.equal(elevHits("DS-ELEVATION-007", ".a { @apply shadow-md hover:shadow-lg; }", "a.css").length, 2, "@apply in CSS");
+  assert.equal(elevHits("DS-ELEVATION-007", ".a { @apply shadow-md; }", "a.scss").length, 1);
+  assert.equal(elevHits("DS-ELEVATION-007", ".a { box-shadow: 0 2px 4px red, 0 8px 16px red; }", "a.css").length, 2, "one finding per raw layer");
+});
+
+test("DS-ELEVATION-007 stays quiet on tokens, rings, keywords and things it cannot read", () => {
+  for (const code of [
+    '<div className="shadow-[var(--shadow-medium)]" />',
+    '<div className="shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)]" />',
+    '<div className="shadow-[0_0_0_2px_var(--border-state-focus)]" />', // zero blur is a ring
+    '<div className="shadow-[0_0_0_0_transparent]" />',
+    '<div className="shadow-[0_1px_0_0_red]" />', // a hard edge: blur 0, spread 0
+    '<div className="shadow-none shadow-xs-not-a-class" />',
+    '<div className="shadow-[color:var(--x)]" />', // a shadow color, no lengths
+    '<div className="shadow-red-500 text-shadow-md" />', // a color, and a different property
+    '<div className="text-shadow-[0_2px_4px_red] drop-shadow-[0_4px_8px_red]" />', // other properties
+    '<div className="data-shadow-md" />',
+    '<div style={{ boxShadow: "var(--shadow-large)" }} />',
+    '<div style={{ boxShadow: "none" }} />',
+    '<div style={{ boxShadow: shadow }} />', // not a string
+    'if (el.style.boxShadow === "0 4px 12px red") {}', // a comparison, not an assignment
+    'const f = boxShadow => "0 4px 12px red";', // an arrow function
+    '<div style={{ boxShadow: shadow }} title="0 4px 12px red" />', // the next string is not the value
+    '<div style={{ boxShadow: "0 4px 12px red\n}} />', // a string that never closes
+    '<div className="shadow-[0_4px_12px_red\n]" />', // a class does not span lines
+    '<div style={{ boxShadow: open ? shadow : "none" }} />',
+    '<div style={{ boxShadow: "0 0 var(--b) 2px red" }} />', // the 2px is the spread: the blur is a var()
+    '<div style={{ boxShadow: "0 0 calc(var(--b) * 2) 2px red" }} />',
+    '<div style={{ boxShadow: "0 4px 0 1E2px red" }} />', // an exponent length is read: the blur is 0
+    '<div style={{ boxShadow: "var(--shadow-small)", color: "0 4px 12px red" }} />', // the second value belongs to color
+    'const a = x === "boxShadow" ? "0 4px 12px red" : "";', // a comparison, not a key
+    'const f = (boxShadow) => boxShadow ?? "0 4px 12px red";', // an arrow function body, not an assignment
+    '<p>Use shadow-md for cards</p>', // JSX text is not a class
+    'const note = 1; // shadow-lg and shadow-md',
+    '<div className="shadow-[0_1px_2px_red" data-x="a]b" />',
+    '<div style={{ boxShadow: "0 0 var(--blur) red" }} />', // a var among too few lengths is not read
+    '<div style={{ myboxShadow: "0 4px 12px red" }} />',
+    '<div className="shadow-[0_4px_12px_red" />', // never closes
+    "// box-shadow: 0 4px 12px red\nconst a = 1;",
+    "/* box-shadow: 0 4px 12px red */\nconst a = 1;",
+    'const url = "https://x.test/box-shadow: 0 4px 12px red";'.replace("box-shadow", "x"), // not a declaration
+  ]) assert.equal(elevHits("DS-ELEVATION-007", code).length, 0, code);
+  for (const css of [
+    ".a { box-shadow: none; }",
+    ".a { box-shadow: 0 0 0 1px var(--border-default); }",
+    ".a { box-shadow: inset 0 0 0 2px red, var(--shadow-small); }",
+    ".a { --shadow-custom: 0 4px 12px red; }", // a custom property definition is not a use
+    ".a { --box-shadow: 0 4px 12px red; }", // a custom property definition
+    ".a { x-box-shadow: 0 4px 12px red; }",
+    "/* .a { box-shadow: 0 4px 12px red; } */",
+    ".a { box-shadow: var(--shadow-xlarge); }",
+    ".shadow-md { color: red; }", // a selector, not a use
+    ".a .shadow-lg { color: red; }",
+    ".a { content: 'shadow-md'; }",
+  ]) assert.equal(elevHits("DS-ELEVATION-007", css, "a.css").length, 0, css);
+});
+
+test("DS-ELEVATION-007 known gap: any string that names a Tailwind shadow size counts, wherever it sits", () => {
+  // The check cannot tell a class from an id, a label or a sentence. Documented in references/hooks.md.
+  assert.equal(elevHits("DS-ELEVATION-007", '<div id="shadow-md" />').length, 1);
+  assert.equal(elevHits("DS-ELEVATION-007", 'const tip = "Use shadow-md for cards";').length, 1);
+  assert.equal(elevHits("DS-ELEVATION-007", '<div className={cn("p-2", open && "shadow-lg")} />').length, 1, "a class in a cn() call is read");
+});
+
+test("DS-ELEVATION-007 reads a shadow-[...] value only up to 600 characters", () => {
+  const long = `<div className="shadow-[0_${"0".repeat(700)}_12px_red]" />`;
+  assert.equal(elevHits("DS-ELEVATION-007", long).length, 0, "a value longer than the bound is skipped, not crashed on");
+  assert.equal(elevHits("DS-ELEVATION-007", `<div className="shadow-[0_4px_12px_red]" /><p>${"x".repeat(900)}</p>`).length, 1);
+});
+
+test("DS-ELEVATION-007 reports the line of the shadow, and is quick on a long file", () => {
+  const f = elevHits("DS-ELEVATION-007", 'const a = 1;\n\n<div className="shadow-[0_4px_12px_red]" />');
+  assert.equal(f[0].line, 3);
+  const long = '<div className="' + "shadow-[var(--shadow-small)] ".repeat(20000) + '" />\n' + ".a { box-shadow: 0 1px ".repeat(5000);
+  const t = Date.now();
+  elevHits("DS-ELEVATION-007", long);
+  assert.ok(Date.now() - t < 1500, "a very long input stays fast");
+});
+
+test("DS-ELEVATION-006 flags a docked panel whose shadow is not for its edge", () => {
+  const cls = (c) => `<aside className="${c}" />`;
+  for (const [code, re] of [
+    [cls("fixed inset-y-0 right-0 shadow-[var(--shadow-large-left)]"), /right-docked.*shadow for a panel docked left.*Use --shadow-large-right/],
+    [cls("fixed inset-y-0 right-0 shadow-[var(--shadow-large)]"), /right-docked.*every side/],
+    [cls("fixed inset-y-0 left-0 shadow-[var(--shadow-large-right)]"), /left-docked.*docked right/],
+    [cls("fixed inset-x-0 bottom-0 shadow-[var(--shadow-large-top)]"), /bottom-docked.*docked top/],
+    [cls("absolute inset-x-0 top-0 shadow-[var(--shadow-large-bottom)]"), /top-docked.*docked bottom/],
+    [cls("fixed top-0 bottom-0 right-0 shadow-[var(--shadow-large-bottom)]"), /right-docked/], // top-0 and bottom-0 together span the height
+    [cls("fixed left-0 right-0 bottom-0 shadow-[var(--shadow-large)]"), /bottom-docked/],
+    [cls("fixed inset-y-0 right-0 shadow-[var(--shadow-xlarge)]"), /every side/],
+    [cls("!fixed inset-y-0 !right-0 shadow-[var(--shadow-large)]"), /right-docked/], // the important marker is ignored
+    [cls("fixed inset-y-0 right-0! shadow-[var(--shadow-large-left)]"), /right-docked/],
+    ["const c = cva('fixed inset-y-0 right-0 shadow-[0_0_0_1px_red,var(--shadow-large-left)]');", /right-docked/],
+    ['<aside className={`fixed inset-y-0 right-0 shadow-[var(--shadow-large-left)]`} />', /right-docked/],
+  ]) {
+    const f = elevHits("DS-ELEVATION-006", code);
+    assert.equal(f.length, 1, code);
+    assert.match(f[0].message, re, code);
+  }
+});
+
+test("DS-ELEVATION-006 stays quiet when the dock is right, or not a dock", () => {
+  for (const code of [
+    '<aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-right)]" />',
+    '<aside className="fixed inset-y-0 left-0 shadow-[var(--shadow-large-left)]" />',
+    '<div className="fixed inset-x-0 bottom-0 shadow-[var(--shadow-large-bottom)]" />',
+    '<div className="fixed inset-x-0 top-0 shadow-[var(--shadow-large-top)]" />',
+    '<div className="fixed inset-y-0 right-0 shadow-none" />',
+    '<div className="fixed top-4 right-0 shadow-[var(--shadow-large)]" />', // one edge but no span: a corner toast, not a dock
+    '<div className="fixed right-0 shadow-[var(--shadow-large)]" />',
+    '<div className="fixed top-0 right-0 shadow-[var(--shadow-large)]" />', // a corner: two edges, no span
+    '<div className="fixed bottom-0 left-0 shadow-[var(--shadow-large)]" />',
+    '<div className="fixed inset-0 shadow-[var(--shadow-large)]" />', // full screen
+    '<div className="fixed inset-y-0 inset-x-0 right-0 shadow-[var(--shadow-large)]" />', // spans both ways
+    '<div className="fixed inset-0 right-0 shadow-[var(--shadow-large)]" />',
+    '<div className="fixed inset-x-0 inset-y-0 bottom-0 shadow-[var(--shadow-large)]" />',
+    '<div className="fixed inset-y-0 left-0 right-0 shadow-[var(--shadow-large)]" />', // spans the width and the height
+    '<div className="inset-y-0 right-0 shadow-[var(--shadow-large)]" />', // not positioned
+    '<div className="relative inset-y-0 right-0 shadow-[var(--shadow-large)]" />',
+    '<div className="fixed inset-y-0 md:right-0 shadow-[var(--shadow-large)]" />', // conditional dock, not read
+    '<div className="fixed inset-y-0 right-0" /><p className="shadow-[var(--shadow-large)]" />', // two strings
+    '<div className="fixed inset-y-0 right-0 data-shadow-large-left" />',
+    '<div className="fixed inset-y-0 right-0 shadow-[var(--shadow-largest-left)]" />',
+    '<div className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-rightish)]" />',
+    '<div className="fixed inset-y-0 right-0 border-r" />',
+    '<header className="fixed inset-x-0 top-0 shadow-[var(--shadow-small)]" />', // an app bar is static: Large would break DS-ELEVATION-009
+    '<header className="fixed inset-x-0 top-0 shadow-[var(--shadow-base)]" />',
+    '<div className="fixed inset-y-0 right-0 shadow-[var(--shadow-medium)]" />',
+    '<aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-right)] hover:shadow-[var(--shadow-xlarge)]" />', // a conditional shadow
+    '<aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-right)] dark:shadow-[var(--shadow-large)] md:shadow-[var(--shadow-large-left)]" />',
+    '<aside className="fixed inset-y-0 end-0 shadow-[var(--shadow-large)]" />', // logical edges are not read (known gap)
+    '// <div className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-left)]" />',
+  ]) assert.equal(elevHits("DS-ELEVATION-006", code).length, 0, code);
+  assert.equal(elevHits("DS-ELEVATION-006", '.a { position: fixed; right: 0; box-shadow: var(--shadow-large-left); }', "a.css").length, 0, "CSS is out of reach of this check");
+});
+
+test("the built registry components raise neither elevation finding", () => {
+  const root = join(HERE, "..", "..", "registry", "vois");
+  if (!existsSync(root)) return;
+  for (const dir of ["card", "choice-card", "dialog", "dropdown-menu", "hover-card", "select", "switch", "tooltip", "command", "panel", "segmented-control", "checkbox", "radio-group", "input"]) {
+    const file = join(root, dir, `${dir}.tsx`);
+    if (!existsSync(file)) continue;
+    const f = detectFile(file, readFileSync(file, "utf8")).filter((x) => x.ruleId.startsWith("DS-ELEVATION"));
+    assert.deepEqual(f, [], `${dir}: ${JSON.stringify(f)}`);
+  }
+  const css = join(root, "tokens", "vois-tokens.css");
+  if (existsSync(css)) assert.deepEqual(detectFile(css, readFileSync(css, "utf8")).filter((x) => x.ruleId.startsWith("DS-ELEVATION")), [], "the generated token file defines shadows, it does not use raw ones");
 });

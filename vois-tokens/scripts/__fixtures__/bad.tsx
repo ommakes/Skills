@@ -76,3 +76,12 @@ function BadGridAndPanel() {
     </div>
   );
 }
+
+// DS-ELEVATION-007 (raw shadow with blur) and DS-ELEVATION-006 (docked panel, shadow not directional).
+function BadElevation() {
+  return (
+    <div className="shadow-[0_4px_12px_rgba(0,0,0,0.2)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+      <aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-left)]" />
+    </div>
+  );
+}

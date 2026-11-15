@@ -805,17 +805,19 @@
       "rule": "A panel docked to an edge casts its shadow away from that edge, not on all sides. Right-docked: negative x. Left-docked: positive x. Bottom-docked: negative y. Top-docked: positive y. Centered: x is 0. Use a negative spread so the shadow does not leak past the panel. Use the directional token for the side: `--shadow-large-right`, `-left`, `-bottom` or `-top` (Large only today), and record the side in the map's `dock` field.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-ELEVATION-006"
     },
     {
       "id": "DS-ELEVATION-007",
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "Do not write a raw `box-shadow` literal or `shadow-[...]` with blur. Use a tier token (`--shadow-base` to `--shadow-xlarge`). A zero-blur ring (spread only, such as an edge or a checkbox ring) is not a tier and is allowed.",
+      "rule": "Do not write a raw shadow with blur: a `box-shadow` or `boxShadow` literal, a `shadow-[...]` value, or a Tailwind default such as `shadow-md`. Use a tier token (`--shadow-base` to `--shadow-xlarge`). A zero-blur ring (spread only, such as an edge or a checkbox ring) is not a tier and is allowed.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-ELEVATION-007"
     },
     {
       "id": "DS-ELEVATION-008",
