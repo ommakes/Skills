@@ -483,10 +483,11 @@ test("dark shadows: the committed export has Medium, Large, XLarge and the four 
 test("dark fills: each step up the ladder is lighter than the one below, and light stays white", () => {
   const { value, parse } = edgeColors;
   const L = (token, mode) => hexToOklch(value(token, mode)).L;
-  const page = L("--bg-background", 1), card = L("--bg-card", 1), small = L("--elevation-surface-small", 1), raised = L("--elevation-surface-raised", 1);
+  const page = L("--bg-background", 1), card = L("--bg-card", 1), small = L("--elevation-surface-small", 1), raised = L("--elevation-surface-raised", 1), popup = L("--elevation-surface-popup", 1);
   // About 0.02 OKLCH lightness is the smallest step that reads as a different surface on a real screen.
-  for (const [lo, hi, name] of [[page, card, "card over page"], [card, small, "small over base"], [small, raised, "raised over small"]]) assert.ok(hi - lo >= 0.02, `${name}: only ${(hi - lo).toFixed(4)} lighter`);
-  for (const token of ["--elevation-surface-small", "--elevation-surface-raised"]) assert.equal(value(token, 0), value("--bg-card", 0), `${token} in light is the card white`);
+  // The popup step is for a menu, select list or hover card. It stacks above a Dialog (z-index 1400 and 1500 over 1300), so it is lighter than the Dialog's raised fill.
+  for (const [lo, hi, name] of [[page, card, "card over page"], [card, small, "small over base"], [small, raised, "raised over small"], [raised, popup, "popup over a Dialog"]]) assert.ok(hi - lo >= 0.02, `${name}: only ${(hi - lo).toFixed(4)} lighter`);
+  for (const token of ["--elevation-surface-small", "--elevation-surface-raised", "--elevation-surface-popup"]) assert.equal(value(token, 0), value("--bg-card", 0), `${token} in light is the card white`);
   // The hairline draws nothing in light, so adding it changes no light pixel.
   assert.equal(parse(value("--elevation-hairline", 0)).a, 0);
   assert.ok(parse(value("--elevation-hairline", 1)).a > 0);
@@ -495,7 +496,7 @@ test("dark fills: each step up the ladder is lighter than the one below, and lig
 test("dark fills: text meets 4.5:1 and edges meet 3:1 on every elevated fill", () => {
   const { value, parse, ratio } = edgeColors;
   const rgb = (token, mode) => { const p = parse(value(token, mode)); assert.equal(p.a, 1, `${token} must be opaque`); return p.c; };
-  for (const fill of ["--bg-card", "--elevation-surface-small", "--elevation-surface-raised"]) {
+  for (const fill of ["--bg-card", "--elevation-surface-small", "--elevation-surface-raised", "--elevation-surface-popup"]) {
     for (const text of ["--text-primary", "--text-secondary"]) {
       const r = ratio(rgb(text, 1), rgb(fill, 1));
       assert.ok(r >= 4.5, `${text} on ${fill} (dark) is ${r.toFixed(2)}:1, under 4.5:1`);
@@ -507,26 +508,33 @@ test("dark fills: text meets 4.5:1 and edges meet 3:1 on every elevated fill", (
   }
 });
 
-test("dark fills: text stays 4.5:1 on a menu or select item hover over the raised fill", () => {
+test("dark fills: text stays 4.5:1 on a menu or select item hover over the raised and popup fills", () => {
   const { value, parse, ratio } = edgeColors;
   const over = (top, under) => top.c.map((x, i) => Math.round(x * top.a + under[i] * (1 - top.a)));
-  const raised = parse(value("--elevation-surface-raised", 1)).c;
-  for (const hover of ["--bg-hover", "--bg-pressed"]) {
-    const bg = over(parse(value(hover, 1)), raised);
-    for (const text of ["--text-primary", "--text-secondary"]) {
-      const r = ratio(parse(value(text, 1)).c, bg);
-      assert.ok(r >= 4.5, `${text} on ${hover} over the raised fill (dark) is ${r.toFixed(2)}:1, under 4.5:1`);
+  for (const fillToken of ["--elevation-surface-raised", "--elevation-surface-popup"]) {
+    const fill = parse(value(fillToken, 1)).c;
+    for (const hover of ["--bg-hover", "--bg-pressed"]) {
+      const bg = over(parse(value(hover, 1)), fill);
+      for (const text of ["--text-primary", "--text-secondary"]) {
+        const r = ratio(parse(value(text, 1)).c, bg);
+        assert.ok(r >= 4.5, `${text} on ${hover} over ${fillToken} (dark) is ${r.toFixed(2)}:1, under 4.5:1`);
+      }
     }
   }
 });
 
 test("dark fills: the built components read the new fills, never --bg-card on an elevated surface", () => {
   const uses = (file, token) => assert.match(read(file), new RegExp(`bg-\\[color:var\\(${token}\\)\\]`), `${file} should use ${token}`);
-  uses("vois/hover-card/hover-card.tsx", "--elevation-surface-small");
-  for (const f of ["vois/dropdown-menu/dropdown-menu.tsx", "vois/select/select.tsx", "vois/dialog/dialog.tsx"]) {
-    uses(f, "--elevation-surface-raised");
+  // A popup (menu, select list, hover card) is lighter than the Dialog it can open from. The Dialog keeps the raised fill.
+  for (const f of ["vois/hover-card/hover-card.tsx", "vois/dropdown-menu/dropdown-menu.tsx", "vois/select/select.tsx"]) {
+    uses(f, "--elevation-surface-popup");
+    assert.doesNotMatch(read(f).replace(/^\s*\/\/.*$/gm, ""), /--elevation-surface-(?:raised|small)/, `${f} should not use the Dialog or Card fill`);
+  }
+  uses("vois/dialog/dialog.tsx", "--elevation-surface-raised");
+  for (const f of ["vois/hover-card/hover-card.tsx", "vois/dropdown-menu/dropdown-menu.tsx", "vois/select/select.tsx", "vois/dialog/dialog.tsx"]) {
     assert.doesNotMatch(read(f).replace(/^\s*\/\/.*$/gm, ""), /bg-\[color:var\(--bg-card\)\]/, `${f} still fills with --bg-card`);
   }
+  assert.match(read("vois/hover-card/hover-card.tsx"), /fill-\[color:var\(--elevation-surface-popup\)\]/, "the Hover Card arrow takes the same fill");
   assert.match(read("vois/card/card.tsx"), /hover:bg-\[color:var\(--elevation-surface-small\)\]/);
   assert.match(read("vois/command/command.tsx"), /\[&_\[data-slot=command\]\]:bg-transparent/, "CommandDialog must let the Dialog fill show");
 });

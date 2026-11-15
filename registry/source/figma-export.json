@@ -222,6 +222,7 @@
   "--cyan-a8": "#3cfdff99",
   "--cyan-a9": "#3cfdffb2",
   "--elevation-hairline": ["=--black-a0","=--white-a3"],
+  "--elevation-surface-popup": ["=--white","=--warm-gray-8"],
   "--elevation-surface-raised": ["=--white","=--warm-gray-9"],
   "--elevation-surface-small": ["=--white","=--warm-gray-10"],
   "--focus-ring-offset": 2,

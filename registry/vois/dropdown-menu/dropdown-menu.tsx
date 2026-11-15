@@ -6,7 +6,7 @@
 //
 // From the Figma Dropdown Menu (Selectors page, 6609:8499) and Menu Item (2812:5192) sets, the same list as the
 // Vois Select:
-//   Surface: --elevation-surface-raised (the same white as --bg-card in light, a lighter step in dark), a 1px --border-pretty edge, --shape-rounded corners, --shadow-medium, 8 padding, on
+//   Surface: --elevation-surface-popup (the same white as --bg-card in light, the lightest step in dark, so a menu over a Dialog shows against it), a 1px --border-pretty edge, --shape-rounded corners, --shadow-medium, 8 padding, on
 //     --z-dropdown. It fades and grows from the trigger in --motion-duration-fast, and fades out in
 //     --motion-duration-instant; under reduced motion it appears and goes at once.
 //   Item: 40 tall (size="sm" is 32), 12 padding on the left and 8 on the right, 8 between parts, --shape-subtle
@@ -50,7 +50,7 @@ const menuKeyframes =
 
 const surface = [
   "z-[var(--z-dropdown)] min-w-[8rem] overflow-x-hidden overflow-y-auto p-[var(--space-padding-x-small)]",
-  "rounded-[var(--shape-rounded)] border border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-raised)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
+  "rounded-[var(--shape-rounded)] border border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-popup)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
   "motion-safe:data-[state=open]:animate-[vois-menu-in_var(--motion-duration-fast)_var(--motion-ease-standard)]",
   "motion-safe:data-[state=closed]:animate-[vois-menu-out_var(--motion-duration-instant)_var(--motion-ease-standard)_forwards]",
   "motion-reduce:animate-none",

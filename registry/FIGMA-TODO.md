@@ -2,6 +2,12 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-15 (popup fill, registry 0.13.0)
+
+- **`Component/Elevation/Surface-Popup`** (`--elevation-surface-popup`): Light Gray/White, Dark Warm Gray-8, scopes frame fill, shape fill and effect color. Export checksum `c01e04df` (891 tokens).
+- **Bound** (surface fill, from `System/Surface/Bg-Card`; the popups to `Surface-Popup`): the four `Position=` variants of the Popover set (`5938:11483`, the Union shape that carries the arrow), the four variants of the Dropdown Menu set (`6609:8499`, which the code's Select list follows) and the Context Menu (`5188:14808`). The Dialog (`3613:6593`, Molecules) is bound the same way to `Surface-Raised`. In Dark mode a Figma popup is now one step lighter than the Dialog, as in code. Light is the same white. The export is unchanged (checksum `c01e04df`), because a binding is not a token.
+  - Not bound: the Menubar bar (`5188:14596`, always visible, not a popup) and the Team Dropdown Menu and Profile Edit Dropdown, which have no surface fill of their own.
+
 ## Done on 2026-11-15 (docked shadows and Choice Card hover, registry 0.12.0)
 
 - **Docked shadows.** New effect styles `Elevation/Large/Right`, `Left`, `Bottom`, `Top` (black at 5% per layer) and `Elevation/Dark/Large/<Side>` (20%). Five layers each, at depths 1, 2, 4, 8 and 16 along the axis away from the dock edge, spread 0, -1, -2, -4, -8. Checked on a specimen: right and bottom fall away from their edge, as do left and top. Export checksum `2a6b12f8`.

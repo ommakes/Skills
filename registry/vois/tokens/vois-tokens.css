@@ -226,6 +226,7 @@
   --cyan-a8: oklch(0.9055 0.1443 196 / 0.6);
   --cyan-a9: oklch(0.9055 0.1443 196 / 0.698);
   --elevation-hairline: var(--black-a0);
+  --elevation-surface-popup: var(--white);
   --elevation-surface-raised: var(--white);
   --elevation-surface-small: var(--white);
   --focus-ring-offset: 2px;
@@ -992,6 +993,7 @@
   --control-on: var(--base-accent-solid);
   --control-oncolor: var(--black);
   --elevation-hairline: var(--white-a3);
+  --elevation-surface-popup: var(--warm-gray-8);
   --elevation-surface-raised: var(--warm-gray-9);
   --elevation-surface-small: var(--warm-gray-10);
   --font-body: var(--font-family-system);

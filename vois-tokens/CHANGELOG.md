@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.39.0] - 2026-11-15
+
+### Added
+- `--elevation-surface-popup` (registry 0.13.0): a fourth dark fill step (`--warm-gray-8`), one step lighter than a Dialog's `--elevation-surface-raised`. A menu, select list or hover card opens above a Dialog, so in dark its fill now follows the layer. Light is unchanged.
+
+### Changed
+- `DS-ELEVATION-005` names the popup fill. `references/elevation.md` has the token row and replaces the "known gap: a popup opened over a Dialog" paragraph with the decided behavior. The element map dark note for Medium names the popup fill.
+
 ## [1.38.0] - 2026-11-15
 
 ### Added
