@@ -26,7 +26,7 @@
   --foreground: var(--text-primary);
   --card: var(--bg-card);
   --card-foreground: var(--text-primary);
-  --popover: var(--bg-card);
+  --popover: var(--elevation-surface-popup);
   --popover-foreground: var(--text-primary);
   --primary: var(--action-primary-resting);
   --primary-foreground: var(--action-primary-text);

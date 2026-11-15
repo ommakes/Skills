@@ -70,7 +70,7 @@ When a project uses shadcn/ui, point each shadcn variable at the Vois token belo
 | `foreground` | `--text-primary` |
 | `card` | `--bg-card` |
 | `card-foreground` | `--text-primary` |
-| `popover` | `--bg-card` |
+| `popover` | `--elevation-surface-popup` |
 | `popover-foreground` | `--text-primary` |
 | `primary` | `--action-primary-resting` |
 | `primary-foreground` | `--action-primary-text` |

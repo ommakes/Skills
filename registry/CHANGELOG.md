@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.0] - 2026-11-15
+
+- **shadcn `popover` follows the popup fill.** `vois-theme.css` maps `--popover` to `--elevation-surface-popup` (it was `--bg-card`), so a stock shadcn popover, dropdown or select list (anything that reads `bg-popover`) is one step above a Dialog in dark, like the Vois menus. `card` stays on `--bg-card`. Light is unchanged: both are white. `MAPPINGS.popover` in `check-registry.mjs`, the `DS-TOKEN-005` table in vois-tokens and the rule text moved with it, and the existing table-equals-MAPPINGS test keeps them together.
+- `check-registry.test.mjs` pins the mapping (popover on the popup fill, card on the card fill, the token defined in `:root` and `.dark`). Chromium with a shadcn-style `@theme inline` mapping: `bg-popover` is `#ffffff` in light and `#41413c` in dark.
+- Needs `@theme inline { --color-popover: var(--popover); }`, as a shadcn project already has. The registry theme file does not declare it.
+
 ## [0.13.0] - 2026-11-15
 
 - **A fourth dark fill step, for popups.** Figma first: new `Component/Elevation/Surface-Popup` (light white, dark Warm Gray-8, `--elevation-surface-popup`). Export checksum `c01e04df` (891 tokens). In dark, a menu, select list or hover card opened from inside a Dialog had the Dialog's fill (menu, select) or a darker one (hover card), so only the shadow told them apart. `vois-dropdown-menu`, `vois-select` and `vois-hover-card` (and its arrow) now fill with the Popup step, which is lighter than the Dialog's Raised step. The Dialog and Card are unchanged. Light is unchanged: the new token is the card white.

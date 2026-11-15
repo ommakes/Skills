@@ -48,7 +48,7 @@ export const MAPPINGS = {
   foreground: { token: "--text-primary", rule: T5 },
   card: { token: "--bg-card", rule: T5 },
   "card-foreground": { token: "--text-primary", rule: T5 },
-  popover: { token: "--bg-card", rule: T5 },
+  popover: { token: "--elevation-surface-popup", rule: T5 },
   "popover-foreground": { token: "--text-primary", rule: T5 },
   primary: { token: "--action-primary-resting", rule: T5 },
   "primary-foreground": { token: "--action-primary-text", rule: T5 },
