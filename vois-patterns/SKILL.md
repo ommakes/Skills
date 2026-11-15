@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.21.0
+version: 1.23.0
 ---
 
 # Vois Patterns Skill
@@ -86,6 +86,9 @@ START: What is the user trying to accomplish?
 └─ PATH G: Show what a product or business offers to people not yet using it (landing page, homepage)
    └─ → read references/marketing-pages.md                   [PATH-G]
 
+├─ PATH H: Someone answers a series of questions written by someone else (survey, intake, assessment, quiz, poll)
+│  └─ → read references/questionnaires.md                    [PATH-H]
+
 PAGE: The task is a whole page or screen layout, not one container (regions, order, behavior at each width)
    └─ → read references/page-templates.md, then your page's entry in data/page-templates.json   [PATH-PAGE]
       Use it together with the path the template routes to. The routed path wins on content.
@@ -115,10 +118,11 @@ existing paths.
 | `references/table-interactions.md` | Selection and bulk actions, sort, filters, columns, density, saved views, URL state, keyboard, inline edit and save model, loading, empty and error states, partial failures | `PATH-TABLE-*` rules (see `data/patterns-rules.json`) |
 | `references/forms.md` | Create/edit forms by complexity tier, validation, save behavior | `[PATH-C]` |
 | `references/form-field-groups.md` | Field widths, columns, spacing, name, address, phone, email, one-time code, auto-growing textareas, AI chat input | rules for form field groups (see `data/patterns-rules.json`) |
-| `references/dialogs-and-action-sheets.md` | Modal vs action sheet by breakpoint, confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` |
+| `references/dialogs-and-action-sheets.md` | Modal vs bottom sheet by breakpoint, the container ladder (confirm, form dialog, large dialog, side peek, page), confirmation/selection dialogs | `[PATH-D]` `[PATH-D-SIZE]` `[PATH-D-1]` `[PATH-D-2]` `[PATH-D-3]` `[PATH-D-4]` `[PATH-D-5]` |
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/pricing-pages.md` | Pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), calculators, comparison tables, trial timelines | `[PATH-F]` `[PATH-PRICE-U1]` to `[PATH-PRICE-C11]` |
 | `references/marketing-pages.md` | Landing pages and homepages: one idea per section, three blocks max, detail behind a link, image tiles, no dividers, one primary button. Taste rules for marketing surfaces only | `[PATH-G]` `[PATH-G-*]` |
+| `references/questionnaires.md` | Surveys, intake forms, quizzes and polls: one question per screen, component per question type, Likert, rank by drag, multi-select limit, progress, required and errors, prefill, poll and quiz results | `[PATH-H]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, personal data (mask, reveal, keep out of URLs), parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |
 | `references/motion.md` | A state change should move: status button, collapse to indicator, label morph, shared element, icon morph, number ticker, typed input, directional, tray, grow-from-trigger, reorder and regroup, chart range change, small state changes. Decision test, morph types, worked examples, frequency and delight tiers, accessibility, anti-patterns, remove-the-motion review. Timing values are in `vois-tokens/references/animation.md` | — (cross-cutting; rules in `vois-tokens` `[DS-MOTION-*]` and `[DS-ANIMATION-*]`) |
@@ -153,7 +157,7 @@ For exact class/style syntax (Tailwind or StyleX) and token values, see vois-tok
 - [ ] Permissions applied (hide/disable rules — see `references/permissions-and-conditional-logic.md`)
 - [ ] All copy routed to righter skill and reviewed
 - [ ] Ready to read vois-tokens for tokens, spacing, components
-- [ ] Mobile breakpoint behavior defined (action sheets vs dialogs, sidebar vs hamburger, etc.)
+- [ ] Mobile breakpoint behavior defined (bottom sheets vs dialogs, sidebar vs hamburger, etc.)
 
 ---
 

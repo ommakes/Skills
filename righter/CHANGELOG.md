@@ -4,6 +4,11 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.11.0] - 2026-11-15
+
+### Added
+- Nine questionnaire copy entries in `data/components.json`: prefill badge, selection limit, availability check, resend cooldown, draft and saved state, questionnaire errors, progress, rank prompts, poll results.
+
 ## [1.10.0] - 2026-10-09
 
 ### Added

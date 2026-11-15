@@ -58,6 +58,33 @@ function collectTags(files, pattern) {
   return tags;
 }
 
+/**
+ * Bracketed text that looks like a rule tag but is not one the strict patterns
+ * above can read: wrong case ([ds-modal-005]) or a DS number that is not exactly
+ * three digits ([DS-MODAL-5], [DS-MODAL-0055]). The strict patterns skip these,
+ * so without this scan a typo is silently ignored. Category tags such as
+ * [DS-A11Y] have no numeric suffix and are fine.
+ */
+const TAG_LOOKALIKE = /\[((?:DS|PATH)-[A-Za-z0-9-]*)\]/gi;
+function malformedTags(files) {
+  const bad = new Map();
+  for (const { file, text } of files) {
+    const re = new RegExp(TAG_LOOKALIKE.source, TAG_LOOKALIKE.flags);
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const id = m[1];
+      const wrongCase = id !== id.toUpperCase();
+      const dsNumber = /^DS-/i.test(id) && /-\d+$/.test(id) && !/-\d{3}$/.test(id);
+      if (!wrongCase && !dsNumber) continue;
+      if (!bad.has(id)) bad.set(id, new Set());
+      bad.get(id).add(file);
+    }
+  }
+  return [...bad].map(
+    ([id, fs]) => `"[${id}]" in ${[...fs].join(", ")} looks like a rule tag but is malformed (use upper case, and exactly three digits for a DS number), so it was not checked.`
+  );
+}
+
 function categoryOf(id) {
   // DS-LAYOUT-COMP-001 -> DS-LAYOUT-COMP ; DS-A11Y-001 -> DS-A11Y
   return id.replace(/-\d{3}$/, "");
@@ -68,6 +95,7 @@ function checkTokens() {
   const refDir = join(ROOT, "vois-tokens", "references");
   const mdFiles = readMarkdownDir(refDir);
   const mdTags = collectTags(mdFiles, NUMBERED_TAG);
+  for (const f of malformedTags(mdFiles)) findings.push(`[vois-tokens] ${f}`);
 
   const rulesPath = join(ROOT, "vois-tokens", "data", "vois-rules.json");
   const rulesData = JSON.parse(readFileSync(rulesPath, "utf8"));
@@ -110,13 +138,22 @@ function checkPatterns() {
   const numbered = collectTags(mdFiles, NUMBERED_TAG);
   const bare = collectTags(mdFiles, BARE_PATH_TAG);
   const mdTags = new Map([...numbered, ...bare]);
+  for (const f of malformedTags(mdFiles)) findings.push(`[vois-patterns] ${f}`);
 
   const rulesPath = join(ROOT, "vois-patterns", "data", "patterns-rules.json");
   const rulesData = JSON.parse(readFileSync(rulesPath, "utf8"));
   const jsonById = new Map(rulesData.nodes.map((n) => [n.id, n]));
 
+  // A patterns reference may cite a numbered vois-tokens rule (for example
+  // [DS-MODAL-005]). The tag counts as known only when that exact id is in
+  // vois-tokens/data/vois-rules.json. A bare PATH tag is never cross-skill.
+  const tokenRuleIds = new Set(
+    JSON.parse(readFileSync(join(ROOT, "vois-tokens", "data", "vois-rules.json"), "utf8")).rules.map((r) => r.id)
+  );
+
   for (const [id, files] of mdTags) {
     if (jsonById.has(id)) continue;
+    if (id.startsWith("DS-") && tokenRuleIds.has(id)) continue;
     findings.push(
       `[vois-patterns] "${id}" is cited in ${[...files].join(", ")} but has no entry in patterns-rules.json.`
     );

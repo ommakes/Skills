@@ -1,0 +1,76 @@
+{
+  "note": "Merge into vois-tokens/data/tokens.json as the key \"questionnaire\". All values are PROPOSED by the 13 Nov 2026 survey standard. Use them only in spacious mobile products. Dense agent tools keep the compact density profile.",
+  "questionnaire": {
+    "source_file": "vois-tokens/references/questionnaire-ui.md",
+    "confidence": "proposed",
+    "breakpoints": [
+      {
+        "name": "xs",
+        "maxPx": 359
+      },
+      {
+        "name": "sm",
+        "minPx": 360,
+        "maxPx": 767
+      },
+      {
+        "name": "md",
+        "minPx": 768,
+        "maxPx": 1023
+      },
+      {
+        "name": "lg",
+        "minPx": 1024
+      }
+    ],
+    "target_px": {
+      "floor": 24,
+      "normal": 44,
+      "comfortable": 48
+    },
+    "gap_px": 8,
+    "gap_primary_destructive_px": 12,
+    "option_row_min_px": 56,
+    "likert_point_px": 48,
+    "rank_row_min_px": 64,
+    "rank_handle_px": 44,
+    "text_input_px": {
+      "min": 52,
+      "max": 56
+    },
+    "font_min_px": 16,
+    "primary_button_px": 52,
+    "progress_bar_px": 4,
+    "max_content_px": 640,
+    "long_text": {
+      "rows_start": 3,
+      "rows_max": {
+        "sm": 8,
+        "md": 10,
+        "lg": 12
+      }
+    },
+    "options_before_scroll": 7,
+    "options_before_search": 12,
+    "rank_all_max": 6,
+    "rank_top_n_max_items": 12,
+    "battery_max_statements": 5,
+    "accepted": {
+      "option_row_min_px": {
+        "status": "accepted",
+        "decision": "2026-11-14",
+        "scope": "Option rows inside PATH-F (radio, checkbox, poll result rows), all breakpoints",
+        "overrides": "compact density row height"
+      }
+    },
+    "poll": {
+      "min_votes_for_percent": 10,
+      "row_min_px": 56,
+      "bar_track_min_contrast": 3,
+      "bar_animation_ms": 400,
+      "keep_option_order": true,
+      "correct_marker": "icon_and_word",
+      "confidence": "proposed"
+    }
+  }
+}

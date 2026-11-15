@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.23.0
+version: 1.26.0
 ---
 
 # Vois Component Selection Skill
@@ -152,6 +152,9 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 | `JOB-DATA-ENTRY` | Job 19 Data entry surface |
 | `JOB-SECONDARY-CONTENT` | Job 20 Secondary content / persistent nav |
 | `JOB-VISUALIZE-DATA` | Job 21 Visualize data (hands the form choice to vois-dataviz) |
+| `JOB-ANSWER-CHOICE-QUESTION` | Job 22 Answer a choice question (survey, one question per screen) |
+| `JOB-ANSWER-SCALE-OR-RANK` | Job 23 Answer a scale or ranking question |
+| `JOB-SHOW-POLL-RESULTS` | Job 24 Show how others answered a choice question |
 
 ---
 
@@ -160,6 +163,8 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 **Read `vois-patterns` first.** That skill determines the container type — settings page, form, table, dialog. Once you know the structure, come here to pick the specific components that fill it.
 
 **`vois-dataviz` for charts.** `JOB-VISUALIZE-DATA` picks the container (Card, Tabs, filter row, states). The chart form, chart colors, honesty rules and dashboard structure come from `vois-dataviz`.
+
+**`vois-fields` for specialized inputs.** `JOB-ACCEPT-TEXT` picks the component (Input, Textarea, InputOTP). For an email, phone, URL, postal code, name, VIN, driver's license, SSN, money, percent, date or one-time code value, a prefilled value or a record picker, `vois-fields` gives the input type, keyboard, autofill, check timing and privacy handling. A one-time code input must take a pasted or autofilled whole code.
 
 **Read `vois-tokens` after.** Once components are selected, `vois-tokens` handles tokens, spacing, animation, and accessibility implementation.
 

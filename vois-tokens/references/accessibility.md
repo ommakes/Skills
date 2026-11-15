@@ -49,6 +49,8 @@ Three focus pseudo-classes. Know when to use each one.
 
 Never remove `outline` without providing a `:focus-visible` replacement. `[DS-A11Y-003]`
 
+Dialog focus (first focus, return focus, Escape) and the dragging alternative are in `references/overlays.md` (`[DS-A11Y-019]` to `[DS-A11Y-023]`).
+
 ### The ring follows the control `[DS-A11Y-018]`
 
 A focus indicator is an external ring, not a change to the control's border. Use the tokens: `--focus-ring-width` (2px), `--focus-ring-offset` (2px) and `--border-state-focus`. Light mode is Blue-10 (4.9:1 on the page) and dark mode is Blue-8 (6.7:1). Both are well above the 3:1 WCAG asks for, so they hold on a card or a tinted surface too.

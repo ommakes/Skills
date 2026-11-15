@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.32.0
+version: 1.36.0
 ---
 
 # Vois Tokens Skill
@@ -79,7 +79,7 @@ building fresh, not just the bare rule text:**
 | `references/components.md` | Component variants, cva, modals/dialogs, accordions | `[DS-COMPONENT]` `[DS-MODAL]` |
 | `references/shape.md` | Choosing corner shape: shape roles before numbers, fixed vs proportional vs elliptical vs capsule, large visual surfaces, continuous corners | `[DS-SHAPE]` |
 | `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
-| `references/elevation.md` | Shadow/elevation tiers, modal scrim, z-index pairing | `[DS-ELEVATION]` |
+| `references/elevation.md` | Shadow/elevation tiers, layers, state changes, dark mode, docked panels, modal scrim, z-index pairing. The element map is `data/elevation-map.json` | `[DS-ELEVATION]` |
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints, form, field, dialog widths, auto-growing textareas | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
 | `references/grid.md` | Grid classes, margins and gutters, how many columns a card grid holds, push and overlay side panels, the same on web, Flutter and native | `[DS-GRID]` `[DS-PANEL]` |
@@ -88,6 +88,8 @@ building fresh, not just the bare rule text:**
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]` `[DS-MOTION-003]` `[DS-MOTION-004]` `[DS-MOTION-005]` `[DS-MOTION-006]` `[DS-MOTION-007]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
 | `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
+| `references/overlays.md` | Dialog structure, bottom sheets and full-screen forms on phones, dialog accessibility (name, first focus, return focus, Escape, dragging) | `[DS-MODAL-004]` to `[DS-MODAL-007]` `[DS-RESPONSIVE-008]` to `[DS-RESPONSIVE-010]` `[DS-A11Y-019]` to `[DS-A11Y-023]` |
+| `references/questionnaire-ui.md` | Respondent-facing questionnaires: required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows, poll and quiz results | `[DS-A11Y-024]` to `[DS-A11Y-028]` `[DS-RESPONSIVE-011]` to `[DS-RESPONSIVE-013]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
 | `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 128px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
 | `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse, em dashes) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |

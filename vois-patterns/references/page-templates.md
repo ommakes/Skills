@@ -85,7 +85,7 @@ A Dense page is shown while the primary input is not a fine pointer (CSS `(point
 
 ### Which overlay opens `[PATH-PAGE-OVERLAY]`
 
-A yes or no, or a pick: modal on desktop, action sheet on phone. Any text field: modal on desktop, full screen on phone, never an action sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.
+A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.
 
 ### Button order `[PATH-PAGE-BUTTON-ORDER]`
 
@@ -93,7 +93,7 @@ Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the 
 
 ### View to edit on the same page `[PATH-PAGE-VIEW-EDIT]`
 
-Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (action sheet on phone). On phone Save sits in a sticky bar.
+Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (bottom sheet on phone). On phone Save sits in a sticky bar.
 
 ### Tables at narrow widths `[PATH-PAGE-TABLE-WIDTH]`
 

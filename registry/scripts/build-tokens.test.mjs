@@ -413,3 +413,120 @@ test("focus: the ring is not a pale blue: at least 4.5:1 on the page in light an
     assert.ok(ratio(page.rgb, ring) >= 4.5, `ring (${mode ? "dark" : "light"}) is ${ratio(page.rgb, ring).toFixed(2)}:1 on the page`);
   }
 });
+
+// ---- Dialog widths (vois-patterns PATH-D-SIZE, DS-LAYOUT-WIDTH-004) ----
+test("dialog widths: both tokens exist, the small one is the Figma Dialog's 344, the large one is wider", () => {
+  const sm = realExport.tokens["--width-dialog-sm"], lg = realExport.tokens["--width-dialog-lg"];
+  assert.equal(sm, 344, "--width-dialog-sm is the width the Figma Dialog is built at");
+  assert.ok(Number.isInteger(lg) && lg > sm, "--width-dialog-lg is a whole number wider than the small tier");
+  assert.ok(lg + 32 <= 1024, "the large tier plus the 16 side margins fits the smallest desktop width");
+});
+
+test("dialog widths: the registry Dialog reads the tokens and never a literal width", () => {
+  const src = read("vois/dialog/dialog.tsx");
+  assert.match(src, /w-\[var\(--width-dialog-sm\)\]/);
+  assert.match(src, /data-\[size=lg\]:w-\[var\(--width-dialog-lg\)\]/);
+  assert.doesNotMatch(src, /\bw-\[\d+px\]/, "a literal pixel width on the Dialog");
+});
+
+// ---- Dark elevation (DS-ELEVATION-005) -------------------------------------------------------------
+
+const withDark = (dark, shadows) => mini({ shadows: shadows ?? { "--shadow-base": [[0, 0, 1, 1, "#0000000a"]], "--shadow-small": [[0, 1, 1, 0, "#0000000a"]], "--shadow-medium": [[0, 2, 2, 0, "#0000000d"]] }, top: { darkShadows: dark } });
+const darkBlock = (css) => css.slice(css.indexOf(".dark {"));
+const lightBlock = (css) => css.slice(0, css.indexOf(".dark {"));
+
+test("dark shadows: Base and Small draw nothing, Medium and up come from the dark styles, light is untouched", () => {
+  const dark = { "--shadow-medium": [[0, 2, 2, 0, "#00000029"]] };
+  const css = build(withDark(dark), brand());
+  const d = darkBlock(css);
+  assert.match(d, /--shadow-base: 0 0 0 0 oklch\(0 0 0 \/ 0\);/);
+  assert.match(d, /--shadow-small: 0 0 0 0 oklch\(0 0 0 \/ 0\);/);
+  assert.match(d, /--shadow-medium: 0 2px 2px 0 oklch\(0 0 0 \/ 0\.161\);/);
+  // The light block is byte-for-byte what it was without any dark shadows.
+  const plain = build(withDark(undefined), brand());
+  assert.equal(lightBlock(css), lightBlock(plain));
+  assert.doesNotMatch(darkBlock(plain), /--shadow-/, "no darkShadows block: dark keeps the light shadows, as before");
+});
+
+test("dark shadows fail closed: no light twin, a flat tier given a shadow, a tier left out, wrong shapes", () => {
+  const dark = { "--shadow-medium": [[0, 2, 2, 0, "#00000029"]] };
+  assert.throws(() => build(withDark({ ...dark, "--shadow-huge": [[0, 1, 1, 0, "#00000029"]] }), brand()), /no light shadow of the same name/);
+  assert.throws(() => build(withDark({ ...dark, "--shadow-small": [[0, 1, 1, 0, "#00000029"]] }), brand()), /carries no shadow in dark/);
+  assert.throws(() => build(withDark({ ...dark, "--shadow-base": [[0, 1, 1, 0, "#00000029"]] }), brand()), /carries no shadow in dark/);
+  assert.throws(() => build(withDark({}), brand()), /--shadow-medium has no dark style/);
+  for (const bad of [[], "x", 5, null]) assert.throws(() => build(withDark(bad), brand()), /darkShadows must be an object/, JSON.stringify(bad));
+  // The layers must be the light ones (minus the 1px ring), in black: truncated, moved or recolored styles fail.
+  assert.throws(() => build(withDark({ "--shadow-medium": [] }), brand()), /must have the layers of the light one/);
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 2, 2, "#00000029"]] }), brand()), /must have the layers of the light one/);
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 2, 2, 0, "#00000029"], [0, 4, 4, 0, "#00000029"]] }), brand()), /must have the layers of the light one/);
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 3, 2, 0, "#00000029"]] }), brand()), /must have the layers of the light one/);
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 2, 2, 0, "#ff000029"]] }), brand()), /layers are black at some alpha/);
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 2, 2, 0, "#000000"]] }), brand()), /layers are black at some alpha/);
+  assert.throws(() => build(withDark({ "--shadow-medium": "x" }), brand()), /must have the layers of the light one/);
+  // A light 1px ring is the hairline's job in dark, so the dark style leaves it out and may not keep it.
+  const ringed = { "--shadow-base": [[0, 0, 1, 1, "#0000000a"]], "--shadow-small": [[0, 1, 1, 0, "#0000000a"]], "--shadow-medium": [[0, 0, 0, 1, "#0000000d"], [0, 2, 2, 0, "#0000000d"]] };
+  assert.doesNotThrow(() => build(withDark({ "--shadow-medium": [[0, 2, 2, 0, "#00000029"]] }, ringed), brand()));
+  assert.throws(() => build(withDark({ "--shadow-medium": [[0, 0, 0, 1, "#00000029"], [0, 2, 2, 0, "#00000029"]] }, ringed), brand()), /must have the layers of the light one/);
+});
+
+test("dark shadows: the committed export has exactly Medium, Large and XLarge, each heavier than its light twin", () => {
+  assert.deepEqual(Object.keys(realExport.darkShadows), ["--shadow-medium", "--shadow-large", "--shadow-xlarge"]);
+  const alpha = (hex) => parseInt(hex.slice(7, 9) || "ff", 16);
+  for (const [k, layers] of Object.entries(realExport.darkShadows)) {
+    const lightA = Math.max(...realExport.shadows[k].map((l) => alpha(l[4])));
+    for (const l of layers) assert.ok(alpha(l[4]) > lightA, `${k} dark layer ${JSON.stringify(l)} is not heavier than light (${lightA})`);
+    assert.ok(!layers.some((l) => l[0] === 0 && l[1] === 0 && l[2] === 0 && l[3] === 1), `${k}: the 1px ring is the hairline token's job in dark`);
+  }
+  assert.match(darkBlock(read("vois/tokens/vois-tokens.css")), /--shadow-base: 0 0 0 0 oklch\(0 0 0 \/ 0\);/);
+});
+
+test("dark fills: each step up the ladder is lighter than the one below, and light stays white", () => {
+  const { value, parse } = edgeColors;
+  const L = (token, mode) => hexToOklch(value(token, mode)).L;
+  const page = L("--bg-background", 1), card = L("--bg-card", 1), small = L("--elevation-surface-small", 1), raised = L("--elevation-surface-raised", 1);
+  // About 0.02 OKLCH lightness is the smallest step that reads as a different surface on a real screen.
+  for (const [lo, hi, name] of [[page, card, "card over page"], [card, small, "small over base"], [small, raised, "raised over small"]]) assert.ok(hi - lo >= 0.02, `${name}: only ${(hi - lo).toFixed(4)} lighter`);
+  for (const token of ["--elevation-surface-small", "--elevation-surface-raised"]) assert.equal(value(token, 0), value("--bg-card", 0), `${token} in light is the card white`);
+  // The hairline draws nothing in light, so adding it changes no light pixel.
+  assert.equal(parse(value("--elevation-hairline", 0)).a, 0);
+  assert.ok(parse(value("--elevation-hairline", 1)).a > 0);
+});
+
+test("dark fills: text meets 4.5:1 and edges meet 3:1 on every elevated fill", () => {
+  const { value, parse, ratio } = edgeColors;
+  const rgb = (token, mode) => { const p = parse(value(token, mode)); assert.equal(p.a, 1, `${token} must be opaque`); return p.c; };
+  for (const fill of ["--bg-card", "--elevation-surface-small", "--elevation-surface-raised"]) {
+    for (const text of ["--text-primary", "--text-secondary"]) {
+      const r = ratio(rgb(text, 1), rgb(fill, 1));
+      assert.ok(r >= 4.5, `${text} on ${fill} (dark) is ${r.toFixed(2)}:1, under 4.5:1`);
+    }
+    for (const edge of ["--input-border", "--control-border", "--border-default"]) {
+      const r = ratio(rgb(edge, 1), rgb(fill, 1));
+      assert.ok(r >= 3, `${edge} on ${fill} (dark) is ${r.toFixed(2)}:1, under 3:1`);
+    }
+  }
+});
+
+test("dark fills: text stays 4.5:1 on a menu or select item hover over the raised fill", () => {
+  const { value, parse, ratio } = edgeColors;
+  const over = (top, under) => top.c.map((x, i) => Math.round(x * top.a + under[i] * (1 - top.a)));
+  const raised = parse(value("--elevation-surface-raised", 1)).c;
+  for (const hover of ["--bg-hover", "--bg-pressed"]) {
+    const bg = over(parse(value(hover, 1)), raised);
+    for (const text of ["--text-primary", "--text-secondary"]) {
+      const r = ratio(parse(value(text, 1)).c, bg);
+      assert.ok(r >= 4.5, `${text} on ${hover} over the raised fill (dark) is ${r.toFixed(2)}:1, under 4.5:1`);
+    }
+  }
+});
+
+test("dark fills: the built components read the new fills, never --bg-card on an elevated surface", () => {
+  const uses = (file, token) => assert.match(read(file), new RegExp(`bg-\\[color:var\\(${token}\\)\\]`), `${file} should use ${token}`);
+  uses("vois/hover-card/hover-card.tsx", "--elevation-surface-small");
+  for (const f of ["vois/dropdown-menu/dropdown-menu.tsx", "vois/select/select.tsx", "vois/dialog/dialog.tsx"]) {
+    uses(f, "--elevation-surface-raised");
+    assert.doesNotMatch(read(f).replace(/^\s*\/\/.*$/gm, ""), /bg-\[color:var\(--bg-card\)\]/, `${f} still fills with --bg-card`);
+  }
+  assert.match(read("vois/card/card.tsx"), /hover:bg-\[color:var\(--elevation-surface-small\)\]/);
+  assert.match(read("vois/command/command.tsx"), /\[&_\[data-slot=command\]\]:bg-transparent/, "CommandDialog must let the Dialog fill show");
+});

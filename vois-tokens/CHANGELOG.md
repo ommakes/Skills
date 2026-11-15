@@ -4,6 +4,47 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.36.0] - 2026-11-15
+
+### Added
+- `references/questionnaire-ui.md` with `DS-A11Y-024` to `-028` and `DS-RESPONSIVE-011` to `-013`: required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows (an exception to the density specs), poll and quiz results.
+- `data/tokens.questionnaire.json`: target sizes, font minimum and result bar timing.
+
+## [1.35.0] - 2026-11-15
+
+### Added
+- Dark elevation tokens (registry 0.11.0): `--elevation-surface-small`, `--elevation-surface-raised`, `--elevation-hairline`, `--black-a0`, and dark values for `--shadow-base` to `--shadow-xlarge`. Base and Small draw nothing in dark, Medium and up are blacker.
+
+### Changed
+- `DS-ELEVATION-005` now names the tokens and no longer says they are missing. `references/elevation.md` has the token table. `data/elevation-map.json` dark notes name the fills. `DS-ELEVATION-006` (directional shadows) is still waiting on E3.
+
+## [1.34.0] - 2026-11-15
+
+### Added
+- `DS-ELEVATION-003` to `-012` (all `judgment`, advisory, no detector yet): state changes (hover up one tier at most, pressed down one or flat, dragged high, disabled flat, focus never changes elevation), resting cards keep a Base or Small shadow, dark never uses shadow alone, the sign rule for docked panels, no raw shadow literal with blur, at most two tiers at rest, Large and XLarge only on overlays, inset only for recessed or pressed, cross-fade instead of animating big shadows, contrast on every elevated fill. A zero-blur ring is exempt from the literal and inset rules.
+- `data/elevation-map.json` with its schema, and `scripts/elevation-map.mjs` with 18 tests. The map lists 12 elements: 9 built ones and 3 proposed ones (right and bottom sheet, dragged item). For built ones the check confirms the registry item exists and its source (comments ignored) uses each `--shadow-*` token the map names. It does not check which state uses the token. It fails closed when `registry/registry.json` is missing.
+
+### Changed
+- `references/elevation.md` now matches the built components: Card, Choice Card and the Segmented Control indicator rest at Base, Card hover, Switch knob and Hover Card are Small, menus and select lists are Medium, Dialog and Tooltip are Large. XLarge is unused except for a dragged item or a full-screen surface. The old table said card Small, popover Large and modal XLarge. No component changed. `DS-ELEVATION-002` text follows, and now says layers run in role order with an exception for a popup opened from a dialog.
+- Pointers added from `DS-SLOP-010` and `DS-SURFACE-007` to the elevation rules.
+
+## [1.33.1] - 2026-11-15
+
+### Changed
+- `references/layout-and-responsive.md`: `--width-dialog-sm` is 344 and `--width-dialog-lg` is 560 (proposed). Both are Figma variables (`Semantic/Dialog/width-dialog-sm` and `-lg`, Size collection) and are in the default tokens. `DS-LAYOUT-WIDTH-004` and `PATH-D-SIZE` named the tokens, but no value existed anywhere. No rule changed.
+
+## [1.33.0] - 2026-11-15
+
+### Added
+- `references/overlays.md` and twelve rules (all `judgment`, advisory, no detector):
+  - `DS-MODAL-004` the body scrolls and the header and footer stay (the registry Dialog does not do this yet), `DS-MODAL-005` two footer buttons at most, `DS-MODAL-006` never nest modals, `DS-MODAL-007` never use a modal for navigation.
+  - `DS-RESPONSIVE-008` below `--breakpoint-md` a choice is a bottom sheet (90dvh at most, stacked footer, visible close), `DS-RESPONSIVE-009` a dialog with a text field is a full-screen form, `DS-RESPONSIVE-010` safe-area padding.
+  - `DS-A11Y-019` accessible name and an AlertDialog description, `DS-A11Y-020` first focus (Cancel in a destructive AlertDialog), `DS-A11Y-021` return focus, `DS-A11Y-022` Escape closes a dialog, the scrim closes a Dialog but not an AlertDialog, and Escape is blocked only for money, delete or legal, `DS-A11Y-023` every drag has a tap or arrow alternative.
+
+### Changed
+- `references/layout-and-responsive.md`: the `dvh` row names bottom sheets and full-screen forms, and the `svh` row says desktop modals.
+- "Action sheets" in `DS-ANIMATION-002` are now "bottom sheets".
+
 ## [1.32.0] - 2026-11-14
 
 ### Added

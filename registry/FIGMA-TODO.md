@@ -2,6 +2,17 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-15 (dark elevation, registry 0.11.0)
+
+- **Dark elevation.** New `Global/Black Alpha/Black-A0` (`--black-a0`, transparent, same scopes as its siblings). New Colors variables `Component/Elevation/Surface-Small` (Light white, Dark Warm Gray-10), `Surface-Raised` (Light white, Dark Warm Gray-9) and `Hairline` (Light Black-A0, Dark White-A3), Web syntax `--elevation-surface-small`, `--elevation-surface-raised`, `--elevation-hairline`. New effect styles `Elevation/Dark/Medium`, `Large`, `XLarge` (black at 16, 20 and 24%). Export checksum `7f179f8c` (890 tokens).
+  - Open: no Figma component uses the dark styles yet. They are applied by code through `.dark`. Effect styles cannot switch by variable mode, so a Figma frame in Dark mode keeps the light shadow until someone applies the `Dark/` style by hand.
+  - Open: the three dark shadow strengths (16, 20 and 24%) are a first pass, checked on a specimen only. Check on a real dark screen.
+
+## Done on 2026-11-15
+
+- **Dialog widths** (registry 0.10.0). New Size variables `Semantic/Dialog/width-dialog-sm` (344) and `width-dialog-lg` (560), scope width and height, Web syntax `--width-dialog-sm` and `--width-dialog-lg`. The Molecules Dialog (`3613:6593`) width is bound to the small one. Export checksum `cbd49db0` (886 tokens).
+  - Open: no Figma Dialog is drawn at the large width. The 560 is proposed and needs a check on real screens, with a Dialog variant for a textarea or a short list.
+
 ## Done on 2026-11-14
 
 - **Focus ring** (registry 0.9.0). `System/Border/Border-State-Focus`: Light Blue-10, Dark Blue-8. `Component/Control/Control-Focus` aliases it in both modes. New `Values/Focus Ring/Width` and `Focus Ring/Offset` (2, scopes empty, `--focus-ring-width`, `--focus-ring-offset`). Export checksum `8810c065` (884 tokens).

@@ -28,7 +28,7 @@ Load it *before* reading `vois-tokens` or `righter`.
    - Managing settings? → Settings Page Template
    - Viewing a list of items? → Table/List with Details Template
    - Creating or editing something? → Form Template
-   - Quick confirmation or selection? → Dialog/Action Sheet Template
+   - Quick confirmation or selection? → Dialog/Bottom Sheet Template
    - Viewing a single item? → Detail Page Template
 
 2. **Read the template rules for that type**
@@ -59,7 +59,7 @@ vois-patterns/
 - **Settings Page** - For profile, workspace, billing, notifications, members pages
 - **Table/List with Details** - For browsing, filtering, and acting on multiple items
 - **Form (Create/Edit)** - For creating new items or editing existing ones
-- **Dialog/Action Sheet** - For quick inputs, confirmations, selections
+- **Dialog/Bottom Sheet** - For quick inputs, confirmations, selections, and the ladder from a confirm to a full page (`docs/dialog-ladder.html` is an interactive version of the ladder)
 - **Detail Page** - For viewing single records in read-only mode
 
 Each template includes:
@@ -230,6 +230,7 @@ If you notice a recurring structure that's not covered:
 | 1.15.0 | 2026-10-09 | Added `references/motion.md`: when a state change should travel or morph, with worked examples |
 | 1.16.0 | 2026-10-09 | Added the status button to `references/motion.md`: decision-test step, table row and worked example |
 | 1.18.0 | 2026-10-28 | Added `references/page-templates.md` and `data/page-templates.json`: 20 whole-page templates in five levels, plus `PATH-PAGE-*` rules for widths, navigation, density by width, overlays, button order, view to edit and narrow tables |
+| 1.22.0 | 2026-11-15 | Added the container ladder `PATH-D-1` to `PATH-D-5` (confirm, form dialog, large dialog, side peek, page). "Action sheet" is now "bottom sheet" for the mobile container, and stays only for a short choice list with a separate Cancel. |
 | 1.21.0 | 2026-11-13 | Added `PATH-DENSITY-PRODUCT` (workbench or relaxed), `references/native-behavior.md` with six `PATH-NATIVE-*` rules (iOS observed, Android not observed), and keyed `PATH-PAGE-DENSITY-TOUCH` on input instead of width |
 | 1.20.0 | 2026-11-12 | Added a `layout` field to every page template (shell, frame, regions, collections, panels, all token names) and `layout_fields`. Record properties panel is now a token. Split view starts at an 800px window. Phone splits in two at 600px for grids. |
 | 1.19.0 | 2026-10-28 | Added the Onboarding steps template (1-2-3 stepper, `PATH-PAGE-ONBOARDING`) and `PATH-PAGE-SORT-FILTER`: Filter and Sort pinned top right of every table, list and card grid. Blog article renamed Blog post, with reading time, newsletter and previous and next |
@@ -283,5 +284,5 @@ If you have questions about a pattern or need clarification:
 ---
 
 **Last updated:** 2026-11-13  
-**Skill version:** 1.21.0  
+**Skill version:** 1.23.0  
 **Status:** Active and improving through agentic feedback loops. Works standalone — MCP telemetry calls (`vois_record_pattern_choice`, `vois_report_pattern_gap`) are optional.

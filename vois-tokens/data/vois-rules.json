@@ -212,6 +212,56 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-A11Y-019",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Every dialog has an accessible name (DialogTitle or AlertDialogTitle, visually hidden if the design shows none). An AlertDialog also has a description that says what will happen.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-020",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "First focus in a dialog: Cancel in a destructive AlertDialog (never the destructive button), the first field in a form dialog, the primary action in a confirmation that is not destructive.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-021",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "When a dialog closes, focus returns to the element that opened it. If that element is gone, focus goes to the nearest sensible place, never to the top of the page.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-022",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Escape closes a dialog, and a click on the scrim closes a Dialog (not an AlertDialog: Radix blocks that on purpose). Block Escape and the scrim only while closing would lose money, a delete or a legal step in progress, and keep a visible Cancel when you do.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-023",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Anything the user can do by dragging can also be done with a single tap or the arrow keys (WCAG 2.2 criterion 2.5.7, Dragging Movements).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-ANIMATION-001",
       "category": "DS-ANIMATION",
       "category_label": "Animation",
@@ -227,7 +277,7 @@
       "category": "DS-ANIMATION",
       "category_label": "Animation",
       "source_file": "vois-tokens/references/animation.md",
-      "rule": "Large elements (drawers, action sheets, modals entering): up to `500ms`.",
+      "rule": "Large elements (drawers, bottom sheets, modals entering): up to `500ms`.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -585,6 +635,46 @@
       "applies_when": "custom (non-Radix) dialog/modal implementations — Radix UI handles this automatically"
     },
     {
+      "id": "DS-MODAL-004",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "The body of a dialog scrolls. The header and the footer stay in view. A tall dialog never scrolls its title or actions away.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-MODAL-005",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "At most two buttons in a dialog footer: a primary action and a secondary action (Cancel). A third action is a link on the left.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-MODAL-006",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Never nest modals. A second step replaces the content of the same dialog (push a view with a Back control) or becomes a page. A destructive confirmation from inside a dialog or sheet replaces its content the same way.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-MODAL-007",
+      "category": "DS-MODAL",
+      "category_label": "Components",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Never use a modal for navigation. A list of places to go is a menu or a page.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-CSS-001",
       "category": "DS-CSS",
       "category_label": "CSS Architecture",
@@ -672,7 +762,107 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "Use the five elevation tiers from Figma, `--shadow-base` to `--shadow-xlarge`, for what each describes, and match the tier to the z-index layer it occupies: `--shadow-medium` pairs with the dropdown z-index when it is a menu (a raised card at Medium stays in the page), `--shadow-large` with the overlay z-index, `--shadow-xlarge` with the modal z-index. Don't put a heavier shadow on a lower-stacked element than a lighter one above it.",
+      "rule": "Use the five elevation tiers from Figma, `--shadow-base` to `--shadow-xlarge`, and match each element to the tier in `data/elevation-map.json`. Card, Choice Card and the segmented indicator rest at Base. Card hover, Switch knob and Hover Card are Small. Menus and select lists are Medium and pair with the dropdown z-index. Dialog and Tooltip are Large and pair with the overlay or modal z-index. XLarge is only for a dragged item or a full-screen surface. Layers run in role order (page, dropdown, overlay, modal), so don't put a heavier shadow on a lower layer than on the one above it. The exception is a popup opened from a dialog (menu, select, hover card, tooltip): it stacks above the modal and keeps its own lighter tier.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-003",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Move an element by at most one tier when its state changes, using the map in `data/elevation-map.json`: hover goes up one tier at most and never down, pressed goes down one tier or to flat, a dragged item goes to a high tier, a disabled element is flat or unchanged. Focus never changes elevation. The focus ring is the focus indicator (`DS-A11Y-018`).",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-004",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "A resting card keeps a Base or Small shadow. A static section that only groups content stays flat (`DS-SLOP-010`). Do not give a plain section a shadow just to look like a card.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-005",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "In dark mode, never use a shadow alone. Base and Small carry no shadow: a lighter fill step than the parent and a 1px hairline border carry them. Medium and up use a blacker shadow plus the hairline. A 4 to 5% black shadow is invisible on a dark surface. The tokens exist: `--elevation-surface-small` and `--elevation-surface-raised` for the fills, `--elevation-hairline` for an edge (transparent in light), and `.dark` redefines `--shadow-base` to `--shadow-xlarge`, so a component that reads a tier token gets the dark shadow for free. Set the fill and the edge yourself from the surface and hairline tokens. Do not hand-write dark values.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-006",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "A panel docked to an edge casts its shadow away from that edge, not on all sides. Right-docked: negative x. Left-docked: positive x. Bottom-docked: negative y. Top-docked: positive y. Centered: x is 0. Use a negative spread so the shadow does not leak past the panel. The shadow tokens have spread 0 today, so the negative spread and directional offsets come with the directional tokens. Until then, use the tier token and record the side in the map's `dock` field.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-007",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Do not write a raw `box-shadow` literal or `shadow-[...]` with blur. Use a tier token (`--shadow-base` to `--shadow-xlarge`). A zero-blur ring (spread only, such as an edge or a checkbox ring) is not a tier and is allowed.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-008",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Show at most two distinct shadow tiers at rest in one view. If a third seems needed, the layout needs fewer levels, not more shadow.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-009",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Use Large and XLarge only for overlays, hover and a dragged item. Never on a static element in the page.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-010",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Use an inset shadow only for a recessed or pressed element. A zero-blur inset ring used as a border or a focus or checked ring is not an elevation shadow and is allowed.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-011",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "To animate between Medium or heavier tiers, cross-fade the opacity of a pre-drawn layer. Do not animate `box-shadow` on large shadows. Animating a 1 to 2px ring is fine.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ELEVATION-012",
+      "category": "DS-ELEVATION",
+      "category_label": "Elevation",
+      "source_file": "vois-tokens/references/elevation.md",
+      "rule": "Check text and border contrast on every elevated fill, not only on the page color. A lighter dark-mode fill step must still keep text at 4.5:1 and a control edge at 3:1.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -787,6 +977,36 @@
       "source_file": "vois-tokens/references/layout-and-responsive.md",
       "rule": "When content doesn't fit, prefer reflow, then collapse, then hide, in that order, before shrinking text or spacing to cram the same layout into less room. Shrinking is the last resort and never overrides the DS-RESPONSIVE-004 minimums.",
       "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-008",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Below --breakpoint-md a dialog that holds a choice (confirm, select, stepper, slider) is a bottom sheet: at most 90dvh tall, a stacked footer with the primary button on top, a visible Close or Cancel button, and dvh for its height.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-009",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "Below --breakpoint-md a dialog that takes text is a full-screen form, not a bottom sheet: a 56 tall header, and a footer at the bottom of the scroll area so the keyboard cannot cover it.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-010",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout, Viewport, and Responsive Behavior",
+      "source_file": "vois-tokens/references/overlays.md",
+      "rule": "A bottom sheet and a full-screen form pad their edges with env(safe-area-inset-bottom), env(safe-area-inset-left) and env(safe-area-inset-right).",
+      "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
     },
@@ -1946,6 +2166,86 @@
       "enforcement": "advisory",
       "verification": "judgment",
       "applies_when": "a soft or responsive-shape surface where smoother corners are wanted"
+    },
+    {
+      "id": "DS-A11Y-024",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Mark every question \"Required\" or \"Optional\" in words, not with an asterisk alone. Set `aria-required` on required questions. After a failed check set `aria-invalid`, put a specific error under the question, and move focus to the first error.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-025",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a one-question-per-screen flow, moving to another question moves focus to the new question title and announces it. This holds for Next and for Back.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-026",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a questionnaire, honour `prefers-reduced-motion` and also offer a visible Reduce motion control. Between questions use no slide or scale. An instant swap or a fade of 150ms or less is fine.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-027",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "A poll or quiz result never relies on colour alone. The correct option carries a check icon and the words 'Correct answer'. The respondent's own pick carries the words 'Your answer'. Each row reads as text: label, percent, and count when shown. Bars are decorative (aria-hidden) and the bar fill has 3:1 contrast against its track.",
+      "severity": "required",
+      "enforcement": "lint",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-028",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "When results appear, announce one short summary in a polite live region and move focus to the results heading. Do not announce every bar or every live update. Bars may animate for 400ms or less, and not at all with reduced motion (DS-A11Y-026).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-011",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "In a questionnaire put the primary action in a sticky bar inside the scrolling container, not `position: fixed`, because the on-screen keyboard covers a fixed bar. Add `padding-bottom: calc(12px + env(safe-area-inset-bottom))`. Put errors above the input, between the label and the field.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-012",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Below 360px a 5-point Likert goes vertical if a point would be under 44px, rank keeps its drag handle and arrow buttons at 44px and the label wraps, and padding shrinks. Text stays 16px. There is no horizontal scroll at 320px.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-RESPONSIVE-013",
+      "category": "DS-RESPONSIVE",
+      "category_label": "Layout and responsive",
+      "source_file": "vois-tokens/references/questionnaire-ui.md",
+      "rule": "Option rows inside a questionnaire (radio, checkbox, and poll result rows) are 56px minimum at every width. This is an accepted exception to the compact density spec. It applies inside PATH-H only. Dense agent tools keep their own row height.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
     }
   ]
 }

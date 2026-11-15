@@ -108,6 +108,9 @@ content genuinely needs to look liftable or separable from the page (a
 dashboard widget, a draggable item) — not as the default container for every
 group.
 
+A card that is a real object (a clickable card, a choice card) does keep its
+resting Base or Small shadow. See `references/elevation.md`, `DS-ELEVATION-004`.
+
 ### `[DS-SLOP-011]` Over-styled active/selected states
 A colored left border plus a corner radius on an active sidebar or nav item is
 a combination that gets uglier the more it's compounded — stacking a border

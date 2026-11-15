@@ -1,4 +1,4 @@
-# Dialog / Action Sheet `[PATH-D]`
+# Dialog / Bottom Sheet `[PATH-D]`
 
 ## When to use:
 
@@ -16,11 +16,12 @@
 
 ### ON MOBILE:
 
-- Single input or confirmation → Action sheet (one-hand operation)
-- Slides up from bottom
-- Multi-step needed → Action sheet covers 80-90% screen height
+- Single input or confirmation → Bottom sheet (one-hand operation)
+- Slides up from bottom, at most 90dvh, stacked footer with the primary button on top, a visible way to close (`[DS-RESPONSIVE-008]`, built in vois-tokens `references/overlays.md`)
+- A short list of choices ending in a separate Cancel is an action sheet: the same bottom sheet, one row per choice
+- More than one step is not a sheet: see `[PATH-D-5]`
 
-**NEVER use action sheet if text input/keyboard required.** Text input requires full modal. Action sheets are for:
+**NEVER use a bottom sheet if text input/keyboard required.** Text input is a full-screen form (`[DS-RESPONSIVE-009]`). Bottom sheets are for:
 
 - Number input (spinner, quantity control)
 - Slider
@@ -40,11 +41,23 @@ Two-column layouts go on pages, not in dialogs (see `[PATH-FIELD-COLUMNS]`). A f
 
 On mobile, dialogs that take text input are full modals at the viewport width, so these tiers do not apply (see above).
 
+## Which container: the ladder
+
+Walk these in order. Take the first one that fits.
+
+1. **Confirm.** `[PATH-D-1]` One yes or no, a destructive or consequential confirmation, or one pick, and the user needs nothing else from the page. An AlertDialog if the action is destructive or has consequences, otherwise a small Dialog. On phone, a bottom sheet.
+2. **Form dialog.** `[PATH-D-2]` One task, one to four stacked fields, no need for the page behind it. A small Dialog. On phone, a full-screen form.
+3. **Large dialog.** `[PATH-D-3]` One task whose content needs the width: a textarea or a short list, still one column. A large Dialog. On phone, a full-screen form.
+4. **Side peek.** `[PATH-D-4]` Five to eight fields, or the user needs the page behind it (to compare, copy or pick rows). A right-anchored Sheet. As a peek it has no scrim and no inert background, so the page stays usable. On phone, full screen.
+5. **Page.** `[PATH-D-5]` More than eight fields, tabs, a timeline, related records, a long form, or more than one step. A full page, opened from an Open action in the overlay.
+
+Never stack dialogs: a second step replaces the content of the same dialog (a pushed view with a Back control), or becomes a page. Never use a dialog for navigation. Both rules are in vois-tokens `references/overlays.md` (`[DS-MODAL-006]`, `[DS-MODAL-007]`). The field counts follow vois-components `JOB-OVERLAY-INTERACTION`.
+
 ## Dialog Content Structure:
 
 **Header:**
 
-- H2 title (modal/action sheet heading)
+- H2 title (dialog or bottom sheet heading)
 - Optional description below title
 - Close button top right (desktop) OR top center (mobile)
 - → **For title and description, use righter skill**
@@ -69,7 +82,7 @@ On mobile, dialogs that take text input are full modals at the viewport width, s
 - Secondary button: right side, `gap-5` left of primary
 - Optional tertiary (ghost/link): left side
 - All vertically centered in sticky footer
-- Anchored to bottom of dialog/action sheet
+- Anchored to bottom of the dialog or bottom sheet. At most two buttons (`[DS-MODAL-005]`)
 
 ## Confirmation Dialogs:
 
@@ -78,7 +91,7 @@ Which component to use for a destructive action: vois-components `JOB-CONFIRM-DE
 Example structure (righter routing):
 
 ```
-Modal/Action sheet
+Modal/Bottom sheet
 ├─ Title (righter): "Delete invoice?"
 ├─ Description (righter): "This can't be undone. All associated records will be removed."
 ├─ [Body: empty or small supporting text]
@@ -94,7 +107,7 @@ Modal/Action sheet
 Example (righter routing):
 
 ```
-Modal/Action sheet
+Modal/Bottom sheet
 ├─ Title (righter): "Select payment source"
 ├─ [Dropdown or list of options]
 └─ Footer
@@ -106,5 +119,5 @@ Modal/Action sheet
 
 ## Mobile-Specific Copy:
 
-Action sheets on mobile might have slightly different button placement or labels than desktop modals.
+Bottom sheets on mobile might have slightly different button placement or labels than desktop modals.
 → **For mobile-specific button copy, verify with righter skill** (especially if space is tight)

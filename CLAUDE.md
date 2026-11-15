@@ -17,6 +17,12 @@ node vois-tokens/scripts/detect.test.mjs
 node vois-tokens/scripts/grid.test.mjs
 node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all
+node vois-fields/scripts/check-fields.test.mjs
+node vois-fields/scripts/check-fields.mjs
+npm i --no-save --no-package-lock ajv   # once, for the next line
+node vois-patterns/scripts/check-questions.mjs
+node vois-tokens/scripts/elevation-map.test.mjs
+node vois-tokens/scripts/elevation-map.mjs
 node vois-eval/check-scenarios.mjs
 node --test vois-eval/run/run.test.mjs
 node vois-eval/check-results.mjs

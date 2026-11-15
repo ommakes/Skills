@@ -1,0 +1,1055 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "question.schema.json",
+  "title": "Vois questionnaire",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "progress",
+    "questions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "question",
+            "section"
+          ]
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "questions": {
+            "contains": {
+              "required": [
+                "showIf"
+              ]
+            }
+          }
+        },
+        "required": [
+          "questions"
+        ]
+      },
+      "then": {
+        "properties": {
+          "progress": {
+            "properties": {
+              "mode": {
+                "const": "section"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "title",
+        "required",
+        "requirement_label"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "type": {
+          "enum": [
+            "single_select",
+            "multi_select",
+            "likert",
+            "likert_battery",
+            "nps",
+            "rank",
+            "open_text",
+            "long_text"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "helper": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "requirement_label": {
+          "enum": [
+            "Required",
+            "Optional"
+          ]
+        },
+        "showIf": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "exclusive": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "statements": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "render": {
+          "const": "accordion"
+        },
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "points",
+            "labels_mode",
+            "labels"
+          ],
+          "properties": {
+            "points": {
+              "enum": [
+                5,
+                7,
+                11
+              ]
+            },
+            "labels_mode": {
+              "enum": [
+                "full",
+                "endpoints"
+              ]
+            },
+            "direction": {
+              "const": "negative_to_positive"
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "orientation_sm": {
+          "enum": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "rank": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "drag",
+            "move_buttons"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "rank_all",
+                "top_n"
+              ]
+            },
+            "top_n": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "drag": {
+              "const": true,
+              "description": "Press and hold to drag. Always on."
+            },
+            "move_buttons": {
+              "const": true,
+              "description": "Up and down buttons. The no-drag option (WCAG 2.5.7). Always on."
+            },
+            "hold_ms": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 500,
+              "default": 200
+            }
+          }
+        },
+        "text": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxlength": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "enum": [
+                120,
+                280,
+                1000,
+                null
+              ]
+            },
+            "soft_limit": {
+              "type": "boolean"
+            },
+            "inputmode": {
+              "type": "string"
+            },
+            "autocomplete": {
+              "type": "string"
+            },
+            "enterkeyhint": {
+              "enum": [
+                "next",
+                "done",
+                "enter",
+                "go",
+                "search",
+                "send"
+              ]
+            },
+            "rows_start": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 6
+            },
+            "rows_max": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 12
+            },
+            "enter_submits": {
+              "const": false
+            }
+          }
+        },
+        "prefill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "confidence",
+            "show_as"
+          ],
+          "properties": {
+            "source": {
+              "enum": [
+                "profile",
+                "previous_response",
+                "url_param",
+                "enrichment",
+                "ai_suggestion"
+              ]
+            },
+            "confidence": {
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            },
+            "show_as": {
+              "enum": [
+                "prefilled",
+                "suggestion_chip",
+                "last_time"
+              ]
+            }
+          }
+        },
+        "validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min_select": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_select": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "reveal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "show",
+            "order",
+            "correct_marker",
+            "min_votes_for_percent"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "poll",
+                "quiz"
+              ]
+            },
+            "show": {
+              "const": "after_answer"
+            },
+            "order": {
+              "const": "keep"
+            },
+            "correct_marker": {
+              "const": "icon_and_word"
+            },
+            "correct_option_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "min_votes_for_percent": {
+              "type": "integer",
+              "minimum": 10
+            },
+            "show_counts": {
+              "type": "boolean"
+            },
+            "update": {
+              "enum": [
+                "on_load",
+                "live"
+              ]
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "required": {
+                "const": true
+              }
+            },
+            "required": [
+              "required"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requirement_label": {
+                "const": "Required"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required": {
+                "const": false
+              }
+            },
+            "required": [
+              "required"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requirement_label": {
+                "const": "Optional"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "single_select",
+                  "multi_select"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "single_select"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "validation": false
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "validation"
+            ],
+            "properties": {
+              "validation": {
+                "required": [
+                  "max_select"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "helper"
+            ],
+            "properties": {
+              "helper": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "const": "multi_select"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "likert"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "scale",
+              "orientation_sm"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "enum": [
+                      5,
+                      7
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "nps"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "scale"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "const": 11
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "likert_battery"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "statements",
+              "scale",
+              "render"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "enum": [
+                      5,
+                      7
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "scale"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "const": 5
+                  },
+                  "labels_mode": {
+                    "const": "full"
+                  }
+                },
+                "required": [
+                  "points",
+                  "labels_mode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scale": {
+                "properties": {
+                  "labels": {
+                    "minItems": 5,
+                    "maxItems": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "scale"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "const": 7
+                  }
+                },
+                "required": [
+                  "points"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scale": {
+                "properties": {
+                  "labels_mode": {
+                    "const": "full"
+                  },
+                  "labels": {
+                    "minItems": 7,
+                    "maxItems": 7
+                  }
+                }
+              },
+              "orientation_sm": {
+                "const": "vertical"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "scale"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "const": 11
+                  }
+                },
+                "required": [
+                  "points"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scale": {
+                "properties": {
+                  "labels_mode": {
+                    "const": "endpoints"
+                  },
+                  "labels": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "scale"
+            ],
+            "properties": {
+              "scale": {
+                "properties": {
+                  "labels_mode": {
+                    "const": "endpoints"
+                  }
+                },
+                "required": [
+                  "labels_mode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scale": {
+                "properties": {
+                  "points": {
+                    "enum": [
+                      5,
+                      11
+                    ]
+                  },
+                  "labels": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "rank"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "options",
+              "rank"
+            ],
+            "properties": {
+              "options": {
+                "maxItems": 12
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "rank"
+            ],
+            "properties": {
+              "rank": {
+                "properties": {
+                  "mode": {
+                    "const": "rank_all"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "options": {
+                "maxItems": 6
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "rank"
+            ],
+            "properties": {
+              "rank": {
+                "properties": {
+                  "mode": {
+                    "const": "top_n"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "options": {
+                "minItems": 7
+              },
+              "rank": {
+                "required": [
+                  "top_n"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "long_text"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "required": [
+                  "rows_max",
+                  "rows_start",
+                  "enter_submits"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "prefill"
+            ],
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "source": {
+                    "const": "ai_suggestion"
+                  }
+                },
+                "required": [
+                  "source"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "show_as": {
+                    "const": "suggestion_chip"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "prefill"
+            ],
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "confidence": {
+                    "const": "low"
+                  }
+                },
+                "required": [
+                  "confidence"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "show_as": {
+                    "const": "suggestion_chip"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "prefill"
+            ],
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "show_as": {
+                    "const": "last_time"
+                  }
+                },
+                "required": [
+                  "show_as"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "source": {
+                    "const": "previous_response"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "prefill"
+            ],
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "source": {
+                    "const": "previous_response"
+                  }
+                },
+                "required": [
+                  "source"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "prefill": {
+                "properties": {
+                  "show_as": {
+                    "const": "last_time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "reveal"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "single_select",
+                  "multi_select"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "reveal"
+            ],
+            "properties": {
+              "reveal": {
+                "required": [
+                  "mode"
+                ],
+                "properties": {
+                  "mode": {
+                    "const": "quiz"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reveal": {
+                "required": [
+                  "correct_option_ids"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "reveal"
+            ],
+            "properties": {
+              "reveal": {
+                "required": [
+                  "mode"
+                ],
+                "properties": {
+                  "mode": {
+                    "const": "poll"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reveal": {
+                "not": {
+                  "required": [
+                    "correct_option_ids"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "reveal",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "single_select"
+              },
+              "reveal": {
+                "required": [
+                  "mode"
+                ],
+                "properties": {
+                  "mode": {
+                    "const": "quiz"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reveal": {
+                "properties": {
+                  "correct_option_ids": {
+                    "maxItems": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

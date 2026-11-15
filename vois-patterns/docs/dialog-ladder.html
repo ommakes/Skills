@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dialog ladder explainer</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--ink:#1b1b1a;--ink2:#5a5a57;--line:#d9d9d4;--accent:#255eea}
+@media (prefers-color-scheme:dark){:root{--bg:#171716;--card:#202020;--ink:#ece9e3;--ink2:#a9a69e;--line:#3a3a37;--accent:#5aa1f1}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 64px}h1{font-size:28px;margin:0 0 6px}.lede{color:var(--ink2);max-width:42em}
+.grid{display:grid;grid-template-columns:300px 1fr;gap:20px;margin-top:24px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+label{display:block;font-weight:600;margin:14px 0 6px}label:first-child{margin-top:0}
+select,input[type=number]{font:inherit;width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;gap:10px;align-items:center;min-height:44px}.check input{width:20px;height:20px}
+.seg{display:flex;gap:8px;margin-top:6px}.seg button{flex:1;font:inherit;min-height:44px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer}
+.seg button[aria-pressed=true]{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:2px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}.steps li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink2)}
+.steps li b{font:600 12px ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 8px;color:var(--ink2);white-space:nowrap}
+.steps li.hit{border-color:var(--accent);color:var(--ink);outline:2px solid var(--accent);outline-offset:2px}.steps li.skip{opacity:.55}
+h2{font-size:20px;margin:0 0 4px}dl{display:grid;grid-template-columns:130px 1fr;gap:6px 16px;margin:14px 0 0}@media(max-width:560px){dl{grid-template-columns:1fr;gap:2px}dd{margin-bottom:8px}}
+dt{color:var(--ink2);font-weight:600}dd{margin:0}code{font:.88em ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px;border-radius:4px}
+.hint{font-size:13px;color:var(--ink2);margin-top:12px}
+</style></head><body><div class="wrap">
+<h1>Which container?</h1>
+<p class="lede">Answer what the task needs. The ladder takes the first step that fits (vois-patterns <code>PATH-D-1</code> to <code>PATH-D-5</code>) and shows the container, its width and what happens on a phone.</p>
+<div class="grid"><div class="panel" id="controls">
+<label for="kind">What is the user doing?</label>
+<select id="kind"><option value="confirm">Confirming, or picking one thing</option><option value="task">Filling in fields</option></select>
+<div id="destructWrap"><label class="check"><input type="checkbox" id="destruct"> The action is destructive or has consequences</label></div>
+<div id="fieldsWrap"><label for="fields">How many fields?</label><input type="number" id="fields" min="1" max="30" value="3" inputmode="numeric">
+<label class="check"><input type="checkbox" id="wide"> It needs width: a textarea or a short list</label></div>
+<label class="check"><input type="checkbox" id="behind"> The user needs the page behind it while they work</label>
+<label class="check"><input type="checkbox" id="rich"> It has tabs, a timeline, related records or a long form</label>
+<label class="check"><input type="checkbox" id="multi"> It has more than one step</label>
+<label>Screen</label><div class="seg" role="group" aria-label="Screen"><button type="button" id="desk" aria-pressed="true">Desktop</button><button type="button" id="phone" aria-pressed="false">Phone</button></div>
+</div><div class="panel"><ol class="steps" id="steps"></ol><div id="result" style="margin-top:18px" aria-live="polite"></div></div></div>
+<p class="hint">The thresholds (four fields for a Dialog, eight for a Sheet) follow vois-components <code>JOB-OVERLAY-INTERACTION</code>. They are proposed and not yet tested on real screens.</p>
+</div><script>
+(function(){
+var $=function(i){return document.getElementById(i)};var phone=false;
+var STEPS=[["PATH-D-1","Confirm"],["PATH-D-2","Form dialog"],["PATH-D-3","Large dialog"],["PATH-D-4","Side peek"],["PATH-D-5","Page"]];
+function pick(){
+  var kind=$("kind").value,n=parseInt($("fields").value,10)||1,wide=$("wide").checked,behind=$("behind").checked,rich=$("rich").checked,multi=$("multi").checked,destruct=$("destruct").checked;
+  if(kind==="confirm"&&!multi&&!rich&&!behind)return 0;
+  if(rich||multi||n>8)return 4;
+  if(behind||n>4)return 3;
+  if(wide)return 2;
+  return 1;
+}
+function info(i){
+  var d=["PATH-D-1","PATH-D-2","PATH-D-3","PATH-D-4","PATH-D-5"][i];
+  var destruct=$("destruct").checked&&$("kind").value==="confirm";
+  var rows;
+  if(i===0)rows=[["Container",destruct?"AlertDialog":"Small Dialog"],["Width","--width-dialog-sm (344)"],["On a phone","Bottom sheet, at most 90dvh, stacked footer with the primary button on top, a visible Close or Cancel (DS-RESPONSIVE-008)"],["First focus",destruct?"Cancel, never the destructive button (DS-A11Y-020)":"The primary action"]];
+  else if(i===1)rows=[["Container","Small Dialog, one column"],["Width","--width-dialog-sm (344)"],["On a phone","Full-screen form: 56 tall header, footer at the bottom of the scroll area so the keyboard cannot cover it (DS-RESPONSIVE-009)"],["First focus","The first field (DS-A11Y-020)"]];
+  else if(i===2)rows=[["Container","Large Dialog, one column"],["Width","--width-dialog-lg (560, proposed)"],["On a phone","Full-screen form (DS-RESPONSIVE-009)"],["First focus","The first field (DS-A11Y-020)"]];
+  else if(i===3)rows=[["Container","Right-anchored Sheet"+($("behind").checked?", as a peek: no scrim, no inert background, no focus trap":", modal with a scrim")],["Width","A panel overlay tier (DS-PANEL-006)"],["On a phone","Full screen (DS-PANEL-002)"],["First focus",$("behind").checked?"Stays where the user was working":"The first field"]];
+  else rows=[["Container","A full page, opened from an Open action in the overlay"],["Width","The page grid"],["On a phone","A page"],["Never","A bigger dialog, or a stack of dialogs (DS-MODAL-006)"]];
+  return {id:d,rows:rows};
+}
+function render(){
+  var hit=pick(),inf=info(hit);
+  $("steps").innerHTML=STEPS.map(function(s,i){return '<li class="'+(i===hit?"hit":i<hit?"skip":"")+'"><b>'+s[0]+'</b><span>'+s[1]+(i===hit?" · this one":"")+'</span></li>'}).join("");
+  var kindConfirm=$("kind").value==="confirm";
+  $("fieldsWrap").hidden=kindConfirm;$("destructWrap").hidden=!kindConfirm;
+  $("result").innerHTML='<h2>'+STEPS[hit][1]+' <code>'+inf.id+'</code></h2><dl>'+inf.rows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join("")+'</dl>';
+  if(!phone)$("result").querySelectorAll("dt").forEach(function(dt){if(dt.textContent==="On a phone")dt.style.opacity=.5});
+}
+["kind","fields","wide","behind","rich","multi","destruct"].forEach(function(id){$(id).addEventListener("input",render);$(id).addEventListener("change",render)});
+$("desk").addEventListener("click",function(){phone=false;$("desk").setAttribute("aria-pressed","true");$("phone").setAttribute("aria-pressed","false");render()});
+$("phone").addEventListener("click",function(){phone=true;$("phone").setAttribute("aria-pressed","true");$("desk").setAttribute("aria-pressed","false");render()});
+render();
+})();
+</script></body></html>

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vois-fields/data/prefill-answer.schema.json",
+  "title": "Vois prefilled answer",
+  "description": "What a prefilled or suggested field value carries, so the field can show its source (FIELD-PREFILL-SOURCE) and decide between filling and suggesting (FIELD-PREFILL-SUGGEST). Checked against sample answers in scripts/check-fields.test.mjs. A product's own answer object may hold more, but these four properties must be present.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fieldType", "value", "origin", "confidence"],
+  "properties": {
+    "fieldType": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "value": { "type": "string" },
+    "origin": { "enum": ["entered", "profile", "previous", "lookup", "import", "suggestion"] },
+    "confidence": { "enum": ["high", "low"] },
+    "sourceLabel": { "type": "string", "minLength": 1 }
+  }
+}
