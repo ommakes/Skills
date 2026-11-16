@@ -146,11 +146,27 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 - **Easing** comes from a Figma string variable, exported as `{ "css": "cubic-bezier(...)" }`. The generator accepts that form only on a `--motion-ease-*` token, and only for a `cubic-bezier` with four numbers.
 - **Values must match the skill.** The checker requires the values to equal the starter block in `vois-tokens/references/animation.md`. A change to one means a change to both.
 
+### `vois-glass`
+
+`vois/glass/glass.ts` installs as `lib/glass.ts`. It exports `glass.subtle`, `glass.standard` and `glass.strong`, one Tailwind class string per tier of frosted glass (vois-tokens `DS-GLASS`). Glass is opt-in: every component stays opaque unless you ask.
+
+| Tier | Use | Blur | Opaque fallback |
+|---|---|---|---|
+| `glass.subtle` | Chips, badges, a hover state | `--glass-blur-subtle` (8) | `--elevation-surface-small` |
+| `glass.standard` | A sticky nav or toolbar, menus | `--glass-blur-standard` (16) | `--elevation-surface-popup` |
+| `glass.strong` | A dialog, sheet or command palette, over the scrim | `--glass-blur-strong` (24) | `--elevation-surface-raised` |
+
+- Each string starts from the opaque fallback with the `--border-default` edge, switches to the glass tint and edge and adds blur and saturate inside an `@supports` test for `backdrop-filter` or its `-webkit-` twin, and goes back to the fallback with no blur under `prefers-reduced-transparency: reduce`.
+- Put it on an element that has a border width (`border`). Do not nest one glass element in another (`DS-GLASS-006`).
+- `DropdownMenuContent` and `DropdownMenuSubContent` take `material="glass"` (standard); a glass submenu always renders in a portal, because a glass menu clips anything fixed inside it. `DialogContent` and `CommandDialog` take `material="glass"` (strong). The Button's `variant="glass"` is the subtle tier, for an icon button over media only; hover and press step up to the standard and strong tints.
+- Those components (and the Button) carry their own copy of the class string, so they install without this item. `check-registry.test.mjs` fails if a copy and `glass.ts` differ.
+- Needs the `vois-tokens` item. Works on any Tailwind 4.
+
 ### `vois-button`
 
 `vois/button/button.tsx` is shadcn/ui's Button on Vois tokens.
 
-**Names.** It keeps shadcn's variant names (`default`, `destructive`, `secondary`, `outline`, `ghost`, `link`) and size names (`sm`, `default`, `lg`, `icon-sm`, `icon`, `icon-lg`), and adds `circular`, plus the two Figma variants shadcn lacks: `auxiliary` (the black Auxilary button) and `destructive-soft` (Soft Negative). Other shadcn components that call `buttonVariants(...)` keep working.
+**Names.** It keeps shadcn's variant names (`default`, `destructive`, `secondary`, `outline`, `ghost`, `link`) and size names (`sm`, `default`, `lg`, `icon-sm`, `icon`, `icon-lg`), and adds `circular`, plus the Figma variants shadcn lacks: `auxiliary` (the black Auxilary button), `destructive-soft` (Soft Negative) and `soft` (the light gray Icon Button Soft, `DS-ICON-007`). Other shadcn components that call `buttonVariants(...)` keep working.
 
 **Heights** (`DS-COMPONENT-007`):
 
@@ -161,9 +177,17 @@ The `--motion-*` tokens go to their own generated file, because the vois-tokens 
 | `lg` | 48, the native default |
 | `circular` | 56 |
 
+**Icon sizes** (`DS-ICON-003`), visual / glyph. On a coarse pointer (`any-pointer: coarse`) they step up one size. A `className` that overrides an icon size (`size-10`) holds on a fine pointer only, so add the coarse twin too (`[@media(any-pointer:coarse)]:size-12`):
+
+| Size | Fine pointer | Coarse pointer |
+|---|---|---|
+| `icon-sm` | 28 / 16 | 36 / 20 |
+| `icon` | 36 / 20 | 48 / 24 |
+| `icon-lg` | 48 / 24 | 56 / 28 |
+
 **Behavior:**
 - **Focus:** a 2px ring with a 2px offset (`DS-A11Y-002`) in each variant's Figma focus color: `--action-primary-focus`, `--solid-negative-focus`, `--soft-negative-focus` or `--action-auxiliary-focus`, and `--border-state-focus` for secondary, outline, ghost and link. The fill stays as it is.
-- **Hit area:** an `::after` at least `--hit-area-min` (`DS-A11Y-001`).
+- **Hit area:** an `::after` at least `--hit-area-min`, and `--hit-area-coarse` (48) on a coarse pointer (`DS-A11Y-001`).
 - **Press:** scales to 0.96 on a pointer press only (`DS-ANIMATION-008`, `003`, `004`).
   - It doesn't scale on a keyboard press or under reduced motion.
   - The motion tokens time it.
@@ -508,6 +532,8 @@ An earlier draft mapped shadcn's `@theme inline` keys instead. That only works i
 | `node registry/scripts/check-registry.mjs` | No | Item types; unique names, paths and install targets (ignoring case); a target on every `registry:file`; regular files with no symlink on the way; no unlisted files; every `.css` file other than the two token files holds only the mapping block, each shadcn variable pointing at the one token `DS-TOKEN-005` names, with `MAPPINGS` equal to that table and every target a generated token; `vois-tokens.css`, `motion-tokens.css` and `shape-tokens.css` equal what the generator writes (and `shape.json` builds); the motion values equal `animation.md`'s starter block; every pending token is listed in `FIGMA-TODO.md`; every custom property a component file reads is a generated token or defined in that file; every file is a type the detector reads, with no findings; `package.json`'s version is the newest CHANGELOG entry |
 | `node registry/scripts/check-registry.test.mjs` | No | The checker's own tests |
 | `node registry/scripts/build-tokens.test.mjs` | No | The generator's tests: OKLCH round trip, brand slots null in the export and filled only by the brand file, alias chains end at a value, the grid lines, the default brand is blue, pending tokens stay pending, motion units and the motion file |
+| `npm run syntax` (in `registry/`) | Yes (esbuild) | Parses every `.ts` and `.tsx` file under `vois/` and fails on a syntax error, with the file and line. It does not type-check. `shadcn build` copies a component without compiling it, and the other checks read it with regexes, so this is the check that catches a bracket lost in a merge |
+| `npm run syntax:test` (in `registry/`) | Yes (esbuild) | The syntax check's own tests |
 | `npm run build` (in `registry/`) | Yes | `shadcn build` validates every item against the registry schema |
 
-CI runs all four on every PR. `node registry/scripts/build-tokens.mjs --check` is the same up-to-date check as `check-registry`'s, for use on its own. The shadcn version is pinned in `package.json`; bump it here first, with a CHANGELOG line.
+CI runs all of these on every PR; the first three need no install, and the install job runs the last three. `node registry/scripts/build-tokens.mjs --check` is the same up-to-date check as `check-registry`'s, for use on its own. The shadcn version is pinned in `package.json`; bump it here first, with a CHANGELOG line.

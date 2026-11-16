@@ -33,14 +33,14 @@
           { "condition": "Action opens a menu of related choices", "recommendation": "Button + DropdownMenu (see Job 15; the registry's vois-dropdown-menu if the project has none)" }
         ] },
         { "condition": "Action is icon-only (constrained space, toolbar, well-understood symbol)", "sub_branches": [
-          { "condition": "Single action", "recommendation": "Button with icon and aria-label" },
+          { "condition": "Single action", "recommendation": "Button with an icon size (`icon-sm` 28, `icon` 36, `icon-lg` 48; one step up on a coarse pointer) and an aria-label that names the action, not the icon. `variant=\"ghost\"` (no background) by default, `variant=\"soft\"` (light gray) when it must read as a button at rest. Size, spacing, placement and style: vois-tokens DS-ICON-003 to DS-ICON-007" },
           { "condition": "Grouped with other icon actions", "recommendation": "Toggle (for on/off) or Button (for one-shot)" }
         ] },
         { "condition": "Action is a removable selection or filter (user created it, they can remove it)", "recommendation": "Badge with dismiss (Chip pattern) — not a Button" }
       ],
       "rationale": [
         { "question": "Why not a custom div or span?", "answer": "Buttons handle keyboard focus, Enter/Space activation, disabled state, and role=\"button\" automatically. A div with onClick doesn't. Never fake a button." },
-        { "question": "Why use Button for icon-only instead of a bare icon?", "answer": "The button element provides a hit area of at least var(--hit-area-min) (when styled correctly), focus ring, and accessible label via aria-label. An icon on its own has none of that." }
+        { "question": "Why use Button for icon-only instead of a bare icon?", "answer": "The button element provides a hit area of at least var(--hit-area-min) (var(--hit-area-coarse) on a coarse pointer, when styled correctly), focus ring, and accessible label via aria-label. An icon on its own has none of that." }
       ]
     },
     {

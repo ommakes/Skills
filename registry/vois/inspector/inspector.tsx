@@ -8,7 +8,8 @@
 //     (none under the last one).
 //   InspectorSectionTrigger: a heading (h3 unless `level` says otherwise) around a full-width button, at least
 //     --hit-area-min tall, title 16/24 semibold --text-primary, a chevron in --icon-secondary that turns when
-//     the section closes. Focus is a 2px --border-state-focus ring inside the row.
+//     the section closes; on hover it turns --icon-state-hover. Focus is a 2px --border-state-focus ring inside
+//     the row; the row reaches 4px past the rows on each side with 4px padding, so the title stays aligned.
 //   InspectorSectionContent: the rows, --space-8 apart, --space-16 under the last one. Its clip box reaches
 //     8px past the rows, so a focus ring at a row's edge is not cut off by the Collapsible.
 //   InspectorRow: a two-column grid, label one part and control two parts, --space-12 between them, so every
@@ -22,7 +23,9 @@
 //     draws them, the corners that face each other --radii-2. The first control takes the free width.
 //   InspectorToggle: a Radix Toggle, a 32 square (--size-field-compact) so it matches the fields beside it
 //     (DS-COMPONENT-007: a button next to a field matches its height). --input-resting fill like a field,
-//     --input-hover on hover, --bg-pressed and --icon-state-active when on, the field focus ring. It needs an
+//     --icon-state-hover on hover (the fill stays), --bg-pressed and --icon-state-active when on, the field focus ring. Disabled wins
+//     over on: --input-disabled and --icon-state-disabled, plus a 1px --border-state-disabled edge when on, so the
+//     setting stays visible. Hover does not change an on toggle. It needs an
 //     aria-label, and aria-expanded plus aria-controls when it shows more rows (individual sides).
 //
 // Controls in an inspector are the dense size: Select and Input `size="compact"` (32), the StepSlider (32),
@@ -60,9 +63,11 @@ function InspectorSectionTrigger({ className, children, level = 3, ...props }: I
       <CollapsibleTrigger
         data-slot="inspector-section-trigger"
         className={cn(
-          "group/trigger flex min-h-[var(--hit-area-min)] w-full cursor-pointer items-center justify-between gap-[var(--space-8)] rounded-[var(--radii-6)] bg-transparent text-left",
+          "group/trigger -mx-[var(--space-4)] flex min-h-[var(--hit-area-min)] w-[calc(100%+2*var(--space-4))] cursor-pointer items-center justify-between gap-[var(--space-8)] rounded-[var(--radii-6)] bg-transparent px-[var(--space-4)] text-left",
           "text-[length:var(--font-size-small)] leading-[var(--line-height-small)] [font-weight:var(--font-weight-semi-bold)] text-[color:var(--text-primary)]",
-          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[color:var(--border-state-focus)]",
+          // The ring sits inside the row, which reaches 4px past the rows on each side with 4px padding: the title
+          // stays on the labels' line and clears the ring, and the ring never covers the first control below.
+          "focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[calc(var(--focus-ring-width)*-1)] focus-visible:outline-[color:var(--border-state-focus)]",
           className
         )}
         {...props}
@@ -149,8 +154,14 @@ function InspectorToggle({ className, ...props }: React.ComponentProps<typeof To
         "bg-[color:var(--input-resting)] text-[color:var(--icon-state-resting)] [&_svg]:size-[var(--size-icon-small)] [&_svg]:shrink-0",
         "after:absolute after:top-1/2 after:left-1/2 after:size-full after:min-h-[var(--hit-area-min)] after:min-w-[var(--hit-area-min)] after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']",
         "transition-[background-color,color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
-        "hover:bg-[color:var(--input-hover)] hover:text-[color:var(--icon-state-hover)]",
-        "data-[state=on]:bg-[color:var(--bg-pressed)] data-[state=on]:text-[color:var(--icon-state-active)]",
+        // Hover darkens the icon only: --input-hover is white in light, which would make a toggle with no edge
+        // disappear into the panel.
+        "hover:text-[color:var(--icon-state-hover)]",
+        // data-* variants come after disabled:, so the on look is guarded with not-disabled (as the Checkbox does):
+        // a disabled toggle that is on reads disabled, and keeps a 1px edge so the setting stays visible (the
+        // SegmentedControl's rule for a disabled chosen item).
+        "data-[state=on]:not-disabled:bg-[color:var(--bg-pressed)] data-[state=on]:not-disabled:text-[color:var(--icon-state-active)]",
+        "data-[state=on]:disabled:shadow-[inset_0_0_0_1px_var(--border-state-disabled)]",
         "focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-[color:var(--border-state-focus)]",
         "disabled:cursor-not-allowed disabled:bg-[color:var(--input-disabled)] disabled:text-[color:var(--icon-state-disabled)]",
         className

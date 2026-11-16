@@ -40,6 +40,19 @@
       ]
     },
     {
+      "name": "vois-glass",
+      "type": "registry:lib",
+      "title": "Vois glass",
+      "description": "Opt-in frosted glass (vois-tokens DS-GLASS): Tailwind class strings glass.subtle, glass.standard and glass.strong on the --glass-* tokens from Figma. Each starts from an opaque surface, adds blur and saturate only where backdrop-filter works (Tailwind writes the -webkit- twin), and drops them under prefers-reduced-transparency. Needs vois-tokens. The Dropdown Menu, Dialog and Command carry their own copy of their tier for material=\"glass\", so they install without this item.",
+      "files": [
+        {
+          "path": "vois/glass/glass.ts",
+          "type": "registry:lib",
+          "target": "lib/glass.ts"
+        }
+      ]
+    },
+    {
       "name": "vois-spinner",
       "type": "registry:ui",
       "title": "Vois Spinner",
@@ -509,7 +522,7 @@
       "name": "vois-dropdown-menu",
       "type": "registry:ui",
       "title": "Vois Dropdown Menu",
-      "description": "shadcn/ui's DropdownMenu (Radix) on Vois tokens, from the Figma Dropdown Menu and Menu Item sets: the same list as the Select, with checked and radio items, destructive items, shortcuts, labels, separators and submenus.",
+      "description": "shadcn/ui's DropdownMenu (Radix) on Vois tokens, from the Figma Dropdown Menu and Menu Item sets: the same list as the Select, with checked and radio items, destructive items, shortcuts, labels, separators and submenus. material=\"glass\" gives the standard glass tier; it needs the vois-tokens glass tokens, not vois-glass.",
       "dependencies": [
         "radix-ui"
       ],
@@ -528,7 +541,7 @@
       "name": "vois-dialog",
       "type": "registry:ui",
       "title": "Vois Dialog",
-      "description": "shadcn/ui's Dialog (Radix) on Vois tokens, from the Figma Dialog: a --width-dialog-sm (344) card, or --width-dialog-lg (560) with the lg size, on --z-modal over a scrim, with a 40 ghost close button, header, footer and a motion-token fade. Install vois-button with it.",
+      "description": "shadcn/ui's Dialog (Radix) on Vois tokens, from the Figma Dialog: a --width-dialog-sm (344) card, or --width-dialog-lg (560) with the lg size, on --z-modal over a scrim, with a ghost icon close button (36, 48 on touch), header, footer and a motion-token fade. Install vois-button with it. material=\"glass\" gives the strong glass tier; it needs the vois-tokens glass tokens, not vois-glass.",
       "dependencies": [
         "radix-ui"
       ],
@@ -547,7 +560,7 @@
       "name": "vois-command",
       "type": "registry:ui",
       "title": "Vois Command",
-      "description": "shadcn/ui's Command (cmdk) on Vois tokens, from the Figma Command Menu: a 56 tall search row, a 12-padded list with group headings, 40 tall items with hover and pressed fills and a keyboard ring, and a CommandDialog. Install vois-dialog with it.",
+      "description": "shadcn/ui's Command (cmdk) on Vois tokens, from the Figma Command Menu: a 56 tall search row, a 12-padded list with group headings, 40 tall items with hover and pressed fills and a keyboard ring, and a CommandDialog. Install vois-dialog with it. material=\"glass\" gives the strong glass tier; it needs the vois-tokens glass tokens, not vois-glass.",
       "dependencies": [
         "cmdk"
       ],

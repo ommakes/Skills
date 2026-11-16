@@ -237,7 +237,7 @@
       "tree_path": [1, 0],
       "user_prompt": "Add a refresh control to the table toolbar. Space is tight, so it should be just an icon.",
       "condition": "Single action",
-      "expected_outcome": "Button with icon and aria-label",
+      "expected_outcome": "Button with an icon size (icon-sm in a dense toolbar) and an aria-label that names the action",
       "forbidden_outcomes": [
         "A bare icon or a div or span with onClick (no keyboard focus, no hit area, no accessible name)",
         "An icon Button with no aria-label"

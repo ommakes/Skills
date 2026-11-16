@@ -5,7 +5,10 @@
 // them correctly, and a className override such as bg-[color:var(--bg-card)] replaces the variant's.
 //
 // Every value is a Vois token from vois-tokens (registry item vois-tokens). Heights: sm 28, default 36
-// (the web default), lg 48 (the native default), circular 56 (vois-tokens DS-COMPONENT-007).
+// (the web default), lg 48 (the native default), circular 56 (vois-tokens DS-COMPONENT-007). Icon-only sizes
+// step up on a coarse pointer (DS-ICON-003). The arbitrary [@media(any-pointer:coarse)]: variant works on any
+// Tailwind 4 (the named any-pointer-coarse: variant needs 4.1). A className that overrides an icon size
+// (size-10) holds on a fine pointer only: tailwind-merge keeps the coarse class, so add its coarse twin too.
 // Press: scale 0.96 for a pointer press only, never a keyboard press or under reduced motion, timed by the
 // motion tokens (DS-ANIMATION-008, DS-ANIMATION-003, DS-ANIMATION-004, DS-MOTION-001). `static` turns it off.
 // Layout follows the Figma Primary Button: container padding, then a label frame with 4px on each side
@@ -18,6 +21,10 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
+
+// glass.subtle from the vois-glass item (lib/glass.ts), copied here so the Button installs without it;
+// check-registry.test.mjs keeps the two equal.
+const GLASS_SUBTLE = "border-[color:var(--border-default)] bg-[color:var(--elevation-surface-small)] shadow-[inset_0_1px_0_var(--glass-highlight-subtle),var(--glass-shadow-subtle)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:border-[color:var(--glass-stroke-subtle)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:bg-[color:var(--glass-tint-subtle)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-blur-[var(--glass-blur-subtle)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-saturate-150 [@media(prefers-reduced-transparency:reduce)]:border-[color:var(--border-default)] [@media(prefers-reduced-transparency:reduce)]:bg-[color:var(--elevation-surface-small)] [@media(prefers-reduced-transparency:reduce)]:backdrop-filter-none"
 
 const buttonVariants = cva(
   [
@@ -32,7 +39,9 @@ const buttonVariants = cva(
     // Focus ring (DS-A11Y-002): the browser outline is replaced, never removed without one.
     "focus-visible:outline-2 focus-visible:outline-offset-2",
     // Hit area at least --hit-area-min in both directions, without changing the visible size (DS-A11Y-001).
+    // On a coarse pointer (any-pointer: coarse, so a touchscreen laptop counts) it is --hit-area-coarse (48).
     "after:absolute after:top-1/2 after:left-1/2 after:size-full after:min-h-[var(--hit-area-min)] after:min-w-[var(--hit-area-min)] after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']",
+    "[@media(any-pointer:coarse)]:after:min-h-[var(--hit-area-coarse)] [@media(any-pointer:coarse)]:after:min-w-[var(--hit-area-coarse)]",
     "disabled:pointer-events-none aria-disabled:pointer-events-none",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
     // Loading: everything but the spinner turns transparent and keeps its space, so the width holds.
@@ -81,6 +90,25 @@ const buttonVariants = cva(
           "hover:bg-[color:var(--bg-hover)] hover:text-[color:var(--text-state-hover)] active:bg-[color:var(--action-ghost-pressed)] active:text-[color:var(--text-primary)]",
           "disabled:text-[color:var(--text-state-disabled)]",
         ],
+        // Frosted glass, subtle tier (Figma Icon Button Glass, vois-tokens DS-GLASS): for an icon button floating over an
+        // image, video or map only (DS-GLASS-001). Hover steps to the standard tint, pressed to the strong one. Opaque
+        // fallback first, no blur under reduced transparency.
+        glass: [
+          "border",
+          GLASS_SUBTLE,
+          "text-[color:var(--icon-primary)] focus-visible:outline-[color:var(--border-state-focus)]",
+          "supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:hover:bg-[color:var(--glass-tint-standard)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:active:bg-[color:var(--glass-tint-strong)]",
+          "[@media(prefers-reduced-transparency:reduce)]:hover:bg-[color:var(--elevation-surface-small)] [@media(prefers-reduced-transparency:reduce)]:active:bg-[color:var(--elevation-surface-small)]",
+          "disabled:text-[color:var(--icon-state-disabled)]",
+        ],
+        // The light gray icon button (Figma Icon Button Soft, vois-tokens DS-ICON-007): a resting fill one step above the
+        // ghost's hover, so a resting Soft never looks like a hovered ghost. Alpha fills, so it reads on a page, a card or
+        // an image.
+        soft: [
+          "bg-[color:var(--action-icon-soft-resting)] text-[color:var(--icon-primary)] focus-visible:outline-[color:var(--border-state-focus)]",
+          "hover:bg-[color:var(--action-icon-soft-hover)] active:bg-[color:var(--action-icon-soft-pressed)]",
+          "disabled:bg-[color:var(--action-icon-soft-disabled)] disabled:text-[color:var(--icon-state-disabled)]",
+        ],
         link: [
           "text-[color:var(--action-link-active)] underline-offset-4 focus-visible:outline-[color:var(--border-state-focus)]",
           "hover:text-[color:var(--action-link-hover)] hover:underline focus-visible:text-[color:var(--action-link-focus)]",
@@ -92,9 +120,11 @@ const buttonVariants = cva(
         sm: "h-[var(--size-action-medium)] px-[var(--space-padding-x-small)] text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-small)]",
         default: "h-[var(--size-action-large)] px-[var(--space-padding-small)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
         lg: "h-[var(--size-action-x-large)] px-[var(--space-padding-small)] text-[length:var(--font-size-medium)] leading-[var(--line-height-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
-        "icon-sm": "size-[var(--size-action-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-small)]",
-        icon: "size-[var(--size-action-large)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
-        "icon-lg": "size-[var(--size-action-x-large)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-medium)]",
+        // Icon-only sizes (DS-ICON-003): 28 / 36 / 48 with 16 / 20 / 24 glyphs, one step up on a coarse pointer:
+        // 36 / 48 / 56 with 20 / 24 / 28 glyphs. Text sizes keep their height on touch; only their hit area grows.
+        "icon-sm": "size-[var(--size-action-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-small)] [@media(any-pointer:coarse)]:size-[var(--size-action-large)] [@media(any-pointer:coarse)]:[&_svg:not([class*='size-'])]:size-[var(--size-20)]",
+        icon: "size-[var(--size-action-large)] [&_svg:not([class*='size-'])]:size-[var(--size-20)] [@media(any-pointer:coarse)]:size-[var(--size-action-x-large)] [@media(any-pointer:coarse)]:[&_svg:not([class*='size-'])]:size-[var(--size-icon-medium)]",
+        "icon-lg": "size-[var(--size-action-x-large)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-medium)] [@media(any-pointer:coarse)]:size-[var(--size-56)] [@media(any-pointer:coarse)]:[&_svg:not([class*='size-'])]:size-[var(--size-icon-large)]",
         circular: "size-[var(--size-action-circular)] rounded-full [&_svg:not([class*='size-'])]:size-[var(--size-icon-medium)]",
       },
       // The press scale. The Button's `static` prop sets this to false.

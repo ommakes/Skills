@@ -19,6 +19,7 @@ import { openingTags } from "./jsx-tags.mjs";
 import { cssBlocks } from "./css-blocks.mjs";
 import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs";
 import { rawShadow, dockedShadow } from "./elevation-checks.mjs";
+import { missingWebkitTwin, literalGlassBlur, animatedGlassBlur } from "./glass-checks.mjs";
 
 export { cssBlocks };
 
@@ -596,6 +597,30 @@ export const RULES = [
     check: dockedShadow,
   },
   {
+    id: "DS-GLASS-003",
+    title: "backdrop-filter with no -webkit- twin",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Write -webkit-backdrop-filter with the same value next to it (WebkitBackdropFilter in a style object). Tailwind's backdrop-blur utilities write both.",
+    check: missingWebkitTwin,
+  },
+  {
+    id: "DS-GLASS-004",
+    title: "Literal backdrop blur instead of a glass token",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Use var(--glass-blur-subtle), -standard or -strong (8, 16, 24), or the registry's glass classes.",
+    check: literalGlassBlur,
+  },
+  {
+    id: "DS-GLASS-005",
+    title: "backdrop-filter animated",
+    severity: "quality",
+    extensions: ALL_EXT,
+    fixHint: "Do not transition or keyframe backdrop-filter. Fade the surface's opacity instead, or show it at once.",
+    check: animatedGlassBlur,
+  },
+  {
     id: "DS-ICON-001",
     title: "Icon stroke width differs from the set's",
     severity: "quality",
@@ -642,6 +667,40 @@ export const RULES = [
         if (off.size === 0) continue;
         const line = lineAt(content, tag.index);
         findings.push({ line, snippet: snippetAt(lines, line), message: `<${tag.name}> is ${[...off].sort((a, b) => a - b).join("px, ")}px, not one of ${allowed.join("/")}px.${note}` });
+      }
+      return findings;
+    },
+  },
+  {
+    id: "DS-ICON-005",
+    title: "Icon-only Button with no accessible name",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: 'Name the action: aria-label="Add to favorites" (not "Heart"), aria-labelledby, or sr-only text inside the Button.',
+    check({ content, lines }) {
+      // An icon size written as a literal: size="icon", size='icon-sm', size={"icon-lg"}, size="circular".
+      // A computed size (size={compact ? "icon-sm" : "icon"}) is not read. data-size= does not count.
+      const iconSize = /(?<![\w-])size\s*=\s*(?:(["'])(?:icon|icon-sm|icon-lg|circular)\1|\{\s*(["'`])(?:icon|icon-sm|icon-lg|circular)\2\s*\})/;
+      const findings = [];
+      for (const tag of openingTags(content, ["Button"])) {
+        const a = tag.attrs;
+        if (!iconSize.test(a)) continue;
+        // A prop spread ({...props}) can carry the name; the detector cannot see inside it. An object spread
+        // inside a value (style={{...base}}, className={cn({...x})}) is not a prop spread.
+        if (/(?:^|[^=({,\s])\s+\{\s*\.\.\.|^\s*\{\s*\.\.\./.test(a)) continue;
+        if (hasName(a)) continue;
+        if (!/\/\s*$/.test(a)) {
+          const from = tag.index + 1 + tag.name.length + a.length + 1;
+          const close = content.indexOf("</Button>", from);
+          if (close === -1) continue; // never closes: not read
+          const body = content.slice(from, close);
+          // A labelled child (asChild with <Link aria-label=...>) names it.
+          if (hasName(body)) continue;
+          // Text among the children (visible or sr-only) names it. An expression child ({label}) may be text: not read.
+          if (childContent(body) !== "none") continue;
+        }
+        const line = lineAt(content, tag.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "Icon-only Button has no accessible name. Add an aria-label that names the action." });
       }
       return findings;
     },
@@ -875,6 +934,78 @@ export const RULES = [
     },
   },
 ];
+
+// --- DS-ICON-005 helpers -----------------------------------------------------------------------
+
+/** aria-label or aria-labelledby with a non-empty value. {undefined}, {null} and an empty string are no name. data-aria-label= does not count. */
+function hasName(text) {
+  const re = /(?<![\w-])aria-(?:label|labelledby)\s*=\s*(?:"([^"]*)"|'([^']*)'|(\{))/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    if (m[3]) {
+      if (/^\{\s*(?:undefined|null|""|''|``)\s*\}/.test(text.slice(m.index + m[0].length - 1))) continue;
+      return true;
+    }
+    if ((m[1] ?? m[2]).trim() !== "") return true;
+  }
+  return false;
+}
+
+/** The index just past the brace that closes the one at `i`, skipping strings and comments; -1 if it never closes. */
+function braceEnd(text, i) {
+  let depth = 0;
+  for (let j = i; j < text.length; j++) {
+    const c = text[j];
+    if (c === '"' || c === "'" || c === "`") {
+      j++;
+      while (j < text.length && text[j] !== c) j += text[j] === "\\" ? 2 : 1;
+    } else if (c === "/" && text[j + 1] === "*") {
+      const e = text.indexOf("*/", j + 2);
+      if (e === -1) return -1;
+      j = e + 1;
+    } else if (c === "{") depth++;
+    else if (c === "}" && --depth === 0) return j + 1;
+  }
+  return -1;
+}
+
+/** The index just past the tag that starts at `i` (its ">"), skipping quoted values and {expressions}; -1 if it never closes. */
+function tagEnd(text, i) {
+  for (let j = i + 1; j < text.length; j++) {
+    const c = text[j];
+    if (c === '"' || c === "'") {
+      const e = text.indexOf(c, j + 1);
+      if (e === -1) return -1;
+      j = e;
+    } else if (c === "{") {
+      const e = braceEnd(text, j);
+      if (e === -1) return -1;
+      j = e - 1;
+    } else if (c === ">") return j + 1;
+  }
+  return -1;
+}
+
+/** What JSX children hold: "text", "expr" (an expression that may be text, or something unreadable) or "none" (tags, whitespace and comments only). */
+function childContent(body) {
+  let found = "none";
+  for (let i = 0; i < body.length; ) {
+    const c = body[i];
+    if (c === "<") {
+      const e = tagEnd(body, i);
+      if (e === -1) return "expr";
+      i = e;
+    } else if (c === "{") {
+      const e = braceEnd(body, i);
+      if (e === -1) return "expr";
+      const inner = body.slice(i + 1, e - 1).trim();
+      if (inner !== "" && !/^\/\*[\s\S]*\*\/$/.test(inner)) found = "expr";
+      i = e;
+    } else if (/\s/.test(c)) i++;
+    else return "text";
+  }
+  return found;
+}
 
 // ---------------------------------------------------------------------------
 // Lookalikes: markup that does a component's job without the component.

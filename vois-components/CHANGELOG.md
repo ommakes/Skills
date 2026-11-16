@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.27.0] - 2026-11-15
+
+### Changed
+- `JOB-TRIGGER-ACTION`: an icon-only action is a Button with an icon size (`icon-sm` 28, `icon` 36, `icon-lg` 48, one step up on a coarse pointer) and an `aria-label` that names the action. It names the two styles (`ghost`, and `soft` for a light gray resting fill) and points to vois-tokens `DS-ICON-003` to `DS-ICON-007` for size, spacing, placement and style. The hit-area answer names `--hit-area-coarse`.
+
 ## [1.26.0] - 2026-11-15
 
 ### Added

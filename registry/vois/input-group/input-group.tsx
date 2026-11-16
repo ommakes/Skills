@@ -139,6 +139,8 @@ const inputGroupButtonVariants = cva(
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--border-state-focus)]",
     // Hit area at least --hit-area-min in both directions, without changing the visible size (DS-A11Y-001).
     "after:absolute after:top-1/2 after:left-1/2 after:size-full after:min-h-[var(--hit-area-min)] after:min-w-[var(--hit-area-min)] after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']",
+    // On a coarse pointer the hit area is --hit-area-coarse (48), as on the Button (DS-A11Y-001, DS-ICON-003).
+    "[@media(any-pointer:coarse)]:after:min-h-[var(--hit-area-coarse)] [@media(any-pointer:coarse)]:after:min-w-[var(--hit-area-coarse)]",
     "disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
   ],
   {

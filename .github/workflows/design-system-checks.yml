@@ -110,6 +110,14 @@ jobs:
       - name: Install the pinned shadcn CLI
         run: npm ci --ignore-scripts --no-audit --no-fund
 
+      # shadcn build copies the components into JSON without compiling them, and the other checks read them with
+      # regexes. This parses every .ts and .tsx file, so a bracket lost in a merge fails here.
+      - name: Parse every registry component (syntax only)
+        run: npm run syntax
+
+      - name: The syntax check's own tests
+        run: npm run syntax:test
+
       - name: Build the registry (shadcn validates every item against its schema)
         run: npm run build
 

@@ -47,3 +47,6 @@
 }
 
 .raw-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } /* DS-ELEVATION-007 */
+
+/* DS-GLASS-003 (no -webkit- twin), DS-GLASS-004 (a literal blur), DS-GLASS-005 (the blur is transitioned) */
+.glass-nav { backdrop-filter: blur(20px); transition: opacity 150ms, backdrop-filter 150ms; }

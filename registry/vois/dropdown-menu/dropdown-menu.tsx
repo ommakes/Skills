@@ -50,11 +50,22 @@ const menuKeyframes =
 
 const surface = [
   "z-[var(--z-dropdown)] min-w-[8rem] overflow-x-hidden overflow-y-auto p-[var(--space-padding-x-small)]",
-  "rounded-[var(--shape-rounded)] border border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-popup)] text-[color:var(--text-primary)] shadow-[var(--shadow-medium)]",
+  "rounded-[var(--shape-rounded)] border text-[color:var(--text-primary)]",
   "motion-safe:data-[state=open]:animate-[vois-menu-in_var(--motion-duration-fast)_var(--motion-ease-standard)]",
   "motion-safe:data-[state=closed]:animate-[vois-menu-out_var(--motion-duration-instant)_var(--motion-ease-standard)_forwards]",
   "motion-reduce:animate-none",
 ]
+
+// The fill. Solid is the default. material="glass" is the standard glass tier (vois-tokens DS-GLASS): its own fill,
+// edge, highlight and shadow, an opaque fallback, and no blur under reduced transparency. The string is glass.standard
+// from the vois-glass item (lib/glass.ts), copied here so the menu installs without it; check-registry.test.mjs keeps
+// the two equal.
+type Material = "solid" | "glass"
+const GLASS_STANDARD = "border-[color:var(--border-default)] bg-[color:var(--elevation-surface-popup)] shadow-[inset_0_1px_0_var(--glass-highlight-standard),var(--glass-shadow-standard)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:border-[color:var(--glass-stroke-standard)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:bg-[color:var(--glass-tint-standard)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-blur-[var(--glass-blur-standard)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-saturate-[1.6] [@media(prefers-reduced-transparency:reduce)]:border-[color:var(--border-default)] [@media(prefers-reduced-transparency:reduce)]:bg-[color:var(--elevation-surface-popup)] [@media(prefers-reduced-transparency:reduce)]:backdrop-filter-none"
+const fill = (material: Material) =>
+  material === "glass"
+    ? GLASS_STANDARD
+    : "border-[color:var(--border-pretty)] bg-[color:var(--elevation-surface-popup)] shadow-[var(--shadow-medium)]"
 
 // Every item shares this. data-* variants come after hover and focus, so each is guarded.
 const itemBase = [
@@ -83,17 +94,20 @@ function DropdownMenuContent({
   className,
   sideOffset = 4,
   collisionPadding = 8,
+  material = "solid",
   children,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & { material?: Material }) {
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         data-slot="dropdown-menu-content"
+        data-material={material}
         sideOffset={sideOffset}
         collisionPadding={collisionPadding}
         className={cn(
           surface,
+          fill(material),
           "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)",
           className
         )}
@@ -241,12 +255,13 @@ function DropdownMenuSubTrigger({ className, inset, children, ...props }: React.
   )
 }
 
-function DropdownMenuSubContent({ className, collisionPadding = 8, children, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
-  return (
+function DropdownMenuSubContent({ className, collisionPadding = 8, material = "solid", children, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent> & { material?: Material }) {
+  const content = (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
+      data-material={material}
       collisionPadding={collisionPadding}
-      className={cn(surface, "origin-(--radix-dropdown-menu-content-transform-origin)", className)}
+      className={cn(surface, fill(material), "origin-(--radix-dropdown-menu-content-transform-origin)", className)}
       {...props}
     >
       <style href="vois-menu-keyframes" precedence="default">
@@ -255,6 +270,9 @@ function DropdownMenuSubContent({ className, collisionPadding = 8, children, ...
       {children}
     </DropdownMenuPrimitive.SubContent>
   )
+  // A glass menu's backdrop-filter clips anything fixed inside it, and a glass submenu inside it would be glass on glass
+  // (DS-GLASS-006). So a glass submenu always renders in a portal, next to its parent, not inside it.
+  return material === "glass" ? <DropdownMenuPrimitive.Portal>{content}</DropdownMenuPrimitive.Portal> : content
 }
 
 export {

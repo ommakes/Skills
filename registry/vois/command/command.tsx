@@ -48,11 +48,12 @@ function CommandDialog({
   description = "Search for a command to run",
   children,
   className,
+  material = "solid",
   ...props
-}: React.ComponentProps<typeof Dialog> & { title?: string; description?: string; className?: string }) {
+}: React.ComponentProps<typeof Dialog> & { title?: string; description?: string; className?: string; material?: "solid" | "glass" }) {
   return (
     <Dialog {...props}>
-      <DialogContent showCloseButton={false} className={cn("w-[460px] max-w-[calc(100vw-var(--space-32))] overflow-hidden p-0 [&_[data-slot=command]]:bg-transparent", className)}>
+      <DialogContent showCloseButton={false} material={material} className={cn("w-[460px] max-w-[calc(100vw-var(--space-32))] overflow-hidden p-0 [&_[data-slot=command]]:bg-transparent", className)}>
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
