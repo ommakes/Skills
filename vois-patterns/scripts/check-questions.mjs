@@ -18,6 +18,18 @@ const readText = (p) => readFileSync(join(root, p), "utf8");
 const readJson = (p) => JSON.parse(readText(p));
 let failed = false;
 const fail = (m) => { failed = true; console.error("FAIL  " + m); };
+// A copy entry field must have the right type and hold something. A wrong type fails (never passes).
+// Blank means empty after removing whitespace and zero-width characters. NaN, [], {} and "" are empty.
+const blank = (v) => typeof v !== "string" || v.replace(/[\s\u200B-\u200D\u2060\uFEFF]/g, "") === "";
+const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+const FIELD_KINDS = { id: "string", name: "string", when_to_use: "string", golden_rule: "string", rules: "strings", variants: "array", examples: "object", path_ids: "strings" };
+const fieldOk = (v, kind) => kind === "string" ? !blank(v)
+  : kind === "strings" ? Array.isArray(v) && v.length > 0 && v.every((x) => !blank(x))
+  : kind === "array" ? Array.isArray(v) && v.length > 0
+  : isPlainObject(v) && Object.keys(v).length > 0;
+for (const [v, kind, want] of [[[], "strings", false], [{}, "object", false], ["  ", "string", false], ["\u200B", "string", false], [null, "string", false], [undefined, "array", false], [NaN, "string", false], [5, "strings", false], [true, "strings", false], ["text", "strings", false], [[""], "strings", false], [[" "], "strings", false], [["x"], "strings", true], [[{ a: 1 }], "array", true], [{ a: 1 }, "object", true], [[1], "object", false], ["x", "string", true]]) {
+  if (fieldOk(v, kind) !== want) fail(`self-test: fieldOk(${JSON.stringify(v)}, ${kind}) should be ${want}`);
+}
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 // 1. Tag sync
@@ -184,8 +196,8 @@ const fieldIds = new Set(existsSync(fieldsPath) ? (JSON.parse(readFileSync(field
 const copyIds = new Set();
 for (const c of copy) {
   if (copyIds.has(c.id)) fail(`duplicate copy id ${c.id}`); copyIds.add(c.id);
-  for (const k of ["id", "name", "when_to_use", "golden_rule", "rules", "variants", "examples", "path_ids"]) if (!c[k]) fail(`copy ${c.id} is missing ${k}`);
-  for (const p of c.path_ids || []) if (!nodeIds.has(p) && !fieldIds.has(p)) fail(`copy ${c.id} cites ${p}, which is not a known id`);
+  for (const [k, kind] of Object.entries(FIELD_KINDS)) if (!fieldOk(c[k], kind)) fail(`copy ${c.id}: ${k} is missing, empty or the wrong type (wanted ${kind})`);
+  for (const p of c.path_ids || []) if (!nodeIds.has(p) && !fieldIds.has(p) && !(!existsSync(fieldsPath) && p.startsWith("FIELD-"))) fail(`copy ${c.id} cites ${p}, which is not a known id`);
   for (const v of c.variants || []) if (!v.name || !v.sentence_construction) fail(`copy ${c.id} has a variant without name or sentence_construction`);
   if (!c.examples?.good?.length || !c.examples?.bad?.length) fail(`copy ${c.id} needs good and bad examples`);
   if (JSON.stringify(c).includes("\u2014")) fail(`copy ${c.id} contains an em dash`);
