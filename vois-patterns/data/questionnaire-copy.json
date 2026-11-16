@@ -1,0 +1,585 @@
+{
+  "_note": "Copy guidance for the questionnaire components (registry item vois-questionnaire, default strings in lib/questionnaire/copy.ts). Moved here from righter/data/components.json in vois-patterns 1.23.2. Reviewed with the righter skill when a question is added.",
+  "components": [
+    {
+      "id": "prefill-badge",
+      "name": "Prefill badge and source line",
+      "path_ids": [
+        "FIELD-PREFILL-SOURCE",
+        "FIELD-PREFILL-NOTME",
+        "FIELD-PREFILL-UNDO",
+        "FIELD-PREFILL-CONFLICT"
+      ],
+      "when_to_use": "A field or answer holds a value the user did not type this session: from a profile, a link, an earlier answer, or an AI guess.",
+      "golden_rule": "Say where the value came from, and make it easy to change.",
+      "rules": [
+        "Badge: 2 to 5 words, sentence case, no period. Name the source in plain words",
+        "Source line: under 60 characters. Say 'Source:' then where it came from",
+        "Never show a confidence percentage. Use a word such as Likely, or show the source instead",
+        "After the user edits, the badge becomes 'Edited by you'",
+        "'Not me' clears every prefilled identity field in one tap",
+        "Undo message: say what was cleared, with one Undo action",
+        "When two sources disagree, show both values and let the user pick"
+      ],
+      "variants": [
+        {
+          "name": "Badge",
+          "sentence_construction": "Filled from + source",
+          "examples": [
+            "Filled from your profile",
+            "From your invitation",
+            "Edited by you"
+          ]
+        },
+        {
+          "name": "Source line",
+          "sentence_construction": "Source: + origin",
+          "examples": [
+            "Source: your account"
+          ]
+        },
+        {
+          "name": "Previous answer",
+          "sentence_construction": "Last time you said: + answer",
+          "examples": [
+            "Last time you said: Design"
+          ],
+          "actions": [
+            "Keep",
+            "Change"
+          ]
+        },
+        {
+          "name": "Wrong person",
+          "sentence_construction": "This isn't me",
+          "examples": [
+            "This isn't me"
+          ]
+        },
+        {
+          "name": "Undo message",
+          "sentence_construction": "Noun + cleared",
+          "examples": [
+            "Suggested answers cleared"
+          ],
+          "actions": [
+            "Undo"
+          ]
+        },
+        {
+          "name": "Sources disagree",
+          "sentence_construction": "Your profile says X. Last time you said Y.",
+          "actions": [
+            "Use profile",
+            "Use last answer",
+            "Type something else"
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Filled from your profile",
+          "Source: your account"
+        ],
+        "bad": [
+          "AI-generated (87% confident)",
+          "Auto-filled"
+        ]
+      }
+    },
+    {
+      "id": "selection-limit",
+      "name": "Selection limit and count",
+      "path_ids": [
+        "PATH-H-2"
+      ],
+      "when_to_use": "A multiple choice question has a minimum, a maximum, or an exclusive option.",
+      "golden_rule": "State the rule before the user answers. Explain every disabled option.",
+      "rules": [
+        "Helper states the limit before the answer: 'Select up to 3'",
+        "Count updates live: '2 of 3 selected'",
+        "At the max, say why options are disabled and how to free one",
+        "Exclusive option: say it clears the others",
+        "Never say 'invalid selection'. Say what to do"
+      ],
+      "variants": [
+        {
+          "name": "Helper",
+          "sentence_construction": "Select + limit",
+          "examples": [
+            "Select up to 3",
+            "Select at least 2",
+            "Select 2 to 4"
+          ]
+        },
+        {
+          "name": "Count",
+          "sentence_construction": "n of N selected",
+          "examples": [
+            "2 of 3 selected"
+          ]
+        },
+        {
+          "name": "Max reached",
+          "sentence_construction": "Maximum reached. Deselect one to choose another.",
+          "examples": [
+            "Maximum reached. Deselect one to choose another."
+          ]
+        },
+        {
+          "name": "Exclusive",
+          "sentence_construction": "Choosing X clears your other choices",
+          "examples": [
+            "Choosing 'None of these' clears your other choices."
+          ]
+        },
+        {
+          "name": "Error",
+          "sentence_construction": "Select at least N. You selected M.",
+          "examples": [
+            "Select at least 2. You selected 1."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Select up to 3",
+          "Maximum reached. Deselect one to choose another."
+        ],
+        "bad": [
+          "Max 3",
+          "Invalid selection"
+        ]
+      }
+    },
+    {
+      "id": "availability-check",
+      "name": "Availability check",
+      "path_ids": [
+        "FIELD-TIMING-PAUSE",
+        "FIELD-TIMING-ACTION"
+      ],
+      "when_to_use": "The system checks whether a value is free or valid on the server, such as a name, handle, or code.",
+      "golden_rule": "Say what is happening, what the result means, and what to do next.",
+      "rules": [
+        "Checking: 2 to 3 words, shown only if the check takes more than a moment",
+        "Available: say so in 1 to 2 words. Do not celebrate",
+        "Taken: say it is taken and suggest the next step. Do not blame",
+        "Cannot check: say the check failed and that the user can continue",
+        "Never reveal whether an account exists for a sensitive value"
+      ],
+      "variants": [
+        {
+          "name": "Checking",
+          "sentence_construction": "Checking + noun",
+          "examples": [
+            "Checking availability"
+          ]
+        },
+        {
+          "name": "Available",
+          "sentence_construction": "Available",
+          "examples": [
+            "Available"
+          ]
+        },
+        {
+          "name": "Taken",
+          "sentence_construction": "Already taken. Try another.",
+          "examples": [
+            "Already taken. Try another."
+          ]
+        },
+        {
+          "name": "Cannot check",
+          "sentence_construction": "Couldn't check right now. We'll check again when you submit.",
+          "examples": [
+            "Couldn't check right now. We'll check again when you submit."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Already taken. Try another."
+        ],
+        "bad": [
+          "Error 409: conflict",
+          "Oops! Someone beat you to it!"
+        ]
+      }
+    },
+    {
+      "id": "resend-cooldown",
+      "name": "One-time code and resend",
+      "path_ids": [
+        "FIELD-TIMING-ACTION"
+      ],
+      "when_to_use": "The user enters a one-time code and may ask for another.",
+      "golden_rule": "Tell them where the code went and when they can ask again.",
+      "rules": [
+        "Say where the code was sent without showing the full address or number",
+        "Show the wait as a plain countdown",
+        "Resend is a button once the wait ends",
+        "A wrong code says the code did not match and what to do. It does not say how close it was",
+        "An expired code says it expired and offers a new one"
+      ],
+      "variants": [
+        {
+          "name": "Sent",
+          "sentence_construction": "We sent a code to + masked target",
+          "examples": [
+            "We sent a code to ••••1234."
+          ]
+        },
+        {
+          "name": "Cooldown",
+          "sentence_construction": "Resend in + time",
+          "examples": [
+            "Resend in 30 seconds"
+          ]
+        },
+        {
+          "name": "Resend",
+          "sentence_construction": "Verb phrase",
+          "examples": [
+            "Send a new code"
+          ]
+        },
+        {
+          "name": "Wrong code",
+          "sentence_construction": "That code didn't match. Check it and try again.",
+          "examples": [
+            "That code didn't match. Check it and try again."
+          ]
+        },
+        {
+          "name": "Expired",
+          "sentence_construction": "That code expired. Send a new one.",
+          "examples": [
+            "That code expired. Send a new one."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Resend in 30 seconds"
+        ],
+        "bad": [
+          "Please wait before requesting another code"
+        ]
+      }
+    },
+    {
+      "id": "draft-and-saved-state",
+      "name": "Saved state and drafts",
+      "path_ids": [
+        "PATH-H-3",
+        "FIELD-PREFILL-FIX"
+      ],
+      "when_to_use": "A long form or questionnaire saves answers, restores a draft, or a link would replace a saved draft.",
+      "golden_rule": "Never use a modal to say something was saved.",
+      "rules": [
+        "Saved state is a quiet inline word, not a toast or modal",
+        "Failed save says it did not save and offers Retry",
+        "Save and finish later states how long the draft is kept",
+        "A link that would overwrite a saved draft asks before it does",
+        "Name both choices with verbs"
+      ],
+      "variants": [
+        {
+          "name": "Saving",
+          "sentence_construction": "Saving",
+          "examples": [
+            "Saving"
+          ]
+        },
+        {
+          "name": "Saved",
+          "sentence_construction": "Saved",
+          "examples": [
+            "Saved"
+          ]
+        },
+        {
+          "name": "Failed",
+          "sentence_construction": "Couldn't save. + action",
+          "examples": [
+            "Couldn't save."
+          ],
+          "actions": [
+            "Retry"
+          ]
+        },
+        {
+          "name": "Finish later",
+          "sentence_construction": "We'll keep your answers for N days.",
+          "examples": [
+            "We'll keep your answers for 30 days."
+          ]
+        },
+        {
+          "name": "Overwrite warning",
+          "title": "You have a saved draft",
+          "sentence_construction": "Continue the saved draft or start with the link's answers?",
+          "actions": [
+            "Continue draft",
+            "Use link answers"
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Saved"
+        ],
+        "bad": [
+          "Your progress has been successfully saved!"
+        ]
+      }
+    },
+    {
+      "id": "questionnaire-errors",
+      "name": "Questionnaire errors",
+      "path_ids": [
+        "PATH-H-4"
+      ],
+      "when_to_use": "The respondent presses Next and one or more questions fail a check.",
+      "golden_rule": "Say what to fix on each question, in the place it needs fixing.",
+      "rules": [
+        "Banner: count the problems, then link to each",
+        "Inline error: say what to do and what happened. Under 60 characters",
+        "Required is a plain word, not an asterisk alone",
+        "Never say 'invalid'. Never blame the respondent"
+      ],
+      "variants": [
+        {
+          "name": "Banner",
+          "sentence_construction": "N things to check",
+          "examples": [
+            "2 things to check"
+          ]
+        },
+        {
+          "name": "Required",
+          "sentence_construction": "Answer this question to continue.",
+          "examples": [
+            "Answer this question to continue."
+          ]
+        },
+        {
+          "name": "Too few",
+          "sentence_construction": "Select at least N. You selected M.",
+          "examples": [
+            "Select at least 2. You selected 1."
+          ]
+        },
+        {
+          "name": "Too long",
+          "sentence_construction": "Shorten this by N characters.",
+          "examples": [
+            "Shorten this by 20 characters."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "2 things to check",
+          "Answer this question to continue."
+        ],
+        "bad": [
+          "Invalid input",
+          "Required field!"
+        ]
+      }
+    },
+    {
+      "id": "questionnaire-progress",
+      "name": "Progress and review",
+      "path_ids": [
+        "PATH-H-3"
+      ],
+      "when_to_use": "A questionnaire shows where the respondent is, a review screen, or a confirmation.",
+      "golden_rule": "Honest counts, and say what happens after Submit.",
+      "rules": [
+        "Progress text: 'Question n of N' or 'Section n of N'. Never a bare percentage",
+        "Review screen title says what to do: Review your answers",
+        "Confirmation says it worked, what was received, and what happens next",
+        "Skipped-by-logic answers show as removed on Review"
+      ],
+      "variants": [
+        {
+          "name": "Progress",
+          "sentence_construction": "Question n of N",
+          "examples": [
+            "Question 3 of 12",
+            "Section 2 of 4"
+          ]
+        },
+        {
+          "name": "Review",
+          "sentence_construction": "Review your answers",
+          "examples": [
+            "Review your answers"
+          ]
+        },
+        {
+          "name": "Confirmation",
+          "sentence_construction": "Title: what worked. Body: what we got and what happens next.",
+          "examples": [
+            "Thanks, we got your answers",
+            "We'll use them to plan the next release. You don't need to do anything else."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Question 3 of 12"
+        ],
+        "bad": [
+          "25% complete",
+          "You're almost there!!"
+        ]
+      }
+    },
+    {
+      "id": "rank-prompts",
+      "name": "Rank prompts",
+      "path_ids": [
+        "PATH-H-2"
+      ],
+      "when_to_use": "The respondent ranks items by dragging, or with the up and down buttons.",
+      "golden_rule": "Say how to rank, and say what changed after every move.",
+      "rules": [
+        "Helper says how: press and hold, then drag, or use the arrows",
+        "Say the limit when it is the top N",
+        "Each move is announced in full: item, new position, total",
+        "Never make drag the only way"
+      ],
+      "variants": [
+        {
+          "name": "Helper",
+          "sentence_construction": "Press and hold an item, then drag it into place. Your top N count.",
+          "examples": [
+            "Press and hold an item, then drag it into place. Your top 3 count."
+          ]
+        },
+        {
+          "name": "Position",
+          "sentence_construction": "Item, moved to position n of N",
+          "examples": [
+            "Battery life, moved to position 2 of 6"
+          ]
+        },
+        {
+          "name": "Cutoff",
+          "sentence_construction": "Your top N end here. Items below are not ranked.",
+          "examples": [
+            "Your top 3 end here. Items below are not ranked."
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Press and hold an item, then drag it into place. Your top 3 count."
+        ],
+        "bad": [
+          "Drag to reorder"
+        ]
+      }
+    },
+    {
+      "id": "poll-results",
+      "name": "Poll and quiz results",
+      "path_ids": [
+        "PATH-H-6"
+      ],
+      "when_to_use": "After a respondent answers a choice question, the screen shows how others answered, and in a quiz which option is correct.",
+      "golden_rule": "Say what the numbers are out of, and say the result in words, not only in color.",
+      "rules": [
+        "Mark the right option with the words 'Correct answer'. Mark the respondent's pick with 'Your answer'",
+        "Give the count in plain words: '1 vote', '42 votes'. Never 'votes: 42'",
+        "Under the minimum, say there are too few votes. Do not show a percent or count",
+        "For multi-select, say the percents add up to more than 100%",
+        "The announcement is one short sentence about this respondent's result. It does not list every option",
+        "Do not cheer or console. 'Not quite' is enough for a wrong answer"
+      ],
+      "variants": [
+        {
+          "name": "Results heading",
+          "sentence_construction": "How others answered",
+          "examples": [
+            "How others answered"
+          ]
+        },
+        {
+          "name": "Marks",
+          "sentence_construction": "Whose or which + answer",
+          "examples": [
+            "Your answer",
+            "Correct answer"
+          ]
+        },
+        {
+          "name": "Vote count",
+          "sentence_construction": "Number + vote or votes",
+          "examples": [
+            "1 vote",
+            "42 votes"
+          ]
+        },
+        {
+          "name": "Too few votes",
+          "sentence_construction": "Too few votes to show results yet.",
+          "examples": [
+            "Too few votes to show results yet."
+          ]
+        },
+        {
+          "name": "Multi-select note",
+          "sentence_construction": "Each percent is out of everyone who answered. They add up to more than 100%.",
+          "examples": [
+            "Each percent is out of everyone who answered. They add up to more than 100%."
+          ]
+        },
+        {
+          "name": "Announcement, right answer",
+          "sentence_construction": "Correct. + share who chose it",
+          "examples": [
+            "Correct. 62% of people chose this."
+          ]
+        },
+        {
+          "name": "Announcement, wrong answer",
+          "sentence_construction": "Not quite. The correct answer is X.",
+          "examples": [
+            "Not quite. The correct answer is 366. 62% of people chose it."
+          ]
+        },
+        {
+          "name": "Announcement, poll",
+          "sentence_construction": "Results are in. N people answered.",
+          "examples": [
+            "Results are in. 120 people answered."
+          ]
+        },
+        {
+          "name": "Freshness",
+          "sentence_construction": "Updated + time ago",
+          "examples": [
+            "Updated 2 minutes ago"
+          ]
+        }
+      ],
+      "examples": {
+        "good": [
+          "Correct answer",
+          "Not quite. The correct answer is 366."
+        ],
+        "bad": [
+          "Wrong!",
+          "Great job, genius!",
+          "Votes: 42"
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
 //   4. The question engine picks the right component (PATH-H-2).
 //   5. tokens.questionnaire.json thresholds match the engine.
 //   6. Righter copy entries have the right shape and point at real rule ids.
-//   7. Jobs 22 and 23 are present and complete.
+//   7. Jobs 22 to 24 are present and complete.
 //   8. The registry copy of the engine is byte for byte this folder's engine.
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -177,8 +177,8 @@ if (t.target_px.normal < 44) fail("normal target must be 44 or more");
 
 // 6. Righter copy
 const COPY_IDS = ["prefill-badge", "selection-limit", "availability-check", "resend-cooldown", "draft-and-saved-state", "questionnaire-errors", "questionnaire-progress", "rank-prompts", "poll-results"];
-const copy = readJson("righter/data/components.json").components.filter((c) => COPY_IDS.includes(c.id));
-if (copy.length !== COPY_IDS.length) fail(`righter/data/components.json should hold ${COPY_IDS.length} questionnaire copy entries, found ${copy.length}`);
+const copy = readJson("vois-patterns/data/questionnaire-copy.json").components.filter((c) => COPY_IDS.includes(c.id));
+if (copy.length !== COPY_IDS.length) fail(`vois-patterns/data/questionnaire-copy.json should hold ${COPY_IDS.length} questionnaire copy entries, found ${copy.length}`);
 const fieldsPath = process.env.FIELDS_RULES || join(root, "vois-fields/data/fields-rules.json");
 const fieldIds = new Set(existsSync(fieldsPath) ? (JSON.parse(readFileSync(fieldsPath, "utf8")).rules ?? []).map((n) => n.id) : []);
 const copyIds = new Set();
@@ -202,4 +202,4 @@ for (const [id, n] of [["JOB-ANSWER-CHOICE-QUESTION", 22], ["JOB-ANSWER-SCALE-OR
 }
 
 if (failed) { console.error("\nQuestionnaire check FAILED"); process.exit(1); }
-console.log(`OK  ${nodes.length} PATH-H nodes and ${rules.length} DS rules in sync, example valid, engine and tokens agree, ${copy.length} copy entries valid`);
+console.log(`OK  ${nodes.length} PATH-H nodes and ${rules.length} DS rules in sync, example valid, engine and tokens agree, ${copy.length} copy entries valid, jobs present`);

@@ -2,7 +2,7 @@
 
 Use this path when someone answers questions that another person wrote. Surveys, intake forms, assessments, and feedback forms all qualify. If the user edits their own record, use PATH-C. Dense desktop forms stay in PATH-C.
 
-Card sort is out of scope. Route it to a research tool. Copy for every state goes to the righter skill.
+Card sort is out of scope. Route it to a research tool. Copy for every state has guidance in `vois-patterns/data/questionnaire-copy.json`, default strings in the `vois-questionnaire` item, and is reviewed with the righter skill. Add a question, then send its copy to Righter for review.
 
 ## Layout `[PATH-H-1]`
 
@@ -151,6 +151,6 @@ Rules:
 8. **No names.** Never show who chose what.
 9. **A quiz needs `correct_option_ids`.** One id for single-choice. At least one for multi-select. Each id must be one of the options. A poll must not have them.
 
-The engine function `pollResultRows` does the rounding, the small-group check, and the flags. The copy is in Righter (`poll-results`).
+The engine function `pollResultRows` does the rounding, the small-group check, and the flags. The copy guidance is `poll-results` in `vois-patterns/data/questionnaire-copy.json`, and it is reviewed with Righter.
 
 Not covered: sorting by votes as an option, time-limited polls, and weighted scoring. Add them when a product needs them.
