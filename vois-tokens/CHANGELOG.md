@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.43.1] - 2026-11-16
+
+### Changed
+- `DS-SHAPE-007` (`references/shape.md`, `data/vois-rules.json`): guidance for `superellipse()`. `squircle` is `superellipse(2)`. A surface may tune the smoothing with `corner-shape: superellipse(n)` where `n` is from 1 to 4. A table says what 1, 1.5, 2 and 3 to 4 look like. `n` below 1 (bevel, scoop) and `infinity` are out. The same support check covers it.
+- The note that the border, shadow and focus outline follow `corner-shape` was checked in Chromium 153 with a focus-visible outline on a squircle button. It does follow. An older write-up said it does not, so this is worth a re-check in other browsers when they ship the property.
+- Still judgment-only. No detector reads `corner-shape` values.
+
+---
+
 ## [1.43.0] - 2026-11-16
 
 ### Added
