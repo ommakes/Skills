@@ -650,10 +650,11 @@
       "category": "DS-MODAL",
       "category_label": "Components",
       "source_file": "vois-tokens/references/overlays.md",
-      "rule": "At most two buttons in a dialog footer: a primary action and a secondary action (Cancel). A third action is a link on the left.",
+      "rule": "A dialog footer has a primary action and a secondary action (Cancel), both right-aligned. Typically that is all. A third action is a ghost or link button on the left, and only when the dialog is wider than 400px.",
       "severity": "recommended",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-MODAL-005"
     },
     {
       "id": "DS-MODAL-006",
@@ -663,7 +664,8 @@
       "rule": "Never nest modals. A second step replaces the content of the same dialog (push a view with a Back control) or becomes a page. A destructive confirmation from inside a dialog or sheet replaces its content the same way.",
       "severity": "required",
       "enforcement": "advisory",
-      "verification": "judgment"
+      "verification": "detector",
+      "detector": "DS-MODAL-006"
     },
     {
       "id": "DS-MODAL-007",

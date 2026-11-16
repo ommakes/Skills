@@ -7,7 +7,7 @@ All rules below are written from the gap plan of 14 Nov 2026 and common practice
 ## Structure
 
 - **The body scrolls. The header and footer stay in view.** `[DS-MODAL-004]` A tall dialog scrolls inside its body. The title and the actions never scroll away. (The registry's `vois-dialog` does not do this yet: it scrolls the whole card and keeps only the close button fixed. See the registry CHANGELOG.)
-- **At most two buttons in the footer.** `[DS-MODAL-005]` A primary action and a secondary action (Cancel). A third action is a link on the left (see `[PATH-D]`). Button order and gap: `[PATH-D]`.
+- **Two buttons in the footer, three only in a wide dialog.** `[DS-MODAL-005]` A primary action and a secondary action (Cancel), both right-aligned. Typically that is all. A third action is a ghost or link button on the left, and only when the dialog is wider than 400px. Button order and gap: `[PATH-D]`.
 - **Never nest modals.** `[DS-MODAL-006]` A second step replaces the content of the same dialog (push a view, with a Back control), or becomes a page. A destructive confirmation from inside a dialog or sheet replaces its content the same way. Never open a dialog from a dialog.
 - **Never use a modal for navigation.** `[DS-MODAL-007]` A list of places to go is a menu or a page, not a dialog.
 

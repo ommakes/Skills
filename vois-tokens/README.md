@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.42.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.43.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.43.0**: Detectors for `DS-MODAL-005` (more than two buttons in a dialog footer) and `DS-MODAL-006` (a dialog, sheet or drawer opened inside another). Both warn, neither blocks. `DS-ELEVATION-010` stays a judgment rule: `DS-ELEVATION-007` already flags every blurred inset shadow, and no pattern can tell a recessed element from a pressed one.
 - **1.42.0**: Frosted glass, opt-in: `references/glass.md` with `DS-GLASS-001` to `010`, the `--glass-*` tokens from Figma, and detectors for a missing `-webkit-` twin, a literal blur and an animated blur.
 - **1.41.0**: Icon-button sizes, spacing, naming and placement (`DS-ICON-003` to `006`), a touch step-up on a coarse pointer, `--hit-area-coarse` (48), a detector for an icon-only Button with no accessible name (`DS-ICON-005`), and the Soft (light gray) icon-button style (`DS-ICON-007`).
 - **1.40.0**: `DS-TOKEN-005` maps shadcn `popover` to `--elevation-surface-popup`, so a stock popover, menu or select list matches the Vois menus in dark.

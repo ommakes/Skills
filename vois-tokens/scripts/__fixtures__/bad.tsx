@@ -89,3 +89,21 @@ function BadElevation() {
     </div>
   );
 }
+
+// DS-MODAL-005 (three buttons in a dialog footer) and DS-MODAL-006 (a dialog opened inside another).
+function BadDialog() {
+  return (
+    <Dialog>
+      <DialogContent>
+        <Dialog>
+          <DialogContent>Second step</DialogContent>
+        </Dialog>
+        <DialogFooter>
+          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">Save draft</Button>
+          <Button>Publish</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

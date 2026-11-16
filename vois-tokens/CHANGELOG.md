@@ -4,6 +4,16 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.43.0] - 2026-11-16
+
+### Added
+- `DS-MODAL-005` rule text changed: it said "at most two buttons, a third is a link"; it now says two buttons on the right, and a third that is a ghost or link button on the left only when the dialog is wider than 400px. Also in `references/overlays.md` and vois-patterns `dialogs-and-action-sheets.md`.
+- Detectors in `scripts/overlay-checks.mjs` for two dialog rules that were judgment-only. Both warn, neither blocks.
+  - `DS-MODAL-005`: a `DialogFooter` or `AlertDialogFooter` with more than two buttons that are not ghost or link, or more than three in all (`Button`, `AlertDialogAction`, `AlertDialogCancel`, `DialogClose`). The rule says a primary and a secondary action sit on the right; a third is a ghost or link button on the left, and only when the dialog is wider than 400px. Width and side are layout, so they are not checked. A `<DialogClose asChild>` wrapper is not counted. A conditional that shows one of two buttons counts as two.
+  - `DS-MODAL-006`: a `Dialog`, `AlertDialog`, `Sheet` or `Drawer` opened between the open and close tags of another one in the same file. It reports only when the outer root closes in the same file, so a cut-off or mismatched file stays quiet.
+  - `data/vois-rules.json`: both rules move from `judgment` to `detector`. Tests cover both directions for every guard, and each guard was removed in a copy to check a test fails.
+- Not built: a detector for `DS-ELEVATION-010`. `DS-ELEVATION-007` already flags every inset shadow with blur, and a pattern cannot tell a recessed or pressed element from any other, so a second check would only repeat the first. It stays `judgment`.
+
 ## [1.42.0] - 2026-11-15
 
 ### Added

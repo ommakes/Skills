@@ -6,6 +6,11 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.4] - 2026-11-16
+
+### Changed
+- `references/dialogs-and-action-sheets.md`: the footer is two buttons on the right, and a third is an optional ghost or link button on the left, only when the dialog is wider than 400px. The file said both "optional tertiary on the left" and "at most two buttons"; it now says one thing, the same as `DS-MODAL-005` in vois-tokens 1.43.0.
+
 ## [1.23.3] - 2026-11-16
 
 ### Fixed
