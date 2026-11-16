@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.28.0] - 2026-11-16
+
+### Added
+- "What You Must Supply" table in `SKILL.md`: for ten components, the name, label, description or live region the caller must provide, each pointing at `DS-A11Y-029` to `DS-A11Y-037` (and `007`, `019`). The rules are in vois-tokens 1.45.0.
+
 ## [1.27.0] - 2026-11-15
 
 ### Changed

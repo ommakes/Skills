@@ -2401,6 +2401,96 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-A11Y-029",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A tooltip trigger can take keyboard focus, and the tooltip opens on focus as well as hover. A tooltip never holds the only copy of information a person needs (touch has no hover). Don't put one on a disabled control: it can't take focus, so say why it is disabled in text beside it.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-030",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A Select, Combobox or Command input has an accessible name from its visible label (`<label htmlFor>` or `aria-labelledby`). Use `aria-label` only when the design shows no label. The chosen value shown in the trigger is not a name.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-031",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Helper and error text under an input is linked to it with `aria-describedby`, and an input that failed its check has `aria-invalid=\"true\"`. The error text itself follows DS-A11Y-009.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-032",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "Every tab has a text name (`aria-label` when the tab is an icon). When a page has more than one tab list, each tab list has its own `aria-label`.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-033",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A data table has a name (`<caption>`, `aria-label` or `aria-labelledby`). Header cells are `<th>`, with `scope=\"col\"` for a column header and `scope=\"row\"` for a row header.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-034",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A toast is announced in a polite live region (assertive only for an error that needs attention now), keeps showing while it is hovered or has focus, and stays long enough to read. A toast never holds the only copy of a result or the only way to do an action: the page shows the same result.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-035",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A Switch, Checkbox or Radio has a visible text label that is tied to the control (a wrapping `<label>` or `htmlFor`), so a click on the label toggles it. A Switch label names the setting (\"Email alerts\"), not the action, and does not change when the state changes.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-036",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A menu or popover closes on Escape and returns focus to its trigger, as a dialog does (DS-A11Y-021, DS-A11Y-022). Build them from Radix (`DropdownMenu`, `Popover`), not from a positioned `div`.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-A11Y-037",
+      "category": "DS-A11Y",
+      "category_label": "Accessibility",
+      "source_file": "vois-tokens/references/accessibility.md",
+      "rule": "A Spinner or Skeleton that stands for loading has a text name (\"Loading orders\") in a polite live region, or `aria-busy=\"true\"` on the region that is loading. A spinner with no text next to it is not decoration.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-RESPONSIVE-011",
       "category": "DS-RESPONSIVE",
       "category_label": "Layout and responsive",

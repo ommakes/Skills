@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.44.1
+version: 1.45.0
 ---
 
 # Vois Tokens Skill
@@ -88,7 +88,7 @@ building fresh, not just the bare rule text:**
 | `references/tailwind-v4.md` | Tailwind v3→v4 migration, container queries, arbitrary values | `[DS-TAILWIND]` |
 | `references/stylex.md` | Projects using StyleX instead of Tailwind — build setup, `defineVars`/`createTheme`, variant composition | `[DS-STYLEX]` |
 | `references/animation.md` | Timing, easing, reduced motion, Motion library usage, motion tokens | `[DS-ANIMATION]` `[DS-MOTION-001]` `[DS-MOTION-002]` `[DS-MOTION-003]` `[DS-MOTION-004]` `[DS-MOTION-005]` `[DS-MOTION-006]` `[DS-MOTION-007]`. For when to morph, see `vois-patterns/references/motion.md`; for morph specs, see `vois-components/references/motion-morphs.md` |
-| `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML | `[DS-A11Y]` |
+| `references/accessibility.md` | Touch targets, focus states, contrast, semantic HTML, what the code using a component must supply (tooltip, select, field errors, tabs, table, toast, switch, menu, loading) | `[DS-A11Y]` |
 | `references/overlays.md` | Dialog structure, bottom sheets and full-screen forms on phones, dialog accessibility (name, first focus, return focus, Escape, dragging) | `[DS-MODAL-004]` to `[DS-MODAL-007]` `[DS-RESPONSIVE-008]` to `[DS-RESPONSIVE-010]` `[DS-A11Y-019]` to `[DS-A11Y-023]` |
 | `references/questionnaire-ui.md` | Respondent-facing questionnaires: required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows, poll and quiz results | `[DS-A11Y-024]` to `[DS-A11Y-028]` `[DS-RESPONSIVE-011]` to `[DS-RESPONSIVE-013]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
@@ -181,6 +181,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] `<br>` not used for spacing `[DS-A11Y-012]`
 - [ ] `<ul>`/`<ol>` used for lists, not stacked divs `[DS-A11Y-011]`
 - [ ] `loading="lazy"` on below-the-fold images `[DS-A11Y-013]`
+- [ ] Each component's name, label, description or live region is supplied by the caller: tooltip, select, field error, tabs, table, toast, switch, menu, loading `[DS-A11Y-029]` to `[DS-A11Y-037]`
 
 **Layout**
 - [ ] Form, field, and dialog widths use width tokens `[DS-LAYOUT-WIDTH-001]` `[DS-LAYOUT-WIDTH-002]` `[DS-LAYOUT-WIDTH-003]` `[DS-LAYOUT-WIDTH-004]`
