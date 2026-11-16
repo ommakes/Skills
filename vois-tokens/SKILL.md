@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.45.0
+version: 1.46.0
 ---
 
 # Vois Tokens Skill
@@ -80,7 +80,7 @@ building fresh, not just the bare rule text:**
 | `references/shape.md` | Choosing corner shape: shape roles before numbers, fixed vs proportional vs elliptical vs capsule, large visual surfaces, continuous corners | `[DS-SHAPE]` |
 | `references/surfaces.md` | Border radius, optical alignment, shadows vs. borders, image outlines, enter/exit choreography, icon transitions | `[DS-SURFACE]` |
 | `references/elevation.md` | Shadow/elevation tiers, layers, state changes, dark mode, docked panels, modal scrim, z-index pairing. The element map is `data/elevation-map.json` | `[DS-ELEVATION]` |
-| `references/glass.md` | Frosted glass (opt-in): where it goes, the three tiers, the `-webkit-` twin, blur tokens, fallback first, worst-case contrast, Figma setup | `[DS-GLASS]` |
+| `references/glass.md` | Frosted glass (opt-in): where it goes, the three tiers, the `-webkit-` twin, blur tokens, fallback first, worst-case contrast, Figma setup, edge fade (tapering blur under sticky chrome) | `[DS-GLASS]` |
 | `references/iconography.md` | Icon sizing, stroke width | `[DS-ICON]` |
 | `references/layout-and-responsive.md` | Viewport height units, content-visibility, breakpoints, form, field, dialog widths, auto-growing textareas | `[DS-LAYOUT]` `[DS-RESPONSIVE]` `[DS-LAYOUT-WIDTH]` `[DS-LAYOUT-FIELD]` |
 | `references/grid.md` | Grid classes, margins and gutters, how many columns a card grid holds, push and overlay side panels, the same on web, Flutter and native | `[DS-GRID]` `[DS-PANEL]` |
@@ -168,6 +168,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Glass only on chrome and floating layers, at most 3 per viewport `[DS-GLASS-001]`; one of the three tiers `[DS-GLASS-002]`
 - [ ] `-webkit-backdrop-filter` next to every `backdrop-filter` `[DS-GLASS-003]`; blur from `--glass-blur-*` `[DS-GLASS-004]`; blur never animated `[DS-GLASS-005]`; no glass inside glass `[DS-GLASS-006]`
 - [ ] Opaque fallback first, opaque again under reduced transparency `[DS-GLASS-007]`; text checked over the worst patch behind it `[DS-GLASS-008]`
+- [ ] A fading blur is one element with the blur and the mask together, only under sticky chrome, one glass surface, gradient fallback `[DS-GLASS-011]` to `[DS-GLASS-015]`
 
 **Accessibility**
 - [ ] All interactive elements have `:focus-visible` styles `[DS-A11Y-002]`

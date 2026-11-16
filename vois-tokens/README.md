@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.45.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.46.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.46.0**: new "Edge fade" section in `references/glass.md` and `DS-GLASS-011` to `DS-GLASS-015`: a blur that tapers off under sticky chrome (one element with blur and eased mask, an optional 4-layer progressive stack whose radii add in quadrature, gradient fallback). Judgment only.
 - **1.45.0**: nine new accessibility rules, `DS-A11Y-029` to `DS-A11Y-037`, for what the code using a component must supply: tooltip, select and combobox names, field error links, tab names, table names and headers, toasts, switch labels, menus and popovers, loading states. All required, judgment only.
 - **1.44.1**: `references/grid.md` gains the CSS for a size container region and a capped, auto-fill collection (`DS-GRID-006`, `DS-GRID-007`). No rule text changes.
 - **1.44.0**: Gradients: `DS-COLOR-010` (write the interpolation space, prefer OKLCH, check hue path, gamut and contrast) and `DS-COLOR-011` (take stop placement from an easing curve). Both advisory, judgment only.

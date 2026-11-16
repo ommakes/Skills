@@ -93,3 +93,76 @@ The strong tier sits over the one modal scrim, `--bg-overlay-dark` (`DS-ELEVATIO
 - **Use the same blur numbers in Figma and CSS, then compare.** A third-party source says Figma's blur is about twice as strong as CSS. One check here did not bear that out: the specimen's busy stage, rebuilt in Chromium, looked close to the canvas at 8 / 16 / 24 and visibly sharper at half those values (2026-11-15, one visual comparison). Compare a browser screenshot with the canvas before you change either number. Background blur does not export to SVG.
 
 The Elevation page has a specimen of each tier over a busy background and over plain UI, in Light and Dark ("Glass (registry)").
+
+## Edge fade `[DS-GLASS-011]` `[DS-GLASS-012]` `[DS-GLASS-013]` `[DS-GLASS-014]` `[DS-GLASS-015]`
+
+An edge fade is a blur that tapers off toward the middle of the screen, so content scrolls under a bar or a dock and softens instead of being cut off. It is one glass surface, and it is the only place a mask belongs on glass.
+
+- An edge fade (a blur that tapers off) goes only at the edge of a scroll area, under sticky chrome: below a top bar, or above a bottom bar, tab bar or floating dock. It is as tall as the chrome plus a short run-out. It counts as one glass surface in DS-GLASS-001. Never put one in the middle of content, and never use one as a scrim for text on a photo (use the dimming layer in DS-GLASS-008). `[DS-GLASS-011]`
+- Build an edge fade from one element that holds both `backdrop-filter` and `mask-image`, each with its `-webkit-` twin, plus `pointer-events: none`. The mask is the eased stop list in `--glass-fade-mask`, not a two-stop linear gradient. Never put the mask, or an `opacity` under 1, on a parent: the blur then disappears (DS-GLASS-006). The blur is `var(--glass-blur-strong)` at most (DS-GLASS-004) and is never animated (DS-GLASS-005). `[DS-GLASS-012]`
+- A layered fade is optional: up to 4 sibling layers with the same mask, anchored to the edge, at 100%, 75%, 50% and 25% of the fade height. Each radius is a share of `--glass-blur-strong`, kept in a custom property so the blur reads `var(...)`. Stacked blurs compound, so the radii add in quadrature: the square root of the sum of their squares at the edge must not exceed `--glass-blur-strong`. 4, 8, 12 and 18 give 23.4. The stack counts as one glass surface. Paint cost of a stack is not measured here: test it on a real phone. `[DS-GLASS-013]`
+- An edge fade's base style is a gradient from `var(--bg-background)` to transparent over the same height. An `@supports` test for `backdrop-filter` or its `-webkit-` twin swaps it for the blur and the mask. Under `prefers-reduced-transparency: reduce` the gradient comes back and `backdrop-filter` is `none`. `[DS-GLASS-014]`
+- Text or controls that sit on top of an edge fade follow DS-GLASS-008, checked over the sharpest and the blurriest patch behind them. Content that scrolls under the fade is allowed to blur; do not rely on a fade to hide content a person must read. `[DS-GLASS-015]`
+
+The mask list is the output of a smooth-blur generator: nine stops from opaque to clear along an eased curve, stretched over the full height of the element. Keep all nine. Two stops show a hard line where the blur ends.
+
+```css
+:root {
+  --glass-fade-mask: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.992) 12.5%, rgba(0, 0, 0, 0.938) 25%, rgba(0, 0, 0, 0.789) 37.5%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.211) 62.5%, rgba(0, 0, 0, 0.063) 75%, rgba(0, 0, 0, 0.008) 87.5%, rgba(0, 0, 0, 0) 100%);
+  --glass-fade-height: 120px;
+  --glass-fade-r1: calc(var(--glass-blur-strong) / 6);
+  --glass-fade-r2: calc(var(--glass-blur-strong) / 3);
+  --glass-fade-r3: calc(var(--glass-blur-strong) / 2);
+  --glass-fade-r4: calc(var(--glass-blur-strong) * 0.75);
+}
+
+/* One layer. For a top edge, use `to bottom` in the mask and `top: 0` here. */
+.edge-fade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--glass-fade-height);
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg-background), transparent);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .edge-fade {
+    background: none;
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+    backdrop-filter: blur(var(--glass-blur-strong));
+    -webkit-mask-image: var(--glass-fade-mask);
+    mask-image: var(--glass-fade-mask);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .edge-fade {
+    background: linear-gradient(to top, var(--bg-background), transparent);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+```
+
+A layered fade is a wrapper with the same fallback gradient and four child layers. Each layer has the same mask and its own height and radius:
+
+```css
+.edge-fade-stack { position: absolute; inset-inline: 0; bottom: 0; height: var(--glass-fade-height); pointer-events: none;
+  background: linear-gradient(to top, var(--bg-background), transparent); }
+.edge-fade-stack > span { position: absolute; inset-inline: 0; bottom: 0; }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .edge-fade-stack { background: none; }
+  .edge-fade-stack > span { -webkit-mask-image: var(--glass-fade-mask); mask-image: var(--glass-fade-mask); }
+  .edge-fade-stack > span:nth-child(1) { height: 100%; -webkit-backdrop-filter: blur(var(--glass-fade-r1)); backdrop-filter: blur(var(--glass-fade-r1)); }
+  .edge-fade-stack > span:nth-child(2) { height: 75%; -webkit-backdrop-filter: blur(var(--glass-fade-r2)); backdrop-filter: blur(var(--glass-fade-r2)); }
+  .edge-fade-stack > span:nth-child(3) { height: 50%; -webkit-backdrop-filter: blur(var(--glass-fade-r3)); backdrop-filter: blur(var(--glass-fade-r3)); }
+  .edge-fade-stack > span:nth-child(4) { height: 25%; -webkit-backdrop-filter: blur(var(--glass-fade-r4)); backdrop-filter: blur(var(--glass-fade-r4)); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .edge-fade-stack { background: linear-gradient(to top, var(--bg-background), transparent); }
+  .edge-fade-stack > span { -webkit-backdrop-filter: none; backdrop-filter: none; -webkit-mask-image: none; mask-image: none; }
+}
+```
+
+**What was checked.** In Chromium 153, a hard step edge behind one 24 layer stays about 60px wide for the first 80px, then thins out. Behind the 4-layer stack it is about 58px at the edge and narrows steadily to about 16px at 120px, which is a real progressive blur. Two stacked 8px layers gave an edge 28px wide; one 8px layer gave 20px, and the square-root rule predicts 29. A mask or an `opacity` of 0.99 on the parent removed the blur completely. Frame cost was **not** measured: headless Chromium here is capped at 60 fps and showed no difference. Safari and Firefox were not tested.
