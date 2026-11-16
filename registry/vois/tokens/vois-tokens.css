@@ -22,6 +22,10 @@
   --action-icon-pressed: var(--bg-pressed);
   --action-icon-resting: oklch(1 0 0 / 0);
   --action-icon-selected: var(--base-info);
+  --action-icon-soft-disabled: var(--black-a1);
+  --action-icon-soft-hover: var(--black-a3);
+  --action-icon-soft-pressed: var(--black-a4);
+  --action-icon-soft-resting: var(--black-a2);
   --action-link-active: var(--blue-10);
   --action-link-focus: var(--blue-10);
   --action-link-hover: var(--blue-12);
@@ -260,6 +264,18 @@
   --font-weight-regular: 400;
   --font-weight-semi-bold: 600;
   --font-weight-thin: 200;
+  --glass-blur-standard: 16px;
+  --glass-blur-strong: 24px;
+  --glass-blur-subtle: 8px;
+  --glass-highlight-standard: var(--white-a5);
+  --glass-highlight-strong: var(--white-a6);
+  --glass-highlight-subtle: var(--white-a4);
+  --glass-stroke-standard: var(--white-a5);
+  --glass-stroke-strong: var(--white-a5);
+  --glass-stroke-subtle: var(--white-a4);
+  --glass-tint-standard: var(--white-a9);
+  --glass-tint-strong: var(--white-a10);
+  --glass-tint-subtle: var(--white-a8);
   --goldie-1: oklch(0.9934 0.0107 95.16);
   --goldie-10: oklch(0.6021 0.1223 89.22);
   --goldie-11: oklch(0.5066 0.1035 88.88);
@@ -330,6 +346,7 @@
   --grid-margin-max-at: 1024px;
   --grid-margin-min: 16px;
   --grid-margin-min-at: 360px;
+  --hit-area-coarse: 48px;
   --hit-area-min: 44px;
   --icon-accent: var(--blue-10);
   --icon-auxiliary: var(--white);
@@ -900,6 +917,9 @@
   --shadow-large-left: 1px 0 1px 0 oklch(0 0 0 / 0.051), 2px 0 2px -1px oklch(0 0 0 / 0.051), 4px 0 4px -2px oklch(0 0 0 / 0.051), 8px 0 8px -4px oklch(0 0 0 / 0.051), 16px 0 16px -8px oklch(0 0 0 / 0.051);
   --shadow-large-bottom: 0 -1px 1px 0 oklch(0 0 0 / 0.051), 0 -2px 2px -1px oklch(0 0 0 / 0.051), 0 -4px 4px -2px oklch(0 0 0 / 0.051), 0 -8px 8px -4px oklch(0 0 0 / 0.051), 0 -16px 16px -8px oklch(0 0 0 / 0.051);
   --shadow-large-top: 0 1px 1px 0 oklch(0 0 0 / 0.051), 0 2px 2px -1px oklch(0 0 0 / 0.051), 0 4px 4px -2px oklch(0 0 0 / 0.051), 0 8px 8px -4px oklch(0 0 0 / 0.051), 0 16px 16px -8px oklch(0 0 0 / 0.051);
+  --glass-shadow-subtle: 0 2px 8px 0 oklch(0 0 0 / 0.078);
+  --glass-shadow-standard: 0 8px 32px 0 oklch(0 0 0 / 0.122);
+  --glass-shadow-strong: 0 16px 48px 0 oklch(0 0 0 / 0.18);
 }
 .dark {
   --action-auxiliary-disabled: var(--white-a6);
@@ -918,6 +938,10 @@
   --action-icon-pressed: var(--bg-pressed);
   --action-icon-resting: var(--white-a1);
   --action-icon-selected: var(--blue-a6);
+  --action-icon-soft-disabled: var(--white-a1);
+  --action-icon-soft-hover: var(--white-a3);
+  --action-icon-soft-pressed: var(--white-a4);
+  --action-icon-soft-resting: var(--white-a2);
   --action-link-active: var(--blue-7);
   --action-link-focus: var(--blue-6);
   --action-link-hover: var(--blue-6);
@@ -999,6 +1023,15 @@
   --font-body: var(--font-family-system);
   --font-heading: var(--font-family-brand);
   --font-mono: var(--font-family-mono);
+  --glass-highlight-standard: var(--white-a3);
+  --glass-highlight-strong: var(--white-a4);
+  --glass-highlight-subtle: var(--white-a2);
+  --glass-stroke-standard: var(--white-a3);
+  --glass-stroke-strong: var(--white-a4);
+  --glass-stroke-subtle: var(--white-a3);
+  --glass-tint-standard: var(--white-a3);
+  --glass-tint-strong: var(--white-a4);
+  --glass-tint-subtle: var(--white-a2);
   --icon-accent: var(--blue-7);
   --icon-auxiliary: var(--black);
   --icon-hint: var(--gray-10);
@@ -1232,4 +1265,7 @@
   --shadow-large-left: 1px 0 1px 0 oklch(0 0 0 / 0.2), 2px 0 2px -1px oklch(0 0 0 / 0.2), 4px 0 4px -2px oklch(0 0 0 / 0.2), 8px 0 8px -4px oklch(0 0 0 / 0.2), 16px 0 16px -8px oklch(0 0 0 / 0.2);
   --shadow-large-bottom: 0 -1px 1px 0 oklch(0 0 0 / 0.2), 0 -2px 2px -1px oklch(0 0 0 / 0.2), 0 -4px 4px -2px oklch(0 0 0 / 0.2), 0 -8px 8px -4px oklch(0 0 0 / 0.2), 0 -16px 16px -8px oklch(0 0 0 / 0.2);
   --shadow-large-top: 0 1px 1px 0 oklch(0 0 0 / 0.2), 0 2px 2px -1px oklch(0 0 0 / 0.2), 0 4px 4px -2px oklch(0 0 0 / 0.2), 0 8px 8px -4px oklch(0 0 0 / 0.2), 0 16px 16px -8px oklch(0 0 0 / 0.2);
+  --glass-shadow-subtle: 0 2px 8px 0 oklch(0 0 0 / 0.161);
+  --glass-shadow-standard: 0 8px 32px 0 oklch(0 0 0 / 0.2);
+  --glass-shadow-strong: 0 16px 48px 0 oklch(0 0 0 / 0.239);
 }

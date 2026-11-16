@@ -51,7 +51,7 @@ export function rawLayers(value) {
 }
 
 // A class string, or any quoted string or template literal. No escapes beyond a backslash are read, and a quote that does not close on its line is skipped.
-const STRING = /(["'`])((?:\\.|(?!\1)[^\\\n])*)\1/g;
+export const STRING = /(["'`])((?:\\.|(?!\1)[^\\\n])*)\1/g;
 const DEFAULT_TW_SHADOW = /(?<![\w-])((?:[\w-]+:)*)(inset-)?shadow-(2xs|xs|sm|md|lg|xl|2xl)(?![\w-])/g;
 
 /**
@@ -59,7 +59,7 @@ const DEFAULT_TW_SHADOW = /(?<![\w-])((?:[\w-]+:)*)(inset-)?shadow-(2xs|xs|sm|md
  * and a StyleX conditional object (`{ default: "x", ":hover": "y" }`) gives every value. The expression ends at a
  * "," ";" or closing bracket that is not inside brackets opened by the expression itself.
  */
-function stringsOfExpression(text, from) {
+export function stringsOfExpression(text, from) {
   const strings = [];
   let depth = 0;
   const limit = Math.min(text.length, from + 1200);

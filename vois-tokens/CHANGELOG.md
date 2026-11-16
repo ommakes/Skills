@@ -4,6 +4,32 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.42.0] - 2026-11-15
+
+### Added
+- `references/glass.md` with `DS-GLASS-001` to `DS-GLASS-010`, from the frosted-glass standard: glass is opt-in and goes only on chrome and floating layers, including an icon button over media (at most 3 per viewport); three tiers (subtle 8, standard 16, strong 24, with saturate 150 / 160 / 180%); the `-webkit-` twin; blur from the tokens; never animate the blur; no glass inside glass; opaque fallback first and again under reduced transparency; contrast at the worst patch behind; glass shadows and the one scrim; Figma setup. The tints, edges and highlights are a first pass, snapped to the White Alpha palette (light tint 60 / 70 / 80%, rounded up from the standard's 55 / 65 / 75% for legibility; dark 8 / 12 / 20%).
+- Tokens from Figma: `--glass-tint-*`, `--glass-stroke-*`, `--glass-highlight-*` (Colors, aliases of `--white-a*`, light and dark), `--glass-blur-*` (8, 16, 24) and `--glass-shadow-*` (from the `Glass/*` and `Glass/Dark/*` effect styles). Export checksum `bcc06a0a` (903 tokens, 12 shadows, 10 dark shadows). `registry/scripts/figma-export.js` exports the glass effect styles' drop shadows.
+- Detectors in `scripts/glass-checks.mjs`: `DS-GLASS-003` (a `backdrop-filter` with no `-webkit-` twin in the same rule or style object, or a twin with another value), `DS-GLASS-004` (a literal backdrop blur or a Tailwind `backdrop-blur` size), `DS-GLASS-005` (`backdrop-filter` in a transition, `@keyframes` or a motion prop). All `quality`. Eight tests in `scripts/detect.test.mjs` (191 to 198), plus lines in `__fixtures__/bad.tsx` and `bad.css`. Each guard was removed in a copy and a test failed without it.
+
+### Changed
+- `DS-ELEVATION-007`: a glass surface's `--glass-shadow-*` counts as a tier token. `references/elevation.md` points to `glass.md`.
+- `references/hooks.md` has rows for the three glass detectors and their gaps. The SKILL reference table, checklist and quick reference name glass.
+
+## [1.41.0] - 2026-11-15
+
+### Added
+- `DS-ICON-003` to `DS-ICON-006` in `references/iconography.md`, from the icon-button standard. Sizes follow the Button heights (`icon-sm` 28/16, `icon` 36/20, `icon-lg` 48/24, visual/glyph) and step up one size on a coarse pointer (36/20, 48/24, 56/28). The pointer picks the size, not the screen width, so there is no tablet column. Targets of neighbors touch but never overlap (16px between `icon-sm` buttons on a fine pointer). The accessible name says the action. Placement by role: app bar, toolbar, table row, close, inside a field, bottom nav, primary action, AI chat (message actions are `icon-sm` with no background; there is no 20px or 24px icon button), and a chip's remove control as the one place a smaller visual is allowed.
+- `DS-ICON-007`: styles by background. No background (`ghost`, the default) and Soft (`soft`, a light gray resting fill one step above the ghost's hover). New tokens from Figma: `--action-icon-soft-resting`, `-hover`, `-pressed`, `-disabled` (black 8 / 12 / 20 / 4% in light, white in dark).
+- `--hit-area-coarse` (48), from Figma (`Semantic/Hit area/hit-area-coarse`). Export checksum `93850e82` (896 tokens, with the Soft tokens).
+- A detector for `DS-ICON-005` (`scripts/registry.mjs`): an icon-size `<Button>` with no `aria-label`, no `aria-labelledby` and no text among its children. It reads children with braces and quotes in mind, so a `>` in `=>`, a JSX comment, an object spread inside a value or `aria-label={undefined}` does not hide a missing name. It skips a prop spread, a computed size and an expression child, because it cannot read them. Five tests in `scripts/detect.test.mjs` (186 to 190), plus a line in `__fixtures__/bad.tsx`. Each guard was removed in a copy and a test failed without it.
+
+### Changed
+- `DS-A11Y-001`: on a coarse pointer the minimum hit area is `var(--hit-area-coarse)`. `references/accessibility.md` shows the media query.
+- `DS-COMPONENT-007`: `icon-lg` on a coarse pointer is 56, the one other control at that size besides the circular action.
+- The icon size table in `references/iconography.md`: 20px is the default icon button's glyph and 24px the large one's (it said 24px for every standalone icon button).
+- `DS-ICON-002`: the Button sets one more glyph size on its own, 28 for `icon-lg` on a coarse pointer. It is never set by hand, and the detector's sizes are unchanged.
+- `references/hooks.md` has a row for `DS-ICON-005`. The SKILL checklist and quick reference name the icon-button rules.
+
 ## [1.40.0] - 2026-11-15
 
 ### Changed

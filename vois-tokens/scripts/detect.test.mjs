@@ -24,7 +24,7 @@ const badCssFindings = findingsFor("bad.css");
 const goodTsxFindings = findingsFor("good.tsx");
 
 const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-003", "DS-CSS-007"]);
-const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-ELEVATION-006", "DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
+const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-ELEVATION-006", "DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-ICON-005", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
 
 for (const rule of RULES) {
   if (CSS_EXT_ONLY_RULE_IDS.has(rule.id)) {
@@ -1504,4 +1504,214 @@ test("the built registry components raise neither elevation finding", () => {
   }
   const css = join(root, "tokens", "vois-tokens.css");
   if (existsSync(css)) assert.deepEqual(detectFile(css, readFileSync(css, "utf8")).filter((x) => x.ruleId.startsWith("DS-ELEVATION")), [], "the generated token file defines shadows, it does not use raw ones");
+});
+
+// --- DS-GLASS-003, -004, -005: frosted glass ---
+
+const glassHits = (id, src, file = "src/Nav.tsx") => detectFile(file, src).filter((f) => f.ruleId === id);
+
+test("DS-GLASS-003 flags a backdrop-filter with no -webkit- twin, in CSS and in a style object", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { backdrop-filter: blur(var(--glass-blur-standard)); }"],
+    ["a.css", ".a { backdrop-filter: none; }"],
+    ["a.scss", ".a { backdrop-filter: blur(var(--glass-blur-standard)); .b { -webkit-backdrop-filter: blur(var(--glass-blur-standard)); } }"], // a twin in a nested rule
+    ["a.css", ".a { -webkit-backdrop-filter: none; } .b { backdrop-filter: none; }"], // a twin in another rule
+    ["a.tsx", '<div style={{ backdropFilter: "blur(var(--glass-blur-standard))" }} />'],
+    ["a.tsx", 'const s = { "backdropFilter": "none" };'],
+    ["a.tsx", "const css = `.a { backdrop-filter: none; }`;"],
+    ["a.css", ".a { backdrop-filter: none; --x-webkit-backdrop-filter: none; }"], // a custom property is not the twin
+    ["a.css", ".a { -webkit-backdrop-filter: none; backdrop-filter: blur(var(--glass-blur-standard)); }"], // the twin's value differs
+    ["a.tsx", 'const s = { "backdrop-filter": "none" };'], // a quoted kebab key
+    ["a.tsx", 'el.style.backdropFilter = "none";'], // a DOM assignment
+    ["a.tsx", '<div style={{ backdropFilter: "none", WebkitBackdropFilter: "blur(var(--glass-blur-subtle))" }} />'],
+  ]) assert.equal(glassHits("DS-GLASS-003", code, file).length, 1, code);
+});
+
+test("DS-GLASS-003 leaves alone a pair, a condition, Tailwind and comments", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { -webkit-backdrop-filter: blur(var(--glass-blur-standard)); backdrop-filter: blur(var(--glass-blur-standard)); }"],
+    ["a.css", ".a { backdrop-filter: none; -webkit-backdrop-filter: none; }"], // order does not matter
+    ["a.css", "@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .a { color: red; } }"],
+    ["a.css", "@supports not (backdrop-filter: blur(1px)) { .a { color: red; } }"],
+    ["a.tsx", '<div style={{ backdropFilter: "none", WebkitBackdropFilter: "none" }} />'],
+    ["a.tsx", '<div style={{ "-webkit-backdrop-filter": "none", backdropFilter: "none" }} />'],
+    ["a.tsx", '<div className="backdrop-blur-[var(--glass-blur-standard)] [@media(prefers-reduced-transparency:reduce)]:backdrop-filter-none" />'],
+    ["a.css", "/* .a { backdrop-filter: none; } */"],
+    ["a.tsx", "// backdrop-filter: none;"],
+    ["a.tsx", '<div style={{ myBackdropFilter: "none" }} />'],
+    ["a.css", ".a { --my-backdrop-filter: none; }"],
+    ["a.tsx", 'const s = { my_backdropFilter: "none" };'],
+    ["a.tsx", "const x = cond ? backdropFilter : other;"], // an expression, not a key
+    ["a.tsx", 'el.style.backdropFilter = "none"; el.style.webkitBackdropFilter = "none";'],
+    ["a.css", ".a {\n  backdrop-filter:\n    blur(var(--glass-blur-standard));\n  -webkit-backdrop-filter:  blur(var(--glass-blur-standard));\n}"], // whitespace does not count as a difference
+    ["a.css", ".a { backdrop-filter: blur(var(--glass-blur-standard))  saturate(1.6); -webkit-backdrop-filter: blur(var(--glass-blur-standard)) saturate(1.6); }"],
+    ["a.css", ".backdropFilter:hover { color: red; }"], // style object keys are not read in CSS
+  ]) assert.equal(glassHits("DS-GLASS-003", code, file).length, 0, code);
+});
+
+test("DS-GLASS-004 flags a literal backdrop blur in each spelling", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }"],
+    ["a.css", ".a { -webkit-backdrop-filter: saturate(1.6) blur(1rem); backdrop-filter: none; }"],
+    ["a.css", ".a { @apply backdrop-blur-md; }"],
+    ["a.tsx", '<div className="backdrop-blur" />'],
+    ["a.tsx", '<div className="md:backdrop-blur-xl" />'],
+    ["a.tsx", '<div className="backdrop-blur-[20px]" />'],
+    ["a.tsx", '<div className="supports-[(backdrop-filter:blur(1px))]:backdrop-blur-sm" />'],
+    ["a.tsx", '<div style={{ WebkitBackdropFilter: "blur(8px)" }} />'],
+    ["a.css", ".a {\n  -webkit-backdrop-filter:\n    blur(12px);\n}"], // a value on the next line
+    ["a.tsx", 'const s = { "backdrop-filter": "blur(12px)" };'],
+    ["a.tsx", 'el.style.backdropFilter = "blur(8px)";'],
+    ["a.tsx", '<div style={{ backdropFilter: dark ? "blur(4px)" : "none" }} />'], // a string in a ternary
+  ]) assert.ok(glassHits("DS-GLASS-004", code, file).length >= 1, code);
+  assert.equal(glassHits("DS-GLASS-004", ".a { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }", "a.css").length, 2, "each declaration is reported");
+});
+
+test("DS-GLASS-004 leaves alone the tokens, a reset, a condition and other filters", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { -webkit-backdrop-filter: blur(var(--glass-blur-subtle)); backdrop-filter: blur(var(--glass-blur-subtle)) saturate(1.5); }"],
+    ["a.css", ".a { backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0px); }"],
+    ["a.css", "@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .a { color: red; } }"],
+    ["a.css", ".a { filter: blur(4px); }"], // DS-SURFACE-014's icon swap uses filter, not backdrop-filter
+    ["a.tsx", '<motion.span initial={{ filter: "blur(4px)" }} />'],
+    ["a.tsx", '<div className="backdrop-blur-none blur-sm backdrop-blur-[var(--glass-blur-strong)] backdrop-blur-(--glass-blur-standard)" />'],
+    ["a.tsx", '<div className="my-backdrop-blur-md" />'],
+    ["a.css", ".backdrop-blur-md { color: red; }"], // CSS is read only inside @apply
+    ["a.tsx", "<p>Use backdrop-blur for glass</p>"], // JSX text, not a class string
+    ["a.tsx", "const backdropBlur = 1; // backdrop-blur-md"],
+    ["a.tsx", "const s = { backdropFilter: `blur(${r}px)`, WebkitBackdropFilter: `blur(${r}px)` };"], // an interpolation is not read
+  ]) assert.equal(glassHits("DS-GLASS-004", code, file).length, 0, code);
+});
+
+test("DS-GLASS-005 flags an animated backdrop-filter", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { transition: opacity 150ms, backdrop-filter 150ms; }"],
+    ["a.css", ".a { transition-property: -webkit-backdrop-filter; }"],
+    ["a.css", ".a { -webkit-transition: -webkit-backdrop-filter 200ms; }"], // the prefixed transition
+    ["a.tsx", '<div style={{ WebkitTransition: "-webkit-backdrop-filter 200ms" }} />'],
+    ["a.tsx", '<motion.div animate={{ "backdrop-filter": "none" }} />'],
+    ["a.tsx", '<motion.div exit={{ WebkitBackdropFilter: "none" }} />'],
+    ["a.css", "@keyframes in { from { -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); } }"],
+    ["a.tsx", '<div className="transition-[opacity,backdrop-filter]" />'],
+    ["a.tsx", '<div style={{ transition: "backdrop-filter 200ms" }} />'],
+    ["a.tsx", '<motion.div animate={{ backdropFilter: "blur(0)", WebkitBackdropFilter: "blur(0)" }} />'],
+    ["a.tsx", '<motion.div whileHover={{ opacity: 1, backdropFilter: "none" }} />'],
+    ["a.tsx", 'const v = { initial: { backdropFilter: "none" } };'],
+  ]) assert.equal(glassHits("DS-GLASS-005", code, file).length, 1, code);
+});
+
+test("DS-GLASS-005 leaves alone other transitions, a static style and other keyframes", () => {
+  for (const [file, code] of [
+    ["a.css", ".a { transition: opacity 150ms; -webkit-backdrop-filter: none; backdrop-filter: none; }"],
+    ["a.css", ".a { transition: filter 150ms; }"],
+    ["a.css", ".a { transition: my-backdrop-filter-ish 1s; }"],
+    ["a.css", "@keyframes in { from { opacity: 0; } } .a { -webkit-backdrop-filter: none; backdrop-filter: none; }"],
+    ["a.css", "@keyframes in { from { opacity: 0; } }\n@supports (backdrop-filter: blur(1px)) { .a { color: red; } }"],
+    ["a.css", "@keyframes in { from { --my-backdrop-filter: 0; } }"],
+    ["a.tsx", '<div className="transition-[opacity] supports-[(backdrop-filter:blur(1px))]:backdrop-blur-[var(--glass-blur-standard)]" />'],
+    ["a.tsx", '<div className="transition-[backdrop-filter-ish]" />'],
+    ["a.tsx", '<div style={{ backdropFilter: "none", WebkitBackdropFilter: "none" }} />'],
+    ["a.tsx", '<motion.div animate={{ opacity: 1 }} style={{ backdropFilter: "none", WebkitBackdropFilter: "none" }} />'],
+  ]) assert.equal(glassHits("DS-GLASS-005", code, file).length, 0, code);
+});
+
+test("DS-GLASS checks stay quick on a very long file", () => {
+  const css = Array.from({ length: 5000 }, (_, i) => `.g${i} { -webkit-backdrop-filter: blur(var(--glass-blur-standard)); backdrop-filter: blur(var(--glass-blur-standard)); }`).join("\n");
+  const t = Date.now();
+  for (const id of ["DS-GLASS-003", "DS-GLASS-004", "DS-GLASS-005"]) assert.equal(glassHits(id, css, "a.css").length, 0);
+  assert.ok(Date.now() - t < 3000);
+});
+
+test("the registry's glass classes and the components that use them raise no glass finding", () => {
+  const root = join(HERE, "..", "..", "registry", "vois");
+  for (const rel of ["glass/glass.ts", "dropdown-menu/dropdown-menu.tsx", "dialog/dialog.tsx", "command/command.tsx", "tokens/vois-tokens.css"]) {
+    const file = join(root, rel);
+    if (!existsSync(file)) continue;
+    assert.deepEqual(detectFile(file, readFileSync(file, "utf8")).filter((x) => x.ruleId.startsWith("DS-GLASS")), [], rel);
+  }
+});
+
+// --- DS-ICON-005: an icon-only Button names its action ---
+
+const nameHits = (src) => detectFile("src/Toolbar.tsx", src).filter((f) => f.ruleId === "DS-ICON-005");
+
+test("DS-ICON-005 flags an icon-size Button with no accessible name, in each spelling", () => {
+  for (const code of [
+    '<Button size="icon"><Heart /></Button>',
+    "<Button size='icon-sm'><Heart /></Button>",
+    '<Button size={"icon-lg"}><Heart /></Button>',
+    "<Button size={`icon`}><Heart /></Button>",
+    '<Button variant="ghost" size="circular" />',
+    '<Button\n  size="icon"\n  onClick={() => setOpen(count > 2)}\n>\n  <Heart />\n</Button>',
+    '<Button size="icon" aria-label=""><Heart /></Button>', // an empty name is no name
+    '<Button size="icon" aria-label="   "><Heart /></Button>',
+    '<Button size="icon" data-aria-label="Like"><Heart /></Button>', // not the attribute
+    '<Button size="icon" title="Like"><Heart /></Button>', // title is not counted
+    '<Button size="icon"><Heart className="sr-only-ish" /></Button>',
+    '<Button size="icon"><Trash onClick={() => go()} /></Button>', // a > inside a child's attribute is not text
+    '<Button size="icon"><Trash data-x={n > 0} /></Button>',
+    '<Button size="icon"><Trash title="a > b" /></Button>',
+    '<Button size="icon" style={{...base}}><Trash /></Button>', // an object spread in a value is not a prop spread
+    '<Button size="icon" className={cn({...x})}><Trash /></Button>',
+    '<Button size="icon" style={ {...base} }><Trash /></Button>', // with spaces
+    '<Button size="icon">{/* delete */}<Trash /></Button>', // a comment is not a name
+    '<Button size="icon" aria-label={undefined}><Trash /></Button>',
+    '<Button size="icon" aria-label={null}><Trash /></Button>',
+    '<Button size="icon" aria-label={""}><Trash /></Button>',
+    "<Button size=\"icon\" aria-label={''}><Trash /></Button>",
+    '<Button size="icon"><Trash onClick={() => f("}")} /></Button>\n<p>Delete</p>', // a brace in a string does not end the child early
+  ]) assert.equal(nameHits(code).length, 1, code);
+  assert.equal(nameHits('<p>x</p>\n<Button size="icon"><Heart /></Button>')[0].line, 2);
+  assert.match(nameHits('<Button size="icon"><Heart /></Button>')[0].message, /no accessible name/);
+});
+
+test("DS-ICON-005 leaves alone a named button, a text button and what it cannot read", () => {
+  for (const code of [
+    '<Button size="icon" aria-label="Add to favorites"><Heart /></Button>',
+    '<Button size="icon" aria-label={t("favorite")}><Heart /></Button>',
+    '<Button size="icon" aria-labelledby="fav-label"><Heart /></Button>',
+    '<Button size="icon"><Heart /><span className="sr-only">Add to favorites</span></Button>',
+    '<Button size="icon" asChild><a href="/" aria-label="Home"><House /></a></Button>',
+    '<Button size="icon">Go</Button>', // visible text
+    '<Button size="icon" {...props}><Heart /></Button>', // the spread may carry the name
+    '<Button size="icon">{icon}</Button>', // an expression child may be text
+    '<Button size={compact ? "icon-sm" : "icon"}><Heart /></Button>', // a computed size is not read
+    '<Button data-size="icon"><Heart /></Button>',
+    '<Button size="sm"><Heart /></Button>',
+    '<Button><Heart /></Button>',
+    '<InputGroupButton size="icon-xs"><Eye /></InputGroupButton>', // another component
+    '<ButtonGroup size="icon"><Heart /></ButtonGroup>',
+    '<Button size="icon-xs"><Heart /></Button>', // not a Button size
+    '<Button size="icon"> ', // never closes: not read
+    '<Button size="icon"><Trash title="</Button>" /></Button>', // a child cut off by "</Button>" in a string: not read
+    '<Button size="icon" className="x" {...rest}><Heart /></Button>', // a prop spread after other props
+    '<Button {...props} size="icon"><Heart /></Button>', // a prop spread first
+    '<Button\n  size="icon"\n  {...props}\n><Heart /></Button>', // on its own line
+    '<Button size="icon">{" "}{label}</Button>',
+    '<Button size="icon"><Trash />{count > 0 ? "Delete" : null}</Button>', // an expression child is not read
+    '<Button size="icon"><Trash onClick={() => {}} /> Delete</Button>', // text after a child with braces
+    '<Button size="icon"><Trash data-s="}" />Delete</Button>', // a brace inside a quoted value
+
+  ]) assert.equal(nameHits(code).length, 0, code);
+});
+
+test("DS-ICON-005 reads one Button at a time", () => {
+  const two = '<Button size="icon" aria-label="Like"><Heart /></Button>\n<Button size="icon"><Trash /></Button>';
+  assert.deepEqual(nameHits(two).map((f) => f.line), [2], "the second, unnamed button is found, the first is not");
+});
+
+test("DS-ICON-005 stays quick on a very long file", () => {
+  const src = Array.from({ length: 5000 }, () => '<Button size="icon" aria-label="Like"><Heart /></Button>').join("\n");
+  const t = Date.now();
+  assert.equal(nameHits(src).length, 0);
+  assert.ok(Date.now() - t < 2000);
+});
+
+test("the built registry components raise no DS-ICON-005 finding", () => {
+  const root = join(HERE, "..", "..", "registry", "vois");
+  for (const dir of ["dialog", "input-group", "button", "command", "panel"]) {
+    const file = join(root, dir, `${dir}.tsx`);
+    if (!existsSync(file)) continue;
+    assert.deepEqual(detectFile(file, readFileSync(file, "utf8")).filter((x) => x.ruleId === "DS-ICON-005"), [], dir);
+  }
 });

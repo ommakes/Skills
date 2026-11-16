@@ -569,3 +569,31 @@ test("shadcn popover maps to the popup fill, so a stock popover, menu or select 
   const tokens = readFileSync(join(repo, "registry", TOKENS_FILE), "utf8");
   assert.equal((tokens.match(/--elevation-surface-popup:/g) || []).length, 2, "defined once in :root and once in .dark");
 });
+
+// The Dropdown Menu, Dialog and Button carry their own copy of a glass tier, so they install without the vois-glass
+// item. Each copy must equal the tier in vois/glass/glass.ts.
+const glassTiers = () => {
+  const src = readFileSync(join(registryDir, "vois/glass/glass.ts"), "utf8");
+  const out = {};
+  for (const m of src.matchAll(/^\s{2}(subtle|standard|strong): \[\n([\s\S]*?)\n\s{2}\]\.join\(" "\),$/gm)) {
+    out[m[1]] = [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1]).join(" ");
+  }
+  return out;
+};
+
+test("glass: every component copy of a tier equals lib/glass.ts, and none imports it", () => {
+  const tiers = glassTiers();
+  assert.deepEqual(Object.keys(tiers), ["subtle", "standard", "strong"]);
+  const copies = [["dropdown-menu/dropdown-menu.tsx", "GLASS_STANDARD", "standard"], ["dialog/dialog.tsx", "GLASS_STRONG", "strong"], ["button/button.tsx", "GLASS_SUBTLE", "subtle"]];
+  for (const [file, name, tier] of copies) {
+    const src = readFileSync(join(registryDir, "vois", file), "utf8");
+    const m = new RegExp(`const ${name} = "([^"]+)"`).exec(src);
+    assert.ok(m, `${file} defines ${name}`);
+    assert.equal(m[1], tiers[tier], `${file}: ${name} differs from glass.${tier} in lib/glass.ts`);
+    assert.doesNotMatch(src, /from\s+["']@\/lib\/glass["']/, `${file} must not import lib/glass: the item would need vois-glass installed`);
+  }
+  for (const t of Object.values(tiers)) {
+    assert.match(t, /^border-\[color:var\(--border-default\)\] bg-\[color:var\(--elevation-surface-/, "the fallback starts opaque, with a visible edge");
+    assert.match(t, /\[@media\(prefers-reduced-transparency:reduce\)\]:backdrop-filter-none/, "no blur under reduced transparency");
+  }
+});

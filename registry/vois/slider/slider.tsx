@@ -9,6 +9,8 @@
 //     drawn as a gradient so WebKit and Firefox match without -moz-range-progress.
 //   Thumb: 20 (--size-20) circle in --control-on with a 2px --switch-knob ring and --shadow-small, so it reads
 //     on the track and on the fill. The thumb carries the 3:1 contrast (WCAG 1.4.11), not the track.
+//   Hover: a 6px halo around the thumb in --bg-hover. Dragging (:active): the halo turns --bg-pressed.
+//     Neither shows on a disabled slider, and hover gives way to focus, so a keyboard user keeps the ring.
 //   Focus: a 2px --control-focus ring 2px outside the thumb (the Checkbox and Radio ring).
 //   Disabled: the fill and the thumb turn --control-disabled.
 //   The input is --hit-area-min tall, so the pointer target is 44 while the track stays 4 (DS-A11Y-001).
@@ -21,6 +23,8 @@
 //   Thumb: 28 tall (--size-28), inset 2px, --radii-6, --segment-active fill, 1px --border-default edge,
 //     --shadow-base, and the current step's label in it, 14/20 medium --text-on-light.
 //   Stops: a 4px dot (--space-4) in --text-state-resting at each step. The thumb covers its own.
+//   Hover (anywhere on the track): the thumb edge becomes 1px --border-state-hover, as a field's edge does.
+//   Dragging (:active): the edge becomes 1px --border-state-active. Neither shows when disabled or focused.
 //   Focus: the thumb edge becomes 2px --segment-focus-ring (the Segments active focus).
 //   The thumb does not animate its position: under a dragging finger an eased move lags behind the pointer.
 //   Disabled: --segment-disabled track, no thumb fill, a 1px --border-state-disabled edge, --text-state-disabled.
@@ -85,6 +89,11 @@ const sliderClasses = [
   "[&::-webkit-slider-thumb]:mt-[calc((var(--space-4)-var(--size-20))/2)]",
   "[&::-moz-range-thumb]:size-[var(--size-20)] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-[var(--shape-circle)] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[color:var(--control-on)] [&::-moz-range-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),var(--shadow-small)]",
   "[&::-webkit-slider-thumb]:transition-[box-shadow] [&::-webkit-slider-thumb]:duration-[var(--motion-duration-fast)] motion-reduce:[&::-webkit-slider-thumb]:transition-none",
+  // Hover and dragging: a halo outside the knob ring, from the state overlay tokens.
+  "enabled:not-focus-visible:hover:[&::-webkit-slider-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),0_0_0_8px_var(--bg-hover),var(--shadow-small)]",
+  "enabled:not-focus-visible:hover:[&::-moz-range-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),0_0_0_8px_var(--bg-hover),var(--shadow-small)]",
+  "enabled:active:[&::-webkit-slider-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),0_0_0_8px_var(--bg-pressed),var(--shadow-small)]",
+  "enabled:active:[&::-moz-range-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),0_0_0_8px_var(--bg-pressed),var(--shadow-small)]",
   // Focus: the ring is on the thumb, so the input's own outline (a box around the whole 44 tall input) goes.
   "outline-none",
   "focus-visible:[&::-webkit-slider-thumb]:[box-shadow:0_0_0_2px_var(--switch-knob),0_0_0_4px_var(--control-focus)]",
@@ -204,6 +213,8 @@ function StepSlider({ className, style, steps, value: valueProp, defaultValue, o
           "pointer-events-none absolute top-1/2 inline-flex h-[var(--size-28)] w-[var(--vois-step-thumb)] -translate-y-1/2 items-center justify-center rounded-[var(--radii-6)] whitespace-nowrap",
           "bg-[color:var(--segment-active)] text-[color:var(--text-on-light)] shadow-[inset_0_0_0_1px_var(--border-default),var(--shadow-base)]",
           "transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none",
+          "peer-enabled:peer-not-focus-visible:peer-hover:shadow-[inset_0_0_0_1px_var(--border-state-hover),var(--shadow-base)]",
+          "peer-enabled:peer-not-focus-visible:peer-active:shadow-[inset_0_0_0_1px_var(--border-state-active),var(--shadow-base)]",
           "peer-focus-visible:shadow-[inset_0_0_0_2px_var(--segment-focus-ring),var(--shadow-base)]",
           "group-data-[disabled]/step:bg-transparent group-data-[disabled]/step:text-[color:var(--text-state-disabled)] group-data-[disabled]/step:shadow-[inset_0_0_0_1px_var(--border-state-disabled)]"
         )}

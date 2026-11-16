@@ -82,6 +82,10 @@ function BadElevation() {
   return (
     <div className="shadow-[0_4px_12px_rgba(0,0,0,0.2)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
       <aside className="fixed inset-y-0 right-0 shadow-[var(--shadow-large-left)]" />
+      {/* DS-GLASS-003 and -004: no -webkit- twin, a literal blur. DS-GLASS-005: the blur is transitioned */}
+      <nav style={{ backdropFilter: "blur(12px)" }} className="backdrop-blur-md transition-[opacity,backdrop-filter]" />
+      {/* DS-ICON-005: icon-only Button with no accessible name */}
+      <Button size="icon"><span className="icon" /></Button>
     </div>
   );
 }

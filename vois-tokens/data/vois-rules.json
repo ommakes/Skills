@@ -1,5 +1,5 @@
 {
-  "source": "vois-tokens/references/*.md (17 files; excludes anti-slop.md and hooks.md — see note)",
+  "source": "vois-tokens/references/*.md (18 files; excludes anti-slop.md and hooks.md — see note)",
   "note": "anti-slop.md (DS-SLOP-*) is intentionally excluded: it is self-declared judgment-only content graded by reading the code, not a lookup table (see references/anti-slop.md). hooks.md (DS-HOOKS) documents an automated-check tool, not a rule source. Both stay Markdown. The optional `engines` field on a rule (`[\"tailwind\"]` or `[\"stylex\"]`) marks it as specific to one styling engine; a rule with no `engines` field applies under either. Every rule also has `verification`: `detector` (a check in scripts/registry.mjs catches some or all violations of it, named in `detector`; passing the check does not prove the rule is met, and gaps are listed in references/hooks.md), `spec` (a chart-spec check), `rendered` (needs the page rendered) or `judgment` (an agent reads the code). It says how a rule can be checked, which is a different question from `enforcement` (whether a hook may deny the edit) and `severity` (how much the rule weighs).",
   "categories": {
     "DS-A11Y": "Accessibility",
@@ -23,7 +23,8 @@
     "DS-TABLE": "Data Tables",
     "DS-MKT": "Marketing Type and Spacing",
     "DS-TOKEN": "Token Layers and Names",
-    "DS-SHAPE": "Shape"
+    "DS-SHAPE": "Shape",
+    "DS-GLASS": "Frosted Glass"
   },
   "rules": [
     {
@@ -31,7 +32,7 @@
       "category": "DS-A11Y",
       "category_label": "Accessibility",
       "source_file": "vois-tokens/references/accessibility.md",
-      "rule": "Every interactive element has a hit area of at least var(--hit-area-min) in both dimensions. The visual element can be smaller. Extend the hit area with a pseudo-element, and never size the visible control with this token.",
+      "rule": "Every interactive element has a hit area of at least var(--hit-area-min) in both dimensions. The visual element can be smaller. Extend the hit area with a pseudo-element, and never size the visible control with this token. On a coarse pointer (any-pointer: coarse) the minimum is var(--hit-area-coarse) (48).",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -594,7 +595,7 @@
       "category": "DS-COMPONENT",
       "category_label": "Components",
       "source_file": "vois-tokens/references/components.md",
-      "rule": "Control heights come from the size tokens. Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`), and 36 is the default on web, 48 on native. The circular action is 56 (`--size-action-circular`) and no other action or control is 56 (an avatar can be). Input and Select are `--size-field-web` (36) on web and `--size-field-native` (48) on native. `--size-field-compact` (32) is only for an inline field nested in a table or a dense row. A Button next to a field matches the field's height.",
+      "rule": "Control heights come from the size tokens. Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`), and 36 is the default on web, 48 on native. The circular action is 56 (`--size-action-circular`) and no other action or control is 56 (an avatar can be, and so can the `icon-lg` icon button on a coarse pointer, DS-ICON-003). Input and Select are `--size-field-web` (36) on web and `--size-field-native` (48) on native. `--size-field-compact` (32) is only for an inline field nested in a table or a dense row. A Button next to a field matches the field's height.",
       "severity": "required",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -813,7 +814,7 @@
       "category": "DS-ELEVATION",
       "category_label": "Elevation",
       "source_file": "vois-tokens/references/elevation.md",
-      "rule": "Do not write a raw shadow with blur: a `box-shadow` or `boxShadow` literal, a `shadow-[...]` value, or a Tailwind default such as `shadow-md`. Use a tier token (`--shadow-base` to `--shadow-xlarge`). A zero-blur ring (spread only, such as an edge or a checkbox ring) is not a tier and is allowed.",
+      "rule": "Do not write a raw shadow with blur: a `box-shadow` or `boxShadow` literal, a `shadow-[...]` value, or a Tailwind default such as `shadow-md`. Use a tier token (`--shadow-base` to `--shadow-xlarge`, or a glass surface's `--glass-shadow-*`, DS-GLASS-009). A zero-blur ring (spread only, such as an edge or a checkbox ring) is not a tier and is allowed.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "detector",
@@ -870,6 +871,109 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-GLASS-001",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Frosted glass is opt-in and goes only on chrome and floating layers: a sticky nav bar, tab bar or toolbar; a menu, popover or dropdown; a dialog, sheet or command palette; an icon button floating over an image, video or map (Button variant=\"glass\"). Never on the content layer (body text, a data table, a form, a card in a list). At most 3 glass surfaces in one viewport.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-002",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Glass has three tiers and no more. Subtle (chips, badges, hover): blur --glass-blur-subtle (8), saturate 150%. Standard (sticky nav or toolbar, menus): --glass-blur-standard (16), 160%. Strong (dialog, sheet, command palette, always over the scrim): --glass-blur-strong (24), 180%. Fill, edge, highlight and shadow come from --glass-tint-*, --glass-stroke-*, --glass-highlight-* and --glass-shadow-* of the same tier. Dark tint is white at low alpha, never black. Corners come from the shape roles, not the tier.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-003",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Every backdrop-filter has a -webkit-backdrop-filter with the same value (WebkitBackdropFilter in a style object). Safari before 18 reads only the prefixed one. Tailwind's backdrop-blur utilities write both.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-GLASS-003"
+    },
+    {
+      "id": "DS-GLASS-004",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "The backdrop blur radius is var(--glass-blur-subtle), -standard or -strong. Never a literal (blur(12px), backdrop-blur-md, backdrop-blur-[20px]), and never more than 24 on a panel.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-GLASS-004"
+    },
+    {
+      "id": "DS-GLASS-005",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Never animate backdrop-filter: no transition, @keyframes or motion prop (animate, initial, exit, while*) that changes it. The browser re-blurs every frame. Fade the surface's opacity instead, or show it at once.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-GLASS-005"
+    },
+    {
+      "id": "DS-GLASS-006",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Never put a glass element inside another one, or inside a backdrop root (an ancestor with opacity under 1, a filter, mask, clip-path, mix-blend-mode or its own backdrop-filter). The inner blur then reaches only up to that ancestor, not the page.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-007",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Fallback first: the base style is the opaque elevation fill of the layer (--elevation-surface-small, -popup or -raised). An @supports test for backdrop-filter or its -webkit- twin lowers the fill to the tint and adds the blur. Under prefers-reduced-transparency: reduce, the opaque fill comes back and backdrop-filter is none.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-008",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Check text on glass against the lightest and the darkest patch that can sit behind it, in both themes and at more than one scroll position: 4.5:1 for text, 3:1 for large text and controls. If it fails, use a stronger tier or a 35% black dimming layer over bright media. Never lower the bar. No accent-colored text or links on glass.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-009",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "A glass surface's float shadow is its tier's --glass-shadow-* token, and its top highlight is a zero-blur inset 0 1px 0 var(--glass-highlight-*). The glass shadow tokens count as tier tokens under DS-ELEVATION-007. The strong tier sits over the one modal scrim, --bg-overlay-dark; there is no second scrim for glass.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-010",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "In Figma, fill a glass layer with Component/Glass/Tint-* (under 100% alpha, or the background blur does not show), stroke it 1px inside with Stroke-*, and apply the Glass/<Tier> effect style (Glass/Dark/<Tier> in a Dark frame). Do not combine Figma's Glass effect with Background blur on one layer. Use the same blur numbers in both and compare a browser screenshot with the canvas before changing either.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-ICON-001",
       "category": "DS-ICON",
       "category_label": "Iconography",
@@ -885,11 +989,62 @@
       "category": "DS-ICON",
       "category_label": "Iconography",
       "source_file": "vois-tokens/references/iconography.md",
-      "rule": "If an icon's surrounding text size doesn't map cleanly to one of the four defined sizes (16/20/24/32px), round to the nearest one rather than introducing an arbitrary size.",
+      "rule": "If an icon's surrounding text size doesn't map cleanly to one of the four defined sizes (16/20/24/32px), round to the nearest one rather than introducing an arbitrary size. The Button sets one more on its own, a 28px glyph for `icon-lg` on a coarse pointer (DS-ICON-003); never set 28 by hand.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "detector",
       "detector": "DS-ICON-002"
+    },
+    {
+      "id": "DS-ICON-003",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "Icon-button sizes follow the Button heights: `icon-sm` 28 with a 16 glyph, `icon` 36 with a 20 glyph (the default), `icon-lg` 48 with a 24 glyph. On a coarse pointer (`@media (any-pointer: coarse)`, not the screen width) they step up to 36/20, 48/24 and 56/28. The target is at least 44 (48 on a coarse pointer) through invisible expansion (DS-A11Y-001). Never smaller than `icon-sm`, except a button inside a field and a chip's remove control (DS-ICON-006). One icon-button size and one glyph size per row.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ICON-004",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "Targets of neighboring icon buttons can touch but never overlap. The gap between two visuals is at least the larger of 8px and the target minus the visual: 16 between `icon-sm` buttons and 8 between `icon` or `icon-lg` buttons on a fine pointer, 12 between `icon-sm` buttons on a coarse pointer. If a row cannot fit the gap, move actions into a menu.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ICON-005",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "An icon-only button has an accessible name that says what it does (`aria-label=\"Add to favorites\"`, not \"Heart\"), from `aria-label`, `aria-labelledby` or `sr-only` text. A Tooltip with the same text shows on hover and focus and never replaces the name. Use icon-only buttons only for actions everyone knows (search, close, add, delete, more, favorite, play).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "detector",
+      "detector": "DS-ICON-005"
+    },
+    {
+      "id": "DS-ICON-006",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "Place icon buttons by role: app bar `icon` with at most 4 actions plus a \"More actions\" menu; dense desktop toolbar `icon-sm`; table row `icon-sm` with at most 3 visible; close a dialog, sheet or panel with `icon` in the top end corner, `aria-label=\"Close\"`; a button inside a field is an InputGroupButton `icon-sm` (28) or `icon-xs` (24), never taller than the field, with a 44 target (48 on a coarse pointer); bottom nav on touch `icon-lg` with a label, navigation only; a primary on-screen action `icon-lg`, with emphasis from the variant. Actions under an AI chat message are `icon-sm` with no background, at most 4 in the row; there is no 20px or 24px icon button. A chip's remove control may be smaller only inside a chip under 28px tall, when its target reaches 24px with spacing (WCAG 2.5.8), and never as the only way to do a destructive action.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-ICON-007",
+      "category": "DS-ICON",
+      "category_label": "Iconography",
+      "source_file": "vois-tokens/references/iconography.md",
+      "rule": "Icon buttons come in styles by background: no background (`variant=\"ghost\"`, the default, for toolbars, app bars, table rows and actions under a chat message) Soft (`variant=\"soft\"`, a light gray resting fill `--action-icon-soft-resting`, for a button that must read as a button at rest on a plain surface) and Glass (`variant=\"glass\"`, the glass subtle tier, only over an image, video or map, DS-GLASS-001). Soft's hover and pressed fills are one step above the ghost's. One style per row. Sizes, gaps and tap areas are the same for every style.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
     },
     {
       "id": "DS-LAYOUT-001",

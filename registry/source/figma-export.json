@@ -18,6 +18,10 @@
   "--action-icon-pressed": "=--bg-pressed",
   "--action-icon-resting": ["#ffffff00","=--white-a1"],
   "--action-icon-selected": ["=--base-info","=--blue-a6"],
+  "--action-icon-soft-disabled": ["=--black-a1","=--white-a1"],
+  "--action-icon-soft-hover": ["=--black-a3","=--white-a3"],
+  "--action-icon-soft-pressed": ["=--black-a4","=--white-a4"],
+  "--action-icon-soft-resting": ["=--black-a2","=--white-a2"],
   "--action-link-active": ["=--blue-10","=--blue-7"],
   "--action-link-focus": ["=--blue-10","=--blue-6"],
   "--action-link-hover": ["=--blue-12","=--blue-6"],
@@ -256,6 +260,18 @@
   "--font-weight-regular": 400,
   "--font-weight-semi-bold": 600,
   "--font-weight-thin": 200,
+  "--glass-blur-standard": 16,
+  "--glass-blur-strong": 24,
+  "--glass-blur-subtle": 8,
+  "--glass-highlight-standard": ["=--white-a5","=--white-a3"],
+  "--glass-highlight-strong": ["=--white-a6","=--white-a4"],
+  "--glass-highlight-subtle": ["=--white-a4","=--white-a2"],
+  "--glass-stroke-standard": ["=--white-a5","=--white-a3"],
+  "--glass-stroke-strong": ["=--white-a5","=--white-a4"],
+  "--glass-stroke-subtle": ["=--white-a4","=--white-a3"],
+  "--glass-tint-standard": ["=--white-a9","=--white-a3"],
+  "--glass-tint-strong": ["=--white-a10","=--white-a4"],
+  "--glass-tint-subtle": ["=--white-a8","=--white-a2"],
   "--goldie-1": "#fffdf5",
   "--goldie-10": "#9e7c03",
   "--goldie-11": "#7d6100",
@@ -326,6 +342,7 @@
   "--grid-margin-max-at": 1024,
   "--grid-margin-min": 16,
   "--grid-margin-min-at": 360,
+  "--hit-area-coarse": 48,
   "--hit-area-min": 44,
   "--icon-accent": null,
   "--icon-auxiliary": ["=--white","=--black"],
@@ -903,7 +920,10 @@
   "--shadow-large-right": [[-1,0,1,0,"#0000000d"],[-2,0,2,-1,"#0000000d"],[-4,0,4,-2,"#0000000d"],[-8,0,8,-4,"#0000000d"],[-16,0,16,-8,"#0000000d"]],
   "--shadow-large-left": [[1,0,1,0,"#0000000d"],[2,0,2,-1,"#0000000d"],[4,0,4,-2,"#0000000d"],[8,0,8,-4,"#0000000d"],[16,0,16,-8,"#0000000d"]],
   "--shadow-large-bottom": [[0,-1,1,0,"#0000000d"],[0,-2,2,-1,"#0000000d"],[0,-4,4,-2,"#0000000d"],[0,-8,8,-4,"#0000000d"],[0,-16,16,-8,"#0000000d"]],
-  "--shadow-large-top": [[0,1,1,0,"#0000000d"],[0,2,2,-1,"#0000000d"],[0,4,4,-2,"#0000000d"],[0,8,8,-4,"#0000000d"],[0,16,16,-8,"#0000000d"]]
+  "--shadow-large-top": [[0,1,1,0,"#0000000d"],[0,2,2,-1,"#0000000d"],[0,4,4,-2,"#0000000d"],[0,8,8,-4,"#0000000d"],[0,16,16,-8,"#0000000d"]],
+  "--glass-shadow-subtle": [[0,2,8,0,"#00000014"]],
+  "--glass-shadow-standard": [[0,8,32,0,"#0000001f"]],
+  "--glass-shadow-strong": [[0,16,48,0,"#0000002e"]]
  },
  "darkShadows": {
   "--shadow-medium": [[0,1,1,0,"#00000029"],[0,2,2,0,"#00000029"],[0,4,4,0,"#00000029"],[0,8,8,0,"#00000029"]],
@@ -912,6 +932,9 @@
   "--shadow-large-right": [[-1,0,1,0,"#00000033"],[-2,0,2,-1,"#00000033"],[-4,0,4,-2,"#00000033"],[-8,0,8,-4,"#00000033"],[-16,0,16,-8,"#00000033"]],
   "--shadow-large-left": [[1,0,1,0,"#00000033"],[2,0,2,-1,"#00000033"],[4,0,4,-2,"#00000033"],[8,0,8,-4,"#00000033"],[16,0,16,-8,"#00000033"]],
   "--shadow-large-bottom": [[0,-1,1,0,"#00000033"],[0,-2,2,-1,"#00000033"],[0,-4,4,-2,"#00000033"],[0,-8,8,-4,"#00000033"],[0,-16,16,-8,"#00000033"]],
-  "--shadow-large-top": [[0,1,1,0,"#00000033"],[0,2,2,-1,"#00000033"],[0,4,4,-2,"#00000033"],[0,8,8,-4,"#00000033"],[0,16,16,-8,"#00000033"]]
+  "--shadow-large-top": [[0,1,1,0,"#00000033"],[0,2,2,-1,"#00000033"],[0,4,4,-2,"#00000033"],[0,8,8,-4,"#00000033"],[0,16,16,-8,"#00000033"]],
+  "--glass-shadow-subtle": [[0,2,8,0,"#00000029"]],
+  "--glass-shadow-standard": [[0,8,32,0,"#00000033"]],
+  "--glass-shadow-strong": [[0,16,48,0,"#0000003d"]]
  }
 }

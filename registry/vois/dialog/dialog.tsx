@@ -72,22 +72,34 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   )
 }
 
+// The strong glass tier (vois-tokens DS-GLASS) for material="glass": glass.strong from the vois-glass item (lib/glass.ts),
+// copied here so the Dialog installs without it; check-registry.test.mjs keeps the two equal.
+const GLASS_STRONG = "border-[color:var(--border-default)] bg-[color:var(--elevation-surface-raised)] shadow-[inset_0_1px_0_var(--glass-highlight-strong),var(--glass-shadow-strong)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:border-[color:var(--glass-stroke-strong)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:bg-[color:var(--glass-tint-strong)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-blur-[var(--glass-blur-strong)] supports-[(backdrop-filter:blur(1px))_or_(-webkit-backdrop-filter:blur(1px))]:backdrop-saturate-[1.8] [@media(prefers-reduced-transparency:reduce)]:border-[color:var(--border-default)] [@media(prefers-reduced-transparency:reduce)]:bg-[color:var(--elevation-surface-raised)] [@media(prefers-reduced-transparency:reduce)]:backdrop-filter-none"
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
   size = "sm",
+  material = "solid",
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean; size?: "sm" | "lg" }) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  showCloseButton?: boolean
+  size?: "sm" | "lg"
+  /** "glass" is the strong glass tier (vois-tokens DS-GLASS), over the same scrim. */
+  material?: "solid" | "glass"
+}) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         data-size={size}
+        data-material={material}
         className={cn(
           "group/dialog fixed top-1/2 left-1/2 z-[var(--z-modal)] w-[var(--width-dialog-sm)] data-[size=lg]:w-[var(--width-dialog-lg)] max-w-[calc(100vw-var(--space-32))] -translate-x-1/2 -translate-y-1/2 overflow-hidden",
-          "rounded-[var(--shape-rounded)] border border-[color:var(--border-default)] bg-[color:var(--elevation-surface-raised)] text-[color:var(--text-primary)] shadow-[var(--shadow-large)]",
+          "rounded-[var(--shape-rounded)] border text-[color:var(--text-primary)]",
+          material === "glass" ? GLASS_STRONG : "border-[color:var(--border-default)] bg-[color:var(--elevation-surface-raised)] shadow-[var(--shadow-large)]",
           "outline-hidden",
           "motion-safe:data-[state=open]:animate-[vois-dialog-in_var(--motion-duration-fast)_var(--motion-ease-standard)]",
           "motion-safe:data-[state=closed]:animate-[vois-dialog-out_var(--motion-duration-instant)_var(--motion-ease-standard)_forwards]",
@@ -107,7 +119,7 @@ function DialogContent({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-[var(--space-8)] right-[var(--space-8)] size-[var(--size-40)]"
+              className="absolute top-[var(--space-8)] right-[var(--space-8)]"
             >
               <X />
               <span className="sr-only">Close</span>
@@ -124,8 +136,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-header"
       className={cn(
-        // 48 on the right keeps the title clear of the close button, and only when there is one.
-        "flex flex-col gap-[var(--space-v-between-text)] pt-[var(--space-padding-large)] pr-[var(--space-padding-large)] pb-[var(--space-padding-small)] pl-[var(--space-padding-large)] in-data-[close=true]:pr-[var(--space-48)]",
+        // 48 on the right keeps the title clear of the close button (8 + 36), and only when there is one. On a
+        // coarse pointer the close is 48 (DS-ICON-003), so it is 56 (8 + 48).
+        "flex flex-col gap-[var(--space-v-between-text)] pt-[var(--space-padding-large)] pr-[var(--space-padding-large)] pb-[var(--space-padding-small)] pl-[var(--space-padding-large)] in-data-[close=true]:pr-[var(--space-48)] [@media(any-pointer:coarse)]:in-data-[close=true]:pr-[var(--space-56)]",
         className
       )}
       {...props}

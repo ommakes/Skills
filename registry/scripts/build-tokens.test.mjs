@@ -469,8 +469,8 @@ test("dark shadows fail closed: no light twin, a flat tier given a shadow, a tie
   assert.throws(() => build(withDark({ "--shadow-medium": [[0, 0, 0, 1, "#00000029"], [0, 2, 2, 0, "#00000029"]] }, ringed), brand()), /must have the layers of the light one/);
 });
 
-test("dark shadows: the committed export has Medium, Large, XLarge and the four docked Large shadows, each heavier than its light twin", () => {
-  assert.deepEqual(Object.keys(realExport.darkShadows), ["--shadow-medium", "--shadow-large", "--shadow-xlarge", "--shadow-large-right", "--shadow-large-left", "--shadow-large-bottom", "--shadow-large-top"]);
+test("dark shadows: the committed export has Medium, Large, XLarge, the four docked Large shadows and the three glass shadows, each heavier than its light twin", () => {
+  assert.deepEqual(Object.keys(realExport.darkShadows), ["--shadow-medium", "--shadow-large", "--shadow-xlarge", "--shadow-large-right", "--shadow-large-left", "--shadow-large-bottom", "--shadow-large-top", "--glass-shadow-subtle", "--glass-shadow-standard", "--glass-shadow-strong"]);
   const alpha = (hex) => parseInt(hex.slice(7, 9) || "ff", 16);
   for (const [k, layers] of Object.entries(realExport.darkShadows)) {
     const lightA = Math.max(...realExport.shadows[k].map((l) => alpha(l[4])));
@@ -610,4 +610,23 @@ test("choice card: a resting card steps up to Small on hover and drops its shado
     assert.ok(cls.length > 0, `${state} classes not found`);
     assert.doesNotMatch(cls, /--shadow-small/, `${state} must keep Base`);
   }
+});
+
+test("glass tokens: tints, edges and highlights are white at an alpha, lighter in dark; blur is 8 / 16 / 24 (vois-tokens DS-GLASS-002)", () => {
+  const t = realExport.tokens;
+  const whiteAlpha = (ref) => {
+    const m = /^=--white-a(\d+)$/.exec(ref);
+    assert.ok(m, `${ref} is not a White Alpha step`);
+    return Number(m[1]);
+  };
+  for (const tier of ["subtle", "standard", "strong"]) {
+    for (const part of ["tint", "stroke", "highlight"]) {
+      const v = t[`--glass-${part}-${tier}`];
+      assert.ok(Array.isArray(v) && v.length === 2, `--glass-${part}-${tier} has a light and a dark value`);
+      assert.ok(whiteAlpha(v[1]) <= whiteAlpha(v[0]), `--glass-${part}-${tier}: dark is not more opaque than light`);
+    }
+  }
+  const tints = ["subtle", "standard", "strong"].map((tier) => t[`--glass-tint-${tier}`].map(whiteAlpha));
+  for (const mode of [0, 1]) assert.ok(tints[0][mode] < tints[1][mode] && tints[1][mode] < tints[2][mode], "each tier's tint is more opaque than the one below");
+  assert.deepEqual(["subtle", "standard", "strong"].map((tier) => t[`--glass-blur-${tier}`]), [8, 16, 24]);
 });

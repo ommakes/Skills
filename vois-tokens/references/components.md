@@ -7,7 +7,7 @@
 - Use `data-slot` attributes for styling component internals — don't reach into component children with arbitrary CSS selectors. `[DS-COMPONENT-003]`
 - **New-York style** is the default for shadcn. The "default" style is deprecated. `[DS-COMPONENT-004]`
 - Components use a 2-layer architecture: Radix UI (or another unstyled primitive library) for structure/behavior, the project's styling engine — Tailwind or StyleX — for style. Don't collapse these. `[DS-COMPONENT-005]`
-- **Control heights come from the size tokens.** Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`), and 36 is the default on web, 48 on native. The circular action is 56 (`--size-action-circular`) and no other action or control is 56 (an avatar can be). Input and Select are `--size-field-web` (36) on web and `--size-field-native` (48) on native. `--size-field-compact` (32) is only for an inline field nested in a table or a dense row. A Button next to a field matches the field's height. `[DS-COMPONENT-007]`
+- **Control heights come from the size tokens.** Button heights are 28 (`--size-action-medium`), 36 (`--size-action-large`) and 48 (`--size-action-x-large`), and 36 is the default on web, 48 on native. The circular action is 56 (`--size-action-circular`) and no other action or control is 56 (an avatar can be, and so can the `icon-lg` icon button on a coarse pointer, `DS-ICON-003`). Input and Select are `--size-field-web` (36) on web and `--size-field-native` (48) on native. `--size-field-compact` (32) is only for an inline field nested in a table or a dense row. A Button next to a field matches the field's height. `[DS-COMPONENT-007]`
 
 ## Component Variants
 

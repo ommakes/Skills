@@ -2,11 +2,42 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale. There are none today.
 
+## Done on 2026-11-15 (every state, and the old draft slider rebuilt, registry 0.18.0)
+
+- **A variant for each state the code draws**, every value bound to an existing variable (no new variables, export checksum unchanged):
+  - `Slider` (`8166:3469`): Resting, Hover (6px `Bg-Hover` halo), Dragging (`Bg-Pressed` halo), Focus, Disabled. Track and fill corners now bound to `Radii-2`.
+  - `Step Slider Stop` (`8166:3480`): the selected stop has Resting, Hover (1px `Border-State-Hover`), Dragging (1px `Border-State-Active`), Focus, Disabled. `Step Slider` (`8166:3533`): Steps 4 or 8 by those five states.
+  - `Inspector Toggle` (`8167:794`): Pressed Off or On by Resting, Hover, Focus, Disabled. `Inspector Section Header` (`8167:801`): Open by Resting, Hover, Focus. `Swatch Picker Trigger` (`8167:839`): Resting, Hover, Focus, Open, Disabled.
+  - Every Focus Ring's stroke width is bound to `Focus Ring/Width`.
+- **The old draft slider is rebuilt on variables** as `Slider Field` (`8176:3615`, the original `7720:3355` is its Resting variant, so its instances still work) with `Slider Field Handle` (`8176:3522`, from `7722:14238`): Resting, Hover, Dragging, Focus, Disabled. The field fill is `Bg-Hover` and the handle `Bg-Pressed` (the draft used `Bg-Overlay-Aux` and `Black-A2` at a reduced paint opacity, which vanished in dark). `Frame 1` (`7722:14274`) is renamed `Slider Field Example`, without its separate handle, which the field now contains.
+  - Open: `Slider Field` has no registry part. It is Figma only until one is built.
+- Left unbound on purpose: the Step Slider's 2px inset (`(32 - 28) / 2`, as in the Segments set; there is no 2px spacing variable), focus and selected ring radii of 10 and 14 (control radius + 4 or + 8, no variable), and icon geometry (the toggle icon, the None icon).
+
+## Done on 2026-11-15 (frosted glass, registry 0.17.0)
+
+- **Colors:** `Component/Glass/Tint-Subtle`, `-Standard`, `-Strong` (light White-A8 / A9 / A10, dark A2 / A3 / A4; scope frame and shape fill), `Stroke-*` (light A4 / A5 / A5, dark A3 / A3 / A4; scope stroke), `Highlight-*` (light A4 / A5 / A6, dark A2 / A3 / A4; scope effect color). Web syntax `--glass-tint-*`, `--glass-stroke-*`, `--glass-highlight-*`.
+- **Values:** `Glass/Blur-Subtle`, `-Standard`, `-Strong` (8, 16, 24; scope effect float; `--glass-blur-*`).
+- **Effect styles:** `Glass/Subtle`, `Glass/Standard`, `Glass/Strong` and `Glass/Dark/<Tier>`: background blur bound to `Glass/Blur-<Tier>`, an inner shadow 0 1 0 0 in white (the highlight; 20 / 30 / 40% light, 8 / 12 / 20% dark), a drop shadow 0 2 8, 0 8 32, 0 16 48 in black (8 / 12 / 18% light, 16 / 20 / 24% dark). Export checksum `bcc06a0a` (903 tokens, 12 shadows, 10 dark shadows). The full Figma export also holds `--hit-area-coarse` and the Soft icon-button variables from the icon-button change; with them the checksum is `f6a8af7b`, and that matched byte for byte.
+- **Specimen:** "Glass (registry)" on the Elevation page (`8178:20`): each tier over a busy gradient and over plain UI, in Light and Dark.
+  - Open: in Dark, the subtle tier's small text over the white shapes of the busy stage is hard to read. That is the worst case `DS-GLASS-008` asks you to check: use a stronger tier or a dimming layer there. The dark tints are a first pass.
+  - **Icon Button Glass** (`8183:1935`, Actions): a clone of Icon Button. Fills bound to `Component/Glass/Tint-Subtle` (resting, focus, disabled), `Tint-Standard` (hover), `Tint-Strong` (pressed); Selected keeps `Action-Icon-Selected`. A 1px inside stroke `Stroke-Subtle` (Focus keeps its 2px focus stroke) and the `Glass/Subtle` effect style. The set frame has a gradient fill so the glass shows. In a Dark frame, swap the effect to `Glass/Dark/Subtle` by hand.
+  - Open: the Menu and Dialog components in Figma do not use the glass styles. The code applies them through `material="glass"`.
+  - Blur parity: the busy stage rebuilt in Chromium looked close to the canvas at 8 / 16 / 24 and sharper at 4 / 8 / 12. One visual check, not a measurement.
+
+## Done on 2026-11-15 (icon buttons, registry 0.16.0)
+
+- **`Semantic/Hit area/hit-area-coarse`** (`--hit-area-coarse`, 48, scope width and height): the tap area on a coarse pointer. Export checksum `93850e82` (896 tokens, with the Soft variables). The full Figma export also holds the glass variables from the glass change; with them the checksum is `f6a8af7b`, and that matched byte for byte. The touch visual sizes are not variables: code steps up to the next action size (`action-large`, `action-x-large`, `size-56`) under `any-pointer: coarse`. A Fine/Coarse mode on the Size collection was not used, because the export takes one value per token outside Light and Dark (`figma-export.js`).
+- **Icon Button** (`41:399`, Actions): Sm 28 / glyph 16, Reg 36 / glyph 20, new Lg 48 / glyph 24, width and height bound to `action-medium`, `action-large`, `action-x-large`, glyphs to `icon-small`, `size-20`, `icon-medium`. X-Sm (20, no instances) deleted. Rows ordered Sm, Reg, Lg. The set's description states the code sizes and the touch step-up. The 38 Reg instances (Dialog close among them) are now 36.
+- **Icon Button Soft** (`8183:1888`), a clone of Icon Button with fills bound to the new `Component/Action Icon Soft/Action-Icon-Soft-*` (light Black-A2 / A3 / A4 / A1 for resting, hover, pressed, disabled; dark White-A*). Selected keeps `Action-Icon-Selected`, Focus keeps the 2px focus stroke. The row labels next to all the sets now read Sm 28 / Reg 36 / Lg 48.
+- **Close Button** (`4381:3151`): its description marks it deprecated for closing a surface. The two Action Sheet header closes (`7380:19168`, `7380:19148`, were XLarge 32) are now Icon Button Reg (36).
+  - Open: the 15 Status Label remove controls still use Close Button Medium (16 in a 24px chip). `DS-ICON-006` allows that inside a chip under 28px when code gives it a 24px target with spacing. Check the Status Label code when it exists.
+  - Open: the Circular Action set (`4151:3785`) is 28 / 40 / 48, not code's 56 `circular`. It is a different control (round, with a shadow) and was left as it is.
+
 ## Done on 2026-11-15 (slider, inspector, swatch picker, registry 0.15.0)
 
 - **Selectors page**, frame "Sliders (registry)" (`8166:3534`): `Slider` (`8166:3469`, State Resting, Focus, Disabled), `Step Slider Stop` (`8166:3480`, Selected No or Yes by state, with a Label text property) and `Step Slider` (`8166:3533`, Steps 4 or 8 by Resting or Disabled). Every fill, stroke, radius and size is bound to an existing variable; no new variables, so the export checksum is unchanged.
 - **Components page**, frame "Inspector and Swatch Picker (registry)" (`8167:867`) under the Panel set: `Inspector Toggle` (`8167:794`), `Inspector Section Header` (`8167:801`, Open Yes or No, Title property), `Inspector Row` (`8167:802`, Label property and a Control instance swap), `Swatch` (`8167:825`), `Swatch Picker Trigger` (`8167:839`), `Swatch Picker Popup` (`8167:840`), and a light and dark inspector built from instances (`8167:873`).
-  - Open: the older draft `Slider` (`7720:3355`), `Progress+ Handle` (`7722:14238`) and `Frame 1` (`7722:14274`) near Survey Options on the Selectors page have hardcoded fills and match neither code part. Delete them, or point Survey Options at the new sets.
+  - Done in 0.16.0: the older draft `Slider` (`7720:3355`) and its handle are rebuilt on variables as `Slider Field`.
   - Open: in Figma the Step Slider's dot slots share the free width, so on an 8-step slider the dots sit within a few px of where code puts them, not exactly. Code spreads stop centers evenly over the thumb's travel.
   - Open: the Slider and Step Slider thumbs use `Elevation/Small` and `Elevation/Base`, which have no `Dark/` twin, so a Dark-mode frame keeps the light shadow (as for the other components).
 

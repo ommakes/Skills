@@ -107,7 +107,7 @@ Each is the Large tier's layers (without the 1px ring) moved along one axis by t
 
 ## Guardrails
 
-- `[DS-ELEVATION-007]` No raw shadow literal with blur. A zero-blur spread-only ring is allowed. It is an edge, not a tier.
+- `[DS-ELEVATION-007]` No raw shadow literal with blur. A zero-blur spread-only ring is allowed. It is an edge, not a tier. A glass surface uses its own `--glass-shadow-*` token instead of a tier (`references/glass.md`, `DS-GLASS-009`).
 - `[DS-ELEVATION-008]` At most two distinct tiers at rest in one view.
 - `[DS-ELEVATION-009]` Large and XLarge only on overlays, hover and a dragged item.
 - `[DS-ELEVATION-010]` Inset only for a recessed or pressed element. A zero-blur inset ring used as a border or a checked ring is allowed.

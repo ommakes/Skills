@@ -5,7 +5,7 @@
 //
 // What it exports: every variable that has Web code syntax (its CSS name). A value is a color
 // (#rrggbb or #rrggbbaa), a number (no unit: build-tokens.mjs adds px, or ms, or none) or an alias ("=--name"). When Light and Dark differ the value is
-// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers, and the Elevation/Dark/* styles (Medium, Large, XLarge) as `darkShadows`: the same shape, for .dark. Elevation/Large/<Right|Left|Bottom|Top> and Elevation/Dark/Large/<side> are the docked-panel shadows.
+// [light, dark]; otherwise one value. Plus the Elevation/* effect styles as [x, y, blur, spread, color] layers, and the Elevation/Dark/* styles (Medium, Large, XLarge) as `darkShadows`: the same shape, for .dark. Elevation/Large/<Right|Left|Bottom|Top> and Elevation/Dark/Large/<side> are the docked-panel shadows. Glass/<Tier> and Glass/Dark/<Tier> give the glass float shadows (their drop shadow only).
 // The seventeen brand slots (DS-TOKEN-004: thirteen colors, four font families) are written as null: a product's brand never leaves Figma here.
 
 const BRAND_SLOTS = [
@@ -21,6 +21,12 @@ const DARK_SHADOW_NAMES = { "Elevation/Dark/Medium": "--shadow-medium", "Elevati
 for (const d of DOCKS) DARK_SHADOW_NAMES[`Elevation/Dark/Large/${d}`] = `--shadow-large-${d.toLowerCase()}`;
 const SHADOW_NAMES = { "Elevation/Base": "--shadow-base", "Elevation/Small": "--shadow-small", "Elevation/Medium": "--shadow-medium", "Elevation/Large": "--shadow-large", "Elevation/XLarge": "--shadow-xlarge" };
 for (const d of DOCKS) SHADOW_NAMES[`Elevation/Large/${d}`] = `--shadow-large-${d.toLowerCase()}`;
+// Frosted glass (DS-GLASS): Glass/<Tier> and Glass/Dark/<Tier>. Only their drop shadow is exported, as --glass-shadow-<tier>;
+// the background blur radius is the Glass/Blur-* variable and the top highlight is the Highlight-* color.
+for (const t of ["Subtle", "Standard", "Strong"]) {
+  SHADOW_NAMES[`Glass/${t}`] = `--glass-shadow-${t.toLowerCase()}`;
+  DARK_SHADOW_NAMES[`Glass/Dark/${t}`] = `--glass-shadow-${t.toLowerCase()}`;
+}
 
 const hex = (c) => {
   const h = (x) => Math.round(x * 255).toString(16).padStart(2, "0");
