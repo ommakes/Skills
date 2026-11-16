@@ -6,6 +6,11 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.3] - 2026-11-16
+
+### Fixed
+- `scripts/check-questions.mjs` treated an empty array or empty object as present, so a copy entry with `rules: []`, `path_ids: []` or `examples: {}` passed. Each copy field now has a type (string, list of strings, list, object) and must hold something. A wrong type fails, and so do blank strings (zero-width characters count as blank), `[""]`, `{}`, `NaN` and `null`. Self-tested on those inputs, and by breaking real entries in a copy.
+
 ## [1.23.2] - 2026-11-16
 
 ### Changed
