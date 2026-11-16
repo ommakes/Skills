@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.45.0] - 2026-11-16
+
+### Added
+- `references/accessibility.md`, new "Components" section, and `DS-A11Y-029` to `DS-A11Y-037` in `data/vois-rules.json`: what the code that uses a component must supply. Radix and native elements already handle roles and keys. The rules cover what they cannot guess: tooltip focus and no sole information (029), names for Select, Combobox and Command (030), `aria-describedby` and `aria-invalid` on fields (031), tab names (032), table name and header scope (033), toast announcement and no sole copy (034), switch and checkbox labels (035), Escape and focus return for menus and popovers (036), a text name for loading states (037). All required, advisory, judgment only; no detector yet.
+
 ## [1.44.1] - 2026-11-16
 
 ### Added

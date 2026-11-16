@@ -126,6 +126,20 @@ A focus indicator is an external ring, not a change to the control's border. Use
 </fieldset>
 ```
 
+## Components
+
+What the code that uses a component must supply. Radix and native elements already handle roles and keys; these are the parts they cannot guess.
+
+- A tooltip trigger can take keyboard focus, and the tooltip opens on focus as well as hover. A tooltip never holds the only copy of information a person needs (touch has no hover). Don't put one on a disabled control: it can't take focus, so say why it is disabled in text beside it. `[DS-A11Y-029]`
+- A Select, Combobox or Command input has an accessible name from its visible label (`<label htmlFor>` or `aria-labelledby`). Use `aria-label` only when the design shows no label. The chosen value shown in the trigger is not a name. `[DS-A11Y-030]`
+- Helper and error text under an input is linked to it with `aria-describedby`, and an input that failed its check has `aria-invalid="true"`. The error text itself follows DS-A11Y-009. `[DS-A11Y-031]`
+- Every tab has a text name (`aria-label` when the tab is an icon). When a page has more than one tab list, each tab list has its own `aria-label`. `[DS-A11Y-032]`
+- A data table has a name (`<caption>`, `aria-label` or `aria-labelledby`). Header cells are `<th>`, with `scope="col"` for a column header and `scope="row"` for a row header. `[DS-A11Y-033]`
+- A toast is announced in a polite live region (assertive only for an error that needs attention now), keeps showing while it is hovered or has focus, and stays long enough to read. A toast never holds the only copy of a result or the only way to do an action: the page shows the same result. `[DS-A11Y-034]`
+- A Switch, Checkbox or Radio has a visible text label that is tied to the control (a wrapping `<label>` or `htmlFor`), so a click on the label toggles it. A Switch label names the setting ("Email alerts"), not the action, and does not change when the state changes. `[DS-A11Y-035]`
+- A menu or popover closes on Escape and returns focus to its trigger, as a dialog does (DS-A11Y-021, DS-A11Y-022). Build them from Radix (`DropdownMenu`, `Popover`), not from a positioned `div`. `[DS-A11Y-036]`
+- A Spinner or Skeleton that stands for loading has a text name ("Loading orders") in a polite live region, or `aria-busy="true"` on the region that is loading. A spinner with no text next to it is not decoration. `[DS-A11Y-037]`
+
 ## Color and Meaning
 
 Never use color as the only signal for state. Error, success, and warning states always need a secondary indicator — an icon, a text label, or both. `[DS-A11Y-017]`

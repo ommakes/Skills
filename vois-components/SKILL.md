@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.27.0
+version: 1.28.0
 ---
 
 # Vois Component Selection Skill
@@ -90,6 +90,26 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Table first load | Skeleton rows under real headers | Spinner |
 | Persistent app navigation | Sidebar | Drawer |
 | Contextual tools for selected item | Sheet or Panel | Sidebar, Drawer |
+
+---
+
+## What You Must Supply
+
+Radix and native elements give roles and keyboard behavior. These parts are the caller's job. The rules are in `vois-tokens/references/accessibility.md`.
+
+| Component | You supply | Rule |
+|-----------|------------|------|
+| Tooltip | A focusable trigger. Nothing essential only in the tooltip. Not on a disabled control | `DS-A11Y-029` |
+| Select, Combobox, Command | A name from the visible label, not the chosen value | `DS-A11Y-030` |
+| Input, Textarea | `aria-describedby` to helper and error text, `aria-invalid` on failure | `DS-A11Y-031` |
+| Tabs | A text name per tab (`aria-label` if an icon). A name per tab list if there are several | `DS-A11Y-032` |
+| Table | A caption or name. `<th>` with `scope` | `DS-A11Y-033` |
+| Toast | A polite live region. No sole copy of a result or action | `DS-A11Y-034` |
+| Switch, Checkbox, Radio | A tied visible label. A switch label names the setting | `DS-A11Y-035` |
+| DropdownMenu, Popover | Radix, so Escape and focus return work | `DS-A11Y-036` |
+| Spinner, Skeleton | A text name in a live region, or `aria-busy` | `DS-A11Y-037` |
+| Icon Button, Dialog | `aria-label`; a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
+
 
 ---
 
