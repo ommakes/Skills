@@ -531,6 +531,30 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-COLOR-010",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "Write the interpolation space in a gradient between saturated or brand colors, and prefer OKLCH: `linear-gradient(to right in oklch, var(--a), var(--b))`, or `bg-linear-to-r/oklch` in Tailwind v4. Do not rely on the default. The default is sRGB when the colors are hex, `rgb()`, `hsl()` or named, and Oklab when they are `oklch()`, `lab()` or `color()`, so the same gradient changes with the syntax of the token. Check the hue path, check the 25%, 50% and 75% points for color that is outside the sRGB gamut, and check contrast under any text.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "a gradient between two or more saturated or brand colors",
+      "does_not_apply_when": "a gradient that is meant to look like RGB mixing, or an existing brand gradient that must keep its current look"
+    },
+    {
+      "id": "DS-COLOR-011",
+      "category": "DS-COLOR",
+      "category_label": "Color",
+      "source_file": "vois-tokens/references/color.md",
+      "rule": "When a gradient needs a non-linear transition, take the shape from an easing curve instead of from stops placed by eye. Use a color hint for a simple skew. For a smoother curve, sample the curve at 5 to 7 even steps and put each stop at its even position with the color `color-mix(in oklch, var(--b) <ease(t)>%, var(--a))`. Keep `in oklch` on the gradient.",
+      "severity": "preferred",
+      "enforcement": "advisory",
+      "verification": "judgment",
+      "applies_when": "a gradient that needs emphasis or a specific rhythm, such as a scrim or a long fade",
+      "does_not_apply_when": "a simple two-color gradient with an even transition"
+    },
+    {
       "id": "DS-COMPONENT-001",
       "category": "DS-COMPONENT",
       "category_label": "Components",

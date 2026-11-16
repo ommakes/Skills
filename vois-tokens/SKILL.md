@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.43.1
+version: 1.44.0
 ---
 
 # Vois Tokens Skill
@@ -128,6 +128,7 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] No raw Tailwind palette classes where tokens exist `[DS-COLOR-002]`
 - [ ] Both light and dark mode verified manually `[DS-COLOR-007]`
 - [ ] Color is not the only signal for error/success/warning `[DS-COLOR-003]`
+- [ ] A gradient between saturated or brand colors writes its interpolation space, preferably `in oklch` `[DS-COLOR-010]`
 - [ ] Decorative icons have `aria-hidden="true"` `[DS-COLOR-005]`
 
 **Components**

@@ -61,6 +61,56 @@ export const colors = stylex.defineVars({
 
 OKLCH produces perceptually uniform colors. Lighter values are actually lighter, not just numerically higher. This matters for building accessible color scales that hold up across light and dark mode.
 
+## Gradients `[DS-COLOR-010]` `[DS-COLOR-011]`
+
+### Interpolation space `[DS-COLOR-010]`
+
+State the space in the gradient. Don't depend on the default, because the default follows the syntax of the colors: sRGB for hex, `rgb()`, `hsl()` and named colors, Oklab for `oklch()`, `lab()` and `color()`. Measured in Chromium 153 on one blue to yellow gradient, the midpoint of the same gradient differs by syntax:
+
+| Colors written as | Default space | Chroma at 50% |
+|---|---|---|
+| `#0044ff` and `#ffd400` | sRGB | 0.024 (a dull gray-green) |
+| `oklch()` values close to those colors | Oklab | 0.046 |
+| Same colors, `in oklch` | OKLCH | 0.143 (a bright teal) |
+
+```css
+/* Prefer */
+background: linear-gradient(to right in oklch, var(--a), var(--b));
+/* Avoid: the result depends on how --a and --b are written */
+background: linear-gradient(to right, var(--a), var(--b));
+```
+
+In Tailwind v4 the gradient utilities use Oklab by default. For OKLCH add the modifier: `bg-linear-to-r/oklch from-... to-...`.
+
+**Hue path.** OKLCH keeps chroma through the middle by turning the hue, and it takes the shorter way round the wheel. Blue to yellow passes through green and teal. Red to blue passes through magenta. If that path is wrong for the brand, use `in oklch longer hue`, use `in oklab` (no hue turn, a calmer middle), or add a stop that sets the path.
+
+**Gamut.** Two in-gamut colors can have a midpoint that sRGB cannot show. In a test of four saturated pairs, three had a midpoint outside sRGB. Chromium clips each channel, which pins one channel at 0 and shifts the hue and lightness. Keep chroma at the end stops lower, or add a stop with lower chroma, when the 25%, 50% or 75% point is out of gamut. Don't rely on the clip.
+
+**Text on a gradient.** Check contrast at the lightest and darkest point under the text (`[DS-A11Y-004]`). The interpolation space changes the lightness of the middle: in the test above the midpoint is lighter in OKLCH (L 0.73) than in sRGB (L 0.63).
+
+**Exceptions.** A gradient that is meant to look like RGB mixing, and a brand gradient that must keep its current look.
+
+**Checks.** The space is written in the gradient. The middle has no unintended gray patch. The 25%, 50% and 75% points are inside the gamut. Contrast passes under the text.
+
+### Eased stops `[DS-COLOR-011]`
+
+For a simple skew, use a color hint. It moves the midpoint and needs no extra stops: `linear-gradient(to right in oklch, var(--a), 30%, var(--b))`.
+
+For a smoother curve, sample an easing curve at even steps. Each stop sits at its even position, and its color is the mix at the eased amount. Smoothstep (`3t² - 2t³`) at 5 steps gives 0, 15.6, 50, 84.4 and 100%:
+
+```css
+background: linear-gradient(
+  to right in oklch,
+  var(--a) 0%,
+  color-mix(in oklch, var(--b) 15.6%, var(--a)) 25%,
+  color-mix(in oklch, var(--b) 50%, var(--a)) 50%,
+  color-mix(in oklch, var(--b) 84.4%, var(--a)) 75%,
+  var(--b) 100%
+);
+```
+
+Stops are straight lines between points, so the count sets how close the gradient is to the curve. Against smoothstep, the largest error is 9.6% of the color range with 3 stops, 3.5% with 5, 1.7% with 7 and 1.0% with 9. Use 5 to 7. Past 9 there is almost no gain. Too few stops show a crease at each stop. Keep `in oklch` on the gradient so the mixes and the steps agree. Don't add stops by eye.
+
 ## Dark Mode with light-dark()
 
 Under Tailwind, dark mode is implemented via `@custom-variant dark (&:is(.dark *))`. Under StyleX, use `stylex.createTheme()` to override the color `defineVars()` group instead (see `[DS-STYLEX-003]` in `references/stylex.md`). Every color token must have a dark mode value either way. `[DS-COLOR-006]`
