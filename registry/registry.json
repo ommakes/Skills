@@ -629,6 +629,87 @@
           "target": "components/ui/swatch-picker.tsx"
         }
       ]
+    },
+    {
+      "name": "vois-questionnaire",
+      "type": "registry:ui",
+      "title": "Vois Questionnaire",
+      "description": "The respondent side of a survey, intake form, quiz or poll (vois-patterns PATH-H, vois-tokens questionnaire-ui.md): Question (picks the right component from the question), ChoiceGroup (radio or checkbox rows, 56px, with a selection limit and an exclusive option), LikertScale (5 or 7 points), LikertBattery (one statement at a time), TapToRank (press and hold to drag, with up and down buttons), PollResults (how others answered, with the correct answer marked) and FieldShell (legend, Required or Optional, helper). The picking logic is the vois-patterns question engine, copied byte for byte. Default copy lives in copy.ts and follows the righter questionnaire entries; pass your own strings to override.",
+      "dependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/questionnaire/choice-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/choice-group.tsx"
+        },
+        {
+          "path": "vois/questionnaire/field-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/field-shell.tsx"
+        },
+        {
+          "path": "vois/questionnaire/likert-battery.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/likert-battery.tsx"
+        },
+        {
+          "path": "vois/questionnaire/likert-scale.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/likert-scale.tsx"
+        },
+        {
+          "path": "vois/questionnaire/poll-results.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/poll-results.tsx"
+        },
+        {
+          "path": "vois/questionnaire/question.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/question.tsx"
+        },
+        {
+          "path": "vois/questionnaire/tap-to-rank.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/tap-to-rank.tsx"
+        },
+        {
+          "path": "vois/questionnaire/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/questionnaire/index.ts"
+        },
+        {
+          "path": "vois/questionnaire/types.ts",
+          "type": "registry:lib",
+          "target": "lib/questionnaire/types.ts"
+        },
+        {
+          "path": "vois/questionnaire/copy.ts",
+          "type": "registry:lib",
+          "target": "lib/questionnaire/copy.ts"
+        },
+        {
+          "path": "vois/questionnaire/poll-rows.ts",
+          "type": "registry:lib",
+          "target": "lib/questionnaire/poll-rows.ts"
+        },
+        {
+          "path": "vois/questionnaire/question-engine.js",
+          "type": "registry:lib",
+          "target": "lib/questionnaire/question-engine.js"
+        },
+        {
+          "path": "vois/questionnaire/question-engine.d.ts",
+          "type": "registry:lib",
+          "target": "lib/questionnaire/question-engine.d.ts"
+        }
+      ]
     }
   ]
 }
