@@ -67,6 +67,41 @@ count = max(1, min(cap[windowClass], floor((inner + gutter) / (itemMin + gutter)
 
 The cap sets how the page looks at each class. The fit stops cards from getting too small in a narrow region. A tile never drops below `itemMin` unless the count is already 1.
 
+### In CSS `[DS-GRID-006]` `[DS-GRID-007]`
+
+Make the region a size container. Then the collection and the components inside it measure the region, not the window.
+
+```css
+.region { container-type: inline-size; }
+
+.collection {
+  display: grid;
+  gap: var(--grid-gutter);
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(
+        min(100%, var(--item-min-card)),
+        calc((100% - (var(--cap) - 1) * var(--grid-gutter)) / var(--cap))
+      ),
+      1fr
+    )
+  );
+}
+
+/* cap per region class, from the page template. A query cannot read a token,
+   so these repeat --breakpoint-sm, -md and -lg. */
+.collection { --cap: 1; }
+@container (width >= 600px)  { .collection { --cap: 2; } }
+@container (width >= 768px)  { .collection { --cap: 3; } }
+@container (width >= 1024px) { .collection { --cap: 4; } }
+```
+
+- The fit needs no query. `auto-fill` with `minmax` gives `floor((inner + gutter) / (itemMin + gutter))` columns, and `min(100%, ...)` keeps one tile from overflowing a region narrower than `itemMin`.
+- The cap is the second term inside `max()`. It is the width of one column when exactly `cap` columns fill the region, so the count can't go above `cap` and the cards still stretch to fill the row. A `max-width` on the collection also holds the count down, but it leaves the row short.
+- A query cannot sit on the element it measures, so the `@container` rules style the collection inside the region, not the region itself.
+- Checked in Chromium 153 with `--item-min-card` 200px and gutter 16px. The column count matched the formula at region widths from 150 to 1500px, with the cap from the queries and with a cap of 4 set on every width. At 450px with a cap of 4 the count was 2, and at 700px it was 3.
+
 ## Text size `[DS-GRID-008]`
 
 Larger text makes items need more room. It raises `itemMin`, so the count drops. It never changes the grid, the margins or the gutters.

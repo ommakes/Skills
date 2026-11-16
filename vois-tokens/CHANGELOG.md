@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.44.1] - 2026-11-16
+
+### Added
+- `references/grid.md`, "In CSS" under Collections (`DS-GRID-006`, `DS-GRID-007`). The reference only had the formula and "a container query on the region". It now has the CSS: `container-type: inline-size` on the region, `repeat(auto-fill, minmax(...))` for the fit, the cap as the second term inside `max()`, and `@container` rules that set `--cap` per region class.
+- Checked in Chromium 153 against the formula (`--item-min-card` 200px, gutter 16px): the column count matched at region widths from 150 to 1500px, and a cap of 4 on every width gave 2 columns at 450px and 3 at 700px. `DS-GRID-007` and `DS-GRID-004` stay quiet on the snippet.
+- No rule text, rule IDs or detectors changed.
+
+---
+
 ## [1.44.0] - 2026-11-16
 
 ### Added
