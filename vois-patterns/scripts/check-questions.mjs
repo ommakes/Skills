@@ -7,6 +7,7 @@
 //   5. tokens.questionnaire.json thresholds match the engine.
 //   6. Righter copy entries have the right shape and point at real rule ids.
 //   7. Jobs 22 and 23 are present and complete.
+//   8. The registry copy of the engine is byte for byte this folder's engine.
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -118,6 +119,15 @@ for (const [props, want, extra] of cases) {
   else if (extra && !extra(r)) fail(`engine ${JSON.stringify(props)} failed its extra check`);
 }
 console.log(`      ${cases.length} engine cases checked`);
+
+// 4a. The registry ships the engine as a copy (registry/vois/questionnaire/question-engine.js).
+// It must be identical to this folder's engine. A missing file or any difference fails.
+{
+  const copyPath = join(root, "registry/vois/questionnaire/question-engine.js");
+  const srcPath = join(root, "vois-patterns/scripts/question-engine.mjs");
+  if (!existsSync(copyPath)) fail("registry/vois/questionnaire/question-engine.js is missing");
+  else if (!readFileSync(copyPath).equals(readFileSync(srcPath))) fail("registry/vois/questionnaire/question-engine.js differs from vois-patterns/scripts/question-engine.mjs; copy the engine over, do not edit the registry copy");
+}
 
 // 4b. Poll results: correct ids must be options, and the rows must behave
 for (const x of good.questions.filter((z) => z.reveal?.correct_option_ids)) {

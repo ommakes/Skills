@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0] - 2026-11-16
+
+- **`vois-questionnaire`, a new item.** The questionnaire components from the `@vois/questionnaire` React package (1.2.0), as a registry item instead of an npm package: `Question`, `ChoiceGroup`, `LikertScale`, `LikertBattery`, `TapToRank`, `PollResults` and `FieldShell`, plus `types.ts`, `copy.ts`, `poll-rows.ts` and the question engine under `lib/questionnaire/`. It depends on `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` and the `utils` item.
+- Changed from the package so the registry detector passes: the 5-point Likert row is a flex row, not `grid-cols-5` (`DS-GRID-007`); the result bars grow from zero on the first frame after mount with `--motion-duration-slow` (400ms) and `--motion-ease-standard` (`DS-MOTION-001`), and appear at full width with reduced motion; the dragged item uses `--shadow-small`, not `shadow-md` (`DS-ELEVATION-007`). Success colors are `--bg-positive`, `--border-positive` and `--text-positive`, so the package's `questionnaire.css` is not needed.
+- Fixed in the port, found in review: the rank list's Up and Down buttons at the ends use `aria-disabled` instead of `disabled`, so keyboard focus is not lost when an item reaches the top or bottom; their labels (and the list label) come from `copy`, with new keys `rankUp`, `rankDown`, `rankMoveUp`, `rankMoveDown`, `rankHandle` and `rankListLabel`; the poll result live region mounts empty and is filled after mount so a screen reader announces it; Likert points get `min-w-0` so long labels wrap.
+- The engine is `question-engine.js` plus a `.d.ts`, byte for byte `vois-patterns/scripts/question-engine.mjs`. `check-questions.mjs` compares them. (The package copy still named the old `PATH-F-*` ids; this one names `PATH-H-*`.)
+- Checked by typechecking the files and running the package's 17 component tests, axe included, against them laid out as a consumer app would (`@/lib/utils`, `@/lib/questionnaire/*`, `@/components/ui/questionnaire/*`).
+
 ## [0.18.2] - 2026-11-16
 
 - **The syntax check no longer skips a file by its extension's case or kind.** In 0.18.1 a `Foo.TSX` or a `.mts` file was never found, so it was never parsed. `check-syntax.mjs` now reads `.ts`, `.tsx`, `.mts` and `.cts` in any case. The loader comes from the lower-cased extension (`loaderFor`). Five tests are new (17 in all): the loader lookup, an upper-case and an `.mts` file found and parsed, a leftover merge marker, an angle-bracket cast (valid in `.ts`, an error in `.tsx`), and the CLI's exit code and `FAIL file:line:col` output. Each new guard was removed in a copy and a test failed; the one redundant guard was dropped. These came from #92, a second build of the same check that was closed in favor of #93.

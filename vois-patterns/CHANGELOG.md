@@ -6,6 +6,12 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.1] - 2026-11-16
+
+### Added
+- `references/questionnaires.md` points to the new `vois-questionnaire` registry item (registry 0.19.0), so the components for `PATH-H` can be installed instead of hand-built.
+- `scripts/check-questions.mjs` fails if `registry/vois/questionnaire/question-engine.js` is missing or differs from `scripts/question-engine.mjs`.
+
 ## [1.23.0] - 2026-11-15
 
 ### Added

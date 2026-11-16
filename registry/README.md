@@ -2,7 +2,7 @@
 
 A shadcn-style registry of Vois core components, so an agent can install a real component instead of hand-building a lookalike. It is a reference implementation of the Vois skills on shadcn/ui and Tailwind v4, not a competing component library.
 
-**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Thirty-two items:
+**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Thirty-four items:
 
 - `vois-tokens`: default values for every Vois token, plus the motion tokens.
 - `vois-theme`: shadcn's variables pointed at those tokens.
@@ -20,6 +20,7 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 
 - Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog` and `vois-command`.
 - The inspector controls: `vois-slider` (Slider for a continuous value, StepSlider for a short named scale, both on a native range input), `vois-inspector` (the sections, label and control rows, control groups and toggle inside a properties pane, for `vois-panel`) and `vois-swatch-picker` (one color from a fixed set).
+- `vois-questionnaire`: the respondent side of a survey, intake form, quiz or poll (`vois-patterns` `PATH-H`): `Question`, `ChoiceGroup`, `LikertScale`, `LikertBattery`, `TapToRank` and `PollResults`, with default copy in `lib/questionnaire/copy.ts`. It installs `@dnd-kit` for the rank list, reads the Vois tokens and the `vois-theme` variables (success colors are `--bg-positive`, `--border-positive` and `--text-positive`, so there is no extra CSS), and needs the `utils` item. The engine that picks the component (`question-engine.js`, installed under `lib/questionnaire`) is a byte-for-byte copy of `vois-patterns/scripts/question-engine.mjs`, and `check-questions.mjs` fails if they differ. The engine is plain ESM JavaScript with a `.d.ts` beside it, which works with a bundler (Next, Vite) and `moduleResolution: bundler`. It does not work under `node16` or `nodenext` resolution, or in Jest without an ESM transform.
 
 Phase 1 is complete. Next are the AI components, in waves (Wave 1 builds on the Wave 0 primitives).
 
