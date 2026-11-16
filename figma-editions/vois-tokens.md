@@ -1,12 +1,12 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, elevation, shape, component architecture, overlays, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.40.0
+version: 1.42.0
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
 
-> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-tokens/SKILL.md. The full version adds a live per-edit checker hook (`scripts/`) for Claude Code, Cursor, and Codex (including the elevation and shadow detectors), a "Reviewing Existing UI" workflow, an element-to-elevation map, and the registry's `vois-theme.css`. Those are code-editing features with no Figma equivalent, so this edition gives the design rules and token values as a reference. Vois's Figma plugin syncs the tokens into your file as real variables.
+> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-tokens/SKILL.md. The full version adds a live per-edit checker hook (`scripts/`) for Claude Code, Cursor, and Codex (including the elevation, shadow, icon-button name and glass detectors), a "Reviewing Existing UI" workflow, an element-to-elevation map, and the registry's `vois-theme.css`. Those are code-editing features with no Figma equivalent, so this edition gives the design rules and token values as a reference. Vois's Figma plugin syncs the tokens into your file as real variables.
 
 You are building UI for a design system that uses **shadcn/ui**, **Tailwind v4 or StyleX**, and **Motion**. Deviation produces inconsistent, unmaintainable UI. Find out which styling engine the project uses (`tailwindcss` or `@stylexjs/stylex` in `package.json`, or ask) before applying the Tailwind- or StyleX-specific sections. Everything else applies either way.
 
@@ -35,11 +35,12 @@ Run this before calling anything done. Each ID is the rule in the section named 
 - **Spacing:** values divisible by 4 or 8, no arbitrary values, consistent at every tested breakpoint `[DS-SPACING-001]` `[DS-SPACING-003]` `[DS-SPACING-004]`.
 - **Typography:** at most 3 text styles per component `[DS-TYPOGRAPHY-001]`; sequential headings `[DS-TYPOGRAPHY-002]`; numbers in mono with `tabular-nums` `[DS-TYPOGRAPHY-003]`; `text-wrap: balance` on headings and `pretty` on body `[DS-TYPOGRAPHY-006]` `[DS-TYPOGRAPHY-007]`; `65ch` text cap `[DS-TYPOGRAPHY-008]`; `…` not `...` `[DS-TYPOGRAPHY-009]`; curly quotes `[DS-TYPOGRAPHY-010]`.
 - **Color:** no hex `[DS-COLOR-001]`, no raw palette classes `[DS-COLOR-002]`; status uses the four role tokens `[DS-COLOR-008]`; color is never the only signal `[DS-COLOR-003]`; decorative icons `aria-hidden` `[DS-COLOR-005]`; both modes checked `[DS-COLOR-007]`.
-- **Components:** manifest checked first `[DS-COMPONENT-001]`; cva for variants `[DS-COMPONENT-002]`; semantic variants `[DS-COMPONENT-006]`; control heights from size tokens `[DS-COMPONENT-007]`; modals use `inert`, `overscroll-behavior: contain`, `scrollbar-gutter: stable` `[DS-MODAL-001]` `[DS-MODAL-002]` `[DS-MODAL-003]`; dialog body scrolls, at most two footer buttons, no nested modals, no modal for navigation `[DS-MODAL-004]` `[DS-MODAL-005]` `[DS-MODAL-006]` `[DS-MODAL-007]`.
+- **Components:** manifest checked first `[DS-COMPONENT-001]`; cva for variants `[DS-COMPONENT-002]`; semantic variants `[DS-COMPONENT-006]`; control heights from size tokens `[DS-COMPONENT-007]`; icon buttons 28 / 36 / 48 with a touch step-up, a named action, one style per row `[DS-ICON-003]` to `[DS-ICON-007]`; modals use `inert`, `overscroll-behavior: contain`, `scrollbar-gutter: stable` `[DS-MODAL-001]` `[DS-MODAL-002]` `[DS-MODAL-003]`; dialog body scrolls, at most two footer buttons, no nested modals, no modal for navigation `[DS-MODAL-004]` `[DS-MODAL-005]` `[DS-MODAL-006]` `[DS-MODAL-007]`.
 - **Surfaces:** concentric radius `[DS-SURFACE-001]`; optical alignment `[DS-SURFACE-003]`; shadows for depth, borders for dividers `[DS-SURFACE-007]`; black/white 0.1 image outlines `[DS-SURFACE-010]`; staged enters `[DS-SURFACE-011]`; softer exits `[DS-SURFACE-013]`; icon swaps scale 0.25 to 1 with blur `[DS-SURFACE-014]`.
-- **Elevation and shape:** the five tiers only, no raw shadows `[DS-ELEVATION-002]` `[DS-ELEVATION-007]`; dark mode never shadow alone `[DS-ELEVATION-005]`; docked panels use the directional token `[DS-ELEVATION-006]`; a shape role before a number `[DS-SHAPE-001]` `[DS-SHAPE-005]`.
+- **Elevation and shape:** the five tiers only, no raw shadows (a glass surface's `--glass-shadow-*` is allowed) `[DS-ELEVATION-002]` `[DS-ELEVATION-007]`; dark mode never shadow alone `[DS-ELEVATION-005]`; docked panels use the directional token `[DS-ELEVATION-006]`; a shape role before a number `[DS-SHAPE-001]` `[DS-SHAPE-005]`.
+- **Frosted glass (only when asked for):** chrome and floating layers only, at most 3 per viewport `[DS-GLASS-001]`; one of three tiers `[DS-GLASS-002]`; a `-webkit-` twin on every `backdrop-filter` `[DS-GLASS-003]`; blur from `--glass-blur-*` `[DS-GLASS-004]`; blur never animated `[DS-GLASS-005]`; no glass inside glass `[DS-GLASS-006]`; opaque fallback first `[DS-GLASS-007]`; contrast at the worst patch `[DS-GLASS-008]`.
 - **Animation:** under 300ms (500ms for large elements) `[DS-ANIMATION-001]` `[DS-ANIMATION-002]`; none keyboard-triggered `[DS-ANIMATION-003]`; reduced motion `[DS-ANIMATION-004]`; no `scale(0)` `[DS-ANIMATION-005]`; `transform-origin` at the trigger `[DS-ANIMATION-006]`; hover guarded for touch `[DS-ANIMATION-007]`; `will-change` only when stutter is seen `[DS-ANIMATION-009]`; no `transition: all` `[DS-TAILWIND-005]`; durations and curves from motion tokens `[DS-MOTION-001]`; morphs inside one token, trays stay mounted, blur capped, springs at `bounce: 0`, delight never gates the task `[DS-MOTION-003]` `[DS-MOTION-004]` `[DS-MOTION-005]` `[DS-MOTION-006]` `[DS-MOTION-007]`.
-- **Accessibility:** `:focus-visible` rings that follow the ring rule `[DS-A11Y-002]` `[DS-A11Y-003]` `[DS-A11Y-018]`; 44px hit area `[DS-A11Y-001]`; AA contrast `[DS-A11Y-004]`; real buttons and links `[DS-A11Y-005]`; `alt` on images `[DS-A11Y-010]`; `fieldset`/`legend` for groups `[DS-A11Y-016]`; lists as lists `[DS-A11Y-011]`; dialog rules `[DS-A11Y-019]` to `[DS-A11Y-023]`.
+- **Accessibility:** `:focus-visible` rings that follow the ring rule `[DS-A11Y-002]` `[DS-A11Y-003]` `[DS-A11Y-018]`; 44px hit area (48px on a coarse pointer) `[DS-A11Y-001]`; AA contrast `[DS-A11Y-004]`; real buttons and links `[DS-A11Y-005]`; `alt` on images `[DS-A11Y-010]`; `fieldset`/`legend` for groups `[DS-A11Y-016]`; lists as lists `[DS-A11Y-011]`; dialog rules `[DS-A11Y-019]` to `[DS-A11Y-023]`.
 - **Layout:** `svh`/`lvh`/`dvh`, never `vh` `[DS-LAYOUT-001]`; tested at 360, 600, 768 and 1024 `[DS-RESPONSIVE-002]`; primary content stays full size, secondary reflows first `[DS-RESPONSIVE-006]` `[DS-RESPONSIVE-007]`; grid class from region width, margins and gutters from tokens `[DS-GRID-001]` `[DS-GRID-004]` `[DS-GRID-007]`; panels follow the width rules `[DS-PANEL-002]` `[DS-PANEL-003]` `[DS-PANEL-006]` `[DS-PANEL-008]`; `gap` not sibling margins `[DS-LAYOUT-COMP-001]`; `min-width: 0` on text flex children `[DS-LAYOUT-COMP-003]`; `aspect-ratio` `[DS-LAYOUT-COMP-005]`; width tokens `[DS-LAYOUT-WIDTH-001]` to `[DS-LAYOUT-WIDTH-004]`; auto-growing textareas `[DS-LAYOUT-FIELD-001]` to `[DS-LAYOUT-FIELD-004]`.
 - **CSS:** no `#id` selectors `[DS-CSS-002]`; max 2 selector levels `[DS-CSS-003]`; `em` media queries `[DS-CSS-007]`; StyleX: plugin wired, tokens from `defineVars()` `[DS-STYLEX-001]` `[DS-STYLEX-002]`.
 - **Data tables, marketing surfaces, questionnaires:** every rule in those sections is part of this checklist when the work touches them. So is every `[DS-SLOP-001]` to `[DS-SLOP-011]` rule.
@@ -148,8 +149,31 @@ Five tiers plus "no shadow". Don't invent a sixth, and don't hand-write a shadow
 - **Resting cards** keep Base or Small. A section that only groups content stays flat `[DS-ELEVATION-004]`.
 - **Dark mode** `[DS-ELEVATION-005]`: never shadow alone, because a 4 to 5% black shadow is invisible on a dark surface. Base and Small carry no shadow. A lighter fill and a 1px hairline carry them. Fill follows the layer: page Base `--bg-card`, Small `--elevation-surface-small`, a modal layer `--elevation-surface-raised`, a dropdown or overlay layer (menu, select, hover card) `--elevation-surface-popup`, one step above a Dialog. `--elevation-hairline` is transparent in light. `.dark` redefines `--shadow-base` to `--shadow-xlarge`, so a component that reads a tier token gets the dark shadow. Set the fill and edge from the tokens, never hand-written values.
 - **Docked panels** `[DS-ELEVATION-006]`: a panel docked to an edge casts its shadow away from it (right-docked negative x, left positive x, bottom negative y, top positive y, centered x is 0) with a negative spread. Use `--shadow-large-right|left|bottom|top`.
-- **Raw shadows** `[DS-ELEVATION-007]`: no `box-shadow` literal with blur, no `shadow-[...]`, no Tailwind `shadow-md`. A zero-blur ring (spread only) is not a tier and is allowed.
+- **Raw shadows** `[DS-ELEVATION-007]`: no `box-shadow` literal with blur, no `shadow-[...]`, no Tailwind `shadow-md`. A zero-blur ring (spread only) is not a tier and is allowed. A glass surface uses its own `--glass-shadow-*` token instead of a tier `[DS-GLASS-009]`.
 - At most two shadow tiers at rest in one view `[DS-ELEVATION-008]`. Large and XLarge only on overlays, hover and a dragged item `[DS-ELEVATION-009]`. Inset shadow only for recessed or pressed elements. A zero-blur inset ring used as an edge or focus ring is fine `[DS-ELEVATION-010]`. Between Medium or heavier tiers, cross-fade a pre-drawn layer instead of animating `box-shadow`. A 1 to 2px ring may animate `[DS-ELEVATION-011]`. Check text (4.5:1) and control edge (3:1) contrast on every elevated fill, not only the page `[DS-ELEVATION-012]`.
+
+## Frosted Glass `[DS-GLASS]`
+
+Glass is a translucent surface that blurs what sits behind it. It is **opt-in**: an opaque surface is the default. The values are a labelled synthesis, since Apple and Microsoft publish no numeric blur, saturation or tint values and Material 3 has no glass. Blur radii follow Tailwind v4's scale (8 / 16 / 24). Tints, edges and highlights are a first pass snapped to the White Alpha palette, so check them on real screens.
+
+- **Where** `[DS-GLASS-001]`: only chrome and floating layers: a sticky nav, tab bar or toolbar; a menu, popover or dropdown; a dialog, sheet or command palette; an icon button floating over an image, video or map. Never the content layer (body text, a data table, a form, a card in a list). At most 3 glass surfaces in one viewport.
+- **Three tiers, no more** `[DS-GLASS-002]`:
+
+| Tier | Use | Blur | Saturate | Tint, light / dark | Shadow |
+|---|---|---|---|---|---|
+| Subtle | Chips, badges, hover, the glass icon button | `--glass-blur-subtle` (8) | 150% | white 60% / 8% | `--glass-shadow-subtle` (0 2 8) |
+| Standard | Sticky nav or toolbar, menus | `--glass-blur-standard` (16) | 160% | white 70% / 12% | `--glass-shadow-standard` (0 8 32) |
+| Strong | Dialog, sheet, command palette, always over the scrim | `--glass-blur-strong` (24) | 180% | white 80% / 20% | `--glass-shadow-strong` (0 16 48) |
+
+  Edge and top highlight come from `--glass-stroke-*` and `--glass-highlight-*` (white at an alpha, lighter in light mode and subtler in dark). **Dark tint is white at low alpha, never black.** Corners come from the shape roles.
+- **The `-webkit-` twin** `[DS-GLASS-003]`: every `backdrop-filter` has a `-webkit-backdrop-filter` with the same value (`WebkitBackdropFilter` in a style object). Tailwind's `backdrop-blur-*` writes both.
+- **Blur from tokens** `[DS-GLASS-004]`: `var(--glass-blur-*)`, never a literal (`blur(12px)`, `backdrop-blur-md`), never above 24 on a panel.
+- **Never animate the blur** `[DS-GLASS-005]`: no `backdrop-filter` in a transition, keyframes or motion prop. Fade opacity instead.
+- **No glass inside glass** `[DS-GLASS-006]`: a backdrop filter blurs only up to the nearest backdrop root (an ancestor with opacity under 1, a filter, mask, clip-path, mix-blend-mode or its own backdrop-filter).
+- **Fallback first** `[DS-GLASS-007]`: the base style is the opaque elevation fill of the layer with the `--border-default` edge. `@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))` switches to the tint and edge and adds the blur. Under `prefers-reduced-transparency: reduce` the opaque fill comes back and `backdrop-filter` is `none`.
+- **Contrast at the worst case** `[DS-GLASS-008]`: check text against the lightest and the darkest patch that can sit behind it, in both themes and at more than one scroll position (4.5:1 text, 3:1 large text and controls). If it fails, use a stronger tier or a 35% black dimming layer over bright media. No accent-colored text or links on glass.
+- **Shadows and scrim** `[DS-GLASS-009]`: the float shadow is the tier's `--glass-shadow-*`, the top highlight a zero-blur `inset 0 1px 0 var(--glass-highlight-*)`. The strong tier sits over the one modal scrim, `--bg-overlay-dark`. No second scrim for glass.
+- **In Figma** `[DS-GLASS-010]`: fill the layer with `Component/Glass/Tint-*` at under 100% alpha (or the background blur does not show), stroke it 1px inside with `Stroke-*`, and apply the `Glass/<Tier>` effect style (`Glass/Dark/<Tier>` in a Dark frame, because effect styles do not follow the variable mode). Do not combine Figma's Glass effect with Background blur on one layer. Use the same blur numbers in Figma and CSS, then compare a browser screenshot with the canvas before changing either.
 
 ## Shape `[DS-SHAPE]`
 
@@ -164,11 +188,33 @@ Choose a shape role before a number: `--shape-sharp`, `--shape-subtle`, `--shape
 | Size | Class | Use |
 |---|---|---|
 | 16px | `size-4` | Inline with body/label text, inside inputs |
-| 20px | `size-5` | Inline with H4/H5 text, default button icon |
-| 24px | `size-6` | Standalone icon buttons, nav items |
+| 20px | `size-5` | Inline with H4/H5 text, default button icon, the default icon button |
+| 24px | `size-6` | The large icon button, nav items |
 | 32px | `size-8` | Empty states, feature callouts, large standalone icons |
 
-Tie icon size to the adjacent text size, never eyeball it. Single stroke width across the icon set, `1.5px` default (lucide-react/Radix Icons), don't mix weights on the same screen `[DS-ICON-001]`. If the surrounding text size doesn't map cleanly to a size above, round to the nearest one `[DS-ICON-002]`.
+Tie icon size to the adjacent text size, never eyeball it. Single stroke width across the icon set, `1.5px` default (lucide-react/Radix Icons), don't mix weights on the same screen `[DS-ICON-001]`. If the surrounding text size doesn't map cleanly to a size above, round to the nearest one. The Button sets one more glyph size on its own, 28px for `icon-lg` on a coarse pointer. Never set 28 by hand `[DS-ICON-002]`.
+
+**Icon buttons** have three sizes: the visual (the box you draw), the target (the area you can tap or click) and the glyph (the icon inside). The visual can be smaller than the target. The extra area is invisible `[DS-A11Y-001]`.
+
+| Size | Visual / glyph, fine pointer | Visual / glyph, coarse pointer | Target, fine / coarse | Use for |
+|---|---|---|---|---|
+| `icon-sm` | 28 / 16 | 36 / 20 | 44 / 48 | Dense toolbars, table rows, a button inside a field |
+| `icon` (default) | 36 / 20 | 48 / 24 | 44 / 48 | App bar actions, card actions, close |
+| `icon-lg` | 48 / 24 | 56 / 28 | 48 / 56 | A primary on-screen action, media controls, a bottom nav item on touch |
+
+- **Sizes** `[DS-ICON-003]`: follow the Button heights (28, 36, 48), so an icon button next to a field or text button has the same height. The pointer picks the column (`@media (any-pointer: coarse)`), never the screen width. There is no tablet column. Never smaller than `icon-sm`, except a button inside a field and a chip's remove control. One size and one glyph size per row. In Figma the set is Icon Button (Sm 28, Reg 36, Lg 48).
+- **Gap** `[DS-ICON-004]`: targets touch but never overlap. The gap between two visuals is at least the larger of 8px and the target minus the visual: 16 between `icon-sm` buttons on a fine pointer, 12 on a coarse pointer, 8 for `icon` and `icon-lg`. If the row can't fit it, move actions into a menu.
+- **Name the action** `[DS-ICON-005]`: `aria-label="Add to favorites"`, not "Heart". A Tooltip with the same text supplements it and never replaces it. Icon-only only for actions everyone knows (search, close, add, delete, more, favorite, play).
+- **Placement** `[DS-ICON-006]`: app bar `icon`, at most 4 actions plus a "More actions" menu. Dense toolbar `icon-sm`. Table row `icon-sm`, at most 3 visible. Close a dialog, sheet or panel: `icon` in the top end corner, `aria-label="Close"`. Inside a field: an `icon-sm` (28) or `icon-xs` (24) button, never taller than the field. Bottom nav on touch: `icon-lg` with a label, navigation only. Primary on-screen action: `icon-lg`, with emphasis from the variant. AI chat message actions (copy, rate, retry): `icon-sm` with no background, at most 4 in the row. There is no 20px or 24px icon button. A chip's remove control may be smaller only in a chip under 28px tall, with a 24px target and spacing around it, and never as the only way to do a destructive action.
+- **Styles by background** `[DS-ICON-007]`, one style per row:
+
+| Style | Button `variant` | Resting fill | Use for | Figma set |
+|---|---|---|---|---|
+| No background | `ghost` | none | Toolbars, app bars, table rows, chat message actions. The default | Icon Button |
+| Soft | `soft` | `--action-icon-soft-resting` (black 8% / white 8%) | A button that must read as a button at rest on a plain surface | Icon Button Soft |
+| Glass | `glass` | the glass subtle tier | An icon button floating over an image, video or map, and nowhere else `[DS-GLASS-001]` | Icon Button Glass |
+
+  Soft's hover and pressed fills (12% and 20%) are one step above the ghost's, so a resting Soft never looks like a hovered ghost.
 
 ## Layout & Responsive `[DS-LAYOUT]` `[DS-RESPONSIVE]`
 
@@ -194,6 +240,7 @@ For long pages, use `content-visibility: auto` with `contain-intrinsic-size` on 
 | `--width-dialog-sm` | 21.5rem (344px) | The standard Dialog: confirmations, AlertDialogs, single-column content |
 | `--width-dialog-lg` | 35rem (560px) | A textarea or content that needs the width. Proposed value, confirm on real screens. Always one column |
 | `--hit-area-min` | 2.75rem (44px) | Minimum click or tap area. Never sets visual size |
+| `--hit-area-coarse` | 3rem (48px) | Minimum tap area on a coarse pointer (`any-pointer: coarse`) |
 
 Widths are in `rem` so they follow the browser font size.
 
@@ -288,7 +335,7 @@ UI animations stay under 300ms `[DS-ANIMATION-001]`. Large elements (drawers, bo
 
 These are not optional.
 
-- Every interactive element has a hit area of at least `var(--hit-area-min)` (44px) both ways. The token never sets visual size. If the visible element is smaller, extend the hit area with a centered pseudo-element `[DS-A11Y-001]`.
+- Every interactive element has a hit area of at least `var(--hit-area-min)` (44px) both ways, and `var(--hit-area-coarse)` (48px) on a coarse pointer. The token never sets visual size. If the visible element is smaller, extend the hit area with a centered pseudo-element `[DS-A11Y-001]`.
 - **Focus:** `:focus-visible` for rings (keyboard and assistive tech, not mouse) `[DS-A11Y-002]`. Never remove `outline` without a `:focus-visible` replacement `[DS-A11Y-003]`.
 - **Focus ring geometry** `[DS-A11Y-018]`: the ring is an external outline, `outline: var(--focus-ring-width) solid var(--border-state-focus)` with `outline-offset: var(--focus-ring-offset)` (2px and 2px). Keep the control's own 1px border and its size. Never swap the border for a thicker one, and never set `border-radius` on focus, because the browser draws the outline at the control's radius plus the offset. Where a ring would be clipped (an item in a scrolling or `overflow` container), draw it inside with a negative offset in the same color. Keep the ring when the field is in error. `--border-state-focus` is Blue-10 in light and Blue-8 in dark, and meets 3:1 on every surface in both themes.
 - **Contrast:** normal text 4.5:1, large text (18px+ regular or 14px+ bold) 3:1, UI components and graphics 3:1 `[DS-A11Y-004]`.
@@ -348,6 +395,8 @@ Several rules are dial-gated . read VARIANCE before flagging; a deliberately sym
 | Radius you want to hand-write | Pick a shape role, or name the missing one |
 | Image needs a subtle edge | 1px outline, pure black or white at 0.1 opacity |
 | Icon swapping state | scale 0.25 to 1 + opacity + blur |
+| Icon-only button | `icon-sm` 28 / `icon` 36 / `icon-lg` 48, a step up on touch, gaps so targets never overlap, `aria-label` names the action, `ghost` or `soft` |
+| Asked for frosted glass | One of three tiers, opaque fallback first, `-webkit-` twin, chrome only |
 | Full-screen height | `svh`, not `vh` |
 | Two colors switching with theme | `light-dark()` |
 | Focus ring | 2px outline, 2px offset, `--border-state-focus`, no `border-radius` change |

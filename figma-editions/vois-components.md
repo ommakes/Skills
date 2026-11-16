@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.26.0
+version: 1.27.0
 ---
 
 # Vois Component Selection Skill
@@ -260,11 +260,11 @@ Why not Popover for tooltips? Requires a click to open/close — more friction t
 *The user needs a target to tap or click.*
 - Has a text label, primary/secondary/destructive/outline/ghost → Button (variant handles it; the registry's `vois-button` is 36px on web, 48px native: `DS-COMPONENT-007`)
 - Has a text label, opens a menu of related choices → Button + DropdownMenu (see Job 15)
-- Icon-only, single action → Button with icon + `aria-label`
+- Icon-only, single action → Button with an icon size (`icon-sm` 28, `icon` 36, `icon-lg` 48, one step up on a coarse pointer) and an `aria-label` that names the action, not the icon. `variant="ghost"` (no background) by default, `variant="soft"` (light gray) when it must read as a button at rest. Size, spacing, placement and style: Iconography in the Vois Tokens skill (`DS-ICON-003` to `DS-ICON-007`)
 - Icon-only, grouped with other icon actions → Toggle (on/off) or Button (one-shot)
 - Removable selection or filter the user created → Badge with dismiss (Chip pattern), not a Button
 
-Why not a custom div/span? Buttons handle keyboard focus, Enter/Space activation, disabled state, and `role="button"` automatically — never fake a button. Why Button for icon-only instead of a bare icon? Button provides a hit area of at least the `--hit-area-min` token, a focus ring, and an accessible label.
+Why not a custom div/span? Buttons handle keyboard focus, Enter/Space activation, disabled state, and `role="button"` automatically — never fake a button. Why Button for icon-only instead of a bare icon? Button provides a hit area of at least the `--hit-area-min` token (`--hit-area-coarse` on a coarse pointer), a focus ring, and an accessible label.
 
 **Job 15 — Expose a set of actions** `JOB-EXPOSE-ACTIONS`
 *Give access to multiple actions without cluttering the primary UI.*
