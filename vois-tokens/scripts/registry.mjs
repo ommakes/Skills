@@ -19,6 +19,7 @@ import { openingTags } from "./jsx-tags.mjs";
 import { cssBlocks } from "./css-blocks.mjs";
 import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs";
 import { rawShadow, dockedShadow } from "./elevation-checks.mjs";
+import { footerButtons, nestedModal } from "./overlay-checks.mjs";
 import { missingWebkitTwin, literalGlassBlur, animatedGlassBlur } from "./glass-checks.mjs";
 
 export { cssBlocks };
@@ -587,6 +588,22 @@ export const RULES = [
     extensions: ALL_EXT,
     fixHint: "Use a tier token, var(--shadow-base) to var(--shadow-xlarge). A zero-blur ring such as 0 0 0 1px var(--border-default) is fine.",
     check: rawShadow,
+  },
+  {
+    id: "DS-MODAL-005",
+    title: "More than two buttons in a dialog footer",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: "Keep Cancel and one primary action on the right. A third action is a ghost or link button on the left, only when the dialog is wider than 400px, or it moves into the body or a second view.",
+    check: footerButtons,
+  },
+  {
+    id: "DS-MODAL-006",
+    title: "Dialog, sheet or drawer opened inside another one",
+    severity: "quality",
+    extensions: CODE_EXT,
+    fixHint: "Replace the content of the same dialog with a second view and a Back control, or make the second step a page. A destructive confirmation does the same.",
+    check: nestedModal,
   },
   {
     id: "DS-ELEVATION-006",

@@ -24,7 +24,7 @@ const badCssFindings = findingsFor("bad.css");
 const goodTsxFindings = findingsFor("good.tsx");
 
 const CSS_EXT_ONLY_RULE_IDS = new Set(["DS-CSS-002", "DS-CSS-003", "DS-CSS-007"]);
-const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-ELEVATION-006", "DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-ICON-005", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
+const CODE_EXT_ONLY_RULE_IDS = new Set(["DS-ELEVATION-006", "DS-MODAL-005", "DS-MODAL-006", "DS-A11Y-010", "DS-A11Y-012", "DS-SPACING-001", "DS-ANIMATION-008", "DS-ICON-001", "DS-ICON-002", "DS-ICON-005", "DS-TYPOGRAPHY-009", "DS-MODAL", "DS-COLOR-002", ...RULES.filter((r) => r.id.startsWith("LOOKALIKE-")).map((r) => r.id)]);
 
 for (const rule of RULES) {
   if (CSS_EXT_ONLY_RULE_IDS.has(rule.id)) {
@@ -1714,4 +1714,87 @@ test("the built registry components raise no DS-ICON-005 finding", () => {
     if (!existsSync(file)) continue;
     assert.deepEqual(detectFile(file, readFileSync(file, "utf8")).filter((x) => x.ruleId === "DS-ICON-005"), [], dir);
   }
+});
+
+const modalHits = (rule, code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === rule);
+const footer = (inner, tag = "DialogFooter") => `<${tag}>${inner}</${tag}>`;
+
+test("DS-MODAL-005 flags a dialog footer with more than two buttons", () => {
+  for (const code of [
+    footer("<Button>A</Button><Button>B</Button><Button>C</Button>"),
+    footer("<DialogClose><Button>Cancel</Button></DialogClose><Button>Save</Button><Button>Delete</Button>"), // a DialogClose without asChild is a button too
+    footer("<AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction>Delete</AlertDialogAction><Button>Learn more</Button>", "AlertDialogFooter"),
+    footer("<Button onClick={() => a > b}>A</Button><Button variant=\"outline\">B</Button><Button>C</Button>"), // a ">" inside an attribute is not a tag end
+    footer("<Button>A</Button>{ok ? <Button>B</Button> : <Button>C</Button>}"), // advisory: a conditional counts as two
+    footer("<Button variant=\"link\">Help</Button><Button>A</Button><Button>B</Button><Button>C</Button>"), // a link does not hide a third real button
+    footer("<Button variant=\"ghost\">Back</Button><Button variant=\"link\">Help</Button><Button variant=\"outline\">Cancel</Button><Button>Save</Button>"), // four buttons is too many, even with ghost and link
+    footer("<Button variant=\"ghost\">Back</Button><Button variant=\"ghost\">Skip</Button><Button variant=\"ghost\">Help</Button><Button variant=\"link\">More</Button>"), // all left-side variants, but four
+  ]) assert.equal(modalHits("DS-MODAL-005", code).length, 1, code);
+  assert.match(modalHits("DS-MODAL-005", footer("<Button>A</Button><Button>B</Button><Button>C</Button>"))[0].message, /3 buttons, 3 of them not ghost or link/);
+  assert.equal(modalHits("DS-MODAL-005", footer("<Button>A</Button><Button>B</Button><Button>C</Button>") + footer("<Button>X</Button><Button>Y</Button><Button>Z</Button>")).length, 2, "one finding per footer");
+});
+
+test("DS-MODAL-005 stays quiet when a footer has two buttons, or the rest are links", () => {
+  for (const code of [
+    footer("<Button variant=\"outline\">Cancel</Button><Button>Save</Button>"),
+    footer("<Button variant=\"link\">Help</Button><Button variant=\"outline\">Cancel</Button><Button>Save</Button>"), // the third action is a link
+    footer("<Button variant=\"ghost\">Back</Button><Button variant=\"outline\">Cancel</Button><Button>Save</Button>"), // or a ghost button
+    footer("<Button variant='ghost'>Back</Button><Button variant={\"ghost\"}>Skip</Button><Button>Save</Button>"), // two ghost and one primary: not more than 3, and one non-ghost
+    footer("<Button variant={\"link\"}>Help</Button><Button>Cancel</Button><Button>Save</Button>"),
+    footer("<DialogClose asChild><Button>Cancel</Button></DialogClose><Button>Save</Button>"), // the wrapper is not a second button
+    footer("<DialogClose asChild><Button>Cancel</Button></DialogClose><DialogClose asChild><Button>Close</Button></DialogClose>"),
+    footer("<ButtonGroup>x</ButtonGroup><Button>B</Button><Button>C</Button>"), // two Buttons; ButtonGroup is not one
+    "<DialogFooter />",
+    "<DialogFooter /><Button>A</Button><Button>B</Button><Button>C</Button></DialogFooter>", // an empty footer must not claim a later close tag
+    "<DialogFooter",
+    "<DialogFooter><Button>A</Button><Button>B</Button><Button>C</Button>", // never closes: not read
+    footer("<Button>A</Button><Button>B</Button><Button>C</Button>", "SheetFooter"), // Sheet and Drawer footers are not read: an action sheet has three or more choices
+    "<div><Button>A</Button><Button>B</Button><Button>C</Button></div>", // not in a footer
+    "// " + footer("<Button>A</Button><Button>B</Button><Button>C</Button>"),
+    "/* " + footer("<Button>A</Button><Button>B</Button><Button>C</Button>") + " */",
+  ]) assert.equal(modalHits("DS-MODAL-005", code).length, 0, code);
+  assert.equal(modalHits("DS-MODAL-005", footer("<Button>A</Button><Button>B</Button><Button>C</Button>"), "a.css").length, 0, "CSS is not read");
+  assert.equal(modalHits("DS-MODAL-005", footer("<Button>A</Button><Button>B</Button><Button>C</Button>")).length, 1, "same code in .tsx is read");
+});
+
+test("DS-MODAL checks stay fast on a large file, and pin two edge cases", () => {
+  const t0 = Date.now();
+  assert.equal(modalHits("DS-MODAL-006", "<Dialog>".repeat(20000) + "</Sheet>".repeat(20000)).length, 0, "closes that match nothing");
+  assert.equal(modalHits("DS-MODAL-005", "<DialogFooter><Button/>".repeat(16000)).length, 0, "footers that never close");
+  assert.ok(Date.now() - t0 < 1500, `took ${Date.now() - t0}ms`);
+  // Pinned, and listed as a known gap in hooks.md: the outer footer ends at the first close tag, so the trailing button is not counted.
+  assert.equal(modalHits("DS-MODAL-005", "<DialogFooter><Button/><DialogFooter><Button/><Button/></DialogFooter><Button/></DialogFooter>").length, 1);
+  // A string that holds JSX is read like code (known gap).
+  assert.equal(modalHits("DS-MODAL-006", "const s = `<Dialog><Dialog></Dialog></Dialog>`;").length, 1);
+});
+
+test("DS-MODAL-006 flags a dialog, sheet or drawer opened inside another", () => {
+  const nest = (outer, inner) => `<${outer}><${outer}Content><${inner}><${inner}Content>x</${inner}Content></${inner}></${outer}Content></${outer}>`;
+  for (const [outer, inner] of [["Dialog", "Dialog"], ["Dialog", "AlertDialog"], ["Sheet", "Dialog"], ["Drawer", "AlertDialog"], ["AlertDialog", "Sheet"]]) {
+    const hits = modalHits("DS-MODAL-006", nest(outer, inner));
+    assert.equal(hits.length, 1, `${inner} in ${outer}`);
+    assert.match(hits[0].message, new RegExp(`${inner} is opened inside a ${outer}`));
+  }
+  assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog><Sheet>x</Sheet></Dialog></Dialog>").length, 2, "three deep: two nested");
+  assert.equal(modalHits("DS-MODAL-006", '<Dialog open={a}>\n<DialogContent>\n<AlertDialog open={b}>x</AlertDialog>\n</DialogContent>\n</Dialog>').length, 1, "props and lines");
+  assert.equal(modalHits("DS-MODAL-006", "<Dialog>{open && <AlertDialog>x</AlertDialog>}</Dialog>")[0]?.line, 1);
+});
+
+test("DS-MODAL-006 stays quiet on siblings, other overlays and anything it cannot match", () => {
+  for (const code of [
+    "<Dialog>x</Dialog><Dialog>y</Dialog>", // siblings
+    "<Dialog><DialogTrigger>x</DialogTrigger><DialogContent><DialogHeader /></DialogContent></Dialog>", // parts are not roots
+    "<Dialog><Popover>x</Popover><Tooltip>y</Tooltip><DropdownMenu>z</DropdownMenu></Dialog>", // a menu or popover in a dialog is allowed
+    "<Dialog><Dialog open /></Dialog>", // a self-closing tag opens nothing
+    "<Dialog open /><Sheet></Sheet></Dialog>", // it must not take a later close tag for its own
+    "<Dialog><Dialog>x</Dialog>", // the outer never closes: not read
+    "<Dialog><AlertDialog>x</Dialog>", // mismatched: not read
+    "</Dialog><Dialog>x</Dialog>", // a stray close tag
+    "// <Dialog><Dialog>x</Dialog></Dialog>",
+    "/* <Dialog><Dialog>x</Dialog></Dialog> */",
+    "<DialogDemo><Dialog>x</Dialog></DialogDemo>", // a name that only starts with Dialog
+    "<Sheets><Sheet>x</Sheet></Sheets>",
+  ]) assert.equal(modalHits("DS-MODAL-006", code).length, 0, code);
+  assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog>x</Dialog></Dialog>", "a.css").length, 0, "CSS is not read");
+  assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog>x</Dialog></Dialog>").length, 1, "same code in .tsx is read");
 });

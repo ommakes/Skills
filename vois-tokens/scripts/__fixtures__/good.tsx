@@ -72,3 +72,23 @@ function GoodElevation() {
     </div>
   );
 }
+
+// A dialog footer with Cancel, a primary action and a link, and a sibling dialog that is not nested.
+function GoodDialog() {
+  return (
+    <>
+      <Dialog>
+        <DialogContent>
+          <DialogFooter>
+            <Button variant="link">Learn more</Button>
+            <Button variant="outline">Cancel</Button>
+            <Button>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog>
+        <DialogContent>Another dialog</DialogContent>
+      </Dialog>
+    </>
+  );
+}

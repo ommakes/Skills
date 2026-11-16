@@ -80,9 +80,9 @@ Never stack dialogs: a second step replaces the content of the same dialog (a pu
 
 - Primary button: right side
 - Secondary button: right side, `gap-5` left of primary
-- Optional tertiary (ghost/link): left side
+- Optional tertiary (ghost or link): left side, only when the dialog is wider than 400px
 - All vertically centered in sticky footer
-- Anchored to bottom of the dialog or bottom sheet. At most two buttons (`[DS-MODAL-005]`)
+- Anchored to bottom of the dialog or bottom sheet. Typically two buttons, three only in a dialog wider than 400px (`[DS-MODAL-005]`)
 
 ## Confirmation Dialogs:
 
