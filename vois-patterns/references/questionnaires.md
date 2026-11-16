@@ -124,6 +124,10 @@ Run these before you call a questionnaire done:
 Targets (44px, 48px, 24px floor) are anchored to Apple, Material, and WCAG. The 56px row is decided. The other survey sizes (52px buttons, 640px width) are the source standard's own proposals. No vendor publishes a full token set. Test on real devices.
 
 
+## Components
+
+The `vois-questionnaire` item in `registry/` has the components for this reference: `Question`, `ChoiceGroup`, `LikertScale`, `LikertBattery`, `TapToRank` and `PollResults`. Install it with the shadcn CLI like the other registry items. The Vois MCP is not needed.
+
 ## Poll and quiz results `[PATH-H-6]`
 
 Use when the respondent should see how others answered, or whether they were right. Applies to `single_select` and `multi_select` only. Scales and rankings need a distribution chart, which is out of scope.
