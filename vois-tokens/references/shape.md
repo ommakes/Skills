@@ -57,3 +57,16 @@ The concentric rule (`[DS-SURFACE-RADIUS]`, outer = inner + padding) applies bet
 ## Continuous corners `[DS-SHAPE-007]`
 
 On the soft and responsive roles, add continuous (squircle) corners as an enhancement where the browser supports them: `supports-[corner-shape:squircle]:[corner-shape:squircle]` in Tailwind, or `@supports (corner-shape: squircle) { corner-shape: squircle; }` in CSS. Browsers without `corner-shape` keep the round corner, and the layout doesn't change. Don't add it to controls, pills or circles: on a capsule it changes the shape itself.
+
+`squircle` is the same as `superellipse(2)`. To tune the smoothing on one surface, write `corner-shape: superellipse(n)` with `n` from 1 to 4:
+
+| `n` | Corner |
+|---|---|
+| 1 | The plain round corner. No change, so don't write it. |
+| 1.5 | A little smoother than round. |
+| 2 | `squircle`. The default. |
+| 3 to 4 | Clearly squarer. Use it only when the surface should look boxy. |
+
+Keep `n` inside that range. `n` below 1 gives a bevel (0) or a scooped, concave corner (negative). `n` above 4 is close to a square corner and loses the radius. Never use `infinity` or `-infinity`. The same support check covers `superellipse()`: `supports-[corner-shape:squircle]:[corner-shape:superellipse(1.5)]` in Tailwind.
+
+`corner-shape` only changes the curve. The border, the shadow and the focus outline follow it (checked in Chromium 153), and the box size doesn't change.

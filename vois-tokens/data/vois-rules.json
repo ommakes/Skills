@@ -2320,7 +2320,7 @@
       "category": "DS-SHAPE",
       "category_label": "Shape",
       "source_file": "vois-tokens/references/shape.md",
-      "rule": "Add continuous (squircle) corners as an enhancement on the soft and responsive roles only, behind a support check (`supports-[corner-shape:squircle]:[corner-shape:squircle]` or `@supports (corner-shape: squircle)`). Never on controls, pills or circles.",
+      "rule": "Add continuous (squircle) corners as an enhancement on the soft and responsive roles only, behind a support check (`supports-[corner-shape:squircle]:[corner-shape:squircle]` or `@supports (corner-shape: squircle)`). `squircle` is `superellipse(2)`. A surface may tune it with `superellipse(n)` where `n` is from 1 to 4. Never `n` below 1 or `infinity`. Never on controls, pills or circles.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment",
