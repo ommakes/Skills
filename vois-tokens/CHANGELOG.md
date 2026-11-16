@@ -4,6 +4,20 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.44.0] - 2026-11-16
+
+### Added
+- `DS-COLOR-010`, "Write the interpolation space in a gradient" (`references/color.md`, `data/vois-rules.json`). Recommended, advisory, judgment only. A gradient between saturated or brand colors says `in oklch` (or `bg-linear-to-r/oklch` in Tailwind v4) and does not rely on the default. Also covers the hue path, gamut at the 25, 50 and 75% points, and contrast under text.
+- `DS-COLOR-011`, "Eased stops". Preferred, advisory, judgment only. Use a color hint for a simple skew. For a smoother curve, sample an easing curve at 5 to 7 even steps and mix the color at the eased amount with `color-mix(in oklch, ...)`.
+- The rule text was checked in Chromium 153 before it was written:
+  - The default space follows the color syntax. Hex, `rgb()`, `hsl()` and named colors interpolate in sRGB. `oklch()`, `lab()` and `color()` interpolate in Oklab. So "avoid the default because it is sRGB" is not true for Vois tokens written in `oklch()`. The rule says "do not rely on the default" and gives the reason.
+  - On a blue to yellow gradient the 50% point has chroma 0.024 in sRGB, 0.046 in Oklab and 0.143 in OKLCH.
+  - In a test of four saturated pairs, three had a 50% point outside sRGB when interpolated in OKLCH. Chromium clips each channel. The rendered pixels matched a per-channel clip.
+  - Piecewise-linear stops against smoothstep: largest error 9.6% of the range with 3 stops, 3.5% with 5, 1.7% with 7, 1.0% with 9.
+- Still judgment-only. No detector reads gradients. A detector for `linear-gradient()` without `in <space>` is possible, but a hex gradient between near hues is fine, so it would need a color-distance test to avoid noise.
+
+---
+
 ## [1.43.1] - 2026-11-16
 
 ### Changed

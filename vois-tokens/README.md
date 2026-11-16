@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.43.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.44.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -83,6 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.44.0**: Gradients: `DS-COLOR-010` (write the interpolation space, prefer OKLCH, check hue path, gamut and contrast) and `DS-COLOR-011` (take stop placement from an easing curve). Both advisory, judgment only.
 - **1.43.1**: `DS-SHAPE-007` now covers `superellipse(n)`: `squircle` is `superellipse(2)`, and a surface may tune `n` from 1 to 4.
 - **1.43.0**: Detectors for `DS-MODAL-005` (more than two buttons in a dialog footer) and `DS-MODAL-006` (a dialog, sheet or drawer opened inside another). Both warn, neither blocks. `DS-ELEVATION-010` stays a judgment rule: `DS-ELEVATION-007` already flags every blurred inset shadow, and no pattern can tell a recessed element from a pressed one.
 - **1.42.0**: Frosted glass, opt-in: `references/glass.md` with `DS-GLASS-001` to `010`, the `--glass-*` tokens from Figma, and detectors for a missing `-webkit-` twin, a literal blur and an animated blur.
