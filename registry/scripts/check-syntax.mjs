@@ -16,15 +16,20 @@ import { fileURLToPath } from "node:url";
 import { transform } from "esbuild";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const LOADERS = { ".tsx": "tsx", ".ts": "ts" };
+const LOADERS = { ".tsx": "tsx", ".ts": "ts", ".mts": "ts", ".cts": "ts" };
 
-/** Every .ts and .tsx file under `dir`, as absolute paths, sorted. Symbolic links are not followed. */
+/** The esbuild loader for a path, by its extension in any case (A.TSX is TypeScript too), or null. A folder name does not count. */
+export function loaderFor(path) {
+  return LOADERS[extname(path).toLowerCase()] ?? null; // every key starts with ".", so no inherited property can match
+}
+
+/** Every TypeScript file (.ts, .tsx, .mts, .cts, any case) under `dir`, as absolute paths, sorted. Symbolic links are not followed. */
 export function sourceFiles(dir) {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) out.push(...sourceFiles(path));
-    else if (entry.isFile() && Object.hasOwn(LOADERS, extname(entry.name))) out.push(path);
+    else if (entry.isFile() && loaderFor(entry.name)) out.push(path);
   }
   return out.sort();
 }
@@ -35,13 +40,12 @@ export function sourceFiles(dir) {
  * report is listed. Every bad file is reported, not just the first.
  */
 export async function syntaxProblems(files, root = registryDir) {
-  if (files.length === 0) return ["no .ts or .tsx file found to parse"];
+  if (files.length === 0) return ["no TypeScript file found to parse"];
   const problems = [];
   for (const file of files) {
     const name = relative(root, file).split("\\").join("/");
-    const ext = extname(file);
-    const loader = Object.hasOwn(LOADERS, ext) ? LOADERS[ext] : null;
-    if (!loader) { problems.push(`${name}: not a .ts or .tsx file, so it cannot be parsed`); continue; }
+    const loader = loaderFor(file);
+    if (!loader) { problems.push(`${name}: not a TypeScript file, so it cannot be parsed`); continue; }
     try {
       await transform(readFileSync(file, "utf8"), { loader, sourcefile: name, logLevel: "silent" });
     } catch (e) {

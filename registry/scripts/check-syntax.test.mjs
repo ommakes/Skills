@@ -1,11 +1,12 @@
 // Run with: node registry/scripts/check-syntax.test.mjs (needs the registry's devDependencies: npm ci in registry/)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkDirectory, sourceFiles, syntaxProblems } from "./check-syntax.mjs";
+import { spawnSync } from "node:child_process";
+import { checkDirectory, loaderFor, sourceFiles, syntaxProblems } from "./check-syntax.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 
@@ -68,7 +69,7 @@ test("a .ts file is read as TypeScript and a .tsx file as JSX", async () => {
 });
 
 test("no file to read fails closed", async () => {
-  assert.deepEqual(await syntaxProblems([]), ["no .ts or .tsx file found to parse"]);
+  assert.deepEqual(await syntaxProblems([]), ["no TypeScript file found to parse"]);
   await withFiles({ "a/readme.md": "# x\n", "a/styles.css": ".a {}\n" }, async (dir) => {
     assert.deepEqual(sourceFiles(dir), [], "only .ts and .tsx are read");
   });
@@ -88,7 +89,7 @@ test("a symbolic link to a file is not read (check-registry.mjs fails on links i
 });
 
 test("sourceFiles finds nested files, ignores other extensions and does not follow a link", async () => {
-  await withFiles({ "a/b/c/deep.tsx": GOOD, "a/x.tsx.bak": "garbage {", "a/y.mts": "garbage {", "a/.tsx": "garbage {" }, async (dir) => {
+  await withFiles({ "a/b/c/deep.tsx": GOOD, "a/x.tsx.bak": "garbage {", "a/.tsx": "garbage {" }, async (dir) => {
     const outside = mkdtempSync(join(tmpdir(), "vois-syntax-out-"));
     try {
       writeFileSync(join(outside, "bad.tsx"), "export const a = ;\n");
@@ -107,17 +108,64 @@ test("a directory that cannot be read is a problem, not a crash", async () => {
   assert.match(problems[0], /cannot be read \(ENOENT\)/);
 });
 
-test("a file that is not .ts or .tsx is a problem, even in a folder with a dot in its name", async () => {
+test("a file that is not TypeScript is a problem, even in a folder with a dot in its name", async () => {
   await withFiles({ "a.b/noext": "export const a = 1\n", "a.b/style.css": ".a {}\n" }, async (dir) => {
     const problems = await syntaxProblems([join(dir, "a.b/noext"), join(dir, "a.b/style.css")], dir);
     assert.equal(problems.length, 2, problems.join("\n"));
-    assert.ok(problems.every((p) => /not a \.ts or \.tsx file/.test(p)));
+    assert.ok(problems.every((p) => /not a TypeScript file/.test(p)));
   });
 });
 
 test("a .tsx file in a folder with a dot in its name is parsed as TSX", async () => {
   await withFiles({ "v1.2/a.tsx": GOOD }, async (dir) => {
     assert.deepEqual(await syntaxProblems(sourceFiles(dir), dir), []);
+  });
+});
+
+test("loaders: TypeScript extensions in any case, and never a folder name", () => {
+  assert.equal(loaderFor("a.tsx"), "tsx");
+  assert.equal(loaderFor("A.TSX"), "tsx");
+  assert.equal(loaderFor("a.ts"), "ts");
+  assert.equal(loaderFor("a.Ts"), "ts");
+  assert.equal(loaderFor("a.mts"), "ts");
+  assert.equal(loaderFor("a.cts"), "ts");
+  assert.equal(loaderFor("dir.tsx/a.css"), null, "a folder name must not count");
+  for (const p of ["a.css", "a.json", "a.d", "tsx", "a.tsx.bak", "", "a."]) assert.equal(loaderFor(p), null, p);
+});
+
+test("an upper-case or .mts file is found and parsed, not skipped", async () => {
+  await withFiles({ "a/Bad.TSX": "export const a = ;\n", "a/ok.Ts": "export const b: number = 1\n", "a/bad.mts": "export const c = ;\n" }, async (dir) => {
+    const files = sourceFiles(dir);
+    assert.equal(files.length, 3, "all three are found");
+    const bad = (await syntaxProblems(files, dir)).map((p) => p.split(":")[0]);
+    assert.deepEqual(bad, ["a/Bad.TSX", "a/bad.mts"]);
+  });
+});
+
+test("a leftover merge marker is a problem", async () => {
+  await withFiles({ "a/a.tsx": "<<<<<<< HEAD\nexport const a = 1\n=======\nexport const a = 2\n>>>>>>> main\n" }, async (dir) => {
+    assert.ok((await syntaxProblems(sourceFiles(dir), dir)).length >= 1);
+  });
+});
+
+test("an angle-bracket cast is TypeScript in .ts and a syntax error in .tsx", async () => {
+  const code = "export const a = <number>(1 as unknown)\n";
+  await withFiles({ "a.ts": code }, async (dir) => assert.deepEqual(await syntaxProblems(sourceFiles(dir), dir), []));
+  await withFiles({ "a.tsx": code }, async (dir) => assert.ok((await syntaxProblems(sourceFiles(dir), dir)).length >= 1));
+});
+
+test("the CLI exits 0 on the registry and 1, naming the file and line, on a broken file", async () => {
+  const script = fileURLToPath(new URL("./check-syntax.mjs", import.meta.url));
+  const ok = spawnSync(process.execPath, [script], { encoding: "utf8" });
+  assert.equal(ok.status, 0, ok.stderr);
+  // The CLI checks its own registry folder, so run the failing case through a copy of the script next to a broken vois/.
+  await withFiles({ "vois/button/button.tsx": "export const v = {\n  glass: [\n    \"a\",\n  soft: [\n    \"b\",\n  ],\n}\n" }, async (dir) => {
+    mkdirSync(join(dir, "scripts"));
+    copyFileSync(script, join(dir, "scripts/check-syntax.mjs"));
+    symlinkSync(join(registryDir, "node_modules"), join(dir, "node_modules"));
+    const bad = spawnSync(process.execPath, [join(dir, "scripts/check-syntax.mjs")], { encoding: "utf8" });
+    assert.equal(bad.status, 1, bad.stdout + bad.stderr);
+    assert.match(bad.stderr, /^FAIL vois\/button\/button\.tsx:\d+:\d+: /m);
   });
 });
 
