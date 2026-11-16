@@ -1,4 +1,4 @@
-// Default strings. They come from the Righter entries in righter/data/components.json
+// Default strings. They follow the copy guidance in vois-patterns/data/questionnaire-copy.json
 // (selection-limit, rank-prompts, poll-results, questionnaire-errors). Pass your own to override.
 export const copy = {
   required: "Required",

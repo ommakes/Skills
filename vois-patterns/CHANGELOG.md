@@ -6,6 +6,11 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.2] - 2026-11-16
+
+### Changed
+- The nine questionnaire copy entries leave `righter/data/components.json` (righter 1.12.0) and live in `data/questionnaire-copy.json`, next to the `vois-questionnaire` registry item. Content is unchanged. `scripts/check-questions.mjs` reads the new file and still checks shape, ids and em dashes. `references/questionnaires.md` points to it. The standalone questionnaire repo is dropped, since registry items hold only code files.
+
 ## [1.23.1] - 2026-11-16
 
 ### Added

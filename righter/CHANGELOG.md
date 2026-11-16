@@ -4,6 +4,11 @@ All notable changes to the Righter skill are documented here.
 
 ---
 
+## [1.12.0] - 2026-11-15
+
+### Removed
+- The nine questionnaire copy entries added in 1.11.0 (prefill badge, selection limit, availability check, resend cooldown, draft and saved state, questionnaire errors, progress, rank prompts, poll results) leave `data/components.json`. They are product-specific, so they now live in `vois-patterns/data/questionnaire-copy.json`, next to the `vois-questionnaire` registry item (the standalone questionnaire repo was dropped). Righter keeps its general rules and reviews questionnaire copy when a question is added there.
+
 ## [1.11.0] - 2026-11-15
 
 ### Added

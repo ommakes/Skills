@@ -7,7 +7,7 @@
     {
       "name": "vois-patterns",
       "path": "vois-patterns",
-      "version": "1.23.1",
+      "version": "1.23.2",
       "author": "Personify Labs",
       "description": "Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Works standalone — telemetry tool calls are optional. Use when building pages, forms, features, workflows.",
       "tags": ["design", "vois", "design-system", "patterns"]
@@ -61,7 +61,7 @@
     {
       "name": "righter",
       "path": "righter",
-      "version": "1.11.0",
+      "version": "1.12.0",
       "author": "Personify Labs",
       "description": "Apply UX content writing principles to review existing UI copy or write new UI copy from scratch. Use this skill whenever someone asks you to review, audit, critique, or improve UI text, error messages, button labels, tooltips, empty states, permission prompts, onboarding copy, accessible labels or link text, marketing-page copy against word limits, or any software interface copy.",
       "tags": ["design", "content", "ux-writing", "copy"]

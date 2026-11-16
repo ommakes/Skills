@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.11.0
+version: 1.12.0
 ---
 
 # Righter
@@ -14,7 +14,7 @@ version: 1.11.0
 A UX writing skill. Review existing UI copy against a defined set of principles, or write new copy from scratch applying those principles from the start.
 
 **Reference files: read these when relevant:**
-- `data/components.json`: per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip, Empty State, Permission Prompt, plus questionnaire copy: prefill badge, selection limit, availability check, resend cooldown, draft and saved state, questionnaire errors, progress, rank prompts, poll results). Look up by component `id`, don't scan the whole file.
+- `data/components.json`: per-component writing rules (Alert Dialog, Toast, Inline Alert, Helper Text, Alert Banner, Tooltip, Empty State, Permission Prompt). Look up by component `id`, don't scan the whole file.
 - `references/accessibility.md`: read when reviewing or writing labels, buttons, link text, form errors, or icon-only controls, or whenever `accessible-copy` might apply
 - `references/tone.md`: read when copy lands on an emotional or high-stakes moment (errors, destructive actions, first use, success)
 - `references/voice-chart.md`: read only when someone asks to define, document, or audit a brand voice
@@ -341,6 +341,7 @@ None of the above?
 The tree above is for errors only. For non-error surfaces, look up the component by `id` in `data/components.json`:
 - `empty-state`: a list, page, or section has nothing to show (first use, user cleared it, no results, empty by nature, no access).
 - `permission-prompt`: the app asks for a device or account permission (location, notifications, camera, contacts, storage).
+- **Questionnaire copy** (surveys, intake forms, quizzes, polls) has its own entries in `vois-patterns/data/questionnaire-copy.json`, next to the `vois-questionnaire` registry item. When a question is added there, review its copy here against the principles above.
 
 **Table copy.** Tables use the components above. An empty table is `empty-state`. A validation message on one editable cell is Helper Text. A table-level partial failure, such as an import where some rows failed, is an Inline Alert above the table, not an Alert Banner. A bulk delete confirmation is an Alert Dialog. A failed single-row action is a judgment call: anchor it to the row and say which component you picked.
 

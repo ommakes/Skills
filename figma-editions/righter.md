@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.10.0
+version: 1.12.0
 ---
 
 # Righter
@@ -286,7 +286,7 @@ The tree is for errors only. Empty states and permission prompts are in Componen
 
 ## Component Writing Rules
 
-Full writing rules per component, referenced from the decision tree above.
+Full writing rules per component, referenced from the decision tree above. Questionnaire copy (surveys, intake forms, quizzes, polls) has its own entries in the `vois-patterns` full version, next to the `vois-questionnaire` registry item. When a question is added there, review its copy here against the principles above.
 
 **Shared prefix format** precedes the title, space-separated. Applies to Alert Dialog, Inline Alert, and Alert Banner titles when the component calls for a specific user action. Skip for purely informational or destructive-confirmation dialogs, system outages, or neutral/informational variants.
 - `Action Required:` user must complete a step to proceed or restore functionality

@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.23.0
+version: 1.23.2
 ---
 
 # Vois Patterns Skill
@@ -233,7 +233,7 @@ Never stack dialogs: a second step replaces the content of the same dialog (a pu
 
 ### PATH H — Questionnaire (survey, intake form, quiz, poll) `[PATH-H]`
 
-**When to use:** someone answers questions another person wrote: surveys, intake forms, assessments, feedback. If the user edits their own record, use PATH C; dense desktop forms stay in PATH C. Card sort goes to a research tool. Component picks are `vois-components` jobs 22 to 24, and copy for every state goes to Righter.
+**When to use:** someone answers questions another person wrote: surveys, intake forms, assessments, feedback. If the user edits their own record, use PATH C; dense desktop forms stay in PATH C. Card sort goes to a research tool. Component picks are `vois-components` jobs 22 to 24, and copy for every state is reviewed with Righter. The full version keeps guidance for it in `vois-patterns/data/questionnaire-copy.json`, with default strings in the `vois-questionnaire` registry item.
 
 - **Layout** `[PATH-H-1]`: one question per screen. Group 2 to 3 simple questions on one page only when the survey has 10 questions or fewer. Next is a full-width button in a sticky bar at the bottom. From 768px, centre the content at 640px max. The 56px option row is an accepted exception to compact density, inside questionnaires only (`DS-RESPONSIVE-013`).
 - **Pick the component** `[PATH-H-2]`, first match wins: 1 long answer over 120 characters → LongTextbox. 2 short answer → OpenText (a typed value such as email, phone or number goes to `vois-fields`). 3 several statements on one scale → Accordion, one at a time, 5 per group at most. 4 eleven points (0 to 10) → Slider with word labels. 5 five points → Likert horizontal, seven points → Likert vertical. 6 order matters → Rank (6 or fewer rank all, 7 to 12 top 3, over 12 do not rank). 7 several answers → CheckboxCard. 8 one answer → RadioCard up to 7, RadioListRow for 8 to 12, a searchable list over 12.
