@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.18.2] - 2026-11-16
+
+- **The syntax check no longer skips a file by its extension's case or kind.** In 0.18.1 a `Foo.TSX` or a `.mts` file was never found, so it was never parsed. `check-syntax.mjs` now reads `.ts`, `.tsx`, `.mts` and `.cts` in any case. The loader comes from the lower-cased extension (`loaderFor`). Five tests are new (17 in all): the loader lookup, an upper-case and an `.mts` file found and parsed, a leftover merge marker, an angle-bracket cast (valid in `.ts`, an error in `.tsx`), and the CLI's exit code and `FAIL file:line:col` output. Each new guard was removed in a copy and a test failed; the one redundant guard was dropped. These came from #92, a second build of the same check that was closed in favor of #93.
+
 ## [0.18.1] - 2026-11-16
 
 - **A syntax check for the components.** `npm run syntax` (`scripts/check-syntax.mjs`, tests in `check-syntax.test.mjs` as `npm run syntax:test`) parses every `.ts` and `.tsx` file under `vois/` with esbuild and fails on a syntax error, naming the file and line. No other check parsed the components: `shadcn build` copies them into JSON without compiling, and the checkers read them with regexes, so a closing bracket dropped while resolving a merge conflict shipped with everything green. It is syntax only and does not type-check, because the components import `@/lib/utils` and `@/components/ui/*`, which resolve only in a consumer app. CI runs it in the `registry-build` job. Replaying the real slip (a dropped `],` in `button.tsx`) fails with `vois/button/button.tsx:106:12: Expected "]" but found ":"`.
