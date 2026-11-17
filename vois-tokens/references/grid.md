@@ -124,6 +124,8 @@ A panel is a surface that opens at the side of a page.
 - **Push** sits inline and moves the main content over. Use it when people need to look at the page and the panel together: a preview, a properties list.
 - **Overlay** floats over the page. Use it for a task that ends: an edit form, a filter set, a notification list.
 
+The registry item `vois-panel-layout` ships these rules: `PanelLayout`, `PanelLayoutMain` and `PanelLayoutPanel` place a `vois-panel` as a push panel, a non-modal docked overlay (no scrim, no focus trap, the Large shadow that falls away from its edge, on the modal layer so a menu opened from inside it stacks above it) or a full-screen panel below `--breakpoint-md`. `usePanelLayout` says whether the app shell shows a bottom bar, a rail or a sidebar, including the fold of `DS-PANEL-004`. The numbers are read from the token variables. A missing token gives a full-screen panel, never a push panel.
+
 ### Phones `[DS-PANEL-002]`
 
 Below `--breakpoint-md` every panel is full screen. No push, no half-width overlay.
