@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.20.0] - 2026-11-17
+
+- **`vois-page-grid`, a new item: the page grid, built.** No registry component read `--grid-margin`, `--grid-gutter` or the `--item-min-*` tokens before this. `PageFrame` is the page region: a size container (so the margin and gutter tokens, which are written in `100cqi`, measure the region and not the window, `DS-GRID-006`), the content held at `--grid-content-max` (`DS-GRID-003`), and padding of the larger of `--grid-margin` and the safe-area inset on each side, on the start and end sides so right-to-left pages work (`DS-GRID-004`, `DS-GRID-005`). `fill` opts out of the content max for a dense page. `CollectionGrid` and `CollectionGridItem` are a list of equal items whose column count is the `DS-GRID-007` formula written in CSS: `repeat(auto-fill, minmax(max(min(100%, itemMin), one column of a full cap row), 1fr))`, with `itemMin` one of `icon-tile`, `logo`, `card`, `plan` or `story`, a `cap` per grid class (a class left out takes the one before it, a bad value is read as 1), and the gap from `--grid-gutter`. No JS.
+- A container query cannot read a token, so the cap queries repeat `--breakpoint-sm`, `-md` and `-lg` (600, 768, 1024). The grid has to sit inside a `PageFrame` or any `@container`: without one the queries do not match and it keeps its narrow cap.
+- Checked in Chromium 153: column count, margin, gutter and grid width against the `grid-logic.mjs` arithmetic for 5 item sizes at 14 region widths from 150 to 1300, content and fill (140 cases); the cap rules; no overflow at a 150 wide region; the safe-area `max()` and the right-to-left swap; the same count for one region width in a 500 and a 1400 wide window. Ten mutations (guard, cap term, safe inset, container, content box, rtl, cap fallback, query, fill, raw gap) all fail the checks.
+
 ## [0.19.0] - 2026-11-16
 
 - **`vois-questionnaire`, a new item.** The questionnaire components from the `@vois/questionnaire` React package (1.2.0), as a registry item instead of an npm package: `Question`, `ChoiceGroup`, `LikertScale`, `LikertBattery`, `TapToRank`, `PollResults` and `FieldShell`, plus `types.ts`, `copy.ts`, `poll-rows.ts` and the question engine under `lib/questionnaire/`. It depends on `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` and the `utils` item.

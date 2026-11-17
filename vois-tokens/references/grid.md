@@ -100,6 +100,7 @@ Make the region a size container. Then the collection and the components inside 
 - The fit needs no query. `auto-fill` with `minmax` gives `floor((inner + gutter) / (itemMin + gutter))` columns, and `min(100%, ...)` keeps one tile from overflowing a region narrower than `itemMin`.
 - The cap is the second term inside `max()`. It is the width of one column when exactly `cap` columns fill the region, so the count can't go above `cap` and the cards still stretch to fill the row. A `max-width` on the collection also holds the count down, but it leaves the row short.
 - A query cannot sit on the element it measures, so the `@container` rules style the collection inside the region, not the region itself.
+- The registry item `vois-page-grid` ships this as `PageFrame` (the region, the content max, safe-area aware margins) and `CollectionGrid` (the formula and gap above, with `itemMin` and a `cap` per class). Use it instead of writing the CSS again.
 - Checked in Chromium 153 with `--item-min-card` 200px and gutter 16px. The column count matched the formula at region widths from 150 to 1500px, with the cap from the queries and with a cap of 4 set on every width. At 450px with a cap of 4 the count was 2, and at 700px it was 3.
 
 ## Text size `[DS-GRID-008]`

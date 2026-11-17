@@ -462,6 +462,27 @@
       ]
     },
     {
+      "name": "vois-page-grid",
+      "type": "registry:ui",
+      "title": "Vois Page Grid",
+      "description": "The page grid of vois-tokens grid.md: PageFrame (a size container, the content max, safe-area aware margins from --grid-margin, a fill opt-out) and CollectionGrid (a column count from the DS-GRID-007 formula in CSS, a cap per grid class, a gap from --grid-gutter).",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/page-grid/page-frame.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/page-frame.tsx"
+        },
+        {
+          "path": "vois/page-grid/collection-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/collection-grid.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-button-group",
       "type": "registry:ui",
       "title": "Vois Button Group",
