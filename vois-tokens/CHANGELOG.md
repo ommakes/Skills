@@ -4,6 +4,12 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.46.0] - 2026-11-16
+
+### Added
+- `references/glass.md`, "Edge fade", and `DS-GLASS-011` to `DS-GLASS-015`: a blur that tapers off at the edge of a scroll area under sticky chrome. One element holds the blur and an eased nine-stop mask (never the mask on a parent: the blur disappears). Blur is the strong tier, 24 at most, so a generator's `blur(32px)` is still flagged by `DS-GLASS-004`. An optional layered stack of up to 4 sibling layers at 100, 75, 50 and 25% height gives a progressive blur; stacked blurs compound, so the radii add in quadrature and must stay within `--glass-blur-strong` (4, 8, 12 and 18 give 23.4). Gradient fallback and reduced-transparency behaviour. Both example blocks are tested to raise no glass finding.
+- Checked in Chromium 153: edge widths behind one layer and behind the stack, compounding of stacked blurs, and the parent mask or opacity removing the blur. Not measured: paint cost (headless, capped at 60 fps), Safari, Firefox.
+
 ## [1.45.0] - 2026-11-16
 
 ### Added

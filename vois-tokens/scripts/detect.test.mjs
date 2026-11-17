@@ -1615,6 +1615,18 @@ test("DS-GLASS-005 leaves alone other transitions, a static style and other keyf
   ]) assert.equal(glassHits("DS-GLASS-005", code, file).length, 0, code);
 });
 
+test("the edge fade CSS in glass.md raises no glass finding, and a generator's literal blur still does", () => {
+  const md = readFileSync(join(HERE, "..", "references", "glass.md"), "utf8");
+  const section = md.slice(md.indexOf("## Edge fade"));
+  const blocks = [...section.matchAll(/```css\n([\s\S]*?)```/g)].map((m) => m[1]);
+  assert.ok(blocks.length >= 2, "the section holds the single and the layered example");
+  for (const css of blocks) for (const id of ["DS-GLASS-003", "DS-GLASS-004", "DS-GLASS-005"]) assert.equal(glassHits(id, css, "a.css").length, 0, `${id}: ${css.slice(0, 40)}`);
+  // From the other side: the smooth-blur generator writes a literal radius, and a calc() on the token is read as a literal.
+  const generated = ".smooth-blur { backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); mask-image: linear-gradient(to top, #000, transparent); }";
+  assert.equal(glassHits("DS-GLASS-004", generated, "a.css").length, 2);
+  assert.equal(glassHits("DS-GLASS-004", ".a { backdrop-filter: blur(calc(var(--glass-blur-strong) * 0.75)); -webkit-backdrop-filter: blur(calc(var(--glass-blur-strong) * 0.75)); }", "a.css").length, 2, "a calc must go through a custom property");
+});
+
 test("DS-GLASS checks stay quick on a very long file", () => {
   const css = Array.from({ length: 5000 }, (_, i) => `.g${i} { -webkit-backdrop-filter: blur(var(--glass-blur-standard)); backdrop-filter: blur(var(--glass-blur-standard)); }`).join("\n");
   const t = Date.now();

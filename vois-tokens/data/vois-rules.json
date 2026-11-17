@@ -1000,6 +1000,56 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-GLASS-011",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "An edge fade (a blur that tapers off) goes only at the edge of a scroll area, under sticky chrome: below a top bar, or above a bottom bar, tab bar or floating dock. It is as tall as the chrome plus a short run-out. It counts as one glass surface in DS-GLASS-001. Never put one in the middle of content, and never use one as a scrim for text on a photo (use the dimming layer in DS-GLASS-008).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-012",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Build an edge fade from one element that holds both `backdrop-filter` and `mask-image`, each with its `-webkit-` twin, plus `pointer-events: none`. The mask is the eased stop list in `--glass-fade-mask`, not a two-stop linear gradient. Never put the mask, or an `opacity` under 1, on a parent: the blur then disappears (DS-GLASS-006). The blur is `var(--glass-blur-strong)` at most (DS-GLASS-004) and is never animated (DS-GLASS-005).",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-013",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "A layered fade is optional: up to 4 sibling layers with the same mask, anchored to the edge, at 100%, 75%, 50% and 25% of the fade height. Each radius is a share of `--glass-blur-strong`, kept in a custom property so the blur reads `var(...)`. Stacked blurs compound, so the radii add in quadrature: the square root of the sum of their squares at the edge must not exceed `--glass-blur-strong`. 4, 8, 12 and 18 give 23.4. The stack counts as one glass surface. Paint cost of a stack is not measured here: test it on a real phone.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-014",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "An edge fade's base style is a gradient from `var(--bg-background)` to transparent over the same height. An `@supports` test for `backdrop-filter` or its `-webkit-` twin swaps it for the blur and the mask. Under `prefers-reduced-transparency: reduce` the gradient comes back and `backdrop-filter` is `none`.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-GLASS-015",
+      "category": "DS-GLASS",
+      "category_label": "Frosted Glass",
+      "source_file": "vois-tokens/references/glass.md",
+      "rule": "Text or controls that sit on top of an edge fade follow DS-GLASS-008, checked over the sharpest and the blurriest patch behind them. Content that scrolls under the fade is allowed to blur; do not rely on a fade to hide content a person must read.",
+      "severity": "required",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-ICON-001",
       "category": "DS-ICON",
       "category_label": "Iconography",
