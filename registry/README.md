@@ -17,6 +17,7 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-segmented-control` and `vois-stepper`: the Figma Segments set, and a step indicator for a flow of 2 to 5 steps.
 - `vois-choice-list` and `vois-choice-card`: full-width radio or checkbox rows, and radio or checkbox cards.
 - `vois-card`, `vois-hover-card` and `vois-panel`: the container with a whole-card link, the hover preview, and the persistent secondary pane.
+- `vois-page-grid`: the page grid (`vois-tokens` `DS-GRID-003` to `007`). `PageFrame` is the page region (a size container, the content max, margins from `--grid-margin` that clear the safe area, a `fill` opt-out). `CollectionGrid` and `CollectionGridItem` are a list of equal cards whose column count comes from the width of an item (`itemMin`) and a `cap` per grid class, with the gap from `--grid-gutter`. Put the grid inside a `PageFrame`.
 
 - Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog` and `vois-command`.
 - The inspector controls: `vois-slider` (Slider for a continuous value, StepSlider for a short named scale, both on a native range input), `vois-inspector` (the sections, label and control rows, control groups and toggle inside a properties pane, for `vois-panel`) and `vois-swatch-picker` (one color from a fixed set).

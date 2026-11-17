@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.46.1] - 2026-11-17
+
+### Changed
+- `references/grid.md` points to the registry item `vois-page-grid` (registry 0.20.0): `PageFrame` and `CollectionGrid` render `DS-GRID-003` to `DS-GRID-007`. Docs only. No rule changed.
+
 ## [1.46.0] - 2026-11-16
 
 ### Added
