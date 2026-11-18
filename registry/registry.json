@@ -483,6 +483,28 @@
       ]
     },
     {
+      "name": "vois-panel-layout",
+      "type": "registry:ui",
+      "title": "Vois Panel Layout",
+      "description": "Places a vois-panel beside the main area by the DS-PANEL rules: push when it fits, a non-modal docked overlay with the Large side shadow when it does not, full screen below md. The numbers come from the token variables. usePanelLayout says whether the app shell shows a sidebar, a rail or a bottom bar.",
+      "registryDependencies": [
+        "utils",
+        "vois-panel"
+      ],
+      "files": [
+        {
+          "path": "vois/panel-layout/panel-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/panel-layout.tsx"
+        },
+        {
+          "path": "vois/panel-layout/panel-logic.ts",
+          "type": "registry:lib",
+          "target": "lib/panel-logic.ts"
+        }
+      ]
+    },
+    {
       "name": "vois-button-group",
       "type": "registry:ui",
       "title": "Vois Button Group",

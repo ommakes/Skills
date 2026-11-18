@@ -15,6 +15,7 @@ The ladder runs: none, Base, Small, Medium, Large, XLarge.
 | Small | `--shadow-small` | Card and resting Choice Card on hover, the Switch knob, Hover Card |
 | Medium | `--shadow-medium` | Dropdown menus and select lists |
 | Large | `--shadow-large` | Dialog, Tooltip |
+| Large, docked | `--shadow-large-right`, `--shadow-large-left` | A Panel as an overlay (`vois-panel-layout`) |
 | XLarge | `--shadow-xlarge` | Nothing at rest. Only a dragged item or a full-screen surface |
 
 Each tier is several stacked shadows of black at a low alpha, so it reads on any light surface. Dark mode needs more than that (`DS-ELEVATION-005`).

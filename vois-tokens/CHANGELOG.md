@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.46.2] - 2026-11-17
+
+### Changed
+- `references/grid.md` points to the registry item `vois-panel-layout` (registry 0.21.0): `PanelLayout` and `usePanelLayout` render `DS-PANEL-002` to `DS-PANEL-006`. `references/elevation.md` lists the docked Panel overlay at Large (`--shadow-large-right`, `--shadow-large-left`). `data/elevation-map.json` has two built rows for it, `panel-overlay-right` and `panel-overlay-left`, checked by `scripts/elevation-map.mjs`. No rule changed.
+
 ## [1.46.1] - 2026-11-17
 
 ### Changed

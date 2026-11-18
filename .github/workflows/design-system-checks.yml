@@ -117,6 +117,8 @@ jobs:
 
       - name: The syntax check's own tests
         run: npm run syntax:test
+      - name: The panel layout's decision logic, against grid-logic.mjs
+        run: npm run panel:test
 
       - name: Build the registry (shadcn validates every item against its schema)
         run: npm run build

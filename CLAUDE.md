@@ -32,7 +32,7 @@ node vois-dataviz/scripts/dataviz.test.mjs
 node registry/scripts/build-tokens.test.mjs
 node registry/scripts/check-registry.test.mjs
 node registry/scripts/check-registry.mjs
-(cd registry && npm ci --ignore-scripts && npm run syntax && npm run syntax:test && npm run build)
+(cd registry && npm ci --ignore-scripts && npm run syntax && npm run syntax:test && npm run panel:test && npm run build)
 node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
 
