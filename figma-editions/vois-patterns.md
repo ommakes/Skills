@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
 description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Use when building pages, forms, features, workflows.
-version: 1.23.2
+version: 1.23.4
 ---
 
 # Vois Patterns Skill
@@ -173,7 +173,7 @@ MOTION: A state change should move (button, label, icon, number, panel, list, ch
 
 Never stack dialogs: a second step replaces the content of the same dialog (a pushed view with a Back control), or becomes a page. Never use a dialog for navigation (`DS-MODAL-006`, `DS-MODAL-007`).
 
-**Structure:** header (H2 title, optional description, close button top right on desktop / top center on mobile) → body (single input field or simple content) → sticky footer (button group, right-aligned on desktop / stacked on mobile: primary on the right, secondary `gap-5` (20px) to its left, optional tertiary/ghost link on the far left). At most two buttons in a footer (`DS-MODAL-005`).
+**Structure:** header (H2 title, optional description, close button top right on desktop / top center on mobile) → body (single input field or simple content) → sticky footer (button group, right-aligned on desktop / stacked on mobile: primary on the right, secondary `gap-5` (20px) to its left). Typically two buttons. A third is an optional ghost or link button on the far left, only when the dialog is wider than 400px (`DS-MODAL-005`).
 
 **Dialog width** `[PATH-D-SIZE]` (desktop; both widths are maximums set by tokens, and every dialog is one column): small, `--width-dialog-sm`, for confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields; large, `--width-dialog-lg`, for content that needs the extra width, such as a textarea or a short list. Pick by what the content needs, not by whether it contains an input. Two-column layouts go on pages, not in dialogs. On mobile, dialogs that take text input are full modals at the viewport width. Destructive confirmations follow `JOB-CONFIRM-DESTRUCTIVE`; deleting a workspace, team, or account adds typed confirmation (see Settings interactions).
 
