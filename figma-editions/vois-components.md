@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.27.0
+version: 1.28.0
 ---
 
 # Vois Component Selection Skill
@@ -387,6 +387,23 @@ Agents often write markup that looks like a component but isn't one. A screen ca
 When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
 
 ---
+
+## What You Must Supply
+
+Radix and native elements give roles and keyboard behavior. These parts are the caller's job (the rules are `DS-A11Y-029` to `DS-A11Y-037` in `vois-tokens`).
+
+| Component | You supply | Rule |
+|-----------|------------|------|
+| Tooltip | A focusable trigger. Nothing essential only in the tooltip. Not on a disabled control | `DS-A11Y-029` |
+| Select, Combobox, Command | A name from the visible label, not the chosen value | `DS-A11Y-030` |
+| Input, Textarea | `aria-describedby` to helper and error text, `aria-invalid` on failure | `DS-A11Y-031` |
+| Tabs | A text name per tab (`aria-label` if an icon). A name per tab list if there are several | `DS-A11Y-032` |
+| Table | A caption or name. `<th>` with `scope` | `DS-A11Y-033` |
+| Toast | A polite live region. No sole copy of a result or action | `DS-A11Y-034` |
+| Switch, Checkbox, Radio | A tied visible label. A switch label names the setting | `DS-A11Y-035` |
+| DropdownMenu, Popover | Radix, so Escape and focus return work | `DS-A11Y-036` |
+| Spinner, Skeleton | A text name in a live region, or `aria-busy` | `DS-A11Y-037` |
+| Icon Button, Dialog | `aria-label`; a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
 
 ## Relationship to Other Skills
 
