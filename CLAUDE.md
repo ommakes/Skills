@@ -9,6 +9,8 @@ Run what CI runs:
 ```
 node scripts/check-rule-sync.mjs
 node conversion-patterns/scripts/check-rule-sync.mjs
+node scripts/check-editions.test.mjs
+node scripts/check-editions.mjs
 python3 scripts/check-verification.py
 python3 scripts/check-verification.test.py
 python3 scripts/check-routing.py
@@ -62,5 +64,5 @@ Mutation tests ("what if I remove this guard") run in a copy or a `git worktree`
 - Public must never gain a required MCP call. If a change needs the MCP, the premium wording goes in the private repo only.
 - Other skills in this repo (`design-ask`, `design-rationale`, `conversion-patterns`, `metrics-tagging`, and the rest) keep the public repo as their source.
 - Branch from `main`, open a draft PR against `main`, and do not stack PR bases. Do not merge your own PRs.
-- Bump the skill version and write a CHANGELOG entry for any change to a skill's behavior, and update `skills.json` and the README version line together. A Figma edition's frontmatter `version` is the source version it was built from, so it changes only when `figma-editions/` is rebuilt for that skill. If it is not rebuilt in the same pass, mark it as behind in `figma-editions/README.md` instead of bumping the number.
+- Bump the skill version and write a CHANGELOG entry for any change to a skill's behavior, and update `skills.json` and the README version line together. A Figma edition's frontmatter `version` is the source version it was built from, so it changes only when `figma-editions/` is rebuilt for that skill. If it is not rebuilt in the same pass, mark it as behind in `figma-editions/README.md` instead of bumping the number. An edition at its source version must name every source rule id (`scripts/check-editions.mjs`); an id left out on purpose goes in `figma-editions/omit.json` with a reason.
 - Tunable limits live in `vois-teams/data/ranges.json`; the hook's `TUNABLES` in `vois-tokens/scripts/team-overrides.mjs` must match it (a test checks).

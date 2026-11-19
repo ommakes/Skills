@@ -294,47 +294,47 @@ Full writing rules per component, referenced from the decision tree above. Quest
 - `Review:` no hard block, but the user should look at this before moving on
 - `Verify Now:` time-sensitive or security-related; reserve for genuine urgency, use sparingly
 
-### Alert Dialog
+### Alert Dialog `id: alert-dialog`
 **Use when:** the user must acknowledge or decide before continuing. High consequence. Blocking. Golden rule: the user is already interrupted. Be efficient.
 - Title: 30–60 characters, no end punctuation, max 2 lines. Communicate the result or required decision, not the cause. Good: "Can't delete project", "Delete 13 files." Bad: "Error occurred while processing."
 - Description: 80–200 characters, max 2 sentences. Include error codes in parentheses at the end. Don't repeat the title.
 - Actions: verb-led, 2–3 words. Primary = recommended action (Confirm, Enable, Continue). Secondary = exit or undo (Cancel, Discard changes). Link = supplemental resource (Learn more).
 - Variants: Confirmation, Informative (use Toast instead if no action needed), Destructive (red primary button), Warning (yellow icon), Error (consider Inline Alert if no specific action required).
 
-### Toast
+### Toast `id: toast`
 **Use when:** confirming a completed action. Low priority. No required response. Auto-dismisses.
 - Sentence case, no period, max 90 characters, max 2 lines. Must be instantly understandable. If it needs explanation, don't use a toast. Not for promotional messages or upsells. Max 1 action (undo, fix, show, update).
 - Success/Confirmation: short past-participle phrase ("Policy updated successfully", "File created"). Error/Negative: succinct statement + optional inline action ("Payment failed"). Neutral: no icon, use when semantic variants don't fit.
 
-### Inline Alert
+### Inline Alert `id: inline-alert`
 **Use when:** contextual to a section of the page. The user can continue without acting. Consequence is real but not blocking.
 - Title: 20–50 characters. Description: 60–180 characters, 1–2 sentences, don't repeat the title. Optional link action for additional detail.
 - Uses shared prefix format. Good: "Review: Premium may change." Bad: "Warning: Something to look at."
 - Variants: Neutral (gray, reminders), Informative (blue, form context), Positive (green, confirmed action), Notice (yellow, needs attention).
 
-### Helper Text
+### Helper Text `id: helper-text`
 **Use when:** attached directly to a form field. Instructs correct input or surfaces a field-level error.
 - Under 50 characters, 1 line or short sentence. Neutral state describes the solution proactively, before an error happens. Error state describes the fix, not the mistake. Tell them how to fix it, not what they did wrong. Error state uses a red warning icon.
 
-### Alert Banner
+### Alert Banner `id: alert-banner`
 **Use when:** system-level message. Affects the whole app or a major capability. High visibility, persistent until resolved.
 - Never auto-dismisses (reappears on refresh if dismissed without fixing). Max 1 action per banner. Max 2 lines on smaller viewports.
 - Title (optional): 20–40 characters. Description: 50–140 characters, no period on short phrases.
 - Uses shared prefix format. Actions: secondary button (takes user to fix the issue) or link button (learn more).
 - Variants: Neutral (gray), Informative (blue), Error (red).
 
-### Tooltip
+### Tooltip `id: tooltip`
 **Use when:** adding a label or short description to an interactive element on hover or keyboard focus.
 - 40–60 characters max, 2 lines max. Only on interactive elements. Never duplicates the visible label of the trigger element. No actions inside tooltips. Only essential labels or descriptions, not "nice to have" context.
 
-### Empty State
+### Empty State `id: empty-state`
 **Use when:** a list, page, or section has nothing to show. Not an error.
 - Title: 15–40 characters, no end punctuation, says what's missing or what this place is for. Description: 40–120 characters, 1–2 sentences, doesn't restate the title. Action: one primary action, verb-led, 2–3 words.
 - Say why it's empty only when that helps the user act. Give a next step that fills the space (for no results, the next step is changing the search or filter). Never blame the user. No filler.
 - Variants: First use ("No invoices yet" / "Create an invoice and it shows up here." / Create invoice). User cleared ("All tasks done" / "Add a task to plan your next steps."). No results ("No results for \"invoice 204\"" / "Try a different search or clear your filters." / Clear filters). Empty by nature ("No open issues" / "Nothing needs your attention right now.", no action). No access ("You don't have access to invoices" / "Ask an admin to add you to the Billing team.", never a create action).
 - Bad: "Nothing to see here", "Oops! Nothing found". Personality (one device) is for first use only, never user-cleared or no-results states.
 
-### Permission Prompt
+### Permission Prompt `id: permission-prompt`
 **Use when:** the app is about to ask for a device or account permission (location, notifications, camera, contacts, storage), including a priming screen before the native OS dialog.
 - Benefit line: 40–80 characters, one sentence, leads with what the user gets. Optional description: 60–150 characters, one concrete detail. Primary action: verb plus the permission name, 2–3 words. Secondary action: exit with no penalty, 2 words ("Not now").
 - Ask in context, when the user first reaches the feature that needs it, never on launch. The primary action names the permission and matches the OS dialog. State one specific benefit, not "we need access".

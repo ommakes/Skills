@@ -366,23 +366,23 @@ Agents often write markup that looks like a component but isn't one. A screen ca
 
 | If you are about to write | Use instead |
 |---|---|
-| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger |
-| `Loader2` with `animate-spin` | Spinner |
-| Buttons with `role="radio"` | RadioGroup, or ToggleGroup (single) for a segmented control |
-| Numbered circles joined by lines | The shared Stepper (spec above) |
+| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger `[LOOKALIKE-001]` | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger |
+| `Loader2` with `animate-spin` `[LOOKALIKE-002]` | Spinner |
+| Buttons with `role="radio"` `[LOOKALIKE-003]` | RadioGroup, or ToggleGroup (single) for a segmented control |
+| Numbered circles joined by lines `[LOOKALIKE-004]` | The shared Stepper (spec above) |
 
 **Not seen, but already forbidden by a rule:**
 
 | If you are about to write | Use instead |
 |---|---|
-| `div` or `span` with `onClick` | Button, or a link for navigation |
-| `fixed inset-0` backdrop and a centered box | Dialog, AlertDialog or Sheet |
-| `setTimeout` that hides a message | Sonner toast |
-| "x" or "×" text as a close | The Dialog or Sheet close, or a ghost icon Button with `aria-label` |
-| `window.confirm`, `alert` or `prompt` | AlertDialog, or Sonner |
-| A colored `border-l-4` box with an icon and text | Alert with a status role (`info`, `positive`, `negative`, `notice`; not `warning`) |
-| A round `div` or `span` holding an image, or one or two capital letters, as a person's picture | Avatar with AvatarImage and AvatarFallback |
-| `title="..."` as a tooltip | Tooltip |
+| `div` or `span` with `onClick` `[LOOKALIKE-005]` | Button, or a link for navigation |
+| `fixed inset-0` backdrop and a centered box `[LOOKALIKE-006]` | Dialog, AlertDialog or Sheet |
+| `setTimeout` that hides a message `[LOOKALIKE-007]` | Sonner toast |
+| "x" or "×" text as a close `[LOOKALIKE-008]` | The Dialog or Sheet close, or a ghost icon Button with `aria-label` |
+| `window.confirm`, `alert` or `prompt` `[LOOKALIKE-009]` | AlertDialog, or Sonner |
+| A colored `border-l-4` box with an icon and text `[LOOKALIKE-010]` | Alert with a status role (`info`, `positive`, `negative`, `notice`; not `warning`) |
+| A round `div` or `span` holding an image, or one or two capital letters, as a person's picture `[LOOKALIKE-012]` | Avatar with AvatarImage and AvatarFallback |
+| `title="..."` as a tooltip `[LOOKALIKE-011]` | Tooltip |
 
 When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
 
