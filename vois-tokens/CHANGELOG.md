@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.46.3] - 2026-11-19
+
+### Fixed
+- The hook's `ignoredFiles` setting had no effect when the edited path was absolute, which is what Claude Code, Cursor and Codex send. `isFileIgnored()` in `scripts/hook-lib.mjs` tested the glob against the raw path, so `hook-admin.mjs ignore-file "src/legacy/**"` (the example in `references/hooks.md`) never matched. Globs now match the path relative to the project root (the `cwd` in the payload), with `/` as the separator, in both `hook.mjs` and `hook-before-edit.mjs` (Cursor).
+- A file outside the project root never matches a relative glob, not even `**`, and a missing or non-string path never throws. A leading `./` on a glob is dropped, `\` counts as `/` in paths and globs, and on a Windows path the root part compares without case. An absolute glob (`/...`, `C:/...`) still matches the absolute path (without case on a Windows path); one that starts with a single `/` is also read from the root, as team scopes are. Empty or non-string globs match nothing.
+- `pathFromRoot()` in `scripts/team-overrides.mjs` is the one place that turns a hook path into a root-relative one. Team scopes use it too, so a team scope now also matches a Windows backslash path. No rule changed.
+
 ## [1.46.2] - 2026-11-17
 
 ### Changed
