@@ -1,6 +1,6 @@
 # Automated Checks `[DS-HOOKS]`
 
-A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no LLM judgment required. `scripts/detect.mjs` checks those rules deterministically with regex/string matching (no dependencies, no AST parser) and can be wired into a hook that fires automatically on every file edit in Claude Code, Cursor, or Codex.
+A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no LLM judgment required. `scripts/detect.mjs` checks those rules deterministically with regex/string matching (no dependencies, no AST parser) and can be wired into a hook that fires automatically on every file edit in Claude Code, Cursor, or Codex. The hook nudges and never fails a build; `scripts/check.mjs` runs the same detectors as a CI gate that does (see [CI gate](#ci-gate)).
 
 **This is purely additive.** It catches violations the instant they're written — seconds after generation, inside the same harness that wrote the code. It does not replace this checklist (most rules still require visual/layout judgment an LLM provides), and it does not touch, call, or compete with the separate GitHub-integrated token-drift app that reconciles raw values against the live token list on its own schedule. The hook only ever writes new files under the consumer project's `.vois/` directory; it never edits token source files and never calls GitHub.
 
@@ -14,6 +14,7 @@ A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no 
 |---|---|---|
 | `DS-COLOR-001` | Yes — advisory only | Hardcoded hex. Tiered `quality`, never blocks — overlaps with the token-drift app's job; this hook just flags fast mid-generation. |
 | `DS-COLOR-002` | Yes — advisory only | Raw Tailwind palette class. Tailwind-only — StyleX has no built-in palette to match against, so its equivalent (`DS-STYLEX-002`, a literal color in `stylex.create()`) is judgment-only. Same advisory-only reasoning as `DS-COLOR-001`. |
+| `DS-TOKEN-001` | Yes, advisory only | A Global palette step used as a value: `var(--blue-9)`, Tailwind's `bg-(--blue-9)` or `bg-[color:var(--gray-a4)]`, a style object string, a CSS declaration. Steps 0 to 12, plain or alpha, of the Vois hues, plus `--white`, `--black` and their alpha steps. Not flagged: the palette defining itself (`--blue-9: oklch(...)`), a custom property that aliases a step (`--bg-card: var(--white)`, `"--x": "var(--blue-9)"`, `[--x:var(--blue-9)]`), comments, and longer names (`--blue-9-text`, `--bg-blue-9`, a BEM class `card--blue-3`). The hue list is checked against every palette family in the registry's Figma export, so a new hue fails CI until it is added. **Known gaps:** a product palette with other hue names is not read, and because aliasing passes everywhere, a step can be laundered through a custom property: a component's own (`style={{ "--x": "var(--blue-9)" }}`, then `var(--x)`) or a Tailwind theme alias (`@theme { --color-blue-9: var(--blue-9) }`, then `bg-blue-9`, which `DS-COLOR-002` does not read either). |
 | `DS-A11Y-003` | Yes | `outline: none`/`outline-none` without a nearby `:focus-visible`. |
 | `DS-A11Y-010` | Yes | `<img>` missing `alt`. |
 | `DS-A11Y-012` | Yes | Consecutive `<br>` used for spacing. |
@@ -150,4 +151,22 @@ Useful in CI, as a manual validate step in your own build loop, or to spot-check
 node /path/to/Skills/vois-tokens/scripts/detect.mjs path/to/file.tsx [more files...]
 ```
 
-Prints JSON findings (`ruleId`, `severity`, `file`, `line`, `snippet`, `message`, `fixHint`) to stdout. This is the raw detector — it does not consult `.vois/config.json`'s ignore lists; that filtering happens in the hook layer (`hook-lib.mjs`), not here, so CI and ad-hoc runs always see every mechanical finding.
+Prints JSON findings (`ruleId`, `severity`, `file`, `line`, `snippet`, `message`, `fixHint`) to stdout and always exits 0. This is the raw detector — it does not consult `.vois/config.json`'s ignore lists; that filtering happens in the hook layer (`hook-lib.mjs`), not here, so ad-hoc runs always see every mechanical finding. To fail a build, use the CI gate below.
+
+## CI gate
+
+The hook only nudges, so an agent can ignore it and the code still merges. `scripts/check.mjs` runs the same detectors over a project and exits non-zero on findings, so a pull request can be blocked on them.
+
+```bash
+node /path/to/vois-tokens/scripts/check.mjs src                       # fail on required rules
+node /path/to/vois-tokens/scripts/check.mjs --fail-on recommended src # also fail on recommended rules
+node /path/to/vois-tokens/scripts/check.mjs --baseline design-baseline.json --update src  # adopt: record what exists
+node /path/to/vois-tokens/scripts/check.mjs --baseline design-baseline.json src           # then fail only on new findings
+```
+
+- **Paths** are files or folders, relative to the working directory and inside `--root` (default: the working directory). Folders are walked; `node_modules`, `dist`, `build`, `.next`, `.vois` and other generated or tool folders are skipped, and symbolic links are not followed.
+- **What fails** is set by `--fail-on`: `required` (the default), `recommended` or `preferred`. Each finding takes its rule's `severity` from `data/vois-rules.json`; a detector that covers other rules (`DS-MODAL`) takes the strictest of them. The lookalike checks and `DS-SLOP-002` have no JSON rule and count as `recommended`. Any other finding without a severity counts as `required`, so a missing entry makes the gate stricter, never quieter.
+- **The baseline** lists findings that already exist, so a project can adopt the gate without fixing everything first. A finding is its rule, its root-relative file and the full trimmed text of its line: moving code does not make it new, editing the line does. Two identical lines need two entries. `--update` records every finding, not only the failing ones, so `--fail-on` can be tightened later. Findings that are gone are counted as fixed, and `--update` shrinks the file. A missing or malformed baseline is an error.
+- **Waivers** from the shared hook config (`.vois/config.json`: `ignoredRules`, `ignoredFiles`, `ignoredValues`) apply, so a waiver agreed for the hook does not fail CI. File globs are read by the hook's own matcher (`isFileIgnored` in `hook-lib.mjs`), so the hook and the gate agree on what a waiver covers. A value waives that rule's findings on any line whose text contains it; it is not matched against the message. `config.local.json` is personal and is not read, and `enabled: false` (the hook's on/off switch) does not turn the gate off. A waiver of the wrong type, or an empty glob or value, is an error rather than a waiver of everything. Team overrides in `.vois/teams` tighten the limits as they do in the hook, and a malformed team file is an error, because skipping it would drop the team's limits.
+- **Output**: `--format text` (default), `github` (an error annotation on each new failing finding, a warning on the rest) or `json`. `--summary FILE` appends a markdown table, for `$GITHUB_STEP_SUMMARY`. `--` ends the options.
+- **Exit codes**: 0 nothing fails, 1 findings fail, 2 bad input (a missing path, nothing to check, a malformed baseline, waiver config or team file, an unknown option, a file that cannot be read). Bad input never means pass.

@@ -92,3 +92,8 @@ function GoodDialog() {
     </>
   );
 }
+
+// DS-TOKEN-001 passes: tokens that alias the palette, and a local alias of a step
+export function PaletteAlias() {
+  return <span className="bg-(--action-primary-resting) text-(--text-primary) [--chip-accent:var(--blue-9)]">Draft</span>;
+}

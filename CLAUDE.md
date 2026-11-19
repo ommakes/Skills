@@ -16,6 +16,7 @@ python3 scripts/check-verification.test.py
 python3 scripts/check-routing.py
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
+node vois-tokens/scripts/check.test.mjs
 node vois-tokens/scripts/grid.test.mjs
 node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all

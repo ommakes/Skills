@@ -7,6 +7,8 @@ import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pathProblem, checkRegistryJson, cssProblems, mappingProblems, ruleSection, versionProblems, checkRegistry, kindAt, token005Table, tableProblems, definedTokens, tokenRefProblems, motionProblems, pendingLogProblems, starterBlock, MAPPINGS, SHADCN_VARS, TOKENS_FILE } from "./check-registry.mjs";
+import { PALETTE_HUES, isPaletteToken } from "../../vois-tokens/scripts/token-layer-checks.mjs";
+import { detectFile } from "../../vois-tokens/scripts/detect.mjs";
 
 const registryDir = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const repo = resolve(registryDir, "..");
@@ -595,5 +597,48 @@ test("glass: every component copy of a tier equals lib/glass.ts, and none import
   for (const t of Object.values(tiers)) {
     assert.match(t, /^border-\[color:var\(--border-default\)\] bg-\[color:var\(--elevation-surface-/, "the fallback starts opaque, with a visible edge");
     assert.match(t, /\[@media\(prefers-reduced-transparency:reduce\)\]:backdrop-filter-none/, "no blur under reduced transparency");
+  }
+});
+
+// ---- The DS-TOKEN-001 palette list ----
+
+// The detector's hue list must be exactly the Global palette families in the Figma export: a family has steps 1 to 12,
+// each a literal hex color (the grays have no alpha steps, so alpha steps are not required). Numbered scales that hold
+// numbers or aliases (space, size, radius) are not palettes.
+test("the DS-TOKEN-001 hue list matches the palette families in the Figma export", () => {
+  const tokens = JSON.parse(readFileSync(join(registryDir, "source/figma-export.json"), "utf8")).tokens;
+  const names = new Set(Object.keys(tokens));
+  const hex = (v) => typeof v === "string" && /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(v);
+  const isHex = (v) => hex(v) || (Array.isArray(v) && v.length === 2 && v.every(hex)); // [light, dark]
+  const families = new Set();
+  for (const n of names) {
+    const m = /^--([a-z]+(?:-[a-z]+)*)-([0-9]+)$/.exec(n);
+    if (!m) continue;
+    const g = m[1];
+    const steps = Array.from({ length: 12 }, (_, i) => `--${g}-${i + 1}`);
+    if (steps.every((t) => names.has(t) && isHex(tokens[t]))) families.add(g);
+  }
+  assert.ok(families.size >= 10, "the export lists palette families");
+  assert.deepEqual([...PALETTE_HUES].sort(), [...families].sort());
+  // Every palette token in the export is a name the detector knows, and no System or Component token is.
+  for (const n of names) {
+    const palette = /^--(?:black|white)(?:-a[0-9]+)?$/.test(n) || [...families].some((g) => new RegExp(`^--${g}-a?[0-9]+$`).test(n));
+    assert.equal(isPaletteToken(n), palette, n);
+  }
+  assert.equal(isPaletteToken("--blue-9"), isPaletteToken("--blue-9"), "no state carried between calls");
+});
+
+// Guard from the other side: a component that names a palette step fails the registry check.
+test("a registry component that names a palette step has a DS-TOKEN-001 finding", () => {
+  const hits = detectFile("vois/badge/badge.tsx", '<span className="bg-(--blue-9)" />').filter((f) => f.ruleId === "DS-TOKEN-001");
+  assert.equal(hits.length, 1);
+  const dir = mkdtempSync(join(tmpdir(), "vois-reg-"));
+  try {
+    cpSync(registryDir, dir, { recursive: true, filter: (src) => !src.includes("node_modules") && !src.includes(`${"public"}/r`) });
+    const file = join(dir, "vois/badge/badge.tsx");
+    writeFileSync(file, readFileSync(file, "utf8") + '\nexport const Bad = () => <span className="bg-(--blue-9)" />\n');
+    assert.ok(checkRegistry(dir).some((p) => /DS-TOKEN-001/.test(p)), "checkRegistry reports it");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
