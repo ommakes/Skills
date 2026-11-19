@@ -66,6 +66,11 @@ jobs:
       - name: Rule ID cross-reference sync (vois-tokens, vois-patterns)
         run: node scripts/check-rule-sync.mjs
 
+      - name: A Figma edition at its source version names every source id
+        run: |
+          node scripts/check-editions.test.mjs
+          node scripts/check-editions.mjs
+
       - name: Every conversion-patterns rule is referenced and consistent
         run: node conversion-patterns/scripts/check-rule-sync.mjs
 
