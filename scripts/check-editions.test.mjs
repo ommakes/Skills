@@ -192,12 +192,22 @@ test("a skill missing from skills.json fails", () => {
   assert.ok(r.problems.some((p) => /vois-patterns/.test(p)));
 });
 
-test("run through a symlink it still runs and prints", () => {
+// This runs the live repo, so an edition may be either level (ok) or marked behind its source (skip). Both are
+// allowed states. What it checks is that the script ran: one result line per edition and no problems.
+test("run through a symlink it still runs and prints one result line per edition", () => {
   const dir = mkdtempSync(join(tmpdir(), "editions-link-"));
   try {
     const link = join(dir, "link.mjs");
     symlinkSync(join(dirname(fileURLToPath(import.meta.url)), "check-editions.mjs"), link);
     const r = spawnSync(process.execPath, [link], { encoding: "utf8" });
-    assert.match(r.stdout, /ok    vois-tokens/);
+    const editions = ["vois-tokens", "vois-patterns", "vois-components", "righter"];
+    const lines = r.stdout.split("\n").filter((l) => l.trim() !== "");
+    for (const name of editions) {
+      const hits = lines.filter((l) => l.startsWith(`ok    ${name}: `) || l.startsWith(`skip  ${name}: `));
+      assert.equal(hits.length, 1, `expected one ok or skip line for ${name}, got:\n${r.stdout}`);
+    }
+    assert.equal(lines.length, editions.length, `expected only result lines, got:\n${r.stdout}`);
+    assert.doesNotMatch(r.stderr, /FAIL/, r.stderr);
+    assert.equal(r.status, 0, r.stderr);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
