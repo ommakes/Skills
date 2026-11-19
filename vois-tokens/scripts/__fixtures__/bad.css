@@ -50,3 +50,6 @@
 
 /* DS-GLASS-003 (no -webkit- twin), DS-GLASS-004 (a literal blur), DS-GLASS-005 (the blur is transitioned) */
 .glass-nav { backdrop-filter: blur(20px); transition: opacity 150ms, backdrop-filter 150ms; }
+
+/* DS-TOKEN-001: a palette step used as a value. The alias on the line above it is fine. */
+.status-draft { --status-accent: var(--blue-9); border-color: var(--blue-9); }

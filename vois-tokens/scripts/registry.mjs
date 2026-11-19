@@ -21,6 +21,7 @@ import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs"
 import { rawShadow, dockedShadow } from "./elevation-checks.mjs";
 import { footerButtons, nestedModal } from "./overlay-checks.mjs";
 import { missingWebkitTwin, literalGlassBlur, animatedGlassBlur } from "./glass-checks.mjs";
+import { paletteRefs } from "./token-layer-checks.mjs";
 
 export { cssBlocks };
 
@@ -207,6 +208,14 @@ export const RULES = [
       );
       return scanRegex(content, lines, pattern, (m) => `Raw Tailwind palette class "${m[0]}" — use a semantic token class.`);
     },
+  },
+  {
+    id: "DS-TOKEN-001",
+    title: "Global palette step used directly",
+    severity: "quality", // advisory: a brand may alias a step on purpose, and the hook never blocks on it
+    extensions: ALL_EXT,
+    fixHint: "Use the System or Component token that aliases the step (--text-primary, --action-primary-resting), or alias it in a token file.",
+    check: paletteRefs,
   },
   {
     id: "DS-A11Y-003",

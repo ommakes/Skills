@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.21.1] - 2026-11-19
+
+- The registry check now also applies `vois-tokens` `DS-TOKEN-001` (vois-tokens 1.47.0): a component that names a Global palette step (`var(--blue-9)`) instead of the token that aliases it fails CI. Every current item passes. A test keeps the detector's hue list equal to the palette families in `source/figma-export.json`, so a new hue in Figma fails until the detector knows it. No item changed.
+
 ## [0.21.0] - 2026-11-17
 
 - **`vois-panel-layout`, a new item: the panel rules, built.** `PanelLayout`, `PanelLayoutMain` and `PanelLayoutPanel` place a `vois-panel` by `DS-PANEL-002` to `006`. By window width: from `--breakpoint-md`, a panel **pushes** when the window, minus `--nav-rail`, minus the panel width, still leaves `--main-min`; otherwise it is an **overlay**; below `--breakpoint-md` it is **full screen**. The overlay is not modal: no scrim, no focus trap, the page behind stays usable. It is docked, on the modal layer (`--z-modal`, so a menu opened from inside it stacks above it), with `--shadow-large-right` or `--shadow-large-left` (`DS-ELEVATION-006`) and the raised fill. Its width is the smallest of the tier (`sm`, `md` or `lg`), half the window rounded down to a multiple of 4, never under `--panel-overlay-min`, written in CSS so it follows the window as it changes. An overlay and a full panel take focus when they open, return it when they close, and close on Escape. A full panel makes the main area inert. A push panel leaves focus alone.

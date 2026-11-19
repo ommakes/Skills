@@ -4,6 +4,18 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.47.0] - 2026-11-19
+
+### Added
+- **A CI gate, `scripts/check.mjs`.** The hook only nudges, so an agent could ignore it and the code still merged. `check.mjs` runs the same detectors over files or folders and exits 1 on findings from required rules (`--fail-on recommended` or `preferred` widens it), 2 on bad input. Severity is each rule's own in `data/vois-rules.json`; the lookalike checks and `DS-SLOP-002` count as recommended, and any other finding with no severity counts as required. A baseline (`--baseline FILE`, `--update` to write it) lets a project adopt the gate and fail only on new findings; a finding is its rule, root-relative file and full line text, and duplicates are counted. The shared hook config's waivers apply, validated (a wrong type or an empty glob is an error, not a waiver of everything), with file globs read by the hook's own matcher (so the hook and the gate agree) and values matched against the line, never the message; `config.local.json` and the hook's on/off switch do not apply. A malformed team override file is an error, because skipping it would drop the team's tighter limits. Output as text, GitHub annotations or JSON, and a markdown summary. Generated and vendored folders are skipped and symbolic links are not followed. `detect.mjs` is unchanged and still always exits 0. Tests in `scripts/check.test.mjs`, in CI and the push list. `references/hooks.md`, "CI gate", documents it.
+- **A reusable workflow, `.github/workflows/design-check-reusable.yml`**, so another repo can run the gate on its pull requests with `paths`, `fail-on`, `baseline` and a pinned `tools-ref`.
+- **A detector for `DS-TOKEN-001`** (`scripts/token-layer-checks.mjs`): a Global palette step used as a value (`var(--blue-9)`, `bg-(--blue-9)`, `bg-[color:var(--gray-a4)]`, a style object string, a CSS declaration). Aliasing a step in a custom property passes, so token files and theme blocks are not flagged. Advisory in the hook; `required` in the gate, because the rule is. The rule's `verification` is now `detector`. The registry's own components and token files have no finding. Known gaps: a product palette with other hue names, and a step laundered through a custom property (a component's own, or a Tailwind `@theme` alias used as `bg-blue-9`).
+
+### Fixed
+- `SKILL.md` said the detector runs nine lookalike checks. It runs ten.
+
+Ported from `ommakes/vois-skills` (#108). Here the reusable workflow checks out this public repo, so a caller needs no token.
+
 ## [1.46.3] - 2026-11-19
 
 ### Fixed
