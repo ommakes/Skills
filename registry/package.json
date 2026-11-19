@@ -1,6 +1,6 @@
 {
   "name": "vois-registry",
-  "version": "0.21.1",
+  "version": "0.21.2",
   "private": true,
   "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
   "type": "module",
@@ -11,10 +11,25 @@
     "syntax": "node scripts/check-syntax.mjs",
     "syntax:test": "node scripts/check-syntax.test.mjs",
     "panel:test": "node scripts/panel-logic.test.mjs",
-    "build": "shadcn build registry.json -o public/r"
+    "build": "shadcn build registry.json -o public/r",
+    "harness": "node harness/build.mjs && node harness/serve.mjs",
+    "harness:test": "node scripts/check-harness.test.mjs",
+    "harness:check": "node scripts/check-harness.mjs"
   },
   "devDependencies": {
+    "@dnd-kit/core": "6.3.1",
+    "@dnd-kit/sortable": "10.0.0",
+    "@dnd-kit/utilities": "3.2.2",
+    "@tailwindcss/cli": "4.3.5",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "cmdk": "1.1.1",
     "esbuild": "0.24.0",
-    "shadcn": "4.23.0"
+    "radix-ui": "1.8.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "shadcn": "4.23.0",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.5"
   }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.2] - 2026-11-19
+
+- **An accessibility harness, so the rendered check has an app to open.** `registry/harness/` renders every `registry:ui` item and its states on its own page, in both themes, and `vois-render.json` lists the pages. `npm run harness` builds it and serves it on port 3000, which is what `.github/workflows/a11y.yml` already starts. Until now that check was skipped on every pull request, because there was no manifest and no app. It is a dev tool: it is not a registry item and nothing in it ships to a consumer. How it works, what its baseline holds and what it does not check: `harness/README.md`.
+- `a11y-baseline.json` lists the 14 known problems (28 entries, mobile and desktop). Four are real findings in the default tokens and components, and none of them is fixed here: the solid destructive Button's text contrast (4.16:1), the Select placeholder's contrast (3.84:1 on the error fill, 4.05:1 on white), the NPS slider with no accessible name, and a `CommandSeparator` inside the command list. The rest are cases axe or the checker cannot judge, each with its reason in the README.
+- `scripts/check-harness.mjs` (tests: `scripts/check-harness.test.mjs`, `npm run harness:check` and `npm run harness:test`) fails when a `registry:ui` item is on no harness page, when `vois-render.json` is not what the stories give, or when the baseline lists a page or state that does not exist. CI runs both in the registry-build job.
+- New dev dependencies, pinned: `react`, `react-dom`, `tailwindcss` and `@tailwindcss/cli`, plus the packages the components import (`radix-ui`, `class-variance-authority`, `clsx`, `tailwind-merge`, `cmdk`, `@dnd-kit/*`). A consumer installs these through each item's own `dependencies`, as before.
+- No item changed. `registry/package.json` and `package-lock.json` change, so the public `ommakes/Skills` copy of `registry/` must change with them.
+
 ## [0.21.1] - 2026-11-19
 
 - The registry check now also applies `vois-tokens` `DS-TOKEN-001` (vois-tokens 1.47.0): a component that names a Global palette step (`var(--blue-9)`) instead of the token that aliases it fails CI. Every current item passes. A test keeps the detector's hue list equal to the palette families in `source/figma-export.json`, so a new hue in Figma fails until the detector knows it. No item changed.
