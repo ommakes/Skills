@@ -1812,6 +1812,44 @@ test("DS-MODAL-006 stays quiet on siblings, other overlays and anything it canno
   assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog>x</Dialog></Dialog>").length, 1, "same code in .tsx is read");
 });
 
+// DS-TOKEN-001: a Global palette step used as a value, not aliased.
+const tokenHits = (code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === "DS-TOKEN-001");
+
+test("DS-TOKEN-001 flags a palette step used as a value, in every form a component reads it", () => {
+  for (const [code, file, n] of [
+    ['<div className="bg-(--blue-9)" />', "a.tsx", 1], // Tailwind v4 shorthand
+    ['<Chip token={dark ? "--blue-9" : "--gray-9"} />', "a.tsx", 2], // a colon after the first branch is not a definition
+    ['<div className="bg-[color:var(--gray-a4)]" />', "a.tsx", 1],
+    ['style={{ color: "var(--white)" }}', "a.tsx", 1],
+    ['style={{ "--x": "var(--blue-9)", color: "var(--blue-9)" }}', "a.tsx", 1], // the alias passes, the value on the same line does not
+    [".a { color: var(--blue-9); }", "a.css", 1],
+    [".a { color: var(--a, var(--blue-9)); }", "a.css", 1], // a fallback is still a use
+    [".a { box-shadow: 0 0 0 1px var(--blue-a5), 0 1px var(--gray-a3); }", "a.css", 2],
+    [".a { color: var(--cool-gray-12); }", "a.scss", 1],
+    [".a { color: var(--black-a0); }", "a.css", 1],
+  ]) assert.equal(tokenHits(code, file).length, n, code);
+  assert.match(tokenHits('<i className="bg-(--blue-9)" />')[0].message, /--blue-9 used directly/);
+});
+
+test("DS-TOKEN-001 leaves aliases, definitions, comments and longer names alone", () => {
+  for (const [code, file] of [
+    [":root { --bg-card: var(--white); }", "a.css"], // a token aliasing the palette
+    [":root { --blue-9: oklch(0.6 0.2 250); }", "a.css"], // the palette defining itself
+    [".a { --x: var(--a, var(--blue-9)); }", "a.css"], // a fallback inside an alias
+    ['className="[--accent:var(--blue-9)] bg-(--accent)"', "a.tsx"], // Tailwind arbitrary property
+    ["const t = { '--blue-9': '#3b82f6' };", "a.ts"],
+    ["// uses --blue-9 here", "a.tsx"],
+    ["/* --blue-9 */ .a {}", "a.css"],
+    [".card--blue-3 {}", "a.css"], // BEM modifier, not a token
+    ["var(--blue-9-text)", "a.tsx"], // a longer name
+    ["var(--gray-10x)", "a.tsx"],
+    ["var(--bg-blue-9)", "a.tsx"],
+    ["var(--white-text)", "a.tsx"],
+    ["var(--blue-13)", "a.tsx"], // no step 13
+    ["var(--brand-9)", "a.tsx"], // not a Vois hue
+  ]) assert.equal(tokenHits(code, file).length, 0, code);
+});
+
 // --- ignoredFiles: globs are matched against the path relative to the project root ---
 
 /** A project with `.vois/config.json` ignoring `globs`, and a file at `rel` that trips DS-COLOR-001 and DS-TAILWIND-004. */

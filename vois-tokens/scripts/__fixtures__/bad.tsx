@@ -107,3 +107,8 @@ function BadDialog() {
     </Dialog>
   );
 }
+
+// DS-TOKEN-001: a Global palette step named in component code instead of the token that aliases it
+export function PaletteMisuse() {
+  return <span className="bg-(--blue-9) text-[color:var(--gray-a11)]">Draft</span>;
+}

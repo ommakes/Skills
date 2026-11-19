@@ -11,7 +11,7 @@ The Vois tokens are Figma variables. Figma is the reference for their names, the
 | System | Surfaces, text, icons and borders by purpose and state | `--bg-card`, `--text-secondary`, `--icon-subtle`, `--border-state-focus` |
 | Component | One component's states | `--input-resting`, `--select-focus`, `--switch-on`, `--action-primary-hover` |
 
-Use the most specific layer that fits. A component reads its Component tokens if it has them, then System tokens. Component code never names a Global palette step directly. Palettes are reached through the layers that alias them.
+Use the most specific layer that fits. A component reads its Component tokens if it has them, then System tokens. Component code never names a Global palette step directly. Palettes are reached through the layers that alias them. The detector flags a palette step used as a value (`var(--blue-9)`, `bg-(--blue-9)`) and leaves a token that aliases one alone (`--bg-card: var(--white)`); see `references/hooks.md`.
 
 ## Names `[DS-TOKEN-002]`
 

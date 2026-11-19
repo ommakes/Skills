@@ -2280,7 +2280,8 @@
       "source_file": "vois-tokens/references/figma-variables.md",
       "severity": "required",
       "enforcement": "advisory",
-      "verification": "judgment",
+      "verification": "detector",
+      "detector": "DS-TOKEN-001",
       "rule": "Tokens come in four layers: Global palettes, Base, System and Component. Use the most specific layer that fits: a component's own Component tokens, then System tokens. Component code never names a Global palette step directly."
     },
     {
