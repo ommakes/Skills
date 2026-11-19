@@ -83,7 +83,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
-- **1.47.0**: `scripts/check.mjs`, a CI gate: the same detectors over a project, failing on new findings from required rules (or the level in `--fail-on`), with a baseline for existing code and GitHub annotations. New detector for `DS-TOKEN-001`: a Global palette step used directly instead of the token that aliases it.
+- **1.47.0**: `scripts/check.mjs`, a CI gate: the same detectors over a project, failing on new findings from required rules (or the level in `--fail-on`), with a baseline for existing code and GitHub annotations. A reusable workflow wraps it. New detector for `DS-TOKEN-001`: a Global palette step used directly instead of the token that aliases it.
 - **1.46.3**: the hook's `ignoredFiles` globs match the path relative to the project root, so `hook-admin.mjs ignore-file "src/legacy/**"` now works when the harness sends an absolute path (Claude Code, Cursor and Codex all do). Windows `\` paths work too.
 - **1.46.2**: `references/grid.md` points to the registry item `vois-panel-layout` (`PanelLayout`, `usePanelLayout`), the docked Panel overlay is listed at Large in `references/elevation.md`, and `data/elevation-map.json` has two built rows for it. Docs and data only.
 - **1.46.1**: `references/grid.md` points to the registry item `vois-page-grid` (`PageFrame` and `CollectionGrid`), the first built component that reads the grid tokens. Docs only.

@@ -170,3 +170,19 @@ node /path/to/vois-tokens/scripts/check.mjs --baseline design-baseline.json src 
 - **Waivers** from the shared hook config (`.vois/config.json`: `ignoredRules`, `ignoredFiles`, `ignoredValues`) apply, so a waiver agreed for the hook does not fail CI. File globs are read by the hook's own matcher (`isFileIgnored` in `hook-lib.mjs`), so the hook and the gate agree on what a waiver covers. A value waives that rule's findings on any line whose text contains it; it is not matched against the message. `config.local.json` is personal and is not read, and `enabled: false` (the hook's on/off switch) does not turn the gate off. A waiver of the wrong type, or an empty glob or value, is an error rather than a waiver of everything. Team overrides in `.vois/teams` tighten the limits as they do in the hook, and a malformed team file is an error, because skipping it would drop the team's limits.
 - **Output**: `--format text` (default), `github` (an error annotation on each new failing finding, a warning on the rest) or `json`. `--summary FILE` appends a markdown table, for `$GITHUB_STEP_SUMMARY`. `--` ends the options.
 - **Exit codes**: 0 nothing fails, 1 findings fail, 2 bad input (a missing path, nothing to check, a malformed baseline, waiver config or team file, an unknown option, a file that cannot be read). Bad input never means pass.
+
+### GitHub Actions
+
+`.github/workflows/design-check-reusable.yml` in `ommakes/Skills` wraps the gate. It checks out only `vois-tokens/scripts` and `vois-tokens/data` into `.vois-tools`, so the calling repo needs none of them:
+
+```yaml
+jobs:
+  design-check:
+    uses: ommakes/Skills/.github/workflows/design-check-reusable.yml@<tag or commit>
+    with:
+      paths: src
+      baseline: design-baseline.json   # optional; create it once with --update
+      fail-on: required
+```
+
+Inputs: `working-directory` (the project root, default `.`), `paths` (space-separated, default `.`), `fail-on`, `baseline` (empty means none) and `tools-ref` (pin a tag or commit). An unknown `fail-on` fails the job. Make it a required check after a few green runs.

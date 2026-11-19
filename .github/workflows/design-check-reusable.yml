@@ -1,0 +1,81 @@
+name: Design system check (reusable)
+# Runs the vois-tokens detectors over a project and fails the job on findings that break a required rule (or the level
+# set in fail-on) and are not in the baseline. The script is vois-tokens/scripts/check.mjs, checked out from
+# ommakes/Skills (public, so no token is needed) into .vois-tools, so the calling repo needs none of it.
+# See vois-tokens/references/hooks.md, "CI gate".
+#
+# Adopting it on an existing project: run check.mjs once with --baseline design-baseline.json --update, commit the file,
+# then call this workflow with baseline: design-baseline.json. Only new findings fail after that.
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: "The project root: .vois/config.json waivers, .vois/teams overrides and the baseline are read from here."
+        type: string
+        default: "."
+      paths:
+        description: "Space-separated files or folders to check, relative to working-directory. node_modules, dist, build, .next and other generated folders are skipped."
+        type: string
+        default: "."
+      fail-on:
+        description: "required, recommended or preferred. Any other value fails."
+        type: string
+        default: required
+      baseline:
+        description: "Path to the baseline file, relative to working-directory. Empty means no baseline: every failing finding counts. A path that does not exist fails."
+        type: string
+        default: ""
+      tools-ref:
+        description: "Branch, tag or commit of ommakes/Skills to take the script from. Pin a tag or commit in other repos."
+        type: string
+        default: main
+
+permissions:
+  contents: read
+
+jobs:
+  design-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    # Inputs go in through env, never straight into the script text, so a value cannot turn into shell code.
+    env:
+      PATHS: ${{ inputs.paths }}
+      FAIL_ON: ${{ inputs.fail-on }}
+      BASELINE: ${{ inputs.baseline }}
+    steps:
+      # An unknown level must fail, not fall back to a looser gate. check.mjs checks it too.
+      - name: Check the inputs
+        run: |
+          case "$FAIL_ON" in required|recommended|preferred) ;; *) echo "::error::fail-on must be exactly required, recommended or preferred"; exit 1 ;; esac
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # The script comes from the tools repo, not the caller. Only the folders it reads are fetched.
+      - name: Get the Vois scripts
+        uses: actions/checkout@v4
+        with:
+          repository: ommakes/Skills
+          ref: ${{ inputs.tools-ref }}
+          path: .vois-tools
+          sparse-checkout: |
+            vois-tokens/scripts
+            vois-tokens/data
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Exit 1 is findings, exit 2 is bad input (a missing path or baseline, a malformed config). Both fail the job.
+      - name: Run the design system check
+        run: |
+          set -f  # paths are split on spaces but never glob-expanded
+          args=(--fail-on "$FAIL_ON" --format github --summary "$GITHUB_STEP_SUMMARY")
+          if [ -n "$BASELINE" ]; then args+=(--baseline "$BASELINE"); fi
+          read -r -a targets <<< "$PATHS"
+          node "$GITHUB_WORKSPACE/.vois-tools/vois-tokens/scripts/check.mjs" "${args[@]}" -- "${targets[@]}"
