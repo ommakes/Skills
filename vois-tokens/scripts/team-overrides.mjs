@@ -5,7 +5,7 @@
 // ../../vois-teams. This file is self-contained so the hook works from vois-tokens alone.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join, relative, isAbsolute } from "node:path";
+import { join, posix, win32 } from "node:path";
 
 export const OVERRIDE_SCHEMA = "vois-team-override/1";
 
@@ -84,6 +84,24 @@ function globToRegExp(glob) {
   return new RegExp(`^${out}(?:/.*)?$`);
 }
 
+/**
+ * Where a hook's `filePath` sits, for matching globs. `abs` is the full path and `rel` the path relative to
+ * `root` (null when the file is outside the root, or is the root itself), both with forward slashes. A
+ * relative `filePath` is taken from the root. A path with a drive letter or a backslash is read as a
+ * Windows path on every OS (`windows: true`), so the root part compares without case, as Windows does. Returns null for a
+ * missing or non-string path or root. Never throws. ignoredFiles in hook-lib.mjs and team scopes both use it.
+ */
+export function pathFromRoot(root, filePath) {
+  if (typeof filePath !== "string" || filePath === "" || typeof root !== "string" || root === "") return null;
+  const windows = [root, filePath].some((p) => /^[A-Za-z]:|\\/.test(p));
+  const path = windows ? win32 : posix;
+  const abs = path.normalize(path.isAbsolute(filePath) ? filePath : path.join(root, filePath));
+  const rel = path.relative(root, abs);
+  const inside = rel !== "" && rel !== ".." && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel);
+  const slashes = (p) => p.split("\\").join("/");
+  return { abs: slashes(abs), rel: inside ? slashes(rel) : null, windows };
+}
+
 /** A scope is well formed when it is absent (whole repo) or { paths: [one or more strings] }. */
 export function validScope(scope) {
   if (scope === undefined) return true;
@@ -119,8 +137,8 @@ export function loadTeams(root, onSkip = () => {}) {
  * Where several teams cover the file, the strictest accepted value wins.
  */
 export function paramsFor(teams, root, filePath) {
-  const rel = filePath ? relative(root, isAbsolute(filePath) ? filePath : join(root, filePath)).split("\\").join("/") : "";
-  const inside = filePath && rel !== "" && rel !== ".." && !rel.startsWith("../") && !isAbsolute(rel);
+  const rel = pathFromRoot(root, filePath)?.rel ?? null;
+  const inside = rel !== null;
   const chosen = new Map(); // "rule\0param" -> { value, team }
   if (inside) {
     for (const team of teams) {

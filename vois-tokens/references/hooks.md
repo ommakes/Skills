@@ -116,6 +116,7 @@ node /path/to/Skills/vois-tokens/scripts/hook-admin.mjs reset
 - `--shared` writes to `.vois/config.json` (commit it — applies to everyone on the project).
 - `--local` writes to `.vois/config.local.json` (gitignored — your personal overrides, e.g. a rule you're temporarily disabling while migrating a legacy area).
 - `reset` clears the session cache (dedup state, edit counts, block counts) without touching your ignore lists.
+- `ignore-file` globs are relative to the project root (the `cwd` the harness sends), whether the harness passes the edited file as an absolute or a relative path. `**` crosses folders and `*` stays inside one. A leading `./` is dropped and `\` counts as `/`. A file outside the project root is never ignored by a relative glob. An absolute glob (`/home/me/app/src/legacy/**`, `C:/app/src/**`) is matched against the absolute path; one that starts with a single `/` is also read from the root. Case matters in the glob, except that on Windows the project root and an absolute glob compare without case, as Windows paths do.
 
 ## Team overrides
 

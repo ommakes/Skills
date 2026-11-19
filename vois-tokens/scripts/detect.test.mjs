@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
 import { RULES } from "./registry.mjs";
 import { TUNABLES, loadTeams, paramsFor, matchesScope, summarizeTeams } from "./team-overrides.mjs";
+import { isFileIgnored } from "./hook-lib.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, "__fixtures__");
@@ -1809,4 +1810,105 @@ test("DS-MODAL-006 stays quiet on siblings, other overlays and anything it canno
   ]) assert.equal(modalHits("DS-MODAL-006", code).length, 0, code);
   assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog>x</Dialog></Dialog>", "a.css").length, 0, "CSS is not read");
   assert.equal(modalHits("DS-MODAL-006", "<Dialog><Dialog>x</Dialog></Dialog>").length, 1, "same code in .tsx is read");
+});
+
+// --- ignoredFiles: globs are matched against the path relative to the project root ---
+
+/** A project with `.vois/config.json` ignoring `globs`, and a file at `rel` that trips DS-COLOR-001 and DS-TAILWIND-004. */
+function ignoringProject(globs, rel = "src/legacy/a.tsx") {
+  const root = mkdtempSync(join(tmpdir(), "vois-ignore-"));
+  mkdirSync(join(root, ".vois"), { recursive: true });
+  writeFileSync(join(root, ".vois", "config.json"), JSON.stringify({ ignoredFiles: globs }));
+  mkdirSync(dirname(join(root, rel)), { recursive: true });
+  writeFileSync(join(root, rel), 'export const A = () => <div className="text-[#ff0000]" />;\n');
+  return root;
+}
+const afterEdit = (cwd, filePath) => spawnSync(process.execPath, [join(HERE, "hook.mjs")], { cwd, input: JSON.stringify({ tool_name: "Write", cwd, tool_input: { file_path: filePath } }), encoding: "utf8" });
+const beforeEdit = (cwd, filePath) => spawnSync(process.execPath, [join(HERE, "hook-before-edit.mjs")], { cwd, input: JSON.stringify({ tool_name: "Write", cwd, tool_input: { file_path: filePath, content: ".a { color: red !important; }" } }), encoding: "utf8" });
+
+test("ignoredFiles applies to the absolute path Claude Code, Cursor and Codex send", () => {
+  const root = ignoringProject(["src/legacy/**"]);
+  const run = afterEdit(root, join(root, "src", "legacy", "a.tsx"));
+  assert.equal(run.status, 0);
+  assert.doesNotMatch(run.stdout, /DS-COLOR-001/, "an absolute path inside the root is ignored");
+  assert.equal(beforeEdit(root, join(root, "src", "legacy", "a.tsx")).status, 0, "the Cursor hook does not deny an ignored file");
+});
+
+test("ignoredFiles still applies to a relative or ./ path, and not to a file outside the glob", () => {
+  const root = ignoringProject(["src/legacy/**"]);
+  assert.doesNotMatch(afterEdit(root, "src/legacy/a.tsx").stdout, /DS-COLOR-001/, "relative path");
+  assert.doesNotMatch(afterEdit(root, "./src/legacy/a.tsx").stdout, /DS-COLOR-001/, "./ path");
+  writeFileSync(join(root, "src", "b.tsx"), 'export const B = () => <div className="text-[#ff0000]" />;\n');
+  assert.match(afterEdit(root, join(root, "src", "b.tsx")).stdout, /DS-COLOR-001/, "a file the glob does not cover is still checked");
+  assert.equal(beforeEdit(root, join(root, "src", "b.tsx")).status, 2, "the Cursor hook still denies outside the glob");
+});
+
+test("a relative ignoredFiles glob never matches a file outside the project root", () => {
+  const root = ignoringProject(["src/legacy/**", "**/a.tsx"]);
+  const other = ignoringProject([]); // same layout, different folder, no ignores of its own
+  const outside = join(other, "src", "legacy", "a.tsx");
+  const run = afterEdit(root, outside);
+  assert.equal(run.status, 0);
+  assert.match(run.stdout, /DS-COLOR-001/, "outside the root: not ignored, and no throw");
+  assert.equal(beforeEdit(root, outside).status, 2);
+  assert.equal(isFileIgnored({ ignoredFiles: ["**"] }, outside, root), false, "not even by **");
+  assert.equal(isFileIgnored({ ignoredFiles: ["src/legacy/**"] }, join(root, "..", "x", "src", "legacy", "a.tsx"), root), false);
+  assert.equal(isFileIgnored({ ignoredFiles: ["src/**"] }, root, root), false, "the root itself is not a file under it");
+});
+
+test("ignoredFiles: an absolute glob keeps matching the absolute path", () => {
+  const root = ignoringProject([]);
+  const file = join(root, "src", "legacy", "a.tsx");
+  writeFileSync(join(root, ".vois", "config.json"), JSON.stringify({ ignoredFiles: [`${root.split("\\").join("/")}/src/legacy/**`] }));
+  assert.doesNotMatch(afterEdit(root, file).stdout, /DS-COLOR-001/);
+  assert.equal(isFileIgnored({ ignoredFiles: ["/elsewhere/src/legacy/**"] }, file, root), false, "a different absolute glob does not match");
+});
+
+test("ignoredFiles: Windows backslash paths and globs", () => {
+  const cfg = (g) => ({ ignoredFiles: [g] });
+  const root = "C:\\work\\proj";
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "C:\\work\\proj\\src\\legacy\\a.tsx", root), true, "absolute backslash path");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "c:\\Work\\Proj\\src\\legacy\\a.tsx", root), true, "drive and folder case differ, as Windows allows");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "C:/work/proj/src/legacy/a.tsx", root), true, "forward slashes on Windows");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "src\\legacy\\a.tsx", root), true, "relative backslash path");
+  assert.equal(isFileIgnored(cfg("src\\legacy\\**"), "C:\\work\\proj\\src\\legacy\\a.tsx", root), true, "backslash glob");
+  assert.equal(isFileIgnored(cfg(".\\src\\legacy\\**"), "C:\\work\\proj\\src\\legacy\\a.tsx", root), true, ".\\ glob");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "D:\\work\\proj\\src\\legacy\\a.tsx", root), false, "another drive is outside the root");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "C:\\work\\proj2\\src\\legacy\\a.tsx", root), false, "a sibling folder whose name starts the same");
+  assert.equal(isFileIgnored(cfg("src/legacy/**"), "C:\\work\\proj\\src\\legacyx\\a.tsx", root), false);
+});
+
+test("ignoredFiles: the glob is anchored to the root-relative path", () => {
+  const root = "/p";
+  const ig = (g, f) => isFileIgnored({ ignoredFiles: [g] }, f, root);
+  assert.equal(ig("./src/legacy/**", "/p/src/legacy/a.tsx"), true, "./ glob");
+  assert.equal(ig("legacy/**", "/p/src/legacy/a.tsx"), false, "a glob is not matched at any depth");
+  assert.equal(ig("src/*.tsx", "/p/src/legacy/a.tsx"), false, "* stays inside one folder");
+  assert.equal(ig("src/*.tsx", "/p/src/a.tsx"), true);
+  assert.equal(ig("**/a.tsx", "/p/src/legacy/a.tsx"), true);
+  assert.equal(ig("src/legacy/**", "/p/src/legacy2/a.tsx"), false);
+  for (const bad of [undefined, null, "", 5]) assert.equal(ig("src/**", bad), false, `file path ${JSON.stringify(bad)}`);
+  assert.equal(isFileIgnored({ ignoredFiles: [5, null, "", "src/**"] }, "/p/x.tsx", root), false, "non-string or empty globs match nothing");
+  assert.equal(isFileIgnored({ ignoredFiles: [""] }, "/p/x.tsx", root), false);
+});
+
+test("ignoredFiles: a leading / glob is read from the root as well as as an absolute path; C:/ and // only as absolute", () => {
+  const ig = (g, f, root = "/p") => isFileIgnored({ ignoredFiles: [g] }, f, root);
+  assert.equal(ig("/src/legacy/**", "/p/src/legacy/a.tsx"), true, "root-relative, as team scopes read it");
+  assert.equal(ig("/p/src/legacy/**", "/p/src/legacy/a.tsx"), true, "absolute");
+  assert.equal(ig("//src/legacy/**", "/p/src/legacy/a.tsx"), false, "// is a UNC prefix, never root-relative");
+  assert.equal(ig("C:/src/legacy/**", "C:\\w\\src\\legacy\\a.tsx", "C:\\w"), false, "a drive glob is never root-relative");
+  assert.equal(ig("C:/w/src/legacy/**", "C:\\w\\src\\legacy\\a.tsx", "C:\\w"), true);
+  assert.equal(ig("C:/w/src/legacy/**", "c:\\w\\src\\legacy\\a.tsx", "C:\\w"), true, "an absolute Windows glob compares without case, as Windows does");
+  assert.equal(ig("c:/W/Src/legacy/**", "C:\\w\\src\\legacy\\a.tsx", "C:\\w"), true);
+  assert.equal(ig("/P/src/legacy/**", "/p/src/legacy/a.tsx"), false, "a POSIX absolute glob still compares with case");
+});
+
+test("team scopes match Windows backslash paths from the same root-relative helper", () => {
+  const t = [team("t", [restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200)], ["apps/payments/**"])];
+  const src = (p) => paramsFor(t, "C:\\w\\proj", p).source("DS-ANIMATION-001", "max_duration_ms");
+  assert.equal(src("C:\\w\\proj\\apps\\payments\\Pay.tsx"), "t");
+  assert.equal(src("apps\\payments\\Pay.tsx"), "t");
+  assert.equal(src("C:\\w\\proj2\\apps\\payments\\Pay.tsx"), null, "a sibling folder is outside the root");
+  assert.equal(src("D:\\w\\proj\\apps\\payments\\Pay.tsx"), null, "another drive is outside the root");
 });

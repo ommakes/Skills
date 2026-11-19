@@ -89,7 +89,7 @@ function main() {
   if (!config.enabled) process.exit(0);
 
   const findings = detectProposed(filePath, content);
-  const relevant = filterFindings(config, findings).filter((f) => f.severity === "slop");
+  const relevant = filterFindings(config, findings, root).filter((f) => f.severity === "slop");
 
   const cache = loadCache(root);
   // A rule that no longer fires has been fixed — reset its fatigue counter so
