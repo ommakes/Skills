@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.29.0] - 2026-11-19
+
+### Added
+- **IconButton for icon-only actions.** `JOB-TRIGGER-ACTION` now picks `IconButton` (the registry's new `vois-icon-button`, registry 0.22.0) for a single icon-only action: its `label` is required, so the accessible name cannot be left out, and it is also the tooltip. Button with an icon size and an `aria-label` stays the fallback where IconButton cannot be added. A new rationale says why: Button keeps its loose types so shadcn's own components keep compiling. The lookalike row for a raw icon `<button>` points to IconButton, or to InputGroupButton inside a field (vois-tokens `DS-ICON-006`). The "What You Must Supply" row for icon buttons says IconButton requires the name.
+- **When to use the three registry items the skill did not name:**
+  - `ButtonGroup` (`vois-button-group`) in `JOB-TRIGGER-ACTION`: a few related actions that read as one control (formatting actions, a split button). Not for choosing a view: `JOB-SWITCH-VIEWS` gains a rationale saying why that is a SegmentedControl or Tabs. Icon actions grouped as one control are outline IconButtons in a ButtonGroup.
+  - `SwatchPicker` (`vois-swatch-picker`) in `JOB-CHOOSE-FROM-LIST`: one color from a fixed set, with the reason a Select with colored dots or a free color picker is wrong.
+  - `ScrollArea` (`vois-scroll-area`) in `JOB-CONTAIN-CONTENT`: content taller than a fixed region inside the page, not the page itself, with the reason a plain `overflow: auto` box falls short there.
+- Quick Reference rows for all four.
+
+### Fixed
+- The Job Index said the JSON holds "all 21 jobs". It holds 24.
+
 ## [1.28.0] - 2026-11-16
 
 ### Added

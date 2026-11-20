@@ -237,13 +237,14 @@
       "tree_path": [1, 0],
       "user_prompt": "Add a refresh control to the table toolbar. Space is tight, so it should be just an icon.",
       "condition": "Single action",
-      "expected_outcome": "Button with an icon size (icon-sm in a dense toolbar) and an aria-label that names the action",
+      "expected_outcome": "IconButton (size icon-sm in a dense toolbar) with a label that names the action, not the icon. Button with an icon size and an aria-label only where the project has no IconButton and none can be added",
       "forbidden_outcomes": [
         "A bare icon or a div or span with onClick (no keyboard focus, no hit area, no accessible name)",
-        "An icon Button with no aria-label"
+        "An icon Button with no aria-label",
+        "A Button with an icon size when the registry's vois-icon-button could be installed"
       ],
       "score_categories_checked": ["component_selection", "accessibility_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed. Updated 2026-11-20: the tree now picks IconButton (vois-components 1.29.0), so the expected outcome changed; not run blind since."
     },
     {
       "id": "EVAL-018",

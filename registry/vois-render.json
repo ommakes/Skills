@@ -131,6 +131,10 @@
       ]
     },
     {
+      "id": "icon-button",
+      "path": "/icon-button"
+    },
+    {
       "id": "input",
       "path": "/input"
     },

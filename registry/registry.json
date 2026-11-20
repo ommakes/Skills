@@ -309,6 +309,21 @@
       ]
     },
     {
+      "name": "vois-icon-button",
+      "type": "registry:ui",
+      "title": "Vois Icon Button",
+      "description": "An icon-only Button with a required label: the label is the accessible name and the tooltip, the variant defaults to ghost, sizes are the Button's icon sizes (28, 36 and 48, each a step up on a coarse pointer, and 56 circular, which stays 56), it is type button by default, and a disabled button's tooltip never opens. Install vois-button and vois-tooltip with it: it imports both.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "vois/icon-button/icon-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/icon-button.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-input-group",
       "type": "registry:ui",
       "title": "Vois Input Group",

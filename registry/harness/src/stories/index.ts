@@ -1,5 +1,5 @@
 import type { Story } from "../frame"
-import { button, buttonDestructive } from "./button"
+import { button, buttonDestructive, iconButton } from "./button"
 import { input, textarea } from "./inputs"
 import { checkbox, radioGroup, switchStory } from "./toggles"
 import { avatar, badge, spinner, tooltip } from "./display"
@@ -29,6 +29,7 @@ export const STORIES: Record<string, Story> = {
   dialog,
   "dropdown-menu": dropdownMenu,
   "hover-card": hoverCard,
+  "icon-button": iconButton,
   input,
   inspector,
   "input-group": inputGroup,

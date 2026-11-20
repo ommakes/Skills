@@ -1,16 +1,21 @@
 {
   "name": "vois-registry",
-  "version": "0.21.2",
+  "version": "0.22.0",
   "private": true,
   "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
   "type": "module",
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
     "check": "node scripts/check-registry.mjs",
     "test": "node scripts/check-registry.test.mjs",
     "syntax": "node scripts/check-syntax.mjs",
     "syntax:test": "node scripts/check-syntax.test.mjs",
     "panel:test": "node scripts/panel-logic.test.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "typecheck:test": "node scripts/typecheck.test.mjs",
+    "icon-button:test": "node scripts/icon-button.test.mjs",
     "build": "shadcn build registry.json -o public/r",
     "harness": "node harness/build.mjs && node harness/serve.mjs",
     "harness:test": "node scripts/check-harness.test.mjs",
@@ -21,6 +26,8 @@
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@tailwindcss/cli": "4.3.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
@@ -30,6 +37,7 @@
     "react-dom": "19.3.1",
     "shadcn": "4.23.0",
     "tailwind-merge": "3.7.0",
-    "tailwindcss": "4.3.5"
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3"
   }
 }
