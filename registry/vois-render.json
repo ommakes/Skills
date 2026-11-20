@@ -1,0 +1,274 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "requiredStates": [],
+  "surfaces": [
+    {
+      "id": "avatar",
+      "path": "/avatar"
+    },
+    {
+      "id": "badge",
+      "path": "/badge"
+    },
+    {
+      "id": "button",
+      "path": "/button"
+    },
+    {
+      "id": "button-destructive",
+      "path": "/button-destructive"
+    },
+    {
+      "id": "button-group",
+      "path": "/button-group"
+    },
+    {
+      "id": "card",
+      "path": "/card"
+    },
+    {
+      "id": "card-disabled",
+      "path": "/card-disabled"
+    },
+    {
+      "id": "choice-card",
+      "path": "/choice-card"
+    },
+    {
+      "id": "choice-card-disabled",
+      "path": "/choice-card-disabled"
+    },
+    {
+      "id": "choice-list",
+      "path": "/choice-list"
+    },
+    {
+      "id": "checkbox",
+      "path": "/checkbox"
+    },
+    {
+      "id": "collapsible",
+      "path": "/collapsible",
+      "states": [
+        {
+          "id": "open",
+          "path": "/collapsible?state=open&theme=light",
+          "expect": "[data-slot=collapsible-content][data-state=open]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/collapsible?state=open&theme=dark",
+          "expect": "[data-slot=collapsible-content][data-state=open]"
+        }
+      ]
+    },
+    {
+      "id": "command",
+      "path": "/command",
+      "states": [
+        {
+          "id": "open",
+          "path": "/command?state=open&theme=light",
+          "expect": "[role=dialog]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/command?state=open&theme=dark",
+          "expect": "[role=dialog]"
+        }
+      ]
+    },
+    {
+      "id": "command-separator",
+      "path": "/command-separator"
+    },
+    {
+      "id": "dialog",
+      "path": "/dialog",
+      "states": [
+        {
+          "id": "open",
+          "path": "/dialog?state=open&theme=light",
+          "expect": "[role=dialog]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/dialog?state=open&theme=dark",
+          "expect": "[role=dialog]"
+        }
+      ]
+    },
+    {
+      "id": "dropdown-menu",
+      "path": "/dropdown-menu",
+      "states": [
+        {
+          "id": "open",
+          "path": "/dropdown-menu?state=open&theme=light",
+          "expect": "[data-slot=dropdown-menu-content]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/dropdown-menu?state=open&theme=dark",
+          "expect": "[data-slot=dropdown-menu-content]"
+        }
+      ]
+    },
+    {
+      "id": "hover-card",
+      "path": "/hover-card",
+      "states": [
+        {
+          "id": "open",
+          "path": "/hover-card?state=open&theme=light",
+          "expect": "[data-slot=hover-card-content]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/hover-card?state=open&theme=dark",
+          "expect": "[data-slot=hover-card-content]"
+        }
+      ]
+    },
+    {
+      "id": "icon-button",
+      "path": "/icon-button"
+    },
+    {
+      "id": "input",
+      "path": "/input"
+    },
+    {
+      "id": "inspector",
+      "path": "/inspector"
+    },
+    {
+      "id": "input-group",
+      "path": "/input-group"
+    },
+    {
+      "id": "page-grid",
+      "path": "/page-grid"
+    },
+    {
+      "id": "panel",
+      "path": "/panel"
+    },
+    {
+      "id": "panel-layout",
+      "path": "/panel-layout",
+      "states": [
+        {
+          "id": "open",
+          "path": "/panel-layout?state=open&theme=light",
+          "expect": "[data-slot=panel]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/panel-layout?state=open&theme=dark",
+          "expect": "[data-slot=panel]"
+        }
+      ]
+    },
+    {
+      "id": "questionnaire",
+      "path": "/questionnaire",
+      "states": [
+        {
+          "id": "results",
+          "path": "/questionnaire?state=results&theme=light",
+          "expect": "[data-slot=poll-results]"
+        },
+        {
+          "id": "results-dark",
+          "path": "/questionnaire?state=results&theme=dark",
+          "expect": "[data-slot=poll-results]"
+        }
+      ]
+    },
+    {
+      "id": "questionnaire-nps",
+      "path": "/questionnaire-nps"
+    },
+    {
+      "id": "radio-group",
+      "path": "/radio-group"
+    },
+    {
+      "id": "scroll-area",
+      "path": "/scroll-area"
+    },
+    {
+      "id": "segmented-control",
+      "path": "/segmented-control"
+    },
+    {
+      "id": "select",
+      "path": "/select",
+      "states": [
+        {
+          "id": "open",
+          "path": "/select?state=open&theme=light",
+          "expect": "[data-slot=select-content]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/select?state=open&theme=dark",
+          "expect": "[data-slot=select-content]"
+        }
+      ]
+    },
+    {
+      "id": "select-placeholder",
+      "path": "/select-placeholder"
+    },
+    {
+      "id": "slider",
+      "path": "/slider"
+    },
+    {
+      "id": "spinner",
+      "path": "/spinner"
+    },
+    {
+      "id": "stepper",
+      "path": "/stepper"
+    },
+    {
+      "id": "step-slider",
+      "path": "/step-slider"
+    },
+    {
+      "id": "switch",
+      "path": "/switch"
+    },
+    {
+      "id": "swatch-picker",
+      "path": "/swatch-picker"
+    },
+    {
+      "id": "tabs",
+      "path": "/tabs"
+    },
+    {
+      "id": "textarea",
+      "path": "/textarea"
+    },
+    {
+      "id": "tooltip",
+      "path": "/tooltip",
+      "states": [
+        {
+          "id": "open",
+          "path": "/tooltip?state=open&theme=light",
+          "expect": "[data-slot=tooltip-content]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/tooltip?state=open&theme=dark",
+          "expect": "[data-slot=tooltip-content]"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.28.0
+version: 1.29.0
 ---
 
 # Vois Component Selection Skill
@@ -76,6 +76,10 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | True zero state | EmptyState with CTA | Blank space |
 | Filtered to zero results | Inline message + clear | EmptyState |
 | Row-level actions | DropdownMenu | ContextMenu, Command |
+| Icon-only action | IconButton (required `label`) | Button with an icon size and no name, a bare icon |
+| A few related actions as one control | ButtonGroup | Separate Buttons with gaps, SegmentedControl |
+| Pick one color from a fixed set | SwatchPicker | Select with colored dots, a hex input |
+| Content taller than a fixed region (panel, menu, list) | ScrollArea | `overflow: auto` with the browser scrollbar |
 | Right-click enhancement | ContextMenu | DropdownMenu |
 | 2–5 sequential required steps, each fits a page container | Stepper (`references/stepper.md`) | Progress, Tabs, Wizard |
 | 6+ steps, or a step that needs its own full page | Wizard | Stepper |
@@ -108,20 +112,20 @@ Radix and native elements give roles and keyboard behavior. These parts are the 
 | Switch, Checkbox, Radio | A tied visible label. A switch label names the setting | `DS-A11Y-035` |
 | DropdownMenu, Popover | Radix, so Escape and focus return work | `DS-A11Y-036` |
 | Spinner, Skeleton | A text name in a live region, or `aria-busy` | `DS-A11Y-037` |
-| Icon Button, Dialog | `aria-label`; a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
+| Icon Button, Dialog | `aria-label` (IconButton requires it as `label`, so it cannot be left out); a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
 
 
 ---
 
 ## Lookalikes: Don't Hand-Build These
 
-Agents often write markup that looks like a component but isn't one. A screen can follow every rule in this skill and still contain one. Before you write markup for any of these, use the component. If the project doesn't have one yet, check the registry (`registry/registry.json`) for a Vois version before reaching for stock shadcn: it ships the Button, inputs, selectors, tabs, avatar, badge, tooltip, stepper and more (see its README). The full rows (why, rule IDs, evidence, a signal a script can match) are in `data/components-rules.json` under `lookalikes`.
+Agents often write markup that looks like a component but isn't one. A screen can follow every rule in this skill and still contain one. Before you write markup for any of these, use the component. If the project doesn't have one yet, check the registry (`registry/registry.json`) for a Vois version before reaching for stock shadcn: it ships the Button and IconButton, inputs, selectors, tabs, avatar, badge, tooltip, stepper and more (see its README). The full rows (why, rule IDs, evidence, a signal a script can match) are in `data/components-rules.json` under `lookalikes`.
 
 **Seen in blind builds** (`vois-eval/lookalike-pass`, 40 builds):
 
 | If you are about to write | Use instead |
 |---|---|
-| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger. No project Button yet? Install the registry's `vois-button` item |
+| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `asChild` as a trigger. For an icon, IconButton with its required `label` (the registry's `vois-icon-button`); inside a field, InputGroupButton (vois-tokens `DS-ICON-006`). No project Button yet? Install the registry's `vois-button` item |
 | `Loader2` with `animate-spin` | Spinner. No project Spinner yet? Install the registry's `vois-spinner`. Inside a Button, use the Button's `loading` prop |
 | Buttons with `role="radio"` | RadioGroup (no project RadioGroup yet? Install the registry's `vois-radio-group`), or ToggleGroup (single) for a segmented control (the registry's `vois-segmented-control`) |
 | Numbered circles joined by lines | The shared Stepper (`references/stepper.md`; the registry's `vois-stepper` is built to it) |
@@ -143,7 +147,7 @@ When the prompt describes how something looks ("a red × in the corner", "a pill
 
 ## Job Index
 
-`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 21 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
+`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 24 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
 
 **Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. Today that is `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks) and `references/motion-morphs.md` (the core eight: label and text morph, shared element transfer, number ticker and typed input, icon morph, directional transition, grow-from-trigger, reorder and regroup, status button), `references/motion-tray.md` (a tray and its lifecycle) and `references/motion-context.md` (shared element context, chart range change, collapse to indicator, small state changes). Pick the morph with `vois-patterns/references/motion.md` first.
 

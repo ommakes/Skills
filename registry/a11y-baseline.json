@@ -1,0 +1,33 @@
+{
+  "schema": "vois-a11y-baseline/1",
+  "known": [
+    "axe:aria-hidden-focus|dropdown-menu|open-dark|desktop",
+    "axe:aria-hidden-focus|dropdown-menu|open-dark|mobile",
+    "axe:aria-hidden-focus|dropdown-menu|open|desktop",
+    "axe:aria-hidden-focus|dropdown-menu|open|mobile",
+    "axe:aria-hidden-focus|select|open-dark|desktop",
+    "axe:aria-hidden-focus|select|open-dark|mobile",
+    "axe:aria-hidden-focus|select|open|desktop",
+    "axe:aria-hidden-focus|select|open|mobile",
+    "axe:aria-required-children|command-separator|default|desktop",
+    "axe:aria-required-children|command-separator|default|mobile",
+    "axe:color-contrast|button-destructive|default|desktop",
+    "axe:color-contrast|button-destructive|default|mobile",
+    "axe:color-contrast|card-disabled|default|desktop",
+    "axe:color-contrast|card-disabled|default|mobile",
+    "axe:color-contrast|choice-card-disabled|default|desktop",
+    "axe:color-contrast|choice-card-disabled|default|mobile",
+    "axe:color-contrast|select-placeholder|default|desktop",
+    "axe:color-contrast|select-placeholder|default|mobile",
+    "axe:label|questionnaire-nps|default|desktop",
+    "axe:label|questionnaire-nps|default|mobile",
+    "axe:scrollable-region-focusable|scroll-area|default|desktop",
+    "axe:scrollable-region-focusable|scroll-area|default|mobile",
+    "focus-visible|command|open-dark|desktop",
+    "focus-visible|command|open-dark|mobile",
+    "focus-visible|command|open|desktop",
+    "focus-visible|command|open|mobile",
+    "focus-visible|step-slider|default|desktop",
+    "focus-visible|step-slider|default|mobile"
+  ]
+}

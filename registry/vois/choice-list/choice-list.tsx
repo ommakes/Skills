@@ -76,7 +76,8 @@ function ChoiceRadioGroup({
   className,
   ...props
 }: React.ComponentProps<typeof RadioGroup> & { invalid?: boolean; variant?: ChoiceVariant }) {
-  const [value, setValue] = useControllable(valueProp, defaultValue ?? "", onValueChange)
+  // Radix allows value={null} for "controlled, nothing chosen". Keep it controlled: null becomes "" (no item), never undefined.
+  const [value, setValue] = useControllable(valueProp === null ? "" : valueProp, defaultValue ?? "", onValueChange)
   const ctx = React.useMemo<ChoiceGroupContextValue>(() => ({ kind: "radio", value, disabled, invalid, variant }), [value, disabled, invalid, variant])
   return (
     <ChoiceGroupContext.Provider value={ctx}>
