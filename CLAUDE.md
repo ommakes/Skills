@@ -17,6 +17,7 @@ python3 scripts/check-routing.py
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
 node vois-tokens/scripts/check.test.mjs
+(cd vois-tokens/eslint-plugin && npm ci --ignore-scripts && node --test index.test.mjs)
 node vois-tokens/scripts/grid.test.mjs
 node vois-teams/scripts/validate.test.mjs
 node vois-teams/scripts/validate.mjs all

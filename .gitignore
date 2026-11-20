@@ -7,3 +7,4 @@ registry/.vois/
 /node_modules/
 registry/.typecheck-tmp-*/
 registry/.icon-button-test-*/
+vois-tokens/eslint-plugin/node_modules/
