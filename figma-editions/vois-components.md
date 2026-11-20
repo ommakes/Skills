@@ -1,12 +1,12 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.28.0
+version: 1.29.0
 ---
 
 # Vois Component Selection Skill
 
-> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`), the Stepper spec as its own file, and the motion specs (`references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`, `motion-logic.md`: label and text morph, shared element transfer, number ticker, icon morph, status button, chart range change and more). This edition inlines the Stepper and the Tray, and leaves the other motion specs out. The full repo also has `registry/`: Vois versions of many components named here (Button, Input, Select, Checkbox, Switch, RadioGroup, Tabs, Dialog, Card, Tooltip, Badge, Avatar, Stepper and more). Where a job says "the registry's `vois-x` item", use it when the project has no component of that name.
+> Full version & updates: https://github.com/ommakes/Skills/blob/main/vois-components/SKILL.md — the full version adds the machine-readable decision trees (`data/components-rules.json`), the Stepper spec as its own file, and the motion specs (`references/motion-morphs.md`, `motion-tray.md`, `motion-context.md`, `motion-logic.md`: label and text morph, shared element transfer, number ticker, icon morph, status button, chart range change and more). This edition inlines the Stepper and the Tray, and leaves the other motion specs out. The full repo also has `registry/`: Vois versions of many components named here (Button, IconButton, ButtonGroup, Input, Select, SwatchPicker, ScrollArea, Checkbox, Switch, RadioGroup, Tabs, Dialog, Card, Tooltip, Badge, Avatar, Stepper and more). Where a job says "the registry's `vois-x` item", use it when the project has no component of that name.
 
 You are picking specific components from the workspace manifest. This skill answers **"which component for this job"** — not what structure (that's `vois-patterns`) and not how to style it (that's `vois-tokens`).
 
@@ -55,6 +55,10 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Filtered to zero results | Inline message + clear | EmptyState |
 | Table first load | Skeleton rows under real headers | Spinner |
 | Row-level actions | DropdownMenu | ContextMenu, Command |
+| Icon-only action | IconButton (required `label`) | Button with an icon size and no name, a bare icon |
+| A few related actions as one control | ButtonGroup | Separate Buttons with gaps, SegmentedControl |
+| Pick one color from a fixed set | SwatchPicker | Select with colored dots, a hex input |
+| Content taller than a fixed region (panel, menu, list) | ScrollArea | `overflow: auto` with the browser scrollbar |
 | Right-click enhancement | ContextMenu | DropdownMenu |
 | 2–5 sequential required steps, each fits a page container | Stepper (spec below) | Progress, Tabs, Wizard |
 | 6+ steps, or a step that needs its own full page | Wizard | Stepper |
@@ -142,8 +146,9 @@ Why not Sheet for filters on mobile, when the user wants to see the list? On a p
 - Interactive, whole card is the primary action target → make the whole Card clickable
 - Named section of a larger page, not a standalone item → semantic HTML `section` + heading, not a Card
 - Workspace panel, tool pane, persistent sidebar section → Surface / Panel (workspace-specific)
+- Content taller or wider than a fixed-size region inside the page (a panel body, a menu or command list, a code block, a sidebar) → ScrollArea (the registry's `vois-scroll-area`): a scrollbar that meets 3:1 and a viewport the keyboard can scroll. Use `type="always"` where the scrollbar is the only sign there is more. Not for the page itself: let the page scroll natively, and do not nest a ScrollArea inside another that scrolls the same way
 
-Why not wrap everything in a Card? It implies a discrete, interactive item — using it for every content group flattens visual hierarchy. Use semantic sections with headings instead.
+Why not wrap everything in a Card? It implies a discrete, interactive item — using it for every content group flattens visual hierarchy. Use semantic sections with headings instead. Why not `overflow: auto` on a div? It is right for the page. Inside a fixed region it gets the browser's scrollbar, which on some systems hides until you scroll, so nothing says there is more, and a box with no focusable children cannot be scrolled from the keyboard. ScrollArea fixes both and matches the Figma scrollbar.
 
 **Job 20 — Host secondary content or persistent navigation** `JOB-SECONDARY-CONTENT`
 *A surface for secondary content, tools, or navigation outside the main content area.*
@@ -166,7 +171,7 @@ Why not Drawer for persistent navigation? Drawer is temporary; navigation the us
 - Filtering, 5+ options or options that change dynamically → Select or Combobox (see Job 6)
 - Applying non-exclusive labels/types (tagging, multi-select filter) → Checkbox group or Badge filters, not Tabs
 
-Why not Segmented Control for major navigation? It communicates narrowing a view, not going somewhere new — use Tabs for distinct content areas. Why not Tabs/Pills for many options? Scrolling tabs are a bad pattern past 5–6 options — switch to Select/Combobox.
+Why not Segmented Control for major navigation? It communicates narrowing a view, not going somewhere new — use Tabs for distinct content areas. Why not Tabs/Pills for many options? Scrolling tabs are a bad pattern past 5–6 options — switch to Select/Combobox. Why not a ButtonGroup for switching views? A ButtonGroup holds actions: each Button does something when pressed and none stays chosen. Switching views is a choice of one that stays visible, which is a SegmentedControl or Tabs, with a selected state that screen readers announce.
 
 **Job 17 — Indicate position in a hierarchy and enable backtracking** `JOB-NAVIGATION-POSITION`
 *The user has navigated into a nested view and needs to know where they are.*
@@ -184,8 +189,9 @@ Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unn
 - Long list (8+) or user might not know the exact option name → Combobox (Select + search)
 - User needs to search across data types or trigger actions, not just pick a value → Command (palette-style)
 - Only 2 options → Radio buttons or Segmented Control, not Select. Full-width rows or cards instead of bare radios: the registry's `vois-choice-list` or `vois-choice-card`
+- The options are colors from a fixed set (a theme palette, neutrals, status colors), such as a label color or a chart series color → SwatchPicker (the registry's `vois-swatch-picker`): one color, an optional None, and the color's name in the trigger, so nobody has to tell colors apart by hue alone. Not a Select with colored dots, and not a free color picker with a hue wheel or hex input: a design system's surfaces take a token, not any color
 
-Why not Combobox for short lists? Adds a search affordance where none is needed — Select is simpler with less friction. Why not Command for standard selection? It's a power-user tool; using it for a plain form field pick adds cognitive overhead.
+Why not Combobox for short lists? Adds a search affordance where none is needed — Select is simpler with less friction. Why not Command for standard selection? It's a power-user tool; using it for a plain form field pick adds cognitive overhead. Why not a Select with a colored dot per option? A Select lists names in a column, so comparing colors means reading down the list, and it cannot show the set as a grid. The SwatchPicker shows every swatch at once, keeps one tab stop with the arrow keys moving across the grid, previews as you move, and names each swatch for screen readers.
 
 **Job 9 — Accept text input from the user** `JOB-ACCEPT-TEXT`
 *The user needs to enter text as part of a form or interaction.*
@@ -260,11 +266,12 @@ Why not Popover for tooltips? Requires a click to open/close — more friction t
 *The user needs a target to tap or click.*
 - Has a text label, primary/secondary/destructive/outline/ghost → Button (variant handles it; the registry's `vois-button` is 36px on web, 48px native: `DS-COMPONENT-007`)
 - Has a text label, opens a menu of related choices → Button + DropdownMenu (see Job 15)
-- Icon-only, single action → Button with an icon size (`icon-sm` 28, `icon` 36, `icon-lg` 48, one step up on a coarse pointer) and an `aria-label` that names the action, not the icon. `variant="ghost"` (no background) by default, `variant="soft"` (light gray) when it must read as a button at rest. Size, spacing, placement and style: Iconography in the Vois Tokens skill (`DS-ICON-003` to `DS-ICON-007`)
-- Icon-only, grouped with other icon actions → Toggle (on/off) or Button (one-shot)
+- Has a text label, a few related actions that read as one control (formatting actions, a split button, a count with actions beside it) → ButtonGroup of outline or secondary Buttons (the registry's `vois-button-group`): joined edges, one border between neighbors, the focus ring kept visible. ButtonGroupSeparator splits two sets that still read as one control, ButtonGroupText holds a count or unit. It is for actions: choosing one view or mode is a SegmentedControl (Job 5)
+- Icon-only, single action → IconButton (the registry's `vois-icon-button`) with a `label` that names the action, not the icon ("Add to favorites", not "Heart"). The label is required, so the name cannot be left out; it is the accessible name and the tooltip, which shows on hover and focus and is dropped while the button is disabled. Ghost by default, `variant="soft"` (light gray) when it must read as a button at rest. Sizes `icon-sm` 28, `icon` 36 and `icon-lg` 48, each one step up on a coarse pointer, and `circular` 56, which stays 56. No IconButton in the project and none can be added: Button with an icon size and an `aria-label`. Size, spacing, placement and style: Iconography in the Vois Tokens skill (`DS-ICON-003` to `DS-ICON-007`)
+- Icon-only, grouped with other icon actions → Toggle (on/off) or IconButton (one-shot). Several one-shot icon actions on the same thing that should read as one control: IconButtons with `variant="outline"` in a ButtonGroup
 - Removable selection or filter the user created → Badge with dismiss (Chip pattern), not a Button
 
-Why not a custom div/span? Buttons handle keyboard focus, Enter/Space activation, disabled state, and `role="button"` automatically — never fake a button. Why Button for icon-only instead of a bare icon? Button provides a hit area of at least the `--hit-area-min` token (`--hit-area-coarse` on a coarse pointer), a focus ring, and an accessible label.
+Why not a custom div/span? Buttons handle keyboard focus, Enter/Space activation, disabled state, and `role="button"` automatically — never fake a button. Why Button for icon-only instead of a bare icon? Button provides a hit area of at least the `--hit-area-min` token (`--hit-area-coarse` on a coarse pointer), a focus ring, and an accessible label. Why IconButton instead of Button with an icon size? IconButton makes the name a required prop, so an icon button cannot ship without one, and it adds the tooltip the icon-button rules ask for. Button keeps its loose types on purpose (shadcn's own components name icon buttons with visually hidden text, which TypeScript cannot see), so with Button the name is checked only by the `DS-ICON-005` detector in the full repo.
 
 **Job 15 — Expose a set of actions** `JOB-EXPOSE-ACTIONS`
 *Give access to multiple actions without cluttering the primary UI.*
@@ -366,7 +373,7 @@ Agents often write markup that looks like a component but isn't one. A screen ca
 
 | If you are about to write | Use instead |
 |---|---|
-| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger `[LOOKALIKE-001]` | Button: `variant="link"` for text, `variant="ghost"` with an icon size and `aria-label` for icons, `asChild` as a trigger |
+| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger `[LOOKALIKE-001]` | Button: `variant="link"` for text, `asChild` as a trigger. For an icon, IconButton with its required `label` (the registry's `vois-icon-button`); inside a field, InputGroupButton (`DS-ICON-006` in `vois-tokens`) |
 | `Loader2` with `animate-spin` `[LOOKALIKE-002]` | Spinner |
 | Buttons with `role="radio"` `[LOOKALIKE-003]` | RadioGroup, or ToggleGroup (single) for a segmented control |
 | Numbered circles joined by lines `[LOOKALIKE-004]` | The shared Stepper (spec above) |
@@ -403,7 +410,7 @@ Radix and native elements give roles and keyboard behavior. These parts are the 
 | Switch, Checkbox, Radio | A tied visible label. A switch label names the setting | `DS-A11Y-035` |
 | DropdownMenu, Popover | Radix, so Escape and focus return work | `DS-A11Y-036` |
 | Spinner, Skeleton | A text name in a live region, or `aria-busy` | `DS-A11Y-037` |
-| Icon Button, Dialog | `aria-label`; a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
+| Icon Button, Dialog | `aria-label` (IconButton requires it as `label`, so it cannot be left out); a Dialog title | `DS-A11Y-007`, `DS-A11Y-019` |
 
 ## Relationship to Other Skills
 
