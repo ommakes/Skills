@@ -17,8 +17,8 @@
 //     variant="destructive" is the Figma Error state: --text-negative, and --select-negative when highlighted.
 //   Label: 14/20 semibold, the Figma section helper text. Separator: the Figma Menu List Divider, a 1px
 //     --border-default line inset 24 with 12 above and below.
-// Gaps in Figma, with the choice made here: the shortcut and the label are bound to --text-state-instruction (gray-6),
-// which is under 4.5:1 on a card, so they use --text-hint, which reaches it. Figma's Solid Active and Aux item
+// Gaps in Figma, with the choice made here: the shortcut and the label are bound to --text-state-instruction, which was
+// gray-6, under 4.5:1 on a card, until the change in source/figma-pending.json. They use --text-hint, which always reached it. Figma's Solid Active and Aux item
 // states are not built: nothing in a menu needs them yet.
 //
 // Which state wins: disabled, then highlighted, then checked, then resting. A checked item that is also highlighted

@@ -37,18 +37,14 @@ node ../vois-loop/scripts/a11y-baseline.mjs --report .vois/render/report.json --
 4. Run `node harness/build.mjs --manifest` to rewrite `vois-render.json`. The check fails if it is not what the stories give.
 5. Run the rendered check. A new FAIL is either a real problem to fix, or (rarely) a known limit of the tools, which goes in the baseline with its reason in the table below.
 
-Keep **one known problem per page**. The baseline key is the check, the page, the state and the viewport, so an entry also hides a second, different problem of the same kind on that page. That is why the solid destructive Button, the disabled Card and the other cases below each have a page of their own.
+Keep **one known problem per page**. The baseline key is the check, the page, the state and the viewport, so an entry also hides a second, different problem of the same kind on that page. That is why the disabled Card, the open select and the other cases below each have a page of their own. Four pages still exist only because they once held a real problem (`button-destructive`, `select-placeholder`, `questionnaire-nps`, `command-separator`, fixed in registry 0.22.1). They now guard the fix: any finding on them fails the check.
 
 ## What the baseline holds, and why
 
-Each row is a page and state with its known problem, on both viewports. Fixing one means removing its entries from `a11y-baseline.json` (the run lists fixed ones).
+Each row is a page and state with its known problem, on both viewports. None of them is a bug to fix in the registry: each is a case axe or the checker cannot judge. Fixing one means removing its entries from `a11y-baseline.json` (the run lists fixed ones).
 
 | Page | Check | What it is |
 |---|---|---|
-| `button-destructive` | `axe:color-contrast` | **Real.** White text on `--solid-negative-resting` is 4.16:1 in the default tokens, in both themes, under 4.5:1 for 14px text. |
-| `select-placeholder` | `axe:color-contrast` | **Real.** The Select placeholder is #7e7e7e: 4.05:1 on white and 3.84:1 on the error fill, under 4.5:1. |
-| `questionnaire-nps` | `axe:label` | **Real.** The NPS range input has no accessible name. The question title is the fieldset legend, which names the group, not the input. |
-| `command-separator` | `axe:aria-required-children` | **Real by axe's rule.** A `CommandSeparator` inside the list puts a `separator` in a `listbox`, which may hold options and groups only. |
 | `card-disabled`, `choice-card-disabled` | `axe:color-contrast` | **Exempt, but axe cannot tell.** The text is the disabled color (4.05:1 light, 3.78:1 dark). WCAG 1.4.3 exempts text in an inactive component, and these are `div`s, not disabled controls. |
 | `scroll-area` | `axe:scrollable-region-focusable` | **Tool limit.** The viewport has no `tabindex`. Chromium (checked on 157) makes a scroll container with no focusable child focusable, so the keyboard works there. axe cannot know that. The component relies on the browser doing it. |
 | `select`, `dropdown-menu`: `open`, `open-dark` | `axe:aria-hidden-focus` | **Tool limit.** An open Radix select or menu is modal: it hides the page with `aria-hidden` and traps focus, and the trigger is still focusable under it. This is the usual axe report for Radix modals. |

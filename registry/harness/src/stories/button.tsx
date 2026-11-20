@@ -39,8 +39,8 @@ export const button: Story = {
 }
 
 /**
- * The solid destructive Button on its own page. White on --solid-negative-resting is 4.16:1 in the default tokens, under the
- * 4.5:1 that 14px text needs, so this page is in the baseline. It has its own page so the baseline entry covers nothing else.
+ * The solid destructive Button on its own page. White on --solid-negative-resting was 4.16:1, under the 4.5:1 that 14px text
+ * needs, until registry 0.21.3 moved the ladder one step darker. The page stays so a regression fails the check.
  */
 export const buttonDestructive: Story = {
   title: "Button, solid destructive",

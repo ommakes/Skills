@@ -479,7 +479,7 @@ Use it for a few related actions that read as one control. For a choice of one v
 | Label, shortcut | 14/20 semibold and 12/16 medium, both `--text-hint` |
 | Separator | 1px `--border-default`, inset 24, 12 above and below |
 
-Figma binds the label and shortcut to `--text-state-instruction` (gray-6, under 4.5:1), so the code uses `--text-hint`. The Figma Solid Active and Aux item states are not built. For choosing a value for a field, use the Select.
+Figma binds the label and shortcut to `--text-state-instruction`, which was gray-6 (under 4.5:1) until the change in `source/figma-pending.json`, so the code uses `--text-hint`, which always reached 4.5:1. The Figma Solid Active and Aux item states are not built. For choosing a value for a field, use the Select.
 
 ### `vois-dialog`
 

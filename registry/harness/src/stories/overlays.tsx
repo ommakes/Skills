@@ -128,8 +128,8 @@ export const hoverCard: Story = {
 }
 
 /**
- * A CommandSeparator inside the list. axe reports aria-required-children: a listbox may hold options and groups, and the separator
- * is neither. It is on its own page so the baseline entry covers nothing else.
+ * A CommandSeparator inside the list. cmdk's own separator has role="separator", which a listbox may not own, so axe reported
+ * aria-required-children until registry 0.21.3 drew the divider itself. The page stays so a regression fails the check.
  */
 export const commandSeparator: Story = {
   title: "Command, with a separator",
