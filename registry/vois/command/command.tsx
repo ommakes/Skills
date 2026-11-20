@@ -7,7 +7,8 @@
 //   Search row: 56 tall, 16 above and below and 24 at the sides, a 20 search icon in --icon-state-resting, 16/24
 //     --text-primary text, --text-hint placeholder, and a 1px --border-default line under it.
 //   List: 12 padding, up to 320 tall, scrolling inside. A group heading is 14/20 semibold --text-hint (the Figma section
-//     helper text, which binds --text-state-instruction, gray-6, under 4.5:1; --text-hint reaches it).
+//     helper text, which binds --text-state-instruction. That was gray-6, under 4.5:1, until the change in
+//     source/figma-pending.json; the code keeps --text-hint, which always reached it).
 //   Item: 40 tall (Figma has 36 and 40), 6 above and below and 16 at the sides, 12 between parts, --shape-subtle
 //     corners, 14/20 medium text. cmdk keeps keyboard focus in the input and marks one item selected, so selected is
 //     the Figma Hover look: --bg-hover. Pressed is --bg-pressed. Disabled is --text-state-disabled with no fill.
@@ -21,7 +22,7 @@
 // Serves vois-components JOB-EXPOSE-ACTIONS (a searchable list of actions, a command palette) and JOB-CHOOSE-FROM-LIST
 // for a long list. cmdk does the filtering and the arrow keys, Home and End, and Enter. Install vois-dialog with it.
 import * as React from "react"
-import { Command as CommandPrimitive } from "cmdk"
+import { Command as CommandPrimitive, useCommandState } from "cmdk"
 
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -118,8 +119,22 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
   )
 }
 
-function CommandSeparator({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
-  return <CommandPrimitive.Separator data-slot="command-separator" className={cn("-mx-[var(--space-padding-small)] my-[var(--space-padding-x-small)] h-px bg-[color:var(--border-default)]", className)} {...props} />
+// A divider between groups. cmdk's own Separator is role="separator", and a listbox may own only options and groups,
+// so axe reports aria-required-children for it. This is a plain div that assistive technology skips. It keeps cmdk's
+// behavior: hidden while the user is filtering, unless `alwaysRender` is set. role and aria-hidden come after the
+// props on purpose, so a caller cannot put the separator role back.
+function CommandSeparator({ className, alwaysRender = false, ...props }: Omit<React.ComponentProps<"div">, "role" | "aria-hidden"> & { alwaysRender?: boolean }) {
+  const filtering = useCommandState((state) => state.search.length > 0)
+  if (filtering && !alwaysRender) return null
+  return (
+    <div
+      data-slot="command-separator"
+      className={cn("-mx-[var(--space-padding-small)] my-[var(--space-padding-x-small)] h-px bg-[color:var(--border-default)]", className)}
+      {...props}
+      role="presentation"
+      aria-hidden="true"
+    />
+  )
 }
 
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {

@@ -63,8 +63,8 @@ function NpsDemo() {
 }
 
 /**
- * The NPS question. Its range input has no accessible name: the question title is the fieldset legend, which names the group and not
- * the input inside it, so axe reports axe:label. The page is in the baseline, on its own so the entry covers nothing else.
+ * The NPS question. Its range input had no accessible name (the question title is the fieldset legend, which names the group and
+ * not the input inside it, so axe reported axe:label) until registry 0.21.3 added aria-label. The page stays so a regression fails the check.
  */
 export const questionnaireNps: Story = {
   title: "Questionnaire, NPS question",

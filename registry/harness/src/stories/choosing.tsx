@@ -192,8 +192,8 @@ export const choiceCardDisabled: Story = {
 }
 
 /**
- * Selects that show their placeholder. The placeholder is #7e7e7e: 4.05:1 on white and 3.84:1 on the error fill in the default
- * tokens, under 4.5:1, so this page is in the baseline. It is its own page so the entry covers nothing else.
+ * Selects that show their placeholder. The placeholder (--text-state-instruction) was under 4.5:1 on the field and on the error
+ * fill until registry 0.21.3 changed it. The page stays so a regression fails the check.
  */
 export const selectPlaceholder: Story = {
   title: "Select, placeholder",

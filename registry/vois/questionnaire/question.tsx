@@ -75,7 +75,7 @@ export function Question({ question: q, value, onChange, votes, respondents, ans
         <FieldShell legend={q.title} requirementLabel={req} helper={q.helper}>
           <input
             type="range" min={0} max={10} step={1} value={n} onChange={(e) => onChange(Number(e.target.value))}
-            aria-valuetext={`${n} of 10`} className="w-full accent-primary"
+            aria-label={q.title} aria-valuetext={`${n} of 10`} className="w-full accent-primary"
           />
           <div className="flex justify-between text-sm text-muted-foreground"><span>{lo}</span><span>{hi}</span></div>
         </FieldShell>
