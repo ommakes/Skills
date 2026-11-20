@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.0] - 2026-11-20
+
+### Added
+- **An ESLint plugin, `eslint-plugin/index.mjs`.** The hook speaks to the agent and the gate to the pull request; nothing showed the findings in the editor. The plugin has one ESLint rule per detector id (`vois/ds-color-001`, `vois/lookalike-002`, `vois/ds-modal`), each reporting at the detector's line with its message and fix hint, so a team can use `// eslint-disable-next-line`. `configs.recommended` sets `error` for rules that are `required` in `data/vois-rules.json` and `warn` for the rest, through `check.mjs`'s `severityOf`, so the plugin and the gate agree. It lints `.js`, `.jsx`, `.ts` and `.tsx`; each detector still runs only on the extensions it declares, and CSS and SCSS stay with the hook and the gate, so the three CSS-only detectors are not in `recommended`. Waivers in `.vois/config.json` and team overrides in `.vois/teams` apply, read by the gate's own functions from the project root (`settings.vois.root`, default ESLint's working directory); a malformed waiver config or team file, or a wrong `settings.vois` (another type, an unknown key, a root that is not a folder), stops the lint run rather than waiving more or dropping a team's limits. `recommended` ignores the folders the gate never walks. The detectors run once per file, however many rules are on. Findings are placed by offset, so a lone CR, U+2028 or U+2029 earlier in the file does not move one. No runtime dependency; `eslint-plugin/package.json` pins ESLint 9.39.5 and the TypeScript parser for the tests in `eslint-plugin/index.test.mjs`, which are in CI and the push list. `references/hooks.md`, "ESLint plugin", documents setup and coverage. The shared detector code is unchanged.
+
+Ported from `ommakes/vois-skills` (#112).
+
 ## [1.47.0] - 2026-11-19
 
 ### Added

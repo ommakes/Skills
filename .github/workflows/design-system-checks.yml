@@ -25,6 +25,12 @@ jobs:
       - name: CI gate tests (vois-tokens check.mjs)
         run: node vois-tokens/scripts/check.test.mjs
 
+      - name: ESLint plugin tests (vois-tokens eslint-plugin, pinned ESLint)
+        working-directory: vois-tokens/eslint-plugin
+        run: |
+          npm ci --ignore-scripts
+          node --test index.test.mjs
+
       - name: Grid and panel maths (vois-tokens)
         run: node vois-tokens/scripts/grid.test.mjs
 

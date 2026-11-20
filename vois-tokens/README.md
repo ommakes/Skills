@@ -1,12 +1,12 @@
 # Vois Tokens Skill
 
-**Version 1.47.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.48.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
 A Claude skill that enforces consistent, production-quality UI output when building with **shadcn/ui**, **Tailwind v4**, and **Motion**. Drop it into your Claude skill directory and every code generation session follows the same spacing scale, token system, component patterns, accessibility requirements, and layout rules — without having to re-explain them each time.
 
-A deterministic detector (`scripts/detect.mjs`) mechanically checks the subset of the Pre-Submit Checklist that doesn't require visual judgment, and can run as a per-edit hook in Claude Code, Cursor, or Codex. `scripts/check.mjs` runs the same checks as a CI gate, with a baseline so existing code does not fail. See [`references/hooks.md`](./references/hooks.md) for setup.
+A deterministic detector (`scripts/detect.mjs`) mechanically checks the subset of the Pre-Submit Checklist that doesn't require visual judgment, and can run as a per-edit hook in Claude Code, Cursor, or Codex. `scripts/check.mjs` runs the same checks as a CI gate, with a baseline so existing code does not fail, and `eslint-plugin/index.mjs` runs them as ESLint rules in the editor. See [`references/hooks.md`](./references/hooks.md) for setup.
 
 ---
 
@@ -74,6 +74,7 @@ vois-tokens/
 ├── README.md        ← this file
 ├── CHANGELOG.md     ← version history
 ├── references/      ← per-topic rule files (spacing, color, components, hooks, etc.)
+├── eslint-plugin/   ← the same detectors as ESLint rules, for the editor
 └── scripts/         ← detect.mjs detector + check.mjs CI gate + hook.mjs/hook-before-edit.mjs/hook-admin.mjs
 ```
 
@@ -83,6 +84,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.48.0**: `eslint-plugin/index.mjs`, an ESLint plugin (flat config, ESLint 9) with one rule per detector id, so editors show findings as you type and a line can be silenced with `eslint-disable-next-line`. `recommended` uses the gate's severities. It covers `.js`, `.jsx`, `.ts` and `.tsx`; CSS stays with the hook and the gate.
 - **1.47.0**: `scripts/check.mjs`, a CI gate: the same detectors over a project, failing on new findings from required rules (or the level in `--fail-on`), with a baseline for existing code and GitHub annotations. A reusable workflow wraps it. New detector for `DS-TOKEN-001`: a Global palette step used directly instead of the token that aliases it.
 - **1.46.3**: the hook's `ignoredFiles` globs match the path relative to the project root, so `hook-admin.mjs ignore-file "src/legacy/**"` now works when the harness sends an absolute path (Claude Code, Cursor and Codex all do). Windows `\` paths work too.
 - **1.46.2**: `references/grid.md` points to the registry item `vois-panel-layout` (`PanelLayout`, `usePanelLayout`), the docked Panel overlay is listed at Large in `references/elevation.md`, and `data/elevation-map.json` has two built rows for it. Docs and data only.

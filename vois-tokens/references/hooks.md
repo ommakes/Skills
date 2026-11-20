@@ -1,6 +1,6 @@
 # Automated Checks `[DS-HOOKS]`
 
-A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no LLM judgment required. `scripts/detect.mjs` checks those rules deterministically with regex/string matching (no dependencies, no AST parser) and can be wired into a hook that fires automatically on every file edit in Claude Code, Cursor, or Codex. The hook nudges and never fails a build; `scripts/check.mjs` runs the same detectors as a CI gate that does (see [CI gate](#ci-gate)).
+A subset of this skill's Pre-Submit Checklist is mechanically verifiable — no LLM judgment required. `scripts/detect.mjs` checks those rules deterministically with regex/string matching (no dependencies, no AST parser) and can be wired into a hook that fires automatically on every file edit in Claude Code, Cursor, or Codex. The hook nudges and never fails a build; `scripts/check.mjs` runs the same detectors as a CI gate that does (see [CI gate](#ci-gate)). `eslint-plugin/index.mjs` shows the same findings in the editor as ESLint rules (see [ESLint plugin](#eslint-plugin)).
 
 **This is purely additive.** It catches violations the instant they're written — seconds after generation, inside the same harness that wrote the code. It does not replace this checklist (most rules still require visual/layout judgment an LLM provides), and it does not touch, call, or compete with the separate GitHub-integrated token-drift app that reconciles raw values against the live token list on its own schedule. The hook only ever writes new files under the consumer project's `.vois/` directory; it never edits token source files and never calls GitHub.
 
@@ -186,3 +186,32 @@ jobs:
 ```
 
 Inputs: `working-directory` (the project root, default `.`), `paths` (space-separated, default `.`), `fail-on`, `baseline` (empty means none) and `tools-ref` (pin a tag or commit). An unknown `fail-on` fails the job. Make it a required check after a few green runs.
+
+## ESLint plugin
+
+The hook speaks to the agent and the gate speaks to the pull request. `eslint-plugin/index.mjs` brings the same detectors into the editor: findings show as you type, wherever ESLint runs, and a team can silence one line with a standard disable comment. It complements the gate; it does not replace it.
+
+```js
+// eslint.config.mjs (flat config, ESLint 9)
+import tsParser from "@typescript-eslint/parser"; // only if you lint .ts or .tsx
+import vois from "/path/to/vois-tokens/eslint-plugin/index.mjs";
+
+export default [
+  { files: ["**/*.{ts,tsx}"], languageOptions: { parser: tsParser } },
+  { files: ["**/*.{js,jsx,tsx}"], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
+  vois.configs.recommended,
+  // settings: { vois: { root: "." } },   // optional: the folder that holds .vois/, default ESLint's working directory
+];
+```
+
+```tsx
+// eslint-disable-next-line vois/ds-color-001 -- brand color agreed with design
+const brand = "#0a7cff";
+```
+
+- **Rules.** One per detector id, named by the id in lower case: `vois/ds-color-001`, `vois/ds-token-001`, `vois/ds-icon-005`, `vois/ds-modal`, `vois/lookalike-002`. Each reports at the detector's line, with its message and then its fix hint. No rule takes options.
+- **Levels.** `configs.recommended` sets a rule to `error` when its rule in `data/vois-rules.json` is `required`, and to `warn` otherwise. It uses the gate's own `severityOf`, so `DS-MODAL` takes the strictest of the rules it covers, and the lookalike checks and `DS-SLOP-002` warn. Change a level, or turn a rule off, in your config as with any ESLint rule.
+- **Coverage.** The plugin lints `.js`, `.jsx`, `.ts` and `.tsx`, and `recommended` applies only to those files. Each detector still runs only on the extensions it declares in `scripts/registry.mjs`. CSS and SCSS stay with the hook and the gate: ESLint does not parse them by default, so `DS-CSS-002`, `DS-CSS-003` and `DS-CSS-007` (CSS only) are left out of `recommended`, and the CSS half of the other rules is not checked in the editor. Other extensions (`.mjs`, `.cjs`, `.mts`, `.vue` and the rest) are not checked by the detectors anywhere. ESLint needs a parser for what it lints: the TypeScript parser for `.ts` and `.tsx`, and JSX turned on for `.jsx` (and for `.js`, which often holds JSX: a file ESLint cannot parse gets no `vois/` finding, only the parse error). The `files` glob is case-sensitive, so `Button.TSX` is not linted, though the gate reads it. `recommended` also ignores the folders the gate never walks (`dist`, `build`, `.next`, `vendor`, `coverage` and the rest of `SKIP_DIRS` in `check.mjs`).
+- **Waivers and teams.** The plugin reads `.vois/config.json` (`ignoredRules`, `ignoredFiles`, `ignoredValues`) and `.vois/teams` from the project root with the gate's own functions, so the editor, the hook and the gate agree on what is waived and on each team's tighter limits. As in the gate, `config.local.json` and `enabled: false` do not apply. `settings.vois` takes one key, `root`; a relative root is read from ESLint's working directory. A file outside the root gets the base limits, and no relative `ignoredFiles` glob matches it. A malformed waiver config, a team file that is not valid JSON or not a `vois-team-override/1` file (or has a malformed scope), or a wrong `settings.vois` (another type, an unknown key, a root that is not a folder) makes the lint run fail with an error, rather than waiving more or dropping a team's limits. An override the detectors cannot apply (an unknown rule or limit, or a value looser than the base) is ignored, as in the hook and the gate. ESLint's own config and disable comments are a second, local waiver: they do not reach the gate, so a finding silenced only in ESLint is still a finding there. Record a waiver the gate should honor in `.vois/config.json`.
+- **Speed.** The detectors run once per file, the first time an enabled `vois/` rule asks, and every rule reads that one result. The waiver and team files are read again for each file, so an edit to them shows in the editor on the next lint. With `eslint --cache`, ESLint does not know about `.vois/`: after you change a waiver or a team file, delete `.eslintcache` (or run once without `--cache`) so unchanged files are linted again.
+- **Dependencies.** None at run time. The plugin imports `scripts/` and `data/` next to it, so keep `vois-tokens/eslint-plugin`, `vois-tokens/scripts` and `vois-tokens/data` together. `eslint-plugin/package.json` pins ESLint 9.39.5 and the TypeScript parser for its tests only: `cd vois-tokens/eslint-plugin && npm ci --ignore-scripts && node --test index.test.mjs`.
