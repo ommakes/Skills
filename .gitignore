@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 registry/node_modules/
 registry/public/
+registry/harness/dist/
+registry/.vois/
 /node_modules/
 registry/.typecheck-tmp-*/
 registry/.icon-button-test-*/
