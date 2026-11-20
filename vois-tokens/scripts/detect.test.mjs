@@ -1722,7 +1722,7 @@ test("DS-ICON-005 stays quick on a very long file", () => {
 
 test("the built registry components raise no DS-ICON-005 finding", () => {
   const root = join(HERE, "..", "..", "registry", "vois");
-  for (const dir of ["dialog", "input-group", "button", "command", "panel"]) {
+  for (const dir of ["dialog", "input-group", "button", "icon-button", "command", "panel"]) {
     const file = join(root, dir, `${dir}.tsx`);
     if (!existsSync(file)) continue;
     assert.deepEqual(detectFile(file, readFileSync(file, "utf8")).filter((x) => x.ruleId === "DS-ICON-005"), [], dir);

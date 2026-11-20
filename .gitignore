@@ -3,3 +3,5 @@ __pycache__/
 registry/node_modules/
 registry/public/
 /node_modules/
+registry/.typecheck-tmp-*/
+registry/.icon-button-test-*/

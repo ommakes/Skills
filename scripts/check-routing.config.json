@@ -3,6 +3,7 @@
   "externalSkills": ["vois-router", "vois-loop", "metrics-tagging"],
   "skipFiles": ["prds/**", "design-previews/README.md"],
   "ignore": [
-    { "file": "vois-tokens/README.md", "message": "DS-CSS-008" }
+    { "file": "vois-tokens/README.md", "message": "DS-CSS-008" },
+    { "file": "registry/vois-render.json", "message": "^path does not exist: /" }
   ]
 }

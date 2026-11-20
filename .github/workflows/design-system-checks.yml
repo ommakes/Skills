@@ -128,6 +128,23 @@ jobs:
       - name: The panel layout's decision logic, against grid-logic.mjs
         run: npm run panel:test
 
+      # The syntax check does not read types. This compiles every component the way an app does (strict, React 19
+      # types, @/ imports resolved to the registry files), so a wrong prop or a broken import between items fails here.
+      - name: Type-check every registry component
+        run: npm run typecheck
+      - name: The type check's own tests (misuse such as an IconButton without a label must not compile)
+        run: npm run typecheck:test
+      - name: IconButton renders its label as the name, and keeps its tooltip closed when disabled
+        run: npm run icon-button:test
+
+      # The accessibility harness (registry/harness, a dev tool) renders every registry:ui item. These check that none is
+      # left off a page and that vois-render.json is what the stories give. The rendered check itself runs only in the
+      # private repo, which has the vois-loop scripts.
+      - name: The harness check's own tests
+        run: npm run harness:test
+      - name: Every registry item is on a harness page
+        run: npm run harness:check
+
       - name: Build the registry (shadcn validates every item against its schema)
         run: npm run build
 
