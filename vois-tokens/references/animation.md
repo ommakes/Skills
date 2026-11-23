@@ -108,7 +108,7 @@ Always respect `prefers-reduced-motion`. Users who set this have real reasons â€
 }
 ```
 
-In Motion:
+In Motion, call the hook, or set `reducedMotion="user"` on a `MotionConfig` so transform and layout animations under it follow the OS setting. `DS-ANIMATION-004` accepts either in the same file:
 
 ```tsx
 import { useReducedMotion } from "motion/react"

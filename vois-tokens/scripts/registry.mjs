@@ -223,13 +223,25 @@ export const RULES = [
     severity: "quality",
     extensions: ALL_EXT,
     fixHint: "Pair outline:none / outline-none with a :focus-visible style, or don't remove the outline.",
-    check({ content, lines }) {
+    check({ content, lines, filePath }) {
       const findings = [];
-      for (const raw of scanRegex(content, lines, /outline:\s*none\b|\boutline-none\b/, "outline removed — no nearby focus-visible replacement found.")) {
-        const windowStart = Math.max(0, raw.line - 4);
-        const windowEnd = Math.min(lines.length, raw.line + 3);
-        const nearby = lines.slice(windowStart, windowEnd).join("\n");
-        if (!/focus-visible/.test(nearby)) findings.push(raw);
+      const sheet = /\.s?css$/i.test(filePath || "");
+      let sheetText = null; // the stylesheet's blocks, with comments blanked, read once
+      const re = /(outline:\s*none\b)|\boutline-none\b/g;
+      let m;
+      while ((m = re.exec(content)) !== null) {
+        const line = lineAt(content, m.index);
+        const nearby = lines.slice(Math.max(0, line - 4), Math.min(lines.length, line + 3)).join("\n");
+        if (/focus-visible/.test(nearby)) continue;
+        // In a stylesheet the replacement is usually the next rule for the same selector, more than three lines away.
+        if (sheet && m[1]) {
+          if (!sheetText) {
+            const text = blankComments(content, /\.scss$/i.test(filePath));
+            sheetText = { rules: styleRules(text) };
+          }
+          if (focusVisibleCovers(sheetText, m.index)) continue;
+        }
+        findings.push({ line, snippet: snippetAt(lines, line), message: "outline removed — no nearby focus-visible replacement found." });
       }
       return findings;
     },
@@ -241,11 +253,30 @@ export const RULES = [
     extensions: CODE_EXT,
     fixHint: "Add an alt attribute (alt=\"\" is valid for purely decorative images).",
     check({ content, lines }) {
+      // One opening tag at a time, so an alt on another line (or on another <img>) is read for the right tag.
+      // A prop spread ({...props}) can carry alt; the detector cannot see inside it, so the tag is not flagged.
       const findings = [];
-      for (const raw of scanRegex(content, lines, /<img\b[^>]*>/, "img tag missing alt attribute.")) {
-        const lineText = lines[raw.line - 1] || "";
-        if (!/\balt\s*=/.test(lineText)) findings.push(raw);
+      const read = new Set();
+      for (const tag of openingTags(content, ["img"])) {
+        read.add(tag.index);
+        const { flat, spread } = readAttrs(tag.attrs);
+        if (spread) continue;
+        const m = /(?<![\w$-])alt\s*=\s*/.exec(flat);
+        // alt="" is valid (decorative). alt={undefined}, alt={null} and a bare alt are no text.
+        if (m && !/^\{\s*(?:undefined|null)\s*\}/.test(tag.attrs.slice(m.index + m[0].length))) continue;
+        const line = lineAt(content, tag.index);
+        findings.push({ line, snippet: snippetAt(lines, line), message: "img tag missing alt attribute." });
       }
+      // A tag the scanner cannot read (over 3000 characters, such as an inline data: URI, or one that never closes) gets the old line check.
+      const start = /<img(?=[\s/>])/g;
+      let m;
+      while ((m = start.exec(content)) !== null) {
+        if (read.has(m.index)) continue;
+        const line = lineAt(content, m.index);
+        if (/(?<![\w$-])alt\s*=/.test(lines[line - 1] || "")) continue;
+        findings.push({ line, snippet: snippetAt(lines, line), message: "img tag missing alt attribute." });
+      }
+      findings.sort((a, b) => a.line - b.line);
       return findings;
     },
   },
@@ -283,6 +314,8 @@ export const RULES = [
       const stylexPattern = /\b(padding|margin|gap|rowGap|columnGap|paddingTop|paddingRight|paddingBottom|paddingLeft|paddingInline|paddingBlock|paddingInlineStart|paddingInlineEnd|marginTop|marginRight|marginBottom|marginLeft|marginInline|marginBlock|marginInlineStart|marginInlineEnd)\s*:\s*["']?(\d+(?:\.\d+)?)(?:px)?["']?\s*[,}]/g;
       while ((match = stylexPattern.exec(content)) !== null) {
         const val = parseFloat(match[2]);
+        // A number under 1 is a ratio (React Flow's fitViewOptions padding: 0.2), not a length on the scale.
+        if (val > 0 && val < 1) continue;
         if (val % divisor !== 0) {
           const line = lineAt(content, match.index);
           findings.push({ line, snippet: snippetAt(lines, line), message: `Arbitrary value "${match[1]}: ${match[2]}" is not divisible by ${divisor}.${note}` });
@@ -355,7 +388,8 @@ export const RULES = [
       // switches animation off, so on its own it does not.
       const hasAnimation = /@keyframes|\banimate-(?!none\b)(?:\[|[\w-])|\bmotion\.[A-Za-z]+|from\s+["']motion\/react["']|from\s+["']framer-motion["']|transition(?:-[\w]+)?:/.test(content);
       // Tailwind's motion-reduce: and motion-safe: variants compile to the prefers-reduced-motion query.
-      const hasReducedMotion = /prefers-reduced-motion|\bmotion-(?:reduce|safe):/.test(content);
+      // Motion's useReducedMotion() hook counts when it is called (importing it does not), and so does a MotionConfig set to reducedMotion="user" or "always".
+      const hasReducedMotion = /prefers-reduced-motion|\bmotion-(?:reduce|safe):|(?<![\w$])(?<!\bfunction\s+)useReducedMotion\s*\(/.test(content) || motionConfigReduces(content);
       if (hasAnimation && !hasReducedMotion) {
         return [{ line: 1, snippet: "(file-level)", message: "File uses animation/transitions but has no prefers-reduced-motion handling anywhere in it." }];
       }
@@ -713,7 +747,7 @@ export const RULES = [
         if (!iconSize.test(a)) continue;
         // A prop spread ({...props}) can carry the name; the detector cannot see inside it. An object spread
         // inside a value (style={{...base}}, className={cn({...x})}) is not a prop spread.
-        if (/(?:^|[^=({,\s])\s+\{\s*\.\.\.|^\s*\{\s*\.\.\./.test(a)) continue;
+        if (readAttrs(a).spread) continue;
         if (hasName(a)) continue;
         if (!/\/\s*$/.test(a)) {
           const from = tag.index + 1 + tag.name.length + a.length + 1;
@@ -961,6 +995,130 @@ export const RULES = [
   },
 ];
 
+// --- Shared attribute and stylesheet readers ---------------------------------------------------
+
+/**
+ * The attribute text of one JSX tag, read at its top level. `flat` is the text with the inside of every quoted value
+ * and every {expression} blanked out (same length, so an index in it is an index in the original); `spread` is true
+ * when a prop spread ({...props}) sits at the top level. An object spread inside a value (style={{...base}}) is not one.
+ */
+function readAttrs(attrs) {
+  let flat = "";
+  let spread = false;
+  for (let i = 0; i < attrs.length; ) {
+    const c = attrs[i];
+    let end = -1;
+    if (c === '"' || c === "'") {
+      const e = attrs.indexOf(c, i + 1);
+      end = e === -1 ? attrs.length : e + 1;
+      flat += c + " ".repeat(Math.max(0, end - i - 2)) + (e === -1 ? "" : c);
+    } else if (c === "{") {
+      const e = braceEnd(attrs, i);
+      end = e === -1 ? attrs.length : e;
+      if (/^\{\s*\.\.\./.test(attrs.slice(i, end))) spread = true;
+      flat += "{" + " ".repeat(Math.max(0, end - i - 2)) + (e === -1 ? "" : "}");
+    } else {
+      end = i + 1;
+      flat += c;
+    }
+    i = end;
+  }
+  return { flat, spread };
+}
+
+/** Whether a <MotionConfig reducedMotion="user"> (or "always", or an expression that may be one) is in the file. "never" and a missing prop are not. */
+function motionConfigReduces(content) {
+  for (const tag of openingTags(content, ["(?:[A-Za-z_$][\\w$]*\\.)?MotionConfig"])) {
+    const m = /(?<![\w$-])reducedMotion\s*=\s*/.exec(readAttrs(tag.attrs).flat);
+    if (!m) continue;
+    const value = tag.attrs.slice(m.index + m[0].length);
+    if (/^(["'])(?:user|always)\1/.test(value) || /^\{\s*(["'`])(?:user|always)\1\s*\}/.test(value)) return true;
+    // A computed value (reducedMotion={mode}) is not read; it may be "user". A string literal that is anything else is not handling.
+    if (value.startsWith("{") && !/^\{\s*["'`]/.test(value)) return true;
+  }
+  return false;
+}
+
+/** Comments replaced by spaces (newlines kept), so an index in the result is an index in the original. `//` comments only in SCSS. */
+function blankComments(content, scss) {
+  const blank = (m) => m.replace(/[^\n]/g, " ");
+  let out = content.replace(/\/\*[\s\S]*?\*\//g, blank);
+  // A // starts a comment at the start of a line or after whitespace, ";", "{" or "}"; not in url(//host/x.png) or http://.
+  if (scss) out = out.replace(/(^|[\s;{}])\/\/[^\n]*/gm, (m, pre) => pre + blank(m.slice(pre.length)));
+  return out;
+}
+
+/** The selector text just before the "{" at `open`: back to the last ";", "{" or "}". Empty for an at-rule. */
+function selectorBefore(text, open) {
+  let start = open;
+  while (start > 0 && text[start - 1] !== ";" && text[start - 1] !== "{" && text[start - 1] !== "}") start--;
+  const sel = text.slice(start, open).trim();
+  return sel.startsWith("@") ? "" : sel;
+}
+
+/** A selector list split on its top-level commas (not the ones inside :is(.a, .b)), whitespace collapsed. */
+function selectorList(sel) {
+  const out = [];
+  let depth = 0;
+  let from = 0;
+  for (let i = 0; i <= sel.length; i++) {
+    const c = sel[i];
+    if (c === "(" || c === "[") depth++;
+    else if (c === ")" || c === "]") depth = Math.max(0, depth - 1);
+    else if ((c === "," && depth === 0) || i === sel.length) {
+      const one = sel.slice(from, i).replace(/\s+/g, " ").trim();
+      if (one) out.push(one);
+      from = i + 1;
+    }
+  }
+  return out;
+}
+
+/**
+ * Every {...} block of comment-free stylesheet text, nested ones too: its "{" and "}" indexes (close is -1 if it never
+ * closes), its selectors (empty for an at-rule such as @media, which is transparent), the block it sits in (`outer`)
+ * and the nearest enclosing real rule (`parent`, an "{" index, or -1 at the top level).
+ */
+function styleRules(text) {
+  const rules = [];
+  const stack = [];
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === "{") {
+      const selectors = selectorList(selectorBefore(text, i));
+      let parent = -1;
+      for (let k = stack.length - 1; k >= 0; k--) if (stack[k].selectors.length) { parent = stack[k].open; break; }
+      const rule = { open: i, close: -1, selectors, outer: stack[stack.length - 1] || null, parent };
+      rules.push(rule);
+      stack.push(rule);
+    } else if (c === "}") {
+      const rule = stack.pop();
+      if (rule) rule.close = i;
+    }
+  }
+  return rules;
+}
+
+/**
+ * Whether the declaration at `index` (in comment-free stylesheet text) has a :focus-visible replacement: a &:focus-visible
+ * rule nested directly in the same block, or, for every selector of its rule, a rule for that selector with :focus-visible
+ * (a rule for ".a:focus" counts as ".a") among the rules that share its parent: the whole file at the top level, the same
+ * parent block when nested (so "&:focus-visible" under another parent does not count). The rule can be anywhere in that
+ * scope. Unreadable braces, or a declaration directly in an at-rule: false.
+ */
+function focusVisibleCovers({ rules }, index) {
+  let own = null;
+  for (const r of rules) if (r.open < index && (r.close === -1 || index < r.close) && (!own || r.open > own.open)) own = r;
+  if (!own || own.close === -1 || own.selectors.length === 0) return false;
+  if (rules.some((r) => r.outer === own && r.selectors.some((s) => /^&:focus-visible(?![\w-])/.test(s)))) return true;
+  const siblings = rules.filter((r) => r.parent === own.parent && r.selectors.length).flatMap((r) => r.selectors);
+  return own.selectors.every((sel) => {
+    if (/:focus-visible(?![\w-])/.test(sel)) return true;
+    const base = sel.replace(/:focus$/, "") + ":focus-visible";
+    return siblings.some((o) => o.startsWith(base) && !/[\w-]/.test(o[base.length] || " "));
+  });
+}
+
 // --- DS-ICON-005 helpers -----------------------------------------------------------------------
 
 /** aria-label or aria-labelledby with a non-empty value. {undefined}, {null} and an empty string are no name. data-aria-label= does not count. */
@@ -989,6 +1147,11 @@ function braceEnd(text, i) {
       const e = text.indexOf("*/", j + 2);
       if (e === -1) return -1;
       j = e + 1;
+    } else if (c === "/" && text[j + 1] === "/" && text[j - 1] !== ":") {
+      // A line comment (a // inside a string was skipped above). An apostrophe or brace in it is not code.
+      const e = text.indexOf("\n", j);
+      if (e === -1) return -1;
+      j = e;
     } else if (c === "{") depth++;
     else if (c === "}" && --depth === 0) return j + 1;
   }

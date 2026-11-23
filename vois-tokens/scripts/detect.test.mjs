@@ -1950,3 +1950,211 @@ test("team scopes match Windows backslash paths from the same root-relative help
   assert.equal(src("C:\\w\\proj2\\apps\\payments\\Pay.tsx"), null, "a sibling folder is outside the root");
   assert.equal(src("D:\\w\\proj\\apps\\payments\\Pay.tsx"), null, "another drive is outside the root");
 });
+
+// ---- Portfolio-Site false positives: DS-A11Y-010, DS-ANIMATION-004, DS-SPACING-001, DS-A11Y-003 -----------
+
+const imgHits = (code) => detectFile("a.tsx", code).filter((f) => f.ruleId === "DS-A11Y-010");
+
+test("DS-A11Y-010 reads the whole <img> tag, so alt on another line counts", () => {
+  for (const code of [
+    "<img\n  src={cardLogo}\n  alt={`${entry.org} logo`}\n  className=\"timeline-card-logo\"\n  loading=\"lazy\"\n/>",
+    '<img src={u} alt="" />',
+    "<img\n  src={a}\n  alt=''\n/>",
+    "<img src={a > b ? x : y}\n alt=\"logo\" />", // a ">" inside braces does not end the tag
+    "<img src={u} alt={name} >", // not self-closing
+  ]) assert.equal(imgHits(code).length, 0, code);
+});
+
+test("DS-A11Y-010 still flags an <img> with no alt, on one line or many", () => {
+  assert.deepEqual(imgHits('<img src={u} />').map((f) => f.line), [1]);
+  assert.deepEqual(imgHits("const a = 1;\n<img\n  src={u}\n  className=\"x\"\n/>").map((f) => f.line), [2], "reported at the tag's first line");
+  assert.equal(imgHits("<img src={a > b ? x : y}\n className=\"x\" />").length, 1, "a > in braces does not hide the missing alt");
+});
+
+test("DS-A11Y-010 reads one <img> at a time", () => {
+  // The old line check let the second tag's alt excuse the first.
+  assert.equal(imgHits('<img src={a} /><img src={b} alt="" />').length, 1);
+  assert.equal(imgHits('<img src={a} alt="" /><img src={b} />').length, 1);
+  assert.equal(imgHits('<img src={a}\n/>\n<img src={b}\n alt="x" />').length, 1, "an alt on a later tag is not this tag's alt");
+});
+
+test("DS-A11Y-010 counts an attribute named alt, nothing that only contains it", () => {
+  for (const code of [
+    '<img src={u} data-alt="x" />',
+    '<img src={u} className="alt=big" />',
+    "<img src={u} title={`alt=${x}`} />",
+    '<img src={u} aria-alt="x" />',
+    "<img src={u} alt={undefined} />", // no value: alt is missing
+    "<img src={u} alt={null} />",
+    "<img src={u} alt />", // a bare attribute is alt={true}, not text
+  ]) assert.equal(imgHits(code).length, 1, code);
+});
+
+test("DS-A11Y-010 does not read inside a prop spread, but an object spread in a value is not a prop spread", () => {
+  for (const code of ["<img {...props} />", "<img src={u} {...rest} />", "<img\n  src={u}\n  {...imgProps}\n/>", "<img {...props} src={u} />"])
+    assert.equal(imgHits(code).length, 0, code);
+  for (const code of ["<img src={u} style={{ ...base }} />", "<img src={u} className={cn({ ...x })} />"])
+    assert.equal(imgHits(code).length, 1, code);
+});
+
+const reducedMotionHits = (code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === "DS-ANIMATION-004");
+
+test("DS-ANIMATION-004: a useReducedMotion() call counts as reduced-motion handling", () => {
+  for (const code of [
+    "import { motion, useReducedMotion } from 'framer-motion';\nfunction A() { const r = useReducedMotion(); return <motion.div animate={{ x: r ? 0 : 10 }} />; }",
+    'import { motion, useReducedMotion } from "motion/react";\nconst r = !!useReducedMotion();\n<motion.div />',
+    "import * as m from 'motion/react';\nconst r = m.useReducedMotion ();\n<div style={{ transition: 'opacity 1s' }} />",
+  ]) assert.equal(reducedMotionHits(code).length, 0, code);
+});
+
+test("DS-ANIMATION-004: importing useReducedMotion, or a lookalike name, is not handling", () => {
+  const motion = "import { motion } from 'framer-motion';\n<motion.div />\n";
+  for (const extra of [
+    "import { useReducedMotion } from 'framer-motion';", // imported, never called
+    "const r = useReducedMotionX();",
+    "const r = myuseReducedMotion();",
+    "const r = use_reduced_motion();",
+    "const r = obj.useReducedMotionFlag;",
+  ]) assert.equal(reducedMotionHits(motion + extra).length, 1, extra);
+});
+
+test("DS-ANIMATION-004: MotionConfig reducedMotion user or always counts, never does not", () => {
+  const body = "<motion.div animate={{ x: 1 }} />";
+  const cfg = (attr) => `import { motion, MotionConfig } from 'framer-motion';\nconst A = () => <MotionConfig ${attr}>${body}</MotionConfig>;`;
+  for (const attr of ['reducedMotion="user"', "reducedMotion='always'", 'reducedMotion={"user"}', 'transition={t} reducedMotion="user"', "reducedMotion={mode}"])
+    assert.equal(reducedMotionHits(cfg(attr)).length, 0, attr);
+  for (const attr of ['reducedMotion="never"', "reducedMotion={'never'}", "transition={t}", 'data-reducedMotion="user"'])
+    assert.equal(reducedMotionHits(cfg(attr)).length, 1, attr);
+  // The prop only counts on MotionConfig.
+  assert.equal(reducedMotionHits(`import { motion } from 'framer-motion';\n<div reducedMotion="user"><motion.div /></div>`).length, 1);
+  assert.equal(reducedMotionHits(`import { motion } from 'framer-motion';\n<MotionConfigX reducedMotion="user"><motion.div /></MotionConfigX>`).length, 1);
+});
+
+test("DS-ANIMATION-004: a file with animation and nothing else is still flagged", () => {
+  assert.equal(reducedMotionHits("import { motion } from 'framer-motion';\n<motion.div animate={{ x: 1 }} />").length, 1);
+  assert.equal(reducedMotionHits(".a { transition: opacity 1s; }", "a.css").length, 1);
+});
+
+const spacingHits = (code, file = "a.tsx") => detectFile(file, code).filter((f) => f.ruleId === "DS-SPACING-001");
+
+test("DS-SPACING-001 does not read a fraction under 1 as a length (React Flow fitView padding)", () => {
+  for (const code of [
+    "<ReactFlow fitView fitViewOptions={{ padding: 0.2 }} />",
+    "if (rf) rf.fitView({ padding: 0.2, duration: readMotionMs('base') });",
+    "const o = { padding: 0.5 };",
+    "const o = { margin: 0.25, gap: 0.1 };",
+    "const o = { padding: 0 };",
+  ]) assert.equal(spacingHits(code).length, 0, code);
+});
+
+test("DS-SPACING-001 still flags a StyleX number that is a length off the scale", () => {
+  for (const code of [
+    "const s = stylex.create({ a: { padding: 11 } });",
+    "const s = stylex.create({ a: { padding: 1.5 } });", // 1 and above is read as pixels
+    "const s = stylex.create({ a: { padding: 1 } });",
+    "const s = stylex.create({ a: { paddingTop: 2, margin: 12.5 } });",
+    'const s = stylex.create({ a: { gap: "6px" } });',
+  ]) assert.ok(spacingHits(code).length >= 1, code);
+  assert.equal(spacingHits("const s = stylex.create({ a: { padding: 16, gap: 8 } });").length, 0);
+});
+
+const focusHits = (code, file = "a.css") => detectFile(file, code).filter((f) => f.ruleId === "DS-A11Y-003");
+const gap6 = ["  a: 1;", "  b: 2;", "  c: 3;", "  d: 4;", "  e: 5;", "  f: 6;"].join("\n");
+
+test("DS-A11Y-003 accepts a :focus-visible rule for the same selector, however far below", () => {
+  for (const css of [
+    `.stage {\n  outline: none;\n${gap6}\n}\n\n.stage:focus-visible {\n  box-shadow: inset 0 0 0 2px red;\n}`,
+    `.stage:focus-visible { box-shadow: 0 0 0 2px red; }\n.x { y: 1; }\n.z { y: 1; }\n.stage {\n  outline: none;\n${gap6}\n}`, // above it
+    `.btn:focus {\n  outline: none;\n${gap6}\n}\n.btn:focus-visible { outline: 2px solid red; }`, // :focus is the removed one
+    `.stage {\n  outline: none;\n${gap6}\n}\n.other { a: 1; }\n.stage:focus-visible > span, .q { a: 1; }`, // a longer selector that starts with it
+    `@media (min-width: 1px) {\n  .stage {\n    outline: none;\n${gap6}\n  }\n}\n.stage:focus-visible { a: 1; }`,
+    `.a, .b {\n  outline: none;\n${gap6}\n}\n.a:focus-visible, .b:focus-visible { a: 1; }`,
+    `.a, .b {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }\n.b:focus-visible { a: 1; }`,
+  ]) assert.equal(focusHits(css).length, 0, css);
+});
+
+test("DS-A11Y-003 accepts a nested :focus-visible in the same SCSS block, however far below", () => {
+  const scss = `.stage {\n  outline: none;\n${gap6}\n  &:focus-visible {\n    box-shadow: 0 0 0 2px red;\n  }\n}`;
+  assert.equal(focusHits(scss, "a.scss").length, 0);
+});
+
+test("DS-A11Y-003 reads braces past a comment when it finds the end of the rule", () => {
+  const scss = `.stage {\n  outline: none;\n  /* } */\n${gap6}\n  &:focus-visible { a: 1; }\n}`;
+  assert.equal(focusHits(scss, "a.scss").length, 0);
+});
+
+test("DS-A11Y-003 still flags an outline removed with no replacement for that selector", () => {
+  for (const css of [
+    `.stage {\n  outline: none;\n${gap6}\n}`,
+    `.stage {\n  outline: none;\n${gap6}\n}\n.other:focus-visible { a: 1; }`, // another element's ring
+    `.a {\n  outline: none;\n${gap6}\n}\n.ab:focus-visible { a: 1; }`, // the name only starts the same
+    `.a {\n  outline: none;\n${gap6}\n}\n.a:focus-visible-ish { a: 1; }`,
+    `.a:hover {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`, // a different state of it
+    `.a, .b {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`, // one of the two has none
+    `.a {\n  outline: none;\n${gap6}\n}\n/* .a:focus-visible { a: 1; } */`, // in a comment
+    `.a {\n  outline: none;\n${gap6}\n}\n.a { content: ".a:focus-visible"; }`,
+    `.a {\n  outline: none;\n${gap6}\n}\n.b .a:focus-visible { a: 1; }`, // a descendant selector is not the same element
+  ]) assert.equal(focusHits(css).length, 1, css);
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n.a:focus-visible {}`.replace(".a:focus-visible {}", "")).length, 1);
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n.aaaaaaaaaaaaaaa .a:focus-visible { a: 1; }`).length, 1, "a descendant whose own selector is long enough to put a space where the boundary check looks");
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n/* old rule; .a:focus-visible { a: 1; } */`).length, 1, "a comment with a semicolon before the selector");
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n// old rule; .a:focus-visible { a: 1; }`, "a.scss").length, 1, "an SCSS line comment");
+  assert.equal(focusHits(`@media print {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`).length, 1, "a declaration in an at-rule has no selector to pair");
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n  .child:focus-visible { a: 1; }\n}`, "a.scss").length, 1, "a nested rule for a child is not this element's ring");
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`, "a.tsx").length, 1, "CSS inside a .tsx file only gets the three-line check");
+  // SCSS: a nested :focus-visible in another rule is not this rule's.
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n.b {\n  &:focus-visible { a: 1; }\n}`, "a.scss").length, 1);
+});
+
+test("DS-A11Y-003 keeps the three-line window for Tailwind and for a replacement next to the declaration", () => {
+  assert.equal(focusHits('<button className="outline-none focus-visible:ring-2" />', "a.tsx").length, 0);
+  assert.equal(focusHits(".a {\n  outline: none;\n}\n.a:focus-visible { x: 1; }").length, 0);
+  assert.equal(focusHits(".a:focus-visible {\n  outline: none;\n  box-shadow: 0 0 0 2px red;\n}").length, 0, "the selector itself is :focus-visible");
+  assert.equal(focusHits('<button className="outline-none" />', "a.tsx").length, 1);
+});
+
+// ---- Review findings on the 1.48.1 detectors ---------------------------------------------------------------
+
+test("DS-A11Y-010 falls back to the line check for a tag it cannot read (over 3000 characters, or never closed)", () => {
+  const big = "x".repeat(3500);
+  assert.equal(imgHits(`<img src="data:${big}" />`).length, 1, "a long tag with no alt on its line is still flagged");
+  assert.equal(imgHits(`<img src="data:${big}" alt="" />`).length, 0, "and alt on the same line still passes");
+  assert.equal(imgHits("<img src={a\n").length, 1, "a tag that never closes");
+  assert.equal(imgHits("<img src={a} alt=\"\"\n").length, 0);
+});
+
+test("DS-A11Y-010 reads past a // comment that holds an apostrophe or a brace", () => {
+  assert.equal(imgHits("<img\n src={x // it's\n}\n alt=\"\" />").length, 0);
+  assert.equal(imgHits("<img\n src={x // }\n}\n alt=\"\" />").length, 0);
+  assert.equal(imgHits("<img\n src={x // it's\n}\n className=\"a\" />").length, 1, "still flagged when there is no alt");
+  assert.equal(imgHits("<img src={`http://x.com/a.png`} />").length, 1, "// inside a string is not a comment");
+  assert.equal(imgHits("<img src={a} alt={`http://x.com`} />").length, 0);
+});
+
+test("DS-ANIMATION-004: defining a function named useReducedMotion is not handling", () => {
+  const motion = "import { motion } from 'framer-motion';\n<motion.div />\n";
+  assert.equal(reducedMotionHits(motion + "export function useReducedMotion() { return false; }").length, 1);
+  assert.equal(reducedMotionHits(motion + "export default function  useReducedMotion(){ return false; }").length, 1);
+  assert.equal(reducedMotionHits(motion + "const r = useReducedMotion();").length, 0);
+});
+
+test("DS-A11Y-003 pairs a nested SCSS rule only with its own parent's rules", () => {
+  const nested = (outlineRule, other) => `.a {\n  ${outlineRule} {\n    outline: none;\n${gap6}\n  }\n${other}\n}`;
+  // Same parent: counts.
+  assert.equal(focusHits(nested("&:focus", "  &:focus-visible { a: 1; }"), "a.scss").length, 0);
+  assert.equal(focusHits(nested(".b", "  .b:focus-visible { a: 1; }"), "a.scss").length, 0);
+  // Another parent's &:focus-visible, or a rule for a nested child, is not this rule's.
+  assert.equal(focusHits(`.a {\n  &:focus {\n    outline: none;\n${gap6}\n  }\n}\n.b {\n  &:focus-visible { a: 1; }\n}`, "a.scss").length, 1);
+  assert.equal(focusHits(`.card {\n  .x {\n    outline: none;\n${gap6}\n  }\n}\n.other {\n  .x:focus-visible { a: 1; }\n}`, "a.scss").length, 1);
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n  .b { &:focus-visible { a: 1; } }\n}`, "a.scss").length, 1, "a grandchild's &:focus-visible");
+  // A top-level rule is not paired with a nested one of the same text.
+  assert.equal(focusHits(`.x {\n  outline: none;\n${gap6}\n}\n.p {\n  .x:focus-visible { a: 1; }\n}`, "a.scss").length, 1);
+  // At-rules are transparent.
+  assert.equal(focusHits(`@media (min-width: 1px) {\n  .a {\n    outline: none;\n${gap6}\n  }\n}\n@media print {\n  .a:focus-visible { a: 1; }\n}`).length, 0);
+});
+
+test("DS-A11Y-003 does not read url(//host) in SCSS as a line comment", () => {
+  const scss = `.a { background: url(//cdn.example.com/x.png); }\n.a {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`;
+  assert.equal(focusHits(scss, "a.scss").length, 0, "the brace after the url stays");
+  assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n// note; .a:focus-visible { a: 1; }`, "a.scss").length, 1, "a real line comment is still blanked");
+});
