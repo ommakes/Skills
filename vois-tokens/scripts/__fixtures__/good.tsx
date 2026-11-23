@@ -27,9 +27,9 @@ export function GoodCard() {
 }
 
 function GoodDialog() {
-  // overscroll-behavior: contain; — applied via the shared modal-scroll class.
   return (
     <div role="dialog" inert={false} className="modal-scroll">
+      <style>{".modal-scroll { overscroll-behavior: contain; }"}</style>
       accessible modal
     </div>
   );

@@ -24,7 +24,7 @@ import { loadTeams, paramsFor } from "../scripts/team-overrides.mjs";
 import { loadWaivers, severityOf, SKIP_DIRS, waived } from "../scripts/check.mjs";
 
 // The vois-tokens version this plugin ships with. A test checks it against SKILL.md and skills.json.
-const VERSION = "1.48.1";
+const VERSION = "1.48.2";
 
 /** The file extensions this plugin lints. CSS and SCSS are left to the hook and the CI gate. */
 export const CODE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
@@ -66,7 +66,7 @@ function findingsFor(context) {
   const root = rootOf(context);
   const waivers = loadWaivers(root); // throws on a malformed .vois/config.json
   const teams = loadTeams(root, (name, why) => {
-    throw new VoisConfigError(`.vois/teams/${name}: ${why}. A broken team file would drop the team's tighter limits, so the lint run stops.`);
+    throw new VoisConfigError(`${name ? `.vois/teams/${name}` : ".vois/teams"}: ${why}. A broken team setup would drop the team's tighter limits, so the lint run stops.`);
   });
   // The physical file is what waivers and team scopes name; the virtual name (a code block inside a Markdown file
   // through a processor) decides which detectors run, by its extension.

@@ -12,6 +12,7 @@
 
 import { readFileSync } from "node:fs";
 import { rulesForFile } from "./registry.mjs";
+import { detectFile } from "./detect.mjs";
 import {
   loadConfig,
   filterFindings,
@@ -38,17 +39,8 @@ function proposedContent(input) {
   return null;
 }
 
-function detectProposed(filePath, content) {
-  const lines = content.split("\n");
-  const findings = [];
-  for (const rule of rulesForFile(filePath)) {
-    const hits = rule.check({ content, lines, filePath }) || [];
-    for (const hit of hits) {
-      findings.push({ ruleId: rule.id, severity: hit.severity ?? rule.severity, file: filePath, line: hit.line, snippet: hit.snippet, message: hit.message, fixHint: rule.fixHint });
-    }
-  }
-  return findings;
-}
+// The same detectors as the other hook, so comments are read the same way in both.
+const detectProposed = (filePath, content) => detectFile(filePath, content);
 
 function denyDecision(reason) {
   // Claude-Code-style hookSpecificOutput JSON on stdout, plus exit code 2 +

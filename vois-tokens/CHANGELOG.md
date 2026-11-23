@@ -4,6 +4,22 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.2] - 2026-11-23
+
+### Fixed
+- **A team file with a wrong schema was reported as "unreadable or invalid JSON".** `loadTeams` (`scripts/team-overrides.mjs`) called `onSkip` with the right reason inside its `try`; the `catch` then called it again, or, when the caller's `onSkip` threw (the gate's and the ESLint plugin's do), caught that error and replaced its message. `onSkip` is now called outside the `try`, once, so the gate and the plugin name the real reason.
+- **An unreadable `.vois/teams` folder was read as "no teams".** A `readdirSync` error other than "the folder is not there" now goes to `onSkip` (with an empty name, so callers print `.vois/teams`). Without it a team's tighter limits fell back to the base limits in the gate and the plugin, quietly. `.vois` or `.vois/teams` being a file, a link that points at itself, or a link whose target is gone is such an error. No folder at all is still "no teams".
+- **A mistyped override `op`, rule or limit was skipped without a word.** `loadTeams` now reports an override whose `op` is not `add`, `restrict` or `refine`, whose rule and limit are not one the vois-teams ranges list, or that is not an object. A real limit the hook has no detector for (the new `UNCHECKED_TUNABLES`, which a test keeps equal to `vois-teams/data/ranges.json` together with `TUNABLES`) and an `add` rule are not errors. The report is per override, so the hook, which passes no `onSkip`, still applies the team's other overrides. A value that loosens the base or sits outside its range is still ignored without an error: no op loosens, and the vois-teams validator rejects it in review.
+- **Inherited names counted as limits.** `TUNABLES["constructor"]` is a function, so an override with `rule: "constructor"` got past the lookup and could throw in the hook. Lookups now read own keys only.
+- **A comment was code.** `DS-TAILWIND-004` flagged `!important` inside `/* ... */`, so a comment that explains why `!important` was removed was a new finding in the gate. Checking the other rules showed the same for nearly all of them (a commented-out hex, a commented-out `transition: all`). `detectFile` now blanks comments with `uncomment` from `check-utils.mjs` (newlines kept, so line numbers do not move) before any rule reads the file, and a finding's snippet is still the line as written. `hook-before-edit.mjs` (Cursor) now calls `detectFile` instead of its own copy of the loop, so the one hook that can deny an edit reads comments the same way. `uncomment` is now one linear, string-aware pass instead of two regexes: a `//` or `/*` inside a string or template literal is not a comment (a finding later on that line is still read), a `/*` that never closes costs nothing extra (the regex scanned to the end of the file once per `/*`: 40,000 of them took 8 to 11 s), and it no longer reads `//` right after `url(` as an SCSS comment. `grid-checks.mjs`'s own block-comment stripper got the same linear scan.
+
+### Changed
+- A comment no longer counts as the safeguard it names: `/* prefers-reduced-motion */` does not satisfy `DS-ANIMATION-004`, and `// overscroll-behavior: contain` does not satisfy `DS-MODAL`. The `good.tsx` fixture applied the second one in a comment; it now applies it. A file that only mentioned a safeguard in a comment now gets the finding.
+- `hook-admin.mjs status` prints a team problem as `<file>: <reason>` (it said `skipped <file>: <reason>`), because a problem can now be one override and not the whole file.
+- A project with a gate baseline can see a few findings once after upgrading: a comment used to count as the safeguard it names, and now it does not. Refresh the baseline with `--update` after reading them.
+- Known limit: JSX text is not told apart from code, so a `//` after whitespace in JSX text starts a comment and a finding later on that line is not read. A `//` inside a string is not a comment.
+- Known, not changed here: the glass checks (`DS-GLASS-003` to `-005`) are quadratic on a file of many thousand blank lines, as they were before this change.
+
 ## [1.48.1] - 2026-11-23
 
 ### Fixed

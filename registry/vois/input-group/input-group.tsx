@@ -198,9 +198,10 @@ function InputGroupInput({ className, prefill = false, ...props }: React.Compone
       data-slot="input-group-control"
       data-prefill={prefill ? "true" : undefined}
       className={cn(
-        // The group draws the box and the focus ring, so the input itself has none (outline-none is paired
-        // with the group's :has(:focus-visible) ring above).
-        "h-full min-w-0 flex-1 border-0 bg-transparent p-0 outline-none",
+        // The group draws the box and the focus ring, so the input itself has none (focus-visible:outline-none is
+        // paired with the group's :has(:focus-visible) ring above). A text input matches :focus-visible whenever it
+        // has focus, so this removes the outline in every case the plain outline-none did.
+        "h-full min-w-0 flex-1 border-0 bg-transparent p-0 focus-visible:outline-none",
         "text-[color:var(--text-primary)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)] placeholder:text-[color:var(--text-state-instruction)]",
         // The browser's own clear button on type="search" would sit beside the Figma clear button.
         "[&::-webkit-search-cancel-button]:appearance-none",

@@ -1,10 +1,12 @@
 // Reads team override files from <root>/.vois/teams/*.json and turns them into the limits the
 // detector checks against. Only the limits listed in TUNABLES are read, and only the stricter side
-// of the base is accepted, so a bad or loosening override file is ignored, never applied.
+// of the base is accepted, so a loosening override is ignored, never applied. A file or override that cannot be
+// applied for any other reason (bad JSON, wrong schema or scope, a mistyped op, rule or limit, a team folder that
+// cannot be read) goes to the caller's `onSkip`, so the caller decides: the hook carries on, the gate stops.
 // The override format, and the validator that rejects loosening at review time, are in
 // ../../vois-teams. This file is self-contained so the hook works from vois-tokens alone.
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { lstatSync, readdirSync, readFileSync } from "node:fs";
 import { join, posix, win32 } from "node:path";
 
 export const OVERRIDE_SCHEMA = "vois-team-override/1";
@@ -25,6 +27,48 @@ export const TUNABLES = {
   "DS-ICON-002": { icon_sizes_px: { type: "set", base: [16, 20, 24, 32], stricter: "subset", allowed: [16, 20, 24, 32] } },
   "DS-SPACING-001": { spacing_divisors: { type: "set", base: [4, 8], stricter: "subset", allowed: [4, 8] } },
 };
+
+/**
+ * Limits a team may set (they are in vois-teams/data/ranges.json) that the hook has no detector for. They are
+ * not typos, so loadTeams does not report them, and `status` lists them as "not checked by the hook". A test
+ * fails if TUNABLES plus this list drift from ranges.json.
+ */
+export const UNCHECKED_TUNABLES = [
+  ["DS-A11Y-004", "min_contrast_normal_text"],
+  ["DS-A11Y-004", "min_contrast_large_text_and_ui"],
+  ["DS-TYPOGRAPHY-001", "max_text_styles"],
+  ["DS-TYPOGRAPHY-008", "max_text_width_ch"],
+  ["DS-MKT-002", "min_display_font_size_px"],
+  ["DS-MKT-005", "max_marketing_body_width_ch"],
+  ["DS-MKT-008", "max_section_gap_px"],
+  ["DS-RESPONSIVE-002", "test_breakpoints_px"],
+  ["JOB-MULTISTEP-GUIDE", "stepper_max_steps"],
+  ["JOB-CHOOSE-FROM-LIST", "select_max_items"],
+  ["JOB-DISPLAY-DATA", "table_max_rows"],
+  ["JOB-CONTEXTUAL-INFO", "tooltip_max_words"],
+  ["JOB-EXPOSE-ACTIONS", "max_visible_actions"],
+  ["JOB-OVERLAY-INTERACTION", "dialog_max_fields"],
+  ["JOB-SWITCH-VIEWS", "segmented_max_options"],
+];
+
+const OPS = new Set(["add", "restrict", "refine"]);
+const unchecked = new Set(UNCHECKED_TUNABLES.map(([r, p]) => `${r}\u0000${p}`));
+/** The checked limit for a rule and param, or undefined. Own keys only: "constructor" and "__proto__" are not limits. */
+const specFor = (rule, param) => (typeof rule === "string" && typeof param === "string" && Object.hasOwn(TUNABLES, rule) && Object.hasOwn(TUNABLES[rule], param) ? TUNABLES[rule][param] : undefined);
+
+/**
+ * Why an override cannot be applied because of what it names (a mistyped op, rule or limit), or null. An override
+ * for a real limit the hook has no detector for is fine, and so is an `add`. A value that loosens the base or sits
+ * outside its range is not reported here: it is ignored on purpose, and the vois-teams validator rejects it in review.
+ */
+function overrideProblem(o) {
+  if (!o || typeof o !== "object" || Array.isArray(o)) return "override ignored: it is not an object";
+  const who = typeof o.id === "string" && o.id ? `override ${o.id}` : "override (no id)";
+  if (typeof o.op !== "string" || !OPS.has(o.op)) return `${who} ignored: op ${JSON.stringify(o.op) ?? "missing"} is not add, restrict or refine`;
+  if (o.op === "add") return null;
+  if (specFor(o.rule, o.param) || unchecked.has(`${o.rule}\u0000${o.param}`)) return null;
+  return `${who} ignored: ${JSON.stringify(o.rule) ?? "no rule"} ${JSON.stringify(o.param) ?? "no limit"} is not a limit a team can set`;
+}
 
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
 // Spacing is checked against its smallest divisor, so [4] and [4,8] check the same thing. Any other set is
@@ -114,19 +158,41 @@ export function matchesScope(scopePaths, relPath) {
   return scopePaths.some((g) => typeof g === "string" && g.trim() !== "" && globToRegExp(normalizeGlob(g)).test(relPath));
 }
 
-/** Every well-formed team override file under <root>/.vois/teams. Never throws. */
+const existsLink = (p) => { try { lstatSync(p); return true; } catch { return false; } };
+
+/**
+ * Every well-formed team override file under <root>/.vois/teams. `onSkip(name, why)` hears about everything that is
+ * not applied: a file that is not a team file, a team folder that cannot be read (`name` is "" then) and an
+ * override that names a limit that does not exist. Callers choose what that means. The hook passes nothing and
+ * carries on, so one bad override never stops the team's other limits from applying. The CI gate and the ESLint
+ * plugin throw, because a quiet skip would hold the team to the looser base limits. loadTeams catches its own
+ * read errors only: whatever `onSkip` throws reaches the caller.
+ */
 export function loadTeams(root, onSkip = () => {}) {
   const dir = join(root, ".vois", "teams");
-  if (!existsSync(dir)) return [];
+  let names;
+  try {
+    names = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+  } catch (e) {
+    // No team folder: no teams. But a link whose target is gone (lstat finds it) is a team folder that cannot be read.
+    if (e?.code === "ENOENT" && !existsLink(dir)) return [];
+    onSkip("", `the folder cannot be read (${e?.code ?? "unknown error"})`); // not "no teams": a team's limits may be in there
+    return [];
+  }
   const teams = [];
-  let names = [];
-  try { names = readdirSync(dir).filter((f) => f.endsWith(".json")).sort(); } catch { return []; }
   for (const name of names) {
-    try {
-      const data = JSON.parse(readFileSync(join(dir, name), "utf8"));
-      if (data && data.schema === OVERRIDE_SCHEMA && typeof data.team === "string" && Array.isArray(data.overrides) && validScope(data.scope)) teams.push(data);
-      else onSkip(name, data && data.schema === OVERRIDE_SCHEMA && !validScope(data.scope) ? "scope must be { paths: [one or more globs] }" : "not a vois-team-override/1 file");
-    } catch { onSkip(name, "unreadable or invalid JSON"); }
+    let data;
+    let unreadable = false;
+    try { data = JSON.parse(readFileSync(join(dir, name), "utf8")); } catch { unreadable = true; }
+    // Outside the try, so an onSkip that throws is not caught here and reported a second time as bad JSON.
+    if (unreadable) { onSkip(name, "unreadable or invalid JSON"); continue; }
+    if (!data || data.schema !== OVERRIDE_SCHEMA || typeof data.team !== "string" || !Array.isArray(data.overrides)) { onSkip(name, "not a vois-team-override/1 file"); continue; }
+    if (!validScope(data.scope)) { onSkip(name, "scope must be { paths: [one or more globs] }"); continue; }
+    for (const o of data.overrides) {
+      const why = overrideProblem(o);
+      if (why) onSkip(name, why);
+    }
+    teams.push(data);
   }
   return teams;
 }
@@ -145,7 +211,7 @@ export function paramsFor(teams, root, filePath) {
       if (!matchesScope(team.scope?.paths, rel)) continue;
       for (const o of team.overrides) {
         if (!o || (o.op !== "restrict" && o.op !== "refine")) continue;
-        const spec = TUNABLES[o.rule]?.[o.param];
+        const spec = specFor(o.rule, o.param);
         if (!spec) continue;
         const value = acceptedValue(spec, o.value);
         if (value === undefined || sameValue(o.rule, spec, value, spec.base)) continue; // a value equal to the base changes nothing, so no team is credited
@@ -192,7 +258,7 @@ export function summarizeTeams(teams) {
     for (const o of team.overrides) {
       if (o && o.op === "add") { lines.push(`  added rule, not checked by the hook: ${o.id ?? "(no id)"}`); continue; }
       if (!o || (o.op !== "restrict" && o.op !== "refine")) continue;
-      const spec = TUNABLES[o.rule]?.[o.param];
+      const spec = specFor(o.rule, o.param);
       const label = `${o.rule} ${o.param} = ${JSON.stringify(o.value)}`;
       if (!spec) lines.push(`  not checked by the hook: ${label}`);
       else if (acceptedValue(spec, o.value) !== undefined && sameValue(o.rule, spec, acceptedValue(spec, o.value), spec.base)) lines.push(`  no change from the base: ${label}`);

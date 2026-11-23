@@ -188,7 +188,7 @@ export function run({ root, paths, failOn = "required", baseline = null }) {
   const files = collectFiles(paths, root);
   const waivers = loadWaivers(root);
   const teams = loadTeams(root, (name, why) => {
-    throw new InputError(`.vois/teams/${name}: ${why}. A broken team file would drop the team's tighter limits, so it fails the gate.`);
+    throw new InputError(`${name ? `.vois/teams/${name}` : ".vois/teams"}: ${why}. A broken team setup would drop the team's tighter limits, so it fails the gate.`);
   });
   const all = [];
   for (const file of files) {

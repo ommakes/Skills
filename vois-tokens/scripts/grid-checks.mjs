@@ -12,11 +12,28 @@ import { cssBlocks } from "./css-blocks.mjs";
 
 const lineAt = (content, index) => content.slice(0, index).split("\n").length;
 const snippetAt = (lines, lineNo) => (lines[lineNo - 1] || "").trim().slice(0, 160);
-// Blank block comments but keep every newline, so line numbers do not move.
+// Blank block comments but keep every newline, so line numbers do not move. One pass, so a file full of unclosed "/*"
+// is not scanned to its end once per "/*". In code a "/*" can sit inside a string ("src/*.ts"), so only a comment that
+// starts after whitespace or one of { ( , ; counts (`code`). A "/*" that never closes is left alone.
 const blank = (c) => c.replace(/[^\n]/g, " ");
-const stripComments = (text) => text.replace(/\/\*[\s\S]*?\*\//g, blank);
-// In code a "/*" can sit inside a string ("src/*.ts"), so only a comment that starts after whitespace or one of { ( , ; counts.
-const stripCodeComments = (text) => text.replace(/(?<![^\s{(,;])\/\*[\s\S]*?\*\//g, blank);
+function blankBlocks(text, code) {
+  const parts = [];
+  let last = 0;
+  let from = 0;
+  for (;;) {
+    const open = text.indexOf("/*", from);
+    if (open === -1) break;
+    if (code && open > 0 && !/[\s{(,;]/.test(text[open - 1])) { from = open + 1; continue; }
+    const close = text.indexOf("*/", open + 2);
+    if (close === -1) break; // no later "/*" can close either
+    parts.push(text.slice(last, open), blank(text.slice(open, close + 2)));
+    last = from = close + 2;
+  }
+  parts.push(text.slice(last));
+  return parts.join("");
+}
+const stripComments = (text) => blankBlocks(text, false);
+const stripCodeComments = (text) => blankBlocks(text, true);
 const uncomment = (text, filePath) => (isCssFile(filePath) ? stripComments(text) : stripCodeComments(text));
 const isCssFile = (filePath = "") => /\.(?:css|scss)$/i.test(filePath);
 

@@ -177,6 +177,40 @@ test("a malformed team override file fails the gate instead of dropping the team
   }
 });
 
+test("the gate names the real reason a team file is broken, and a team setup it cannot read or apply fails it", () => {
+  const ok = { schema: "vois-team-override/1", team: "pay", overrides: [{ id: "p-001", op: "restrict", rule: "DS-ANIMATION-001", param: "max_duration_ms", value: 200, reason: "Because." }] };
+  const withOverride = (o) => JSON.stringify({ ...ok, overrides: [{ ...ok.overrides[0], ...o }] });
+  const cases = [
+    [JSON.stringify({ ...ok, schema: "other/1" }), /not a vois-team-override\/1 file/],
+    [JSON.stringify({ ...ok, scope: { paths: [] } }), /scope must be/],
+    ["{ broken", /unreadable or invalid JSON/],
+    [withOverride({ op: "restrct" }), /override p-001 ignored: op "restrct"/],
+    [withOverride({ rule: "DS-ANIMATON-001" }), /DS-ANIMATON-001/],
+    [withOverride({ param: "max_duration" }), /max_duration/],
+  ];
+  for (const [body, want] of cases) {
+    const root = project({ "src/a.tsx": CLEAN, ".vois/teams/pay.json": body });
+    try {
+      const r = cli(root, ["src"]);
+      assert.equal(r.code, 2, body);
+      assert.match(r.err, want, body);
+      if (!want.test("unreadable or invalid JSON")) assert.doesNotMatch(r.err, /invalid JSON/, `${body} is valid JSON`);
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  }
+  // An unreadable team folder fails the gate, as a missing one does not.
+  const asFile = project({ "src/a.tsx": CLEAN, ".vois/teams": "not a folder" });
+  const none = project({ "src/a.tsx": CLEAN });
+  try {
+    const r = cli(asFile, ["src"]);
+    assert.equal(r.code, 2);
+    assert.match(r.err, /\.vois\/teams.*cannot be read/);
+    assert.equal(cli(none, ["src"]).code, 0, "no team folder at all is fine");
+    // A real limit the hook cannot check, and an add rule, are not errors.
+    const quiet = project({ "src/a.tsx": CLEAN, ".vois/teams/pay.json": JSON.stringify({ ...ok, overrides: [{ id: "p-002", op: "restrict", rule: "DS-TYPOGRAPHY-001", param: "max_text_styles", value: 2, reason: "x" }, { id: "p-003", op: "add", text: "x", reason: "x" }] }) });
+    try { assert.equal(cli(quiet, ["src"]).code, 0); } finally { rmSync(quiet, { recursive: true, force: true }); }
+  } finally { rmSync(asFile, { recursive: true, force: true }); rmSync(none, { recursive: true, force: true }); }
+});
+
 test("a folder whose name starts with two dots is inside the root", () => {
   const root = project({ "..generated/a.tsx": HEX });
   try {
