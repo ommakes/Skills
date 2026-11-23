@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.5] - 2026-11-23
+
+### Fixed
+- **`DS-SURFACE-004` gave 2px where the Vois Button uses 4px.** The rule said `icon-side padding = text-side padding - 2px`, with a `pl-4 pr-3.5` example. The registry Button (and the Figma Primary Button it follows) puts the label in a frame with `--space-padding-2x-small` (4px) on each side and the icon outside that frame, so the icon side is 4px less than the text side, and the gap between icon and text is that same 4px. The rule, its JSON entry and the example now say 4px and use the token. The Button's `leadingIcon` and `trailingIcon` already did this, so nothing in the registry changes. Button heights (`DS-COMPONENT-007`) and the 4px grid (`DS-SPACING-001`) are not touched.
+
 ## [1.48.4] - 2026-11-23
 
 ### Fixed

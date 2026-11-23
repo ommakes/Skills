@@ -51,11 +51,11 @@ const styles = stylex.create({
 
 When geometric centering looks wrong, align optically instead. `[DS-SURFACE-003]`
 
-**Buttons with text + icon:** use slightly less padding on the icon side. Rule of thumb: `icon-side padding = text-side padding - 2px`. `[DS-SURFACE-004]`
+**Buttons with text + icon:** use less padding on the icon side, by the label inset. In the Vois Button the label sits in its own frame with `--space-padding-2x-small` (4px) on each side, and the icon sits outside that frame. So `icon-side padding = text-side padding - 4px`, and the gap between the icon and the text is that same 4px. The Button's `leadingIcon` and `trailingIcon` already do this. Copy it only in a button you build by hand. The icon box has empty space inside it, which is why the icon side needs less. `[DS-SURFACE-004]`
 
 ```tsx
-<button className="pl-4 pr-3.5 flex items-center gap-2">
-  <span>Continue</span>
+<button className="flex items-center gap-0 px-[var(--space-padding-small)]">
+  <span className="px-[var(--space-padding-2x-small)]">Continue</span>
   <ArrowRightIcon />
 </button>
 ```
