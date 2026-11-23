@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.48.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.48.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -84,6 +84,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.48.1**: four false positives found by running the gate on a real site. `DS-A11Y-010` reads the whole `<img>` tag, so an `alt` on another line counts (and a prop spread `{...props}` is not read). `DS-ANIMATION-004` accepts a `useReducedMotion()` call and `<MotionConfig reducedMotion="user">`. `DS-SPACING-001` no longer reads a StyleX number under 1 as a length (React Flow `fitViewOptions: { padding: 0.2 }`). `DS-A11Y-003` accepts a `:focus-visible` rule for the same selector anywhere in a stylesheet, not only within three lines.
 - **1.48.0**: `eslint-plugin/index.mjs`, an ESLint plugin (flat config, ESLint 9) with one rule per detector id, so editors show findings as you type and a line can be silenced with `eslint-disable-next-line`. `recommended` uses the gate's severities. It covers `.js`, `.jsx`, `.ts` and `.tsx`; CSS stays with the hook and the gate.
 - **1.47.0**: `scripts/check.mjs`, a CI gate: the same detectors over a project, failing on new findings from required rules (or the level in `--fail-on`), with a baseline for existing code and GitHub annotations. A reusable workflow wraps it. New detector for `DS-TOKEN-001`: a Global palette step used directly instead of the token that aliases it.
 - **1.46.3**: the hook's `ignoredFiles` globs match the path relative to the project root, so `hook-admin.mjs ignore-file "src/legacy/**"` now works when the harness sends an absolute path (Claude Code, Cursor and Codex all do). Windows `\` paths work too.
