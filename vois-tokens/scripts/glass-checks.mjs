@@ -9,18 +9,42 @@
 import { finding, isCssFile, uncomment } from "./check-utils.mjs";
 import { STRING, stringsOfExpression } from "./elevation-checks.mjs";
 
-/** The index of the "{" that opens the block holding `index`, or -1. Strings are not read. */
-function blockStart(text, index) {
-  let depth = 0;
-  for (let i = index - 1; i >= 0; i--) {
+/**
+ * The blocks of `text`, read in one pass (braces are counted as they are written; strings are not read). `ownerOf(index)` is the
+ * "{" that opens the innermost block around `index`, or -1 outside any block, and `ownText(index)` is that block's own text
+ * without its nested blocks, kept in braces so the first key of an object still follows a "{". Outside any block it is the whole
+ * text. Both are looked up, so many declarations in one block cost one pass in all, where scanning back from each one costs the
+ * square of the block. A stray "}" closes nothing; a block that never closes runs to the end.
+ */
+function blockMap(text) {
+  const n = text.length;
+  const owner = new Int32Array(n + 1);
+  const own = new Map(); // "{" index -> own text
+  const stack = []; // open frames: { open, from, parts }
+  let top = -1;
+  for (let i = 0; i < n; i++) {
+    owner[i] = top;
     const c = text[i];
-    if (c === "}") depth++;
-    else if (c === "{") {
-      if (depth === 0) return i;
-      depth--;
+    if (c === "{") {
+      const parent = stack[stack.length - 1];
+      if (parent) { parent.parts.push(text.slice(parent.from, i)); parent.from = n; } // it resumes after the child closes; a child that never closes takes the rest
+      stack.push({ open: i, from: i + 1, parts: [] });
+      top = i;
+    } else if (c === "}" && stack.length > 0) {
+      const frame = stack.pop();
+      frame.parts.push(text.slice(frame.from, i));
+      own.set(frame.open, `{${frame.parts.join("")}}`);
+      const parent = stack[stack.length - 1];
+      if (parent) parent.from = i + 1;
+      top = parent ? parent.open : -1;
     }
   }
-  return -1;
+  owner[n] = top;
+  for (const frame of stack) { frame.parts.push(text.slice(frame.from, n)); own.set(frame.open, `{${frame.parts.join("")}}`); }
+  return {
+    ownerOf: (index) => owner[Math.min(Math.max(index, 0), n)],
+    ownText: (index) => { const open = owner[Math.min(Math.max(index, 0), n)]; return open === -1 ? text : own.get(open); },
+  };
 }
 
 /** The index of the "}" that closes the block opened at `open`, or the end of the text. */
@@ -31,23 +55,6 @@ function blockEnd(text, open) {
     else if (text[i] === "}" && --depth === 0) return i;
   }
   return text.length;
-}
-
-/** The text of the innermost block around `index`, without its nested blocks. */
-function ownBlock(text, index) {
-  const open = blockStart(text, index);
-  if (open === -1) return text;
-  const body = text.slice(open + 1, blockEnd(text, open));
-  // Drop nested blocks so a twin inside a nested rule does not count for the outer one.
-  let out = "";
-  let depth = 0;
-  for (const c of body) {
-    if (c === "{") depth++;
-    else if (c === "}") depth = Math.max(0, depth - 1);
-    else if (depth === 0) out += c;
-  }
-  // Keep the braces, so the first key of an object still follows a "{".
-  return `{${out}}`;
 }
 
 /** A CSS declaration's value: up to ";" or "}" (a value may wrap onto the next line), or a quote when it sits in a string. */
@@ -95,16 +102,25 @@ export function missingWebkitTwin({ content, lines, filePath }) {
       findings.push(finding(content, lines, index, "backdrop-filter and its -webkit- twin have different values. Safari before 18 shows the twin's."));
     }
   };
+  // The twins of a block are read once, however many declarations sit in it.
+  let blocks = null;
+  const twinCache = new Map();
+  const twinsAt = (index, re, js) => {
+    blocks ??= blockMap(text);
+    const k = `${blocks.ownerOf(index)}${js ? "js" : "css"}`;
+    if (!twinCache.has(k)) twinCache.set(k, valuesIn(blocks.ownText(index), re, js));
+    return twinCache.get(k);
+  };
   let m;
   const decl = new RegExp(CSS_DECL.source, "gi");
   while ((m = decl.exec(text)) !== null) {
-    check(m.index, valuesIn(ownBlock(text, m.index), CSS_TWIN, false), cssValue(text, m.index + m[0].length), true);
+    check(m.index, twinsAt(m.index, CSS_TWIN, false), cssValue(text, m.index + m[0].length), true);
   }
   if (!isCssFile(filePath)) {
     const key = new RegExp(JS_KEY.source, "g");
     while ((m = key.exec(text)) !== null) {
       const value = stringsOfExpression(text, m.index + m[0].length)[0] ?? null;
-      check(m.index, valuesIn(ownBlock(text, m.index), JS_TWIN, true), value, false);
+      check(m.index, twinsAt(m.index, JS_TWIN, true), value, false);
     }
   }
   return findings.sort((a, b) => a.line - b.line);
@@ -181,10 +197,12 @@ export function animatedGlassBlur({ content, lines, filePath }) {
     while ((m = tw.exec(text)) !== null) if (/(?:^|,)(?:-webkit-)?backdrop-filter(?:,|$)/.test(m[1])) findings.push(finding(content, lines, m.index, msg));
     // A motion prop whose object sets the filter: animate={{ backdropFilter: ... }}
     const seen = new Set(); // one finding per object, even when it sets both keys
+    let blocks = null;
     for (const re of [JS_KEY, JS_TWIN]) {
       const k = new RegExp(re.source, "g");
       while ((m = k.exec(text)) !== null) {
-        const open = blockStart(text, m.index);
+        blocks ??= blockMap(text);
+        const open = blocks.ownerOf(m.index);
         if (open === -1 || seen.has(open)) continue;
         const before = text.slice(Math.max(0, open - 60), open);
         if (/(?<![\w$])(?:animate|initial|exit|while[A-Z]\w*)\s*(?:=\s*\{|:)\s*$/.test(before)) {

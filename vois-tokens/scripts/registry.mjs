@@ -15,6 +15,7 @@
 // two vocabularies agree on those, they just answer different questions.
 
 import { BASE_PARAMS, limitNote } from "./team-overrides.mjs";
+import { lineAt } from "./check-utils.mjs";
 import { openingTags } from "./jsx-tags.mjs";
 import { cssBlocks } from "./css-blocks.mjs";
 import { rawColumnCount, rawGridGutter, rawPanelWidth } from "./grid-checks.mjs";
@@ -42,9 +43,6 @@ const TAILWIND_COLOR_PREFIXES = [
   "outline", "divide", "accent", "caret", "decoration", "shadow",
 ];
 
-function lineAt(content, index) {
-  return content.slice(0, index).split("\n").length;
-}
 
 function snippetAt(lines, lineNo) {
   return (lines[lineNo - 1] || "").trim().slice(0, 160);

@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.48.3** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.48.4** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -84,6 +84,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.48.4**: `DS-GLASS-003` and `-005` and `DS-ELEVATION-007` no longer take quadratic time (many `backdrop-filter` declarations in one rule; a long run of `a:a:a:`). Finding a line no longer costs a pass over the file per finding. The findings are the same.
 - **1.48.3**: a team value that is out of range, the wrong type or looser than the base now stops the gate and the ESLint plugin (the hook still ignores it and applies the team's other limits), and the glass checks no longer take quadratic time on a file with a long run of whitespace.
 - **1.48.2**: a broken team setup now stops the gate and the ESLint plugin with its real reason (a team file with the wrong schema was reported as invalid JSON, an unreadable `.vois/teams` folder and a mistyped override `op`, rule or limit were skipped without a word), and no detector reads a comment any more (a comment that explains why `!important` was removed was a `DS-TAILWIND-004` finding). The hook still never blocks.
 - **1.48.1**: four false positives found by running the gate on a real site. `DS-A11Y-010` reads the whole `<img>` tag, so an `alt` on another line counts (and a prop spread `{...props}` is not read). `DS-ANIMATION-004` accepts a `useReducedMotion()` call and `<MotionConfig reducedMotion="user">`. `DS-SPACING-001` no longer reads a StyleX number under 1 as a length (React Flow `fitViewOptions: { padding: 0.2 }`). `DS-A11Y-003` accepts a `:focus-visible` rule for the same selector anywhere in a stylesheet, not only within three lines.

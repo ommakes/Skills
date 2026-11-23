@@ -9,8 +9,8 @@
 
 import { openingTags } from "./jsx-tags.mjs";
 import { cssBlocks } from "./css-blocks.mjs";
+import { lineAt } from "./check-utils.mjs";
 
-const lineAt = (content, index) => content.slice(0, index).split("\n").length;
 const snippetAt = (lines, lineNo) => (lines[lineNo - 1] || "").trim().slice(0, 160);
 // Blank block comments but keep every newline, so line numbers do not move. One pass, so a file full of unclosed "/*"
 // is not scanned to its end once per "/*". In code a "/*" can sit inside a string ("src/*.ts"), so only a comment that
