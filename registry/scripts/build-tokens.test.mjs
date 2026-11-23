@@ -414,6 +414,25 @@ test("focus: the ring is not a pale blue: at least 4.5:1 on the page in light an
   }
 });
 
+// The ring and the edges sit next to each other on every field, and in light their luminance is close (a mid gray edge
+// against a blue ring is about 1.3:1). Luminance cannot tell them apart, so color does: the ring is clearly blue and every
+// edge token is a neutral gray. A Figma edit that tints an edge, or turns the ring gray, fails here.
+test("focus: the ring is chromatic and no neutral edge token is, so an edge never competes with the ring", () => {
+  const { value } = edgeColors;
+  const chroma = (hex) => hexToOklch(hex).C;
+  const edges = ["--border-default", "--input-border", "--control-border", "--switch-outline", "--border-state-hover", "--border-state-filled", "--border-state-disabled"];
+  for (const mode of [0, 1]) {
+    const name = mode ? "dark" : "light";
+    const ring = chroma(value("--border-state-focus", mode));
+    assert.ok(ring >= 0.12, `the ring (${name}) has OKLCH chroma ${ring.toFixed(3)}, under 0.12: it reads as gray`);
+    for (const e of edges) {
+      const c = chroma(value(e, mode));
+      assert.ok(c <= 0.03, `${e} (${name}) has OKLCH chroma ${c.toFixed(3)}, over 0.03: an edge must be neutral so it cannot be mistaken for the ring`);
+      assert.ok(ring - c >= 0.1, `${e} (${name}) is within 0.1 chroma of the ring`);
+    }
+  }
+});
+
 // ---- Dialog widths (vois-patterns PATH-D-SIZE, DS-LAYOUT-WIDTH-004) ----
 test("dialog widths: both tokens exist, the small one is the Figma Dialog's 344, the large one is wider", () => {
   const sm = realExport.tokens["--width-dialog-sm"], lg = realExport.tokens["--width-dialog-lg"];
