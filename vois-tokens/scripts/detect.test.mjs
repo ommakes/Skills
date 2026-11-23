@@ -2450,3 +2450,110 @@ test("an out-of-range value is cut short in the message", () => {
   assert.ok(got[0][1].length < 400, `${got[0][1].length} characters`);
   assert.match(got[0][1], /xxx…/);
 });
+
+// ---------------------------------------------------------------------------
+// DS-GLASS-003 and DS-ELEVATION-007 in linear time
+// ---------------------------------------------------------------------------
+
+const ruleTime = (id, file, src) => {
+  const rule = RULES.find((r) => r.id === id);
+  const a = Date.now();
+  rule.check({ content: src, lines: src.split("\n"), filePath: file });
+  return Date.now() - a;
+};
+
+test("DS-GLASS-003 is linear in the number of declarations in one block, and in nesting depth", () => {
+  const decl = "backdrop-filter: blur(var(--glass-blur-standard));\n";
+  const twin = "-webkit-backdrop-filter: blur(var(--glass-blur-standard));\n";
+  const fast = (what, file, src) => assert.ok(ruleTime("DS-GLASS-003", file, src) < 1500, what);
+  fast("3,000 declarations with no twin, one CSS rule", "a.css", `.a{${decl.repeat(3000)}}`);
+  fast("3,000 declarations, each with a twin", "a.css", `.a{${(decl + twin).repeat(3000)}}`);
+  fast("3,000 keys in one object", "a.tsx", `const s={${"backdropFilter: 'blur(var(--glass-blur-standard))',\n".repeat(3000)}}`);
+  fast("3,000 separate rules", "a.css", `${`.a{${decl}}\n`.repeat(3000)}`);
+  fast("20,000 nested blocks and one declaration", "a.css", `${".a{".repeat(20000)}${decl}${"}".repeat(20000)}`);
+  fast("20,000 unclosed blocks", "a.css", `${".a{".repeat(20000)}${decl}`);
+  fast("20,000 stray closers", "a.css", `${"}".repeat(20000)}.a{${decl}}`);
+  // The number of findings is right too.
+  assert.equal(has(detectFile("a.css", `.a{${decl.repeat(3000)}}`), "DS-GLASS-003").length, 3000);
+  assert.equal(has(detectFile("a.css", `.a{${(decl + twin).repeat(3000)}}`), "DS-GLASS-003").length, 0);
+});
+
+test("DS-GLASS-003 and -005 read the same code as the 1.48.3 version, on random files", async () => {
+  const ref = await import("./__fixtures__/glass-reference.mjs");
+  const now = await import("./glass-checks.mjs");
+  const pieces = [
+    "{", "}", "{ ", " }", ".a {", ".b{", "\n", " ", "  ", ";", ",", "(", ")", "@supports (", "@media (min-width: 1px) {", "a", "x: y;",
+    "backdrop-filter: blur(1px);", "backdrop-filter: blur(2px);", "-webkit-backdrop-filter: blur(1px);", "-webkit-backdrop-filter: blur(2px);",
+    "backdrop-filter:blur(1px)", "BACKDROP-FILTER: none;",
+    "backdropFilter: 'blur(1px)',", "WebkitBackdropFilter: 'blur(1px)',", "WebkitBackdropFilter: 'blur(2px)',", "\"backdrop-filter\": \"blur(1px)\",",
+    "animate={{", "initial={{", "whileHover={{", "style={{", "exit: {", "transition: 'backdrop-filter 1s'", "transitionProperty: \"backdrop-filter\",", "@keyframes k {", "@-webkit-keyframes k {",
+    "el.style.backdropFilter = 'blur(1px)';", "el.style.webkitBackdropFilter = 'blur(1px)';", "cond ? backdropFilter : x", "'", "\"", "`", "${", "// c\n", "/* c */",
+  ];
+  let seed = 12345;
+  const rand = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const show = (fs) => fs.map((f) => `${f.line}: ${f.message}`);
+  for (let n = 0; n < 1500; n++) {
+    let src = "";
+    for (let k = Math.floor(rand() * 40); k >= 0; k--) src += pieces[Math.floor(rand() * pieces.length)];
+    for (const file of ["a.css", "a.scss", "a.tsx"]) {
+      const lines = src.split("\n");
+      const args = { content: src, lines, filePath: file };
+      for (const fn of ["missingWebkitTwin", "animatedGlassBlur"]) assert.deepEqual(show(now[fn](args)), show(ref[fn](args)), `${fn} ${file}: ${JSON.stringify(src)}`);
+    }
+  }
+});
+
+test("DS-ELEVATION-007 is linear on a long chain of variant prefixes, and reads the same classes", () => {
+  assert.ok(ruleTime("DS-ELEVATION-007", "a.tsx", "a:".repeat(50000)) < 1500, "a chain in code");
+  assert.ok(ruleTime("DS-ELEVATION-007", "a.tsx", `"${"a:".repeat(50000)}"`) < 1500, "a chain in a string");
+  assert.ok(ruleTime("DS-ELEVATION-007", "a.css", `.a{@apply ${"a:".repeat(50000)}}`) < 1500, "a chain in @apply");
+  assert.ok(ruleTime("DS-ELEVATION-007", "a.tsx", `"${"a:".repeat(50000)}shadow-md"`) < 1500, "a chain, then a class");
+  const e7 = (src) => has(detectFile("a.tsx", src), "DS-ELEVATION-007").map((f) => f.message.split(" ")[0]);
+  assert.deepEqual(e7('<i className="shadow-md" />'), ["shadow-md"]);
+  assert.deepEqual(e7('<i className="md:hover:shadow-lg" />'), ["shadow-lg"], "with variants");
+  assert.deepEqual(e7('<i className="dark:inset-shadow-sm" />'), ["inset-shadow-sm"]);
+  assert.deepEqual(e7('<i className="[&>*]:supports-[x]:shadow-xl" />'), ["shadow-xl"]);
+  assert.deepEqual(e7('<i className="my-shadow-md shadow-mdx" />'), [], "not inside a longer word");
+  assert.deepEqual(e7('<i className="shadow-[0_4px_12px_rgba(0,0,0,0.2)]" />'), ["shadow-[...]"], "an arbitrary blur");
+  assert.deepEqual(e7('<i className="md:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)]" />'), ["shadow-[...]"], "an arbitrary blur with variants");
+  assert.deepEqual(e7('<i className="my-shadow-[0_4px_12px_red]" />'), [], "an arbitrary blur inside a longer word");
+});
+
+test("lineAt gives the line of an index as slice-and-split did, for any index, and stays fast for many findings", async () => {
+  const { lineAt } = await import("./check-utils.mjs");
+  const old = (text, index) => text.slice(0, index).split("\n").length;
+  let seed = 99;
+  const rand = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  for (let n = 0; n < 300; n++) {
+    let text = "";
+    for (let k = Math.floor(rand() * 30); k > 0; k--) text += ["a", "\n", "\n\n", " bc ", "\r\n", ""][Math.floor(rand() * 6)];
+    for (let i = -2; i <= text.length + 2; i++) assert.equal(lineAt(text, i), old(text, i), `${JSON.stringify(text)} at ${i}`);
+    assert.equal(lineAt(text, NaN), old(text, NaN));
+    assert.equal(lineAt(text, undefined), old(text, undefined));
+  }
+  // Two files in turn, then back: the cache follows the text it is given.
+  const a = "x\ny\nz", b = "p\nq";
+  assert.deepEqual([lineAt(a, 4), lineAt(b, 2), lineAt(a, 4), lineAt(b, 3)], [old(a, 4), old(b, 2), old(a, 4), old(b, 3)]);
+  const d = "backdrop-filter: blur(var(--glass-blur-standard));\n";
+  assert.ok(ruleTime("DS-GLASS-003", "a.css", `.a{${d.repeat(30000)}}`) < 2500, "30,000 findings from one check");
+  assert.ok(ruleTime("DS-GLASS-004", "a.css", `.a{${d.replace("var(--glass-blur-standard)", "12px").repeat(30000)}}`) < 2500, "30,000 findings from another");
+  assert.ok(ruleTime("DS-COLOR-001", "a.tsx", '<i className="text-[#ff0000]" />\n'.repeat(30000)) < 2500, "30,000 findings from a rule in registry.mjs");
+});
+
+test("DS-GLASS-003 blockMap: a parent that never closes, with a child that never closes, owns no text after the child", async () => {
+  const ref = await import("./__fixtures__/glass-reference.mjs");
+  const now = await import("./glass-checks.mjs");
+  const show = (fs) => fs.map((f) => `${f.line}: ${f.message}`);
+  for (const src of [
+    "{BACKDROP-FILTER: none;${-webkit-backdrop-filter: blur(2px);",
+    ".a{backdrop-filter: blur(1px); .b{ -webkit-backdrop-filter: blur(1px);",
+    ".a{ .b{ x:y } -webkit-backdrop-filter: blur(1px); } backdrop-filter: blur(1px);",
+    ".a{ .b{ x:y } } } } backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);",
+    "} backdrop-filter: blur(1px); { -webkit-backdrop-filter: blur(2px); }",
+  ]) for (const file of ["a.css", "a.tsx"]) {
+    const args = { content: src, lines: src.split("\n"), filePath: file };
+    assert.deepEqual(show(now.missingWebkitTwin(args)), show(ref.missingWebkitTwin(args)), `${file}: ${src}`);
+  }
+  const args = { content: "{BACKDROP-FILTER: none;${-webkit-backdrop-filter: blur(2px);", lines: ["{BACKDROP-FILTER: none;${-webkit-backdrop-filter: blur(2px);"], filePath: "a.css" };
+  assert.match(now.missingWebkitTwin(args)[0].message, /no -webkit-backdrop-filter in the same rule/, "the twin is in the child, not in the parent's own text");
+});

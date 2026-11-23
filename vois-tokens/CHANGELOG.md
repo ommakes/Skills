@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.4] - 2026-11-23
+
+### Fixed
+- **`DS-GLASS-003` was quadratic in the size of a block.** For each `backdrop-filter` declaration it scanned back to the block's opening brace, rebuilt the block's text and read its twins again, so 3,000 declarations in one rule took 15 to 17 s. The blocks are now read in one pass (`blockMap` in `scripts/glass-checks.mjs`): each declaration looks up its block, and the block's text and twins are read once. The motion-prop loop of `DS-GLASS-005` used the same back-scan for every key and uses the map too. Braces are counted as written, as before, so a stray `}` closes nothing and a block that never closes runs to the end. A test compares both checks with the 1.48.3 code (kept as `scripts/__fixtures__/glass-reference.mjs`) on random files.
+- **Finding a line was quadratic in the number of findings.** `lineAt` (`scripts/check-utils.mjs`, and the copies in `registry.mjs` and `grid-checks.mjs`) cut the file at the index and split it for every finding, so 20,000 findings from one check took 5 s and 60,000 took 63 s. It now keeps the newline positions of the last file and searches them; the line it gives is the same for every index, and an index that is not a whole number of zero or more takes the old way. `registry.mjs` and `grid-checks.mjs` use it.
+- **`DS-ELEVATION-007` was quadratic on `a:a:a:...`.** The Tailwind shadow patterns had a `(?:[\w-]+:)*` variant chain in front of the class (100 KB took 5 s). The chain was captured and never read, so it is gone and the same classes match, with or without variants. One difference, in text no class list holds: in `a:shadow-md:x-md:shadow-md` the old pattern took the first `shadow-md` for a variant and reported one class; both are reported now.
+
 ## [1.48.3] - 2026-11-23
 
 ### Fixed

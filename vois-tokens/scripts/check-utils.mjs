@@ -1,6 +1,30 @@
-// Small helpers shared by regex-level checks (elevation-checks.mjs). grid-checks.mjs keeps its own copies of the first four.
+// Small helpers shared by regex-level checks (elevation-checks.mjs). grid-checks.mjs keeps its own copies of all but lineAt.
 
-export const lineAt = (content, index) => content.slice(0, index).split("\n").length;
+let breaksOf = null; // the text whose newline positions are kept
+let breaks = [];
+
+/**
+ * The line (from 1) that `index` falls on: one more than the number of newlines before it, as
+ * `content.slice(0, index).split("\n").length` counts. The newline positions of the last text are kept and searched, so
+ * a check with many findings in one file reads the file once and not once per finding. An index that is not a whole
+ * number of zero or more takes the slow way, so it means what it always did.
+ */
+export function lineAt(content, index) {
+  if (typeof content !== "string" || !Number.isInteger(index) || index < 0) return content.slice(0, index).split("\n").length;
+  if (content !== breaksOf) {
+    breaks = [];
+    for (let i = content.indexOf("\n"); i !== -1; i = content.indexOf("\n", i + 1)) breaks.push(i);
+    breaksOf = content;
+  }
+  let lo = 0;
+  let hi = breaks.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (breaks[mid] < index) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo + 1;
+}
 export const snippetAt = (lines, lineNo) => (lines[lineNo - 1] || "").trim().slice(0, 160);
 /** Turn every character but newlines into a space, so line numbers do not move. */
 export const blank = (c) => c.replace(/[^\n]/g, " ");

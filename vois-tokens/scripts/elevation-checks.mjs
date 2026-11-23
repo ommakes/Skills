@@ -52,7 +52,9 @@ export function rawLayers(value) {
 
 // A class string, or any quoted string or template literal. No escapes beyond a backslash are read, and a quote that does not close on its line is skipped.
 export const STRING = /(["'`])((?:\\.|(?!\1)[^\\\n])*)\1/g;
-const DEFAULT_TW_SHADOW = /(?<![\w-])((?:[\w-]+:)*)(inset-)?shadow-(2xs|xs|sm|md|lg|xl|2xl)(?![\w-])/g;
+// No variant chain in front: `(?:[\w-]+:)*` before the class is quadratic on "a:a:a:...", and the class matches the same text
+// without it (the ":" in front of it already passes the lookbehind).
+const DEFAULT_TW_SHADOW = /(?<![\w-])(inset-)?shadow-(2xs|xs|sm|md|lg|xl|2xl)(?![\w-])/g;
 
 /**
  * The string literals of the expression that follows a style key, up to its end: a ternary (`a ? "x" : "y"`) gives both,
@@ -101,7 +103,7 @@ export function rawShadow({ content, lines, filePath }) {
   }
 
   // 3. shadow-[...] and inset-shadow-[...] (Tailwind arbitrary value; "_" is a space)
-  const arb = /(?<![\w-])((?:[\w-]+:)*)(?:inset-)?shadow-\[/g;
+  const arb = /(?<![\w-])(?:inset-)?shadow-\[/g;
   while ((m = arb.exec(text)) !== null) {
     const open = m.index + m[0].length - 1;
     let depth = 0;
@@ -119,7 +121,7 @@ export function rawShadow({ content, lines, filePath }) {
   const sizes = (body, base) => {
     const re = new RegExp(DEFAULT_TW_SHADOW.source, "g");
     let s;
-    while ((s = re.exec(body)) !== null) report(base + s.index, `${s[2] ?? ""}shadow-${s[3]} is a Tailwind default, not a Vois tier. ${hint}`);
+    while ((s = re.exec(body)) !== null) report(base + s.index, `${s[1] ?? ""}shadow-${s[2]} is a Tailwind default, not a Vois tier. ${hint}`);
   };
   if (isCssFile(filePath)) {
     const apply = /@apply\s+([^;}]*)/g;
