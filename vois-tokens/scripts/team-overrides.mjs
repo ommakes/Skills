@@ -56,17 +56,39 @@ const unchecked = new Set(UNCHECKED_TUNABLES.map(([r, p]) => `${r}\u0000${p}`));
 /** The checked limit for a rule and param, or undefined. Own keys only: "constructor" and "__proto__" are not limits. */
 const specFor = (rule, param) => (typeof rule === "string" && typeof param === "string" && Object.hasOwn(TUNABLES, rule) && Object.hasOwn(TUNABLES[rule], param) ? TUNABLES[rule][param] : undefined);
 
+/** A value for an error message: its JSON, cut to 60 characters, or "no value". */
+function shown(value) {
+  const json = JSON.stringify(value);
+  if (json === undefined) return "no value";
+  return json.length > 60 ? `${json.slice(0, 60)}\u2026` : json;
+}
+
+/** What a team may set for a limit, in words, for an error message. */
+function allowedText(spec) {
+  if (spec.type === "set") return `a non-empty list of ${spec.allowed.join(", ")}, none repeated`;
+  const side = spec.stricter === "lower" ? ", at or below" : spec.stricter === "higher" ? ", at or above" : "";
+  return `a number from ${spec.min} to ${spec.max}${side ? `${side} the base ${spec.base}` : ""}`;
+}
+
 /**
- * Why an override cannot be applied because of what it names (a mistyped op, rule or limit), or null. An override
- * for a real limit the hook has no detector for is fine, and so is an `add`. A value that loosens the base or sits
- * outside its range is not reported here: it is ignored on purpose, and the vois-teams validator rejects it in review.
+ * Why an override cannot be applied, or null. Two things are reported: what it names (a mistyped op, rule or
+ * limit) and the value it sets for a limit the hook checks (the wrong type, outside the range, on the looser side
+ * of the base, or not one of the allowed sizes). The hook ignores such an override and keeps the base limit, and the
+ * gate and the plugin stop, because the team's tighter limit was never applied. An override for a real limit the hook
+ * has no detector for is not checked here (the hook has no range for it) and is fine, and so is an `add`.
  */
 function overrideProblem(o) {
   if (!o || typeof o !== "object" || Array.isArray(o)) return "override ignored: it is not an object";
   const who = typeof o.id === "string" && o.id ? `override ${o.id}` : "override (no id)";
   if (typeof o.op !== "string" || !OPS.has(o.op)) return `${who} ignored: op ${JSON.stringify(o.op) ?? "missing"} is not add, restrict or refine`;
   if (o.op === "add") return null;
-  if (specFor(o.rule, o.param) || unchecked.has(`${o.rule}\u0000${o.param}`)) return null;
+  const spec = specFor(o.rule, o.param);
+  if (spec) {
+    return acceptedValue(spec, o.value) === undefined
+      ? `${who} ignored: ${shown(o.value)} is not a value a team may set for ${o.rule} ${o.param} (${allowedText(spec)})`
+      : null;
+  }
+  if (unchecked.has(`${o.rule}\u0000${o.param}`)) return null;
   return `${who} ignored: ${JSON.stringify(o.rule) ?? "no rule"} ${JSON.stringify(o.param) ?? "no limit"} is not a limit a team can set`;
 }
 

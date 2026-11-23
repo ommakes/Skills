@@ -60,12 +60,15 @@ function cssValue(text, from) {
 const norm = (v) => v.replace(/\s+/g, " ").trim().toLowerCase();
 
 // Declarations. A test inside parentheses, such as @supports ((backdrop-filter: blur(1px))), is a condition, not a declaration.
-const CSS_DECL = /(?<![\w-])(?<!\(\s*)backdrop-filter\s*:/gi;
-const CSS_TWIN = /(?<![\w-])(?<!\(\s*)-webkit-backdrop-filter\s*:/gi;
+// Each pattern checks its own text with a lookahead BEFORE its variable-width lookbehind ((?<!\(\s*), (?<=[{,]\s*)). A lookbehind
+// like that walks back over every space before the position, and it runs at every position, so on a long run of whitespace it
+// costs time in proportion to the square of the run. With the lookahead first, only a position that holds the key pays for it.
+const CSS_DECL = /(?<![\w-])(?=backdrop-filter\s*:)(?<!\(\s*)backdrop-filter\s*:/gi;
+const CSS_TWIN = /(?<![\w-])(?=-webkit-backdrop-filter\s*:)(?<!\(\s*)-webkit-backdrop-filter\s*:/gi;
 // A style object key ({ backdropFilter: ..., "backdrop-filter": ... }) or a DOM assignment (el.style.backdropFilter = ...).
 // The key must open an object entry, so `cond ? backdropFilter : x` is not one.
-const JS_KEY = /(?:(?<=[{,]\s*)(?:["']?backdropFilter["']?|["']backdrop-filter["'])\s*:|(?<=\.)backdropFilter\s*=(?![=>]))/g;
-const JS_TWIN = /(?:(?<=[{,]\s*)(?:["']?WebkitBackdropFilter["']?|["']-webkit-backdrop-filter["'])\s*:|(?<=\.)[wW]ebkitBackdropFilter\s*=(?![=>]))/g;
+const JS_KEY = /(?:(?=(?:["']?backdropFilter["']?|["']backdrop-filter["'])\s*:)(?<=[{,]\s*)(?:["']?backdropFilter["']?|["']backdrop-filter["'])\s*:|(?<=\.)backdropFilter\s*=(?![=>]))/g;
+const JS_TWIN = /(?:(?=(?:["']?WebkitBackdropFilter["']?|["']-webkit-backdrop-filter["'])\s*:)(?<=[{,]\s*)(?:["']?WebkitBackdropFilter["']?|["']-webkit-backdrop-filter["'])\s*:|(?<=\.)[wW]ebkitBackdropFilter\s*=(?![=>]))/g;
 
 /** The value after each match of `re` in `block`: a CSS value, or the first string of a JS expression (null if none). */
 function valuesIn(block, re, js) {
@@ -109,7 +112,9 @@ export function missingWebkitTwin({ content, lines, filePath }) {
 
 // A Tailwind backdrop-blur class: bare (8px), a named size, or an arbitrary length. A var(...) or (--token) value
 // and backdrop-blur-none pass. Variants (supports-[...]:, md:) are read like the plain class.
-const TW_BLUR = /(?<![\w-])(?:[\w-]+:|\[[^\]\s]*\]:)*backdrop-blur(?:-(xs|sm|md|lg|xl|2xl|3xl|none)|-\[([^\]\s]+)\]|-\(([^)\s]+)\))?(?![\w\[(-])/g;
+// No variant chain in front: `(?:[\w-]+:)*` before the class is quadratic on "a:a:a:...", and the class matches the same
+// text without it (the ":" before it already passes the lookbehind).
+const TW_BLUR = /(?<![\w-])backdrop-blur(?:-(xs|sm|md|lg|xl|2xl|3xl|none)|-\[([^\]\s]+)\]|-\(([^)\s]+)\))?(?![\w\[(-])/g;
 
 /** DS-GLASS-004: a literal blur radius instead of a --glass-blur-* token. */
 export function literalGlassBlur({ content, lines, filePath }) {
@@ -127,7 +132,7 @@ export function literalGlassBlur({ content, lines, filePath }) {
     }
   };
   let m;
-  const decl = /(?<![\w-])(?<!\(\s*)(?:-webkit-)?backdrop-filter\s*:/gi;
+  const decl = /(?<![\w-])(?=(?:-webkit-)?backdrop-filter\s*:)(?<!\(\s*)(?:-webkit-)?backdrop-filter\s*:/gi;
   while ((m = decl.exec(text)) !== null) blurs(cssValue(text, m.index + m[0].length), m.index);
   if (!isCssFile(filePath)) {
     for (const re of [JS_KEY, JS_TWIN]) {
@@ -169,10 +174,10 @@ export function animatedGlassBlur({ content, lines, filePath }) {
   while ((m = tr.exec(text)) !== null) if (ANIMATED.test(m[1])) findings.push(finding(content, lines, m.index, msg));
   if (!isCssFile(filePath)) {
     // transition: "backdrop-filter 200ms" or transitionProperty: "backdrop-filter" in a style object
-    const key = /(?<=[{,]\s*)["']?(?:transition|transitionProperty|WebkitTransition)["']?\s*:/g;
+    const key = /(?=["']?(?:transition|transitionProperty|WebkitTransition)["']?\s*:)(?<=[{,]\s*)["']?(?:transition|transitionProperty|WebkitTransition)["']?\s*:/g;
     while ((m = key.exec(text)) !== null) if (stringsOfExpression(text, m.index + m[0].length).some((v) => ANIMATED.test(v))) findings.push(finding(content, lines, m.index, msg));
     // Tailwind transition-[backdrop-filter] or a list that holds it
-    const tw = /(?<![\w-])(?:[\w-]+:)*transition-\[([^\]\s]*)\]/g;
+    const tw = /(?<![\w-])transition-\[([^\]\s]*)\]/g;
     while ((m = tw.exec(text)) !== null) if (/(?:^|,)(?:-webkit-)?backdrop-filter(?:,|$)/.test(m[1])) findings.push(finding(content, lines, m.index, msg));
     // A motion prop whose object sets the filter: animate={{ backdropFilter: ... }}
     const seen = new Set(); // one finding per object, even when it sets both keys

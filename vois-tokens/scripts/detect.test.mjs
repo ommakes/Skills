@@ -2252,7 +2252,6 @@ test("an override that names a real limit the hook cannot check, an add rule, or
       restrictOverride(2, "JOB-DISPLAY-DATA", "table_max_rows", 10),
       { id: "t-003", op: "add", text: "No gradients.", reason: "Because." },
       { id: "t-004", op: "refine", rule: "DS-ICON-001", param: "stroke_width_px", value: 2, reason: "Because." },
-      restrictOverride(5, "DS-ANIMATION-001", "max_duration_ms", 400), // loosens: ignored by design, as vois-teams documents
     ]),
   });
   assert.deepEqual(skips(root), []);
@@ -2350,4 +2349,104 @@ test("a team folder that is a dangling link is reported, as a missing folder is 
   const got = skips(root);
   assert.equal(got.length, 1);
   assert.match(got[0][1], /cannot be read/);
+});
+
+test("the glass checks stay fast on a long run of whitespace, and read the same code as before", () => {
+  const slow = (file, text) => { const t = Date.now(); detectFile(file, text); return Date.now() - t; };
+  for (const file of ["a.css", "a.tsx"]) {
+    assert.ok(slow(file, "     \n".repeat(12000)) < 1500, `${file}: blank lines`);
+    assert.ok(slow(file, "     \n".repeat(30000)) < 1500, `${file}: 30,000 blank lines`);
+    assert.ok(slow(file, " ".repeat(200000)) < 1500, `${file}: one long run of spaces`);
+    assert.ok(slow(file, `{${" ".repeat(100000)}`) < 1500, `${file}: a brace and then spaces`);
+    assert.ok(slow(file, `(${" ".repeat(100000)}`) < 1500, `${file}: a paren and then spaces`);
+  }
+  // The lookbehinds still decide what counts, with whitespace between the opener and the key.
+  const g3 = (file, src) => has(detectFile(file, src), "DS-GLASS-003").length;
+  assert.equal(g3("a.css", ".a {\n   \n   backdrop-filter: blur(var(--glass-blur-standard));\n}"), 1, "declaration after blank lines");
+  assert.equal(g3("a.css", "@supports ( \n backdrop-filter: blur(1px)) { .a { x: y; } }"), 0, "a test inside parentheses is not a declaration");
+  assert.equal(g3("a.tsx", "const s = {\n   \n   backdropFilter: 'blur(var(--glass-blur-standard))' };"), 1, "key after blank lines");
+  assert.equal(g3("a.tsx", "const s = { backdropFilter: 'blur(var(--glass-blur-standard))', WebkitBackdropFilter: 'blur(var(--glass-blur-standard))' };"), 0, "a twin in the same object");
+  assert.equal(g3("a.tsx", "const x = cond ? backdropFilter : y;"), 0, "a ternary is not a key");
+  assert.equal(has(detectFile("a.tsx", "const s = {\n  \n transition: 'backdrop-filter 200ms' };"), "DS-GLASS-005").length, 1, "a transition key after blank lines");
+});
+
+test("a value a team may not set is reported on every limit the hook checks; a value it may set is not", () => {
+  const bad = {
+    "DS-ANIMATION-001 max_duration_ms": [400, 301, 99, 50, 0, -1, "200", null, true, [200], {}],
+    "DS-ANIMATION-002 max_duration_ms": [600, 501, 199, "400", null],
+    "DS-ANIMATION-005 min_start_scale": [0.89, 0.5, 0, 1.01, 2, "0.95", null],
+    "DS-ANIMATION-008 min_press_scale": [0.94, 0.5, 1.01, "0.97", null],
+    "DS-CSS-003 max_selector_nesting": [3, 5, 0, 0.5, "1", null],
+    "DS-ICON-001 stroke_width_px": [0.5, 2.5, 0, "1.5", null],
+    "DS-ICON-002 icon_sizes_px": [[12, 16], [16, 20, 24, 32, 48], [], [16, 16], [16, "20"], "16", 16, null, [64], [16, null]],
+    "DS-SPACING-001 spacing_divisors": [[4, 8, 16], [3], [], [4, 4], [2, 4], "8", 8, null],
+  };
+  const good = {
+    "DS-ANIMATION-001 max_duration_ms": [100, 200, 300],
+    "DS-ANIMATION-002 max_duration_ms": [200, 400, 500],
+    "DS-ANIMATION-005 min_start_scale": [0.9, 0.95, 1],
+    "DS-ANIMATION-008 min_press_scale": [0.95, 0.97, 1],
+    "DS-CSS-003 max_selector_nesting": [1, 2],
+    "DS-ICON-001 stroke_width_px": [1, 1.5, 2],
+    "DS-ICON-002 icon_sizes_px": [[16], [24, 16], [16, 20, 24, 32]],
+    "DS-SPACING-001 spacing_divisors": [[4], [8], [8, 4], [4, 8]],
+  };
+  assert.deepEqual(Object.keys(bad).sort(), Object.entries(TUNABLES).flatMap(([r, ps]) => Object.keys(ps).map((p) => `${r} ${p}`)).sort(), "every checked limit has a case");
+  for (const [key, values] of Object.entries(bad)) {
+    const [rule, param] = key.split(" ");
+    for (const value of values) {
+      const root = projectWith({ t: team("t", [restrictOverride(1, rule, param, value), restrictOverride(2, "DS-ANIMATION-001", "max_duration_ms", 250)]) });
+      const got = skips(root).filter(([, why]) => /override x-001/.test(why));
+      assert.equal(got.length, 1, `${key} = ${JSON.stringify(value)} is reported`);
+      assert.match(got[0][1], new RegExp(`${rule} ${param}`));
+      assert.match(got[0][1], /is not a value a team may set/);
+      // The hook (no onSkip) still ignores the value and keeps the team's other limits.
+      const params = paramsFor(loadTeams(root), root, join(root, "a.tsx"));
+      assert.equal(params.get("DS-ANIMATION-001", "max_duration_ms"), 250, "the good override on the same team still applies");
+      assert.equal(params.source(rule, param), rule === "DS-ANIMATION-001" ? "t" : null, key);
+    }
+  }
+  for (const [key, values] of Object.entries(good)) {
+    const [rule, param] = key.split(" ");
+    for (const value of values) {
+      const root = projectWith({ t: team("t", [restrictOverride(1, rule, param, value)]) });
+      assert.deepEqual(skips(root), [], `${key} = ${JSON.stringify(value)} is allowed`);
+    }
+  }
+});
+
+test("the avatar-import exemption still reads a BOM and any indentation, and does not scan blank lines", () => {
+  const box = 'export const A = () => <div className="size-8 rounded-full"><img src={u} /></div>;';
+  const hits = (src) => has(detectFile("a.tsx", src), "LOOKALIKE-012").length;
+  assert.equal(hits(`﻿import { Avatar } from "x";\n${box}`), 0, "a BOM before the import");
+  assert.equal(hits(`\n\f  import { Avatar } from "x";\n${box}`), 0, "a form feed and spaces before the import");
+  assert.equal(hits(`\timport { Avatar } from "x";\n${box}`), 0);
+  assert.equal(hits(`// import { Avatar }\n${box}`), 1, "a commented import does not count");
+  assert.equal(hits(box), 1);
+});
+
+test("a long chain of variant prefixes is read in linear time, and a variant still counts", () => {
+  const t = (id, src) => { const rule = RULES.find((r) => r.id === id); const a = Date.now(); rule.check({ content: src, lines: src.split("\n"), filePath: "a.tsx" }); return Date.now() - a; };
+  for (const id of ["DS-GLASS-003", "DS-GLASS-004", "DS-GLASS-005"]) {
+    assert.ok(t(id, "a:".repeat(50000)) < 1500, `${id}: a chain in code`);
+    assert.ok(t(id, `"${"a:".repeat(50000)}"`) < 1500, `${id}: a chain in a string`);
+  }
+  const g5 = (src) => has(detectFile("a.tsx", src), "DS-GLASS-005").length;
+  assert.equal(g5('<div className="transition-[backdrop-filter]" />'), 1);
+  assert.equal(g5('<div className="md:hover:transition-[opacity,backdrop-filter]" />'), 1, "with variants");
+  assert.equal(g5('<div className="my-transition-[backdrop-filter]" />'), 0, "not inside a longer word");
+  assert.equal(g5('<div className="transition-[opacity]" />'), 0);
+  const g4 = (src) => has(detectFile("a.tsx", src), "DS-GLASS-004").length;
+  assert.equal(g4('<div className="md:[&>*]:backdrop-blur-md" />'), 1, "a variant chain in front of a literal blur");
+  assert.equal(g4('<div className="supports-[backdrop-filter]:md:backdrop-blur-[12px]" />'), 1);
+  assert.equal(g4('<div className="my-backdrop-blur-md" />'), 0, "not inside a longer word");
+  assert.equal(g4('<div className="md:backdrop-blur-(--glass-blur-standard)" />'), 0, "a token passes");
+});
+
+test("an out-of-range value is cut short in the message", () => {
+  const root = projectWith({ t: team("t", [restrictOverride(1, "DS-ICON-002", "icon_sizes_px", "x".repeat(5000))]) });
+  const got = skips(root);
+  assert.equal(got.length, 1);
+  assert.ok(got[0][1].length < 400, `${got[0][1].length} characters`);
+  assert.match(got[0][1], /xxx…/);
 });
