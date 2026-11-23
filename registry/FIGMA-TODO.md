@@ -2,9 +2,11 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale.
 
-## Pending in Figma, decided 2026-11-19 (contrast, registry 0.22.1)
+## Done on 2026-11-20 (contrast, registry 0.22.1)
 
-The code already uses these values. Change each variable in the Vois Figma file to match, then remove its entry from `source/figma-pending.json` (the build fails once Figma matches, so it tells you when). Found by the rendered accessibility check (`harness/README.md`): each was under the 4.5:1 minimum for normal text.
+The five variables below were changed in the Vois Figma file (variable aliases only, both modes), and their entries are out of `source/figma-pending.json`. Found by the rendered accessibility check (`harness/README.md`): each was under the 4.5:1 minimum for normal text. `source/figma-export.json` carries the five new values.
+
+- **Open: three other variables differ between Figma and `figma-export.json`.** A re-export on 2026-11-20 did not match the committed file. Figma has `--border-default` as `Gray-4` light and `Gray-6` dark (the file says `Gray-6` and `Gray-5`), `--border-state-focus` dark as `Blue-7` (the file says `Blue-8`, the 0.9.0 focus ring), and `--input-border` as `Gray-4` and `Gray-6` (the file says `Gray-5-5` and `Gray-5`). Decide which side is right, then fix Figma or the export. Until then `--verify-export` does not pass against a fresh export.
 
 - **`--text-state-instruction`** (placeholder text; Select, Input, Textarea, Input group. The Dropdown menu and Command use `--text-hint` instead, so they are unaffected): was `Gray-6` in both modes. Measured in Chromium against the fill the placeholder sits on: 3.46:1 on the light field (`#eaeaea`), 3.84:1 on the light error fill, 4.07:1 on the dark field and 3.70:1 on the dark error fill. Now `Gray-8` in light (6.1:1 on the field, 7.4:1 on the error fill) and `Gray-5` in dark (7.6:1, 7.0:1). `Gray-7` was tried first and gives 4.17:1 on the light field, so it still fails. Both new values are the step `--text-state-resting` already uses in that mode. `--text-state-disabled` is also `Gray-6` and stays as it is: disabled text is exempt.
 - **`--solid-negative-resting`** (the solid destructive Button, white label): was `Tomato-8`, 4.16:1. Now `Tomato-9` (5.42:1), in both modes.

@@ -2,29 +2,5 @@
   "format": 1,
   "about": "Tokens decided but not yet in Figma. build-tokens.mjs applies them on top of figma-export.json. Each entry fails the build once Figma exports it, so remove it then. registry/FIGMA-TODO.md says what to create in Figma for each one.",
   "add": {},
-  "change": {
-    "--text-state-instruction": {
-      "from": "=--gray-6",
-      "to": [
-        "=--gray-8",
-        "=--gray-5"
-      ]
-    },
-    "--solid-negative-resting": {
-      "from": "=--tomato-8",
-      "to": "=--tomato-9"
-    },
-    "--solid-negative-focus": {
-      "from": "=--tomato-8",
-      "to": "=--tomato-9"
-    },
-    "--solid-negative-hover": {
-      "from": "=--tomato-9",
-      "to": "=--tomato-10"
-    },
-    "--solid-negative-pressed": {
-      "from": "=--tomato-10",
-      "to": "=--tomato-11"
-    }
-  }
+  "change": {}
 }
