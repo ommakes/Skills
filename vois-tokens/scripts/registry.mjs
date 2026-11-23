@@ -1348,7 +1348,7 @@ const LOOKALIKE_RULES = [
       // The file that defines an avatar, and a file that already imports one (any path with "avatar" in it,
       // or an import line that mentions Avatar), are left alone.
       if (isUiPrimitive(filePath) || /avatar[^\\/]*\.[a-z]+$/i.test(filePath || "")) return [];
-      if (/^\s*import\b[^\n]*Avatar/m.test(content) || /\bfrom\s*["'][^"']*avatar[^"']*["']/i.test(content)) return [];
+      if (/^[^\S\r\n\u2028\u2029]*import\b[^\n]*Avatar/m.test(content) || /\bfrom\s*["'][^"']*avatar[^"']*["']/i.test(content)) return [];
       // A round box of avatar size (24 to 80px: size-6 to size-20, size-[var(--size-avatar-*)], or h-N with w-N)
       // whose first content is an <img>, a Next <Image>, or one or two capital letters. A dot (size-2), a bare
       // round box, an icon, a word, a self-closing box and a prefixed (md:, hover:) class do not match.

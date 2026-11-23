@@ -4,6 +4,14 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.3] - 2026-11-23
+
+### Fixed
+- **A team value a team may not set was ignored without an error.** An override whose value is the wrong type (`"200"`), outside the range (50 where the lowest is 100), on the looser side of the base (400 where the base is 300), or not an allowed size (`[12, 16]` for icon sizes, a repeated size, an empty list) fell back to the base limit, so the gate and the plugin held the team to the looser limit and said nothing. `loadTeams` now reports it, with the value and what is allowed, and the gate and the plugin stop. This covers the eight limits the hook checks. A value equal to the base is fine. The hook still ignores such a value and applies the team's other overrides. The other 15 limits in `vois-teams/data/ranges.json` have no detector here and no range here, so they are not range-checked; the validator does that.
+- **The glass checks (`DS-GLASS-003` to `-005`) took quadratic time on a long run of whitespace.** Their patterns put a variable-width lookbehind (`(?<=[{,]\s*)`, `(?<!\(\s*)`) before the text they look for, so every position walked back over all the spaces before it: 12,000 blank lines took several seconds. Each pattern now tests its text with a lookahead first. They match the same code. `LOOKALIKE-012` had the same shape in `^\s*import` with the `m` flag (every line start scanned across the blank lines after it); it now reads whitespace that is not a line break, so a BOM or a form feed before the import still counts. The Tailwind patterns of `DS-GLASS-004` and `-005` had a `(?:[\w-]+:)*` variant chain in front of the class that was quadratic on `a:a:a:...` (100 KB took 5 s); the chain is gone and the same classes match, with or without variants.
+- The message for a value a team may not set cuts the value to 60 characters, so a huge value does not fill the log.
+- Known, not changed here: `DS-GLASS-003` is quadratic when thousands of `backdrop-filter` declarations sit in one rule, and `DS-ELEVATION-007` is quadratic on `a:a:a:...`.
+
 ## [1.48.2] - 2026-11-23
 
 ### Fixed

@@ -187,6 +187,10 @@ test("the gate names the real reason a team file is broken, and a team setup it 
     [withOverride({ op: "restrct" }), /override p-001 ignored: op "restrct"/],
     [withOverride({ rule: "DS-ANIMATON-001" }), /DS-ANIMATON-001/],
     [withOverride({ param: "max_duration" }), /max_duration/],
+    [withOverride({ value: 50 }), /override p-001 ignored: 50 is not a value a team may set for DS-ANIMATION-001 max_duration_ms/],
+    [withOverride({ value: 400 }), /400/],
+    [withOverride({ value: "200" }), /"200"/],
+    [withOverride({ value: null }), /null/],
   ];
   for (const [body, want] of cases) {
     const root = project({ "src/a.tsx": CLEAN, ".vois/teams/pay.json": body });
@@ -205,6 +209,11 @@ test("the gate names the real reason a team file is broken, and a team setup it 
     assert.equal(r.code, 2);
     assert.match(r.err, /\.vois\/teams.*cannot be read/);
     assert.equal(cli(none, ["src"]).code, 0, "no team folder at all is fine");
+    // The base value itself, and a tighter one, are fine.
+    for (const value of [300, 200, 100]) {
+      const fine = project({ "src/a.tsx": CLEAN, ".vois/teams/pay.json": withOverride({ value }) });
+      try { assert.equal(cli(fine, ["src"]).code, 0, String(value)); } finally { rmSync(fine, { recursive: true, force: true }); }
+    }
     // A real limit the hook cannot check, and an add rule, are not errors.
     const quiet = project({ "src/a.tsx": CLEAN, ".vois/teams/pay.json": JSON.stringify({ ...ok, overrides: [{ id: "p-002", op: "restrict", rule: "DS-TYPOGRAPHY-001", param: "max_text_styles", value: 2, reason: "x" }, { id: "p-003", op: "add", text: "x", reason: "x" }] }) });
     try { assert.equal(cli(quiet, ["src"]).code, 0); } finally { rmSync(quiet, { recursive: true, force: true }); }

@@ -297,9 +297,11 @@ test("team overrides tighten limits for the files in their scope", () => {
   assert.deepEqual(ids(inScope), ["vois/ds-icon-002"]);
   assert.match(inScope[0].message, /limit set by the pay team/);
   assert.deepEqual(ids(lint(ICON, "apps/web/a.jsx", { root })), [], "outside the scope the base sizes apply");
-  // From the other side: a team cannot loosen a limit. 24 is in the base set; 12 is not, and stays a finding.
+  // From the other side: a team cannot loosen a limit. Asking for 12 stops the run; the base set itself changes nothing, and 12 stays a finding.
   const loose = project({ ".vois/teams/x.json": team("x", [restrict("DS-ICON-002", "icon_sizes_px", [12, 16, 20, 24, 32])]) });
-  assert.deepEqual(ids(lint(ICON.replace("24", "12"), "src/a.jsx", { root: loose })), ["vois/ds-icon-002"]);
+  assert.throws(() => lint(ICON.replace("24", "12"), "src/a.jsx", { root: loose }), /DS-ICON-002 icon_sizes_px/);
+  const same = project({ ".vois/teams/x.json": team("x", [restrict("DS-ICON-002", "icon_sizes_px", [16, 20, 24, 32])]) });
+  assert.deepEqual(ids(lint(ICON.replace("24", "12"), "src/a.jsx", { root: same })), ["vois/ds-icon-002"]);
 });
 
 test("a malformed team file stops the lint run instead of dropping the team's limits", () => {
@@ -317,6 +319,8 @@ test("the lint run names the real reason a team setup is broken", () => {
     [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, op: "restrct" }])) }, /override x-001 ignored: op "restrct"/],
     [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, rule: "DS-ICON-0002" }])) }, /DS-ICON-0002/],
     [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, param: "icon_size_px" }])) }, /icon_size_px/],
+    [{ ".vois/teams/t.json": JSON.stringify(team("t", [restrict("DS-ICON-002", "icon_sizes_px", [12, 16, 20, 24, 32])])) }, /override x-001 ignored.*DS-ICON-002 icon_sizes_px/],
+    [{ ".vois/teams/t.json": JSON.stringify(team("t", [restrict("DS-ICON-002", "icon_sizes_px", "16")])) }, /"16"/],
     [{ ".vois/teams": "not a folder" }, /\.vois\/teams.*cannot be read/],
   ];
   for (const [files, want] of cases) {
@@ -324,8 +328,8 @@ test("the lint run names the real reason a team setup is broken", () => {
     assert.throws(() => lint(ICON, "src/a.jsx", { root }), want, JSON.stringify(files));
     assert.throws(() => lint(ICON, "src/a.jsx", { root }), (e) => e instanceof VoisConfigError && !/invalid JSON/.test(e.message), JSON.stringify(files));
   }
-  // From the other side: a limit the detectors cannot check, and a value looser than the base, are not errors.
-  const quiet = project({ ".vois/teams/t.json": team("t", [restrict("DS-TYPOGRAPHY-001", "max_text_styles", 2), restrict("DS-ICON-002", "icon_sizes_px", [12, 16, 20, 24, 32])]) });
+  // From the other side: a limit the detectors cannot check, and the base value itself, are not errors.
+  const quiet = project({ ".vois/teams/t.json": team("t", [restrict("DS-TYPOGRAPHY-001", "max_text_styles", 2), restrict("DS-ICON-002", "icon_sizes_px", [16, 20, 24, 32])]) });
   assert.deepEqual(ids(lint(ICON, "src/a.jsx", { root: quiet })), []);
 });
 
