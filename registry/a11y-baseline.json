@@ -15,10 +15,6 @@
     "axe:color-contrast|choice-card-disabled|default|mobile",
     "axe:scrollable-region-focusable|scroll-area|default|desktop",
     "axe:scrollable-region-focusable|scroll-area|default|mobile",
-    "focus-visible|command|open-dark|desktop",
-    "focus-visible|command|open-dark|mobile",
-    "focus-visible|command|open|desktop",
-    "focus-visible|command|open|mobile",
     "focus-visible|step-slider|default|desktop",
     "focus-visible|step-slider|default|mobile"
   ]

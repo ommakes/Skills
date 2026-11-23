@@ -48,14 +48,13 @@ Each row is a page and state with its known problem, on both viewports. None of 
 | `card-disabled`, `choice-card-disabled` | `axe:color-contrast` | **Exempt, but axe cannot tell.** The text is the disabled color (4.05:1 light, 3.78:1 dark). WCAG 1.4.3 exempts text in an inactive component, and these are `div`s, not disabled controls. |
 | `scroll-area` | `axe:scrollable-region-focusable` | **Tool limit.** The viewport has no `tabindex`. Chromium (checked on 157) makes a scroll container with no focusable child focusable, so the keyboard works there. axe cannot know that. The component relies on the browser doing it. |
 | `select`, `dropdown-menu`: `open`, `open-dark` | `axe:aria-hidden-focus` | **Tool limit.** An open Radix select or menu is modal: it hides the page with `aria-hidden` and traps focus, and the trigger is still focusable under it. This is the usual axe report for Radix modals. |
-| `command`: `open`, `open-dark` | `focus-visible` | **Tool limit.** Radix focuses the input when the palette opens, so the checker's "before focus" look is already the focused look and it sees no change. The Dialog page avoids this with `onOpenAutoFocus`; `CommandDialog` does not pass that prop through. |
 | `step-slider` | `focus-visible` | **Tool limit.** The ring is drawn around the thumb, on an element the checker does not compare. The ring shows (checked by eye in Chromium). |
 
 ## What it does not check
 
 These are limits of the run, not findings. `report.json` lists them under `not_checked`.
 
-- **Focus rings on roving-focus widgets are not verified.** For a radio group, tabs, a segmented control or a choice list, the checker marks the group's wrapper as the tab stop, but Tab lands on the item inside it, so it never reads the item's focus style. The run reports "Tab reached 0 of 2" (or part of the controls) for those pages.
+- **Only one item per roving-focus group is read.** In a radio group, tabs, a segmented control or a choice list, one item is the tab stop (in Radix, the checked one), so Tab reaches that item and the checker reads its focus ring. The other items need the arrow keys, which the walk does not press, so the run lists them under `not_checked` ("Tab reached 2 of 4") and their rings are not verified.
 - Hover, press and touch behaviour, hit area size, and anything behind a click.
 - How a page looks. Screenshots are saved for a person to look at; nothing is compared pixel by pixel.
 - Whether an animation is decorative. Every one that survives reduced motion is a WARN for a person to judge.
