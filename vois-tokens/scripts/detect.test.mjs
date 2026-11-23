@@ -2,14 +2,14 @@
 // No new dependency — uses Node's built-in test runner.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
 import { RULES } from "./registry.mjs";
-import { TUNABLES, loadTeams, paramsFor, matchesScope, summarizeTeams } from "./team-overrides.mjs";
+import { TUNABLES, UNCHECKED_TUNABLES, loadTeams, paramsFor, matchesScope, summarizeTeams } from "./team-overrides.mjs";
 import { isFileIgnored } from "./hook-lib.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -1314,7 +1314,9 @@ test("DS-ANIMATION-004: Tailwind motion-reduce: and motion-safe: count as reduce
   assert.equal(has('<svg className="animate-[spin_1s_linear_infinite] motion-reduce:animate-none" />'), false);
   assert.equal(has('<svg className="motion-safe:animate-spin" />'), false);
   assert.equal(has('<svg className="animate-spin" data-x="motion-reducer" />'), true, "motion-reducer is not the variant");
-  assert.equal(has('<svg className="animate-spin" />\n/* prefers-reduced-motion */'), false, "the literal query still counts");
+  assert.equal(has('<svg className="animate-spin" />\nconst q = "(prefers-reduced-motion: reduce)";'), false, "the literal query in code still counts");
+  assert.equal(has('<svg className="animate-spin" />\n/* prefers-reduced-motion */'), true, "a comment that names the query is not handling");
+  assert.equal(has('<svg className="animate-spin" />\n// motion-reduce: later'), true, "nor is one that names the variant");
 });
 
 // ---- DS-ELEVATION-007 (raw shadow with blur) and DS-ELEVATION-006 (docked shadow) -----------------------------
@@ -2157,4 +2159,195 @@ test("DS-A11Y-003 does not read url(//host) in SCSS as a line comment", () => {
   const scss = `.a { background: url(//cdn.example.com/x.png); }\n.a {\n  outline: none;\n${gap6}\n}\n.a:focus-visible { a: 1; }`;
   assert.equal(focusHits(scss, "a.scss").length, 0, "the brace after the url stays");
   assert.equal(focusHits(`.a {\n  outline: none;\n${gap6}\n}\n// note; .a:focus-visible { a: 1; }`, "a.scss").length, 1, "a real line comment is still blanked");
+});
+
+// ---------------------------------------------------------------------------
+// A broken team setup is reported with its real reason and never loosens a limit. The hook passes no onSkip
+// and keeps going; the gate and the ESLint plugin pass one that throws.
+// ---------------------------------------------------------------------------
+
+const skips = (root) => {
+  const out = [];
+  loadTeams(root, (name, why) => out.push([name, why]));
+  return out;
+};
+const sameLimit = restrictOverride(1, "DS-ANIMATION-001", "max_duration_ms", 200);
+
+test("a team file with a wrong schema is reported once, with its own reason", () => {
+  const cases = [
+    [{ ...team("t", [sameLimit]), schema: "something-else" }, /not a vois-team-override\/1 file/],
+    [{ ...team("t", [sameLimit]), team: 5 }, /not a vois-team-override\/1 file/],
+    [{ schema: "vois-team-override/1", team: "t", overrides: "x" }, /not a vois-team-override\/1 file/],
+    [{ ...team("t", [sameLimit]), scope: { paths: [] } }, /scope must be/],
+    ["{ nope", /unreadable or invalid JSON/],
+  ];
+  for (const [body, want] of cases) {
+    const got = skips(projectWith({ t: body }));
+    assert.equal(got.length, 1, `${JSON.stringify(body)} is reported once, not twice`);
+    assert.equal(got[0][0], "t.json");
+    assert.match(got[0][1], want);
+  }
+});
+
+test("an onSkip that throws keeps its own error: the JSON catch does not swallow it or call it again", () => {
+  const root = projectWith({ t: { ...team("t", [sameLimit]), schema: "something-else" } });
+  let calls = 0;
+  assert.throws(() => loadTeams(root, (name, why) => { calls++; throw new Error(`stop: ${why}`); }), /stop: not a vois-team-override\/1 file/);
+  assert.equal(calls, 1);
+});
+
+test("a team folder that cannot be read is reported, never read as 'no teams'", () => {
+  const noTeams = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  assert.deepEqual(skips(noTeams), [], "no .vois folder at all is fine");
+  mkdirSync(join(noTeams, ".vois"));
+  assert.deepEqual(skips(noTeams), [], "no teams folder is fine");
+  const asFile = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  mkdirSync(join(asFile, ".vois"));
+  writeFileSync(join(asFile, ".vois", "teams"), "not a folder"); // readdir fails with ENOTDIR
+  const got = skips(asFile);
+  assert.equal(got.length, 1);
+  assert.match(got[0][1], /cannot be read/);
+  const dotFile = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  writeFileSync(join(dotFile, ".vois"), "not a folder"); // existsSync says no here, so a guard on it alone lets this through
+  assert.equal(skips(dotFile).length, 1);
+  const loop = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  mkdirSync(join(loop, ".vois"));
+  symlinkSync("teams", join(loop, ".vois", "teams")); // a link that points at itself: ELOOP
+  assert.equal(skips(loop).length, 1);
+  assert.deepEqual(loadTeams(asFile), [], "with no onSkip it still returns [] and never throws");
+});
+
+test("an override with a mistyped op, rule or limit is reported; the team's other overrides still apply", () => {
+  const good = restrictOverride(9, "DS-ANIMATION-001", "max_duration_ms", 200);
+  const bad = [
+    [{ ...good, op: "restrct" }, /override x-009.*op/],
+    [{ ...good, op: "Restrict" }, /op/],
+    [{ ...good, op: undefined }, /op/],
+    [{ ...good, rule: "DS-ANIMATON-001" }, /override x-009.*DS-ANIMATON-001/],
+    [{ ...good, rule: "ds-animation-001" }, /ds-animation-001/],
+    [{ ...good, param: "max_duration" }, /override x-009.*max_duration/],
+    [{ ...good, param: "min_start_scale" }, /min_start_scale/], // a real limit, but of another rule
+    [{ ...good, rule: "constructor", param: "name" }, /constructor/], // inherited names are not limits
+    [{ ...good, rule: "__proto__", param: "x" }, /__proto__/],
+    [{ ...good, rule: undefined }, /rule/],
+    [null, /override/],
+    ["restrict", /override/],
+    [[], /override/],
+  ];
+  for (const [override, want] of bad) {
+    const root = projectWith({ t: team("t", [override, restrictOverride(2, "DS-ANIMATION-002", "max_duration_ms", 400)]) });
+    const got = skips(root);
+    assert.equal(got.length, 1, JSON.stringify(override));
+    assert.match(got[0][1], want, JSON.stringify(override));
+    const params = paramsFor(loadTeams(root), root, join(root, "a.tsx"));
+    assert.equal(params.get("DS-ANIMATION-002", "max_duration_ms"), 400, "the good override on the same team still applies (the hook's behavior)");
+    assert.doesNotThrow(() => params.get("DS-ANIMATION-001", "max_duration_ms"));
+  }
+});
+
+test("an override that names a real limit the hook cannot check, an add rule, or a loosening value is not a typo", () => {
+  const root = projectWith({
+    t: team("t", [
+      restrictOverride(1, "DS-TYPOGRAPHY-001", "max_text_styles", 2),
+      restrictOverride(2, "JOB-DISPLAY-DATA", "table_max_rows", 10),
+      { id: "t-003", op: "add", text: "No gradients.", reason: "Because." },
+      { id: "t-004", op: "refine", rule: "DS-ICON-001", param: "stroke_width_px", value: 2, reason: "Because." },
+      restrictOverride(5, "DS-ANIMATION-001", "max_duration_ms", 400), // loosens: ignored by design, as vois-teams documents
+    ]),
+  });
+  assert.deepEqual(skips(root), []);
+});
+
+test("every limit in vois-teams/data/ranges.json is either checked by the hook or known as unchecked", { skip: !existsSync(join(HERE, "..", "..", "vois-teams", "data", "ranges.json")) }, () => {
+  const ranges = JSON.parse(readFileSync(join(HERE, "..", "..", "vois-teams", "data", "ranges.json"), "utf8")).ranges;
+  const known = new Set([...Object.entries(TUNABLES).flatMap(([r, ps]) => Object.keys(ps).map((p) => `${r} ${p}`)), ...UNCHECKED_TUNABLES.map(([r, p]) => `${r} ${p}`)]);
+  assert.deepEqual([...known].sort(), ranges.map((r) => `${r.rule} ${r.param}`).sort());
+  for (const [r, p] of UNCHECKED_TUNABLES) assert.ok(!TUNABLES[r]?.[p], `${r} ${p} is checked, so it does not belong in UNCHECKED_TUNABLES`);
+});
+
+test("status lists a problem in an override next to the file's other lines", () => {
+  const root = projectWith({ t: team("t", [{ ...sameLimit, op: "restrct" }]) });
+  const cli = spawnSync(process.execPath, [join(HERE, "hook-admin.mjs"), "status"], { cwd: root, encoding: "utf8" });
+  assert.match(cli.stdout, /t\.json: override x-001 ignored: op "restrct"/);
+  const folder = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  mkdirSync(join(folder, ".vois"));
+  writeFileSync(join(folder, ".vois", "teams"), "x");
+  const cli2 = spawnSync(process.execPath, [join(HERE, "hook-admin.mjs"), "status"], { cwd: folder, encoding: "utf8" });
+  assert.match(cli2.stdout, /\.vois\/teams.*cannot be read/);
+});
+
+// ---------------------------------------------------------------------------
+// DS-TAILWIND-004 and comments
+// ---------------------------------------------------------------------------
+
+test("DS-TAILWIND-004 reads code, not comments", () => {
+  const important = (src, file) => has(detectFile(file, src), "DS-TAILWIND-004");
+  assert.equal(important("/* removed !important here */\n.a { color: red; }", "a.css").length, 0, "CSS block comment");
+  assert.equal(important(".a { color: red; /* was !important */ }", "a.css").length, 0, "trailing CSS comment");
+  assert.equal(important("/*\n * Why !important\n * was removed\n */\n.a { color: red; }", "a.css").length, 0, "multi-line comment");
+  assert.equal(important("// no !important\n.a { color: red; }", "a.scss").length, 0, "SCSS line comment");
+  assert.equal(important("// no !important\nconst a = 1;", "a.ts").length, 0, "code line comment");
+  assert.equal(important("/* no !important */\nconst a = 1;", "a.ts").length, 0, "code block comment");
+  assert.equal(important("export const A = () => <div>{/* !important */}</div>;", "a.tsx").length, 0, "JSX comment");
+  // From the other side: real uses still count, on the right line, even next to a comment.
+  assert.equal(important(".a { color: red !important; }", "a.css").length, 1);
+  assert.equal(important("/* note */ .a { color: red !important; }", "a.css")[0].line, 1);
+  assert.equal(important("/* why\nnot */\n.a { color: red !important; }", "a.css")[0].line, 3, "line numbers stay put");
+  assert.equal(important('const a = "https://x.test"; const b = "!important";', "a.ts").length, 1, "a string is not a comment, and a // in a URL starts none");
+  assert.equal(important('<div className="!p-4 text-sm" />', "a.tsx").length, 0, "Tailwind's important prefix is another syntax");
+  assert.equal(important(".a { color: red !important; } /* ok */ .b { color: blue !important; }", "a.css").length, 2);
+  assert.equal(important("/* unterminated !important\n.a { color: red; }", "a.css").length, 1, "an unterminated comment hides nothing it cannot prove is a comment");
+});
+
+test("no rule reads a comment: every fixture, wrapped whole in comments, gives no finding", () => {
+  for (const f of ["bad.tsx", "bad.css", "bad-stylex.tsx", "adversarial.tsx", "adversarial.css"]) {
+    const path = join(FIXTURES, f);
+    const body = readFileSync(path, "utf8").replace(/\*\//g, "* /");
+    assert.ok(detectFile(path, body).length > 0, `${f} has findings to hide`);
+    const wrapped = [`/*\n${body}\n*/\n`];
+    if (!f.endsWith(".css")) wrapped.push(body.split("\n").map((l) => `// ${l}`).join("\n"));
+    for (const text of wrapped) assert.deepEqual(detectFile(path, text).map((x) => x.ruleId), [], `${f}: ${text.slice(0, 12).trim()}`);
+  }
+});
+
+test("blanking comments keeps line numbers and snippets, and does not hide code next to a comment or a URL", () => {
+  const css = "/* a\n b */\n.a { color: red !important; } /* c */\n.b { background: url(//cdn.test/x.png); color: blue !important; }";
+  const hits = detectFile("a.scss", css).filter((x) => x.ruleId === "DS-TAILWIND-004");
+  assert.deepEqual(hits.map((h) => h.line), [3, 4], "// inside url() is not a comment");
+  assert.equal(hits[0].snippet, ".a { color: red !important; } /* c */", "the snippet is the line as written, comment included");
+  const ts = 'const u = "https://x.test/a"; const c = "text-[#ff0000]"; // trailing note\n/* block */ const d = "bg-[#00ff00]";';
+  assert.deepEqual(detectFile("a.tsx", ts).filter((x) => x.ruleId === "DS-COLOR-001").map((h) => h.line), [1, 2]);
+});
+
+test("the Cursor hook does not deny on !important in a comment, and still denies on the real thing", () => {
+  const root = ignoringProject([]);
+  const send = (content) => spawnSync(process.execPath, [join(HERE, "hook-before-edit.mjs")], { cwd: root, input: JSON.stringify({ tool_name: "Write", cwd: root, tool_input: { file_path: join(root, "src", "a.css"), content } }), encoding: "utf8" });
+  assert.equal(send("/* why !important was removed */\n.a { color: red; }").status, 0);
+  assert.equal(send("/* why */\n.a { color: red !important; }").status, 2);
+});
+
+test("blanking comments is linear, and a // or /* inside a string is not a comment", () => {
+  const slow = (file, text) => { const t = Date.now(); detectFile(file, text); return Date.now() - t; };
+  for (const file of ["a.css", "a.scss", "a.tsx"]) assert.ok(slow(file, " /*".repeat(40000)) < 1500, `${file}: many unterminated /* stay fast`);
+  assert.ok(slow("a.tsx", "// x\n".repeat(300)) < 1500);
+  assert.ok(slow("a.tsx", "'".repeat(40000)) < 1500);
+  const hex = (src, file = "a.tsx") => has(detectFile(file, src), "DS-COLOR-001").length;
+  assert.equal(hex('const a = "see // docs"; const b = <i className="text-[#ff0000]" />;'), 1, "// in a double-quoted string");
+  assert.equal(hex("const a = 'a /* b'; const b = <i className=\"text-[#ff0000]\" />; /* c */"), 1, "/* in a string");
+  assert.equal(hex("const a = `x // y`; const b = <i className=\"text-[#ff0000]\" />;"), 1, "// in a template literal");
+  assert.equal(hex('const a = "say \\" // hi"; const b = <i className="text-[#ff0000]" />;'), 1, "an escaped quote does not end the string");
+  assert.equal(hex('// it\'s a note\nconst b = <i className="text-[#ff0000]" />;'), 1, "an apostrophe in a comment starts no string");
+  assert.equal(hex("/* don't */ const b = <i className=\"text-[#ff0000]\" />;"), 1);
+  assert.equal(hex("const b = <i className=\"text-[#ff0000]\" />; // text-[#00ff00]"), 1, "the comment half of a line is still blanked");
+  assert.equal(hex("// note /* not a block\nconst b = <i className=\"text-[#ff0000]\" />;\n/* real */"), 1, "a // comment that holds /* does not start a block");
+  assert.equal(has(detectFile("a.css", '.a::after { content: "/* x */"; color: red !important; }'), "DS-TAILWIND-004").length, 1, "a CSS string is not a comment");
+});
+
+test("a team folder that is a dangling link is reported, as a missing folder is not", () => {
+  const root = mkdtempSync(join(tmpdir(), "vois-teams-"));
+  mkdirSync(join(root, ".vois"));
+  symlinkSync(join(root, "gone"), join(root, ".vois", "teams"));
+  const got = skips(root);
+  assert.equal(got.length, 1);
+  assert.match(got[0][1], /cannot be read/);
 });

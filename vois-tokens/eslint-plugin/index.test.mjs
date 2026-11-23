@@ -309,6 +309,26 @@ test("a malformed team file stops the lint run instead of dropping the team's li
   }
 });
 
+test("the lint run names the real reason a team setup is broken", () => {
+  const good = restrict("DS-ICON-002", "icon_sizes_px", [16, 20]);
+  const cases = [
+    [{ ".vois/teams/t.json": '{"schema":"other"}' }, /\.vois\/teams\/t\.json: not a vois-team-override\/1 file/],
+    [{ ".vois/teams/t.json": JSON.stringify({ ...team("t", []), scope: { paths: [] } }) }, /scope must be/],
+    [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, op: "restrct" }])) }, /override x-001 ignored: op "restrct"/],
+    [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, rule: "DS-ICON-0002" }])) }, /DS-ICON-0002/],
+    [{ ".vois/teams/t.json": JSON.stringify(team("t", [{ ...good, param: "icon_size_px" }])) }, /icon_size_px/],
+    [{ ".vois/teams": "not a folder" }, /\.vois\/teams.*cannot be read/],
+  ];
+  for (const [files, want] of cases) {
+    const root = project(files);
+    assert.throws(() => lint(ICON, "src/a.jsx", { root }), want, JSON.stringify(files));
+    assert.throws(() => lint(ICON, "src/a.jsx", { root }), (e) => e instanceof VoisConfigError && !/invalid JSON/.test(e.message), JSON.stringify(files));
+  }
+  // From the other side: a limit the detectors cannot check, and a value looser than the base, are not errors.
+  const quiet = project({ ".vois/teams/t.json": team("t", [restrict("DS-TYPOGRAPHY-001", "max_text_styles", 2), restrict("DS-ICON-002", "icon_sizes_px", [12, 16, 20, 24, 32])]) });
+  assert.deepEqual(ids(lint(ICON, "src/a.jsx", { root: quiet })), []);
+});
+
 test("settings.vois.root names the project root; a wrong type stops the run", () => {
   const parent = project({ "app/.vois/config.json": { ignoredRules: ["DS-COLOR-001"] }, "app/src/a.js": "" });
   assert.equal(lint(HEX, "app/src/a.js", { root: parent }).length, 2, "the cwd has no config");

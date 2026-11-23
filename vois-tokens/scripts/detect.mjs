@@ -8,21 +8,28 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { rulesForFile } from "./registry.mjs";
+import { snippetAt, uncomment } from "./check-utils.mjs";
 import { BASE_PARAMS, loadTeams, paramsFor } from "./team-overrides.mjs";
 
-/** `params` is the limits that apply to this file (see team-overrides.mjs). It defaults to the base limits. */
+/**
+ * `params` is the limits that apply to this file (see team-overrides.mjs). It defaults to the base limits.
+ * Rules read the file with its comments blanked out (newlines kept, so every line number is the same), because a
+ * comment that explains why `!important` was removed is not `!important`. A finding's snippet is still the line as written.
+ */
 export function detectFile(filePath, content, { params = BASE_PARAMS } = {}) {
   const lines = content.split("\n");
+  const code = uncomment(content, filePath);
+  const codeLines = code.split("\n");
   const findings = [];
   for (const rule of rulesForFile(filePath)) {
-    const hits = rule.check({ content, lines, filePath, params }) || [];
+    const hits = rule.check({ content: code, lines: codeLines, filePath, params }) || [];
     for (const hit of hits) {
       findings.push({
         ruleId: rule.id,
         severity: hit.severity ?? rule.severity, // a detector may lower one finding below the rule (DS-ANIMATION-005)
         file: filePath,
         line: hit.line,
-        snippet: hit.snippet,
+        snippet: hit.snippet === snippetAt(codeLines, hit.line) ? snippetAt(lines, hit.line) : hit.snippet,
         message: hit.message,
         fixHint: rule.fixHint,
       });
