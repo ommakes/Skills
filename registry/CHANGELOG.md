@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.22.2] - 2026-11-23
+
+- `a11y-baseline.json` drops the four `focus-visible|command|open` and `open-dark` entries (20 to 16). They were a false report: Radix focuses the command palette's input when it opens, and the checker used to record the control's resting look after that, so the ring could not read as a change. vois-loop 1.15.2 records it unfocused. `harness/README.md` loses the row, and its note on roving-focus widgets now says what the checker reads (the one item Tab reaches in each group) and what it does not (the other items). No item changed.
+
 ## [0.22.1] - 2026-11-20
 
 Four problems the accessibility harness found in 0.21.2 (still there in 0.22.0), fixed. Numbered 0.21.3 until 0.22.0 merged first. Each was in the baseline and is out of it now.
