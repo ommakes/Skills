@@ -4,6 +4,11 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.6] - 2026-11-23
+
+### Changed
+- **`DS-SURFACE-004`: the label inset is 4px at small and 8px at default and large.** 1.48.5 said 4px for every size. At the larger text sizes the icon side looked heavy, so default and large now use `--space-padding-x-small` (8px) for the label's inset and 8px container padding (was 12px). Text-only buttons keep the same padding from the edge (12, 16, 16). An icon button keeps its width: the icon side loses 4px and the gap between icon and text gains 4px. The rule, its JSON entry, the example and the `components.md` pointer say so. Registry 0.22.3 changes the Button to match. The 4px was a rule of thumb that matched Figma, not a measurement: it is a choice, and Figma needs the same change.
+
 ## [1.48.5] - 2026-11-23
 
 ### Fixed

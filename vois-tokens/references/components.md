@@ -44,7 +44,7 @@ const buttonVariants = cva(
 
 `text-[color:...]` and `border-[color:...]` carry a type hint on purpose: shadcn's `cn()` runs `tailwind-merge`, which cannot tell `text-[var(--x)]` (a color) from `text-sm` (a size) and can drop one of them.
 
-The full version is the registry's `vois-button` item (`registry/vois/button/button.tsx`): the Figma layout (a label frame with 4px on each side and centered text, `leadingIcon` and `trailingIcon`), the focus ring, hit area, press scale, a `loading` state with `vois-spinner`, and every state. Install it rather than writing a Button.
+The full version is the registry's `vois-button` item (`registry/vois/button/button.tsx`): the Figma layout (a label frame with a 4px inset at small and 8px at default and large, and centered text, `leadingIcon` and `trailingIcon`), the focus ring, hit area, press scale, a `loading` state with `vois-spinner`, and every state. Install it rather than writing a Button.
 
 
 

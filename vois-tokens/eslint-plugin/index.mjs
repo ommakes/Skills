@@ -24,7 +24,7 @@ import { loadTeams, paramsFor } from "../scripts/team-overrides.mjs";
 import { loadWaivers, severityOf, SKIP_DIRS, waived } from "../scripts/check.mjs";
 
 // The vois-tokens version this plugin ships with. A test checks it against SKILL.md and skills.json.
-const VERSION = "1.48.5";
+const VERSION = "1.48.6";
 
 /** The file extensions this plugin lints. CSS and SCSS are left to the hook and the CI gate. */
 export const CODE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];

@@ -51,11 +51,12 @@ const styles = stylex.create({
 
 When geometric centering looks wrong, align optically instead. `[DS-SURFACE-003]`
 
-**Buttons with text + icon:** use less padding on the icon side, by the label inset. In the Vois Button the label sits in its own frame with `--space-padding-2x-small` (4px) on each side, and the icon sits outside that frame. So `icon-side padding = text-side padding - 4px`, and the gap between the icon and the text is that same 4px. The Button's `leadingIcon` and `trailingIcon` already do this. Copy it only in a button you build by hand. The icon box has empty space inside it, which is why the icon side needs less. `[DS-SURFACE-004]`
+**Buttons with text + icon:** use less padding on the icon side, by the label inset. In the Vois Button the label sits in its own frame, and the icon sits outside it. The label's inset is `--space-padding-2x-small` (4px) at the small size and `--space-padding-x-small` (8px) at default and large. The container padding is 8px at every size, so the text side is 12, 16 and 16. So `icon-side padding = text-side padding - inset`, and the gap between the icon and the text is the inset. The Button's `leadingIcon` and `trailingIcon` already do this. Copy it only in a button you build by hand. The icon box has empty space inside it, which is why the icon side needs less. `[DS-SURFACE-004]`
 
 ```tsx
-<button className="flex items-center gap-0 px-[var(--space-padding-small)]">
-  <span className="px-[var(--space-padding-2x-small)]">Continue</span>
+{/* default size: container 8, label inset 8 */}
+<button className="flex items-center gap-0 px-[var(--space-padding-x-small)]">
+  <span className="px-[var(--space-padding-x-small)]">Continue</span>
   <ArrowRightIcon />
 </button>
 ```

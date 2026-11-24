@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.22.3] - 2026-11-23
+
+- **`vois-button`: the label inset is 4px at sm and 8px at default and lg.** Container padding is now 8px at every size (default and lg were 12px), and the label frame's inset on each side is 4px at sm and 8px at default and lg (was 4px for all). Text-only buttons are the same width as before (text sits 12 / 16 / 16 from the edge). A Button with `leadingIcon` or `trailingIcon` is the same width too: the icon side is 8px from the edge (was 12px at default and lg) and the gap between icon and text is 8px (was 4px). Sizes sm and the icon-only sizes are unchanged. Visible change: icons in default and lg buttons sit closer to the edge and further from the text. Follows `vois-tokens` 1.48.6 (`DS-SURFACE-004`). Figma still has 4px, see `FIGMA-TODO.md`.
+
 ## [0.22.2] - 2026-11-23
 
 - `a11y-baseline.json` drops the four `focus-visible|command|open` and `open-dark` entries (20 to 16). They were a false report: Radix focuses the command palette's input when it opens, and the checker used to record the control's resting look after that, so the ring could not read as a change. vois-loop 1.15.2 records it unfocused. `harness/README.md` loses the row, and its note on roving-focus widgets now says what the checker reads (the one item Tab reaches in each group) and what it does not (the other items). No item changed.

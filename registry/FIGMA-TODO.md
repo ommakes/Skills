@@ -2,6 +2,10 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale.
 
+## Open (registry 0.22.3, Button label inset)
+
+The code Button now uses an 8px label inset at default and lg (4px at sm), with 8px container padding at every size. The Figma Primary Button set still has a 4px label frame inset and 12px container padding at Reg and Lg. To match: in the Primary Button set, Reg and Lg, set the label frame's horizontal padding to `Space/Padding/X-Small` (8) and the container's horizontal padding to `Space/Padding/X-Small` (8). Sm stays as it is. Text-only buttons keep their width; buttons with an icon keep theirs too (icon side 8, gap 8).
+
 ## Done on 2026-11-20 (contrast, registry 0.22.1)
 
 The five variables below were changed in the Vois Figma file (variable aliases only, both modes), and their entries are out of `source/figma-pending.json`. Found by the rendered accessibility check (`harness/README.md`): each was under the 4.5:1 minimum for normal text. `source/figma-export.json` carries the five new values.

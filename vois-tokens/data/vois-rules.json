@@ -1370,7 +1370,7 @@
       "category": "DS-SURFACE",
       "category_label": "Surfaces and Motion Polish",
       "source_file": "vois-tokens/references/surfaces.md",
-      "rule": "Buttons with text + icon: use less padding on the icon side, by the label inset. The label sits in a frame with `--space-padding-2x-small` (4px) on each side and the icon sits outside it, so `icon-side padding = text-side padding - 4px`. The Button's `leadingIcon` and `trailingIcon` already do this.",
+      "rule": "Buttons with text + icon: use less padding on the icon side, by the label inset. The label sits in a frame and the icon sits outside it. The label's inset is `--space-padding-2x-small` (4px) at the small size and `--space-padding-x-small` (8px) at default and large; the container padding is 8px at every size. So `icon-side padding = text-side padding - inset`, and the gap between icon and text is the inset. The Button's `leadingIcon` and `trailingIcon` already do this.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"

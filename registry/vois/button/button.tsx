@@ -11,8 +11,10 @@
 // (size-10) holds on a fine pointer only: tailwind-merge keeps the coarse class, so add its coarse twin too.
 // Press: scale 0.96 for a pointer press only, never a keyboard press or under reduced motion, timed by the
 // motion tokens (DS-ANIMATION-008, DS-ANIMATION-003, DS-ANIMATION-004, DS-MOTION-001). `static` turns it off.
-// Layout follows the Figma Primary Button: container padding, then a label frame with 4px on each side
-// (--space-padding-2x-small) holding centered text, with optional leading and trailing icons.
+// Layout follows the Figma Primary Button: container padding (8 at every text size), then a label frame
+// holding centered text, with optional leading and trailing icons outside it. The label's inset is 4px at sm
+// (--space-padding-2x-small) and 8px at default and lg (--space-padding-x-small), so the icon side is 4 or 8px
+// tighter than the text side and the icon sits that far from the text (vois-tokens DS-SURFACE-004).
 // `loading` shows the Spinner over the content without changing the width.
 // registry/FIGMA-TODO.md lists the choices still to check against Figma.
 import * as React from "react"
@@ -116,10 +118,11 @@ const buttonVariants = cva(
         ],
       },
       size: {
-        // Container padding, then the label's own 4px: text sits 12 / 16 / 16 from the edge, as in Figma.
+        // Container padding 8 / 8 / 8, then the label's own inset 4 / 8 / 8 (LABEL_INSET): text sits 12 / 16 / 16
+        // from the edge, as in Figma, and an icon sits 8 from it.
         sm: "h-[var(--size-action-medium)] px-[var(--space-padding-x-small)] text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-small)]",
-        default: "h-[var(--size-action-large)] px-[var(--space-padding-small)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
-        lg: "h-[var(--size-action-x-large)] px-[var(--space-padding-small)] text-[length:var(--font-size-medium)] leading-[var(--line-height-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
+        default: "h-[var(--size-action-large)] px-[var(--space-padding-x-small)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
+        lg: "h-[var(--size-action-x-large)] px-[var(--space-padding-x-small)] text-[length:var(--font-size-medium)] leading-[var(--line-height-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-20)]",
         // Icon-only sizes (DS-ICON-003): 28 / 36 / 48 with 16 / 20 / 24 glyphs, one step up on a coarse pointer:
         // 36 / 48 / 56 with 20 / 24 / 28 glyphs. Text sizes keep their height on touch; only their hit area grows.
         "icon-sm": "size-[var(--size-action-medium)] [&_svg:not([class*='size-'])]:size-[var(--size-icon-small)] [@media(any-pointer:coarse)]:size-[var(--size-action-large)] [@media(any-pointer:coarse)]:[&_svg:not([class*='size-'])]:size-[var(--size-20)]",
@@ -142,6 +145,8 @@ const buttonVariants = cva(
 )
 
 const ICON_ONLY = new Set(["icon-sm", "icon", "icon-lg", "circular"])
+// The label frame's inset on each side: 4 at sm, 8 at default and lg. It is also the gap between an icon and the text.
+const LABEL_INSET = { sm: "px-[var(--space-padding-2x-small)]" } as const
 const SPINNER_SIZE = { sm: "sm", "icon-sm": "sm", "icon-lg": "lg", circular: "lg" } as const
 
 type ButtonProps = React.ComponentProps<"button"> &
@@ -185,7 +190,7 @@ function Button({
         {/* The label frame lays out its children in a row with Figma's 8px gap, so an icon passed as a child
             (shadcn style) still sits beside the text. leadingIcon and trailingIcon are the Vois way. */}
         {leadingIcon ? <span data-slot="button-icon" data-position="leading" aria-hidden="true" className="inline-flex">{leadingIcon}</span> : null}
-        <span data-slot="button-label" className="inline-flex items-center justify-center gap-[var(--space-padding-x-small)] px-[var(--space-padding-2x-small)] text-center">{inner}</span>
+        <span data-slot="button-label" className={cn("inline-flex items-center justify-center gap-[var(--space-padding-x-small)] text-center", LABEL_INSET[size as keyof typeof LABEL_INSET] ?? "px-[var(--space-padding-x-small)]")}>{inner}</span>
         {trailingIcon ? <span data-slot="button-icon" data-position="trailing" aria-hidden="true" className="inline-flex">{trailingIcon}</span> : null}
       </>
     )
