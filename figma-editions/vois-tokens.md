@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, elevation, shape, component architecture, overlays, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.48.4
+version: 1.48.6
 ---
 
 # Vois Tokens Skill (Rules & Values Edition)
@@ -120,7 +120,7 @@ Detail-level rules for nested surfaces, optical alignment, image treatment, and 
 
 **Concentric border radius:** when nesting rounded elements, `outerRadius = innerRadius + padding` `[DS-SURFACE-001]`. Mismatched radii on nested elements is one of the most common things that makes UI feel off. If the padding between two surfaces exceeds 24px, treat them as independent and pick each radius on its own `[DS-SURFACE-002]`. Example: `rounded-2xl p-2` (16px radius, 8px padding) outer → `rounded-lg` (8px = 16-8 ✓) inner.
 
-**Optical over geometric alignment**, when geometric centering looks wrong, align optically `[DS-SURFACE-003]`. Buttons with text + icon: icon-side padding = text-side padding − the label inset, 4px at small and 8px at default and large `[DS-SURFACE-004]`. Play-button triangles: shift right ~2px, their geometric center isn't their visual center `[DS-SURFACE-005]`. Asymmetric icons (stars, arrows): fix the SVG viewBox/path directly if possible `[DS-SURFACE-006]`.
+**Optical over geometric alignment**, when geometric centering looks wrong, align optically `[DS-SURFACE-003]`. Buttons with text + icon: icon-side padding = text-side padding − the label inset. The label sits in its own frame and the icon sits outside it. The inset is 4px (`--space-padding-2x-small`) at small and 8px (`--space-padding-x-small`) at default and large; the container padding is 8px at every size, so the text side is 12, 16 and 16, and the gap between icon and text is the inset `[DS-SURFACE-004]`. Play-button triangles: shift right ~2px, their geometric center isn't their visual center `[DS-SURFACE-005]`. Asymmetric icons (stars, arrows): fix the SVG viewBox/path directly if possible `[DS-SURFACE-006]`.
 
 **Shadows over borders for depth:** cards/containers/bordered buttons that need depth should use a layered `box-shadow`, not a solid `border`, shadows adapt to any background, border colors don't `[DS-SURFACE-007]`. Don't apply this to dividers or layout-separation borders, those stay borders `[DS-SURFACE-008]`. Use shadows for: cards with depth, bordered buttons, elevated elements (dropdowns/modals), elements on varied/image backgrounds. Use borders for: list dividers, table cell boundaries, form input outlines, hairline separators.
 
