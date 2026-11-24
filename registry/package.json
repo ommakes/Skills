@@ -1,6 +1,6 @@
 {
   "name": "vois-registry",
-  "version": "0.22.2",
+  "version": "0.22.3",
   "private": true,
   "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
   "type": "module",
