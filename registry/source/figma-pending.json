@@ -1,6 +1,23 @@
 {
   "format": 1,
   "about": "Tokens decided but not yet in Figma. build-tokens.mjs applies them on top of figma-export.json. Each entry fails the build once Figma exports it, so remove it then. registry/FIGMA-TODO.md says what to create in Figma for each one.",
-  "add": {},
+  "add": {
+    "--toggle-group-unselected": [
+      "=--white",
+      "#ffffff00"
+    ],
+    "--toggle-group-hover": [
+      "=--black-a1",
+      "=--white-a2"
+    ],
+    "--toggle-group-selected": [
+      "=--black-a2",
+      "=--white-a4"
+    ],
+    "--toggle-group-disabled": [
+      "=--gray-2",
+      "=--white-a1"
+    ]
+  },
   "change": {}
 }

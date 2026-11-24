@@ -13,7 +13,7 @@
 // vois-components has no job for a standalone disclosure yet; the AI parts (reasoning, tool call) build on it.
 // Do not pass your own `id` to CollapsibleContent: Radix points the trigger's aria-controls at its own generated id,
 // so a custom id breaks the link between the trigger and what it opens.
-// For a set of panels where one opens at a time, use an Accordion (not in the registry yet).
+// For a set of panels where one opens at a time, use an Accordion (vois-accordion).
 import * as React from "react"
 import { Collapsible as CollapsiblePrimitive } from "radix-ui"
 

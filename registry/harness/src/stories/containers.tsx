@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from "@/components/ui/button-group"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardLink, CardTitle } from "@/components/ui/card"
@@ -158,4 +159,26 @@ export const inputGroup: Story = {
   title: "Input group",
   items: ["vois-input-group"],
   render: () => <InputGroupDemo />,
+}
+
+export const accordion: Story = {
+  title: "Accordion",
+  items: ["vois-accordion"],
+  render: ({ state }) => (
+    <Accordion type="single" collapsible defaultValue={state === "open" ? "returns" : undefined} className="max-w-xl">
+      <AccordionItem value="returns">
+        <AccordionTrigger>Can I return an item?</AccordionTrigger>
+        <AccordionContent>Yes. You have 30 days from delivery to return it for a full refund.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="shipping">
+        <AccordionTrigger>How long does shipping take?</AccordionTrigger>
+        <AccordionContent>Most orders arrive in 3 to 5 working days.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="gift" disabled>
+        <AccordionTrigger>Gift wrapping</AccordionTrigger>
+        <AccordionContent>Not available right now.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
+  states: { open: { expect: "[data-slot=accordion-content][data-state=open]" } },
 }

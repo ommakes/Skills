@@ -2,6 +2,17 @@
 
 What the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) still needs. Tokens that code needs before Figma has them go in `source/figma-pending.json`. The checker fails if one is missing from this list, so the list can't silently go stale.
 
+## To do in Figma (toggle group, registry 0.25.0)
+
+The four variables below are in the Figma file (`Component/Toggle Group/...`, bound in the Toggle Group Button set `3488:2898`), but the export does not have them yet. Re-export, then remove them from `source/figma-pending.json` (the build fails once they match).
+
+- **`--toggle-group-unselected`**: Light `White`, Dark transparent (`#ffffff00`, as `--select-resting`). Figma shows `#ffffff` in light only.
+- **`--toggle-group-hover`**: Light `Black-A1` (`#0000000a`, matches Figma), Dark `White-A2` (first pass).
+- **`--toggle-group-selected`**: Light `Black-A2` (`#00000014`, matches Figma), Dark `White-A4` (first pass, one step above hover).
+- **`--toggle-group-disabled`**: Light `Gray-2` (`#f0f0f0`, matches Figma), Dark `White-A1` (first pass).
+- Figma has no Dark mode value for these four. Set the dark side in the variable collection, then re-export.
+- Open: the Toggle Group example (`3488:2870`) draws the right button's edge with `System/Border/Border-Opaque` (`#e2e2e2`), while the standalone Selected button uses `Border-Default`. The code uses `Border-Default`. Rebind one of them.
+
 ## Open (registry 0.22.3, Button label inset)
 
 The code Button now uses an 8px label inset at default and lg (4px at sm), with 8px container padding at every size. The Figma Primary Button set still has a 4px label frame inset and 12px container padding at Reg and Lg. To match: in the Primary Button set, Reg and Lg, set the label frame's horizontal padding to `Space/Padding/X-Small` (8) and the container's horizontal padding to `Space/Padding/X-Small` (8). Sm stays as it is. Text-only buttons keep their width; buttons with an icon keep theirs too (icon side 8, gap 8).
@@ -205,3 +216,10 @@ The five variables below were changed in the Vois Figma file (variable aliases o
    - **Command:** the item heights are 36 and 40 (the code uses 40). Figma's Active state (current choice) is not built because a command list has none. The search row has a trailing icon in Figma that the code does not draw.
    - **No Figma design:** Collapsible. It has no visual of its own, so there is nothing to build.
    - **The z-index ladder put overlays under the modal. Fixed in 0.8.1.** Figma now has `--z-modal` 1300, `--z-dropdown` 1400 and `--z-overlay` 1500 (export checksum `7e6728b4`, 880 tokens), so a menu, select, hover card or tooltip opened from inside a Dialog shows above it. It was 1000, 1200 and 1300 before.
+9. **Batch 2 findings (2026-11-24).**
+   - **Pagination:** the active page is `--select-solid-active` with `--text-on-dark`. Dark theme: white on `--blue-9` is about 3.5:1 (light is 5.4:1). Pick a darker fill or a different text token.
+   - **Calendar:** Figma cells are 19 by 24 with 10/12 text, which fails `DS-A11Y-001`. Om chose to size up the code, so the Figma set should be redrawn: 44 by 44 cells with no gap (a 36 square fill inside), 14/20 text, 44 nav buttons with 16 chevrons, and a 332 wide card.
+   - **Off the 4px grid:** some batch 2 Figma frames use 2px and 5px gaps. The code uses 4 (a spacing token). Fix the frames or add the tokens.
+   - **Toast:** there is no `--z-toast` token. The viewport uses `--z-overlay`.
+   - **Alert dialog:** no Figma frame was read. The code copies the Dialog (see 0.27.0).
+10. **Dialog frames (2026-11-24).** The frames at `8305:27515` are 360 and 480 wide (min 360, max 480) and hardcode them. The Size variables are `--width-dialog-sm` 344 and `--width-dialog-lg` 560. The rule is that a modal may be 340 to 560 wide, so both are fine and the code keeps the variables. The frames have no separate alert dialog: the Confirmation frame has a close button, the Required frame does not, and the code follows Required.

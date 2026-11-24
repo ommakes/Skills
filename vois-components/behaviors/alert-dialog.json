@@ -1,0 +1,273 @@
+{
+  "id": "alert-dialog",
+  "name": "Alert dialog",
+  "purpose": "A question that needs an answer before the person can go on, such as confirming a delete. It traps focus and cannot be closed by clicking outside.",
+  "notFor": [
+    {
+      "use": "Dialog",
+      "when": "The person can leave without answering, or the task is a form."
+    },
+    {
+      "use": "Alert",
+      "when": "The message is information only and nothing needs to block."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/alert-dialog, dialog and dismissable-layer",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date. The inventory words Action and Cancel as Close parts with a value; Radix has AlertDialogAction and AlertDialogCancel instead."
+  },
+  "anatomy": [
+    {
+      "part": "AlertDialog (root)",
+      "required": true,
+      "note": "Holds the open state. It is always modal."
+    },
+    {
+      "part": "AlertDialogTrigger",
+      "required": true,
+      "note": "The button that opens the dialog. It can sit apart from the content."
+    },
+    {
+      "part": "AlertDialogOverlay",
+      "required": false,
+      "note": "Dims the page behind. vois-alert-dialog draws it with the content."
+    },
+    {
+      "part": "AlertDialogContent",
+      "required": true,
+      "note": "The dialog. It has the alertdialog role and traps focus."
+    },
+    {
+      "part": "AlertDialogTitle",
+      "required": true,
+      "note": "The question. It names the dialog."
+    },
+    {
+      "part": "AlertDialogDescription",
+      "required": true,
+      "note": "What happens if the person agrees. It describes the dialog."
+    },
+    {
+      "part": "AlertDialogCancel",
+      "required": true,
+      "note": "The safe answer. Radix focuses it when the dialog opens."
+    },
+    {
+      "part": "AlertDialogAction",
+      "required": true,
+      "note": "The agreeing answer. Pass variant destructive for a delete."
+    },
+    {
+      "part": "AlertDialogShortcut",
+      "required": false,
+      "note": "Shows the keys for a shortcut. Radix has no such part."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-ALERT-DIALOG-001",
+      "group": "interaction",
+      "text": "Clicking outside the dialog leaves it open. Only an answer or Escape closes it.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: onPointerDownOutside and onInteractOutside call preventDefault",
+      "note": "The Vois item keeps this. Do not turn it off.",
+      "rules": [
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-002",
+      "group": "interaction",
+      "text": "Escape closes the dialog and returns focus to the control that opened it.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: Escape goes to the Dialog's DismissableLayer; the Dialog's modal onCloseAutoFocus focuses the trigger",
+      "note": "Focus goes back to the trigger. If the trigger is gone, see the focus line below.",
+      "rules": [
+        "DS-A11Y-021",
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-003",
+      "group": "interaction",
+      "text": "A dialog opened inside another dialog joins a stack. Escape closes only the topmost one and returns focus to its trigger.",
+      "support": "native",
+      "evidence": "dismissable-layer.tsx: isHighestLayer decides which layer handles Escape",
+      "note": "Only the Escape part is checked. Radix does not mark the dialog underneath as having a nested dialog open. Put a data attribute on it yourself if you style for that.",
+      "rules": [
+        "DS-A11Y-021",
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-004",
+      "group": "interaction",
+      "text": "A keyboard shortcut can open the dialog without clicking.",
+      "support": "supply",
+      "note": "Radix has no shortcut part. Add a key handler that sets open, and show the keys yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-005",
+      "group": "interaction",
+      "text": "Choosing an answer can run work first. The dialog stays open until the work finishes. A success closes it, and a failure keeps it open so the person can try again.",
+      "support": "supply",
+      "note": "Radix closes as soon as Action is pressed. Control open yourself, call preventDefault on the Action click, then close when your work is done.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-006",
+      "group": "interaction",
+      "text": "While that work runs, the other answers cannot close the dialog and dismissals are refused. The app can still close it directly.",
+      "support": "supply",
+      "note": "Same as above. Disable Cancel while pending and call preventDefault in onEscapeKeyDown.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-007",
+      "group": "interaction",
+      "text": "A shared confirm helper can ask a question without dialog markup. It resolves to yes for the agreeing answer, and to no for Cancel, Escape or any other answer.",
+      "support": "supply",
+      "note": "Radix and vois-alert-dialog have no helper. Build one if the app asks many questions.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-008",
+      "group": "interaction",
+      "text": "If several confirmations are asked at once, they wait their turn and appear one after another.",
+      "support": "supply",
+      "note": "Part of the confirm helper above. Queue the questions there.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-009",
+      "group": "focus",
+      "text": "Tab stays inside the dialog while it is open, and the rest of the page cannot be reached.",
+      "support": "differs",
+      "evidence": "dialog.tsx: modal sets trapFocus, calls hideOthers and wraps the content in RemoveScroll; alert-dialog.tsx forces modal true",
+      "note": "The page behind is hidden from assistive tech with aria-hidden. Radix does not use the inert attribute.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-010",
+      "group": "focus",
+      "text": "Opening the dialog focuses its first answer, so the least destructive answer should come first.",
+      "support": "differs",
+      "evidence": "alert-dialog.tsx: onOpenAutoFocus calls preventDefault, then focuses cancelRef (the AlertDialogCancel part)",
+      "note": "Radix focuses Cancel, not the first answer in the footer. Use AlertDialogCancel for the safe answer. If there is no AlertDialogCancel, focus lands on the content. If you pass your own onOpenAutoFocus and call preventDefault, Radix skips the Cancel focus.",
+      "rules": [
+        "DS-A11Y-020"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-011",
+      "group": "focus",
+      "text": "Opening by touch focuses the dialog content instead, so no on-screen keyboard appears.",
+      "support": "supply",
+      "note": "Radix always focuses Cancel. Cancel is a button, so it does not raise a keyboard. Nothing to add unless you put a field in the dialog, which this component is not for.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-012",
+      "group": "focus",
+      "text": "When the control that opened the dialog has been removed, focus goes to a useful nearby place.",
+      "support": "supply",
+      "note": "Radix returns focus to a trigger that is gone, so focus drops to the page body. Move focus yourself in onCloseAutoFocus.",
+      "rules": [
+        "DS-A11Y-021"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-013",
+      "group": "state",
+      "text": "The dialog slides up and fades in as it opens, and slides down and fades out before it disappears.",
+      "support": "differs",
+      "evidence": "alert-dialog.tsx: vois-alert-dialog keyframes through a style tag; Presence keeps the content mounted for the exit",
+      "note": "The Vois item fades and scales the card, as vois-dialog does. It does not slide. Both stop under reduced motion.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-014",
+      "group": "state",
+      "text": "While an answer's work is running, its button stays focusable and is marked busy and disabled, and the other answers are marked disabled.",
+      "support": "supply",
+      "note": "Set aria-busy and aria-disabled on the Action, and disabled on Cancel, from your own pending state. vois-button has a loading prop you can use for the Action.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-015",
+      "group": "state",
+      "text": "After a second of waiting, screen readers hear a waiting message. An error from a failed attempt clears on the next attempt or when the dialog opens again.",
+      "support": "supply",
+      "note": "Add a live region and a timer in your pending state.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-016",
+      "group": "state",
+      "text": "A trigger can be disabled.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: AlertDialogTrigger is a button and takes disabled",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-017",
+      "group": "state",
+      "text": "The content is marked while the on-screen keyboard covers part of the page.",
+      "support": "supply",
+      "note": "Radix has no such flag. This only matters for a dialog with a field.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-018",
+      "group": "accessibility",
+      "text": "The dialog uses the alert-dialog role. Screen readers announce its title and description.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: Content sets role=alertdialog; dialog.tsx sets aria-labelledby and aria-describedby when the parts exist",
+      "note": "This Radix version does not warn when the Description is missing, so check for it yourself. Always include one.",
+      "rules": [
+        "DS-A11Y-019"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-019",
+      "group": "accessibility",
+      "text": "It is always modal, never closes on an outside press, and never presents as a sheet.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: Root passes modal true and omits the modal prop; outside events are prevented",
+      "note": "vois-alert-dialog has no sheet presentation.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-ALERT-DIALOG-020",
+      "group": "mistake",
+      "text": "Do not put the destructive answer first. Opening focuses Cancel, so make the safe answer an AlertDialogCancel.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: cancelRef is set only by AlertDialogCancel",
+      "rules": [
+        "DS-A11Y-020"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-021",
+      "group": "mistake",
+      "text": "Do not expect an outside press to close it. It is always modal and never closes on an outside press.",
+      "support": "native",
+      "evidence": "alert-dialog.tsx: onPointerDownOutside and onInteractOutside call preventDefault",
+      "rules": [
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-ALERT-DIALOG-022",
+      "group": "mistake",
+      "text": "Do not present it as a sheet. On a small touch screen, keep the centered card.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

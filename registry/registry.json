@@ -250,6 +250,25 @@
       ]
     },
     {
+      "name": "vois-accordion",
+      "type": "registry:ui",
+      "title": "Vois Accordion",
+      "description": "shadcn/ui's Accordion (Radix) from the Figma Accordian set: each item is a card (Bg-Default, Bg-Subtle on hover), a 20/28 title, a plus that turns into a close icon when open, and a height animation on motion tokens.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/accordion/accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/accordion.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-avatar",
       "type": "registry:ui",
       "title": "Vois Avatar",
@@ -362,6 +381,25 @@
       ]
     },
     {
+      "name": "vois-toggle-group",
+      "type": "registry:ui",
+      "title": "Vois Toggle Group",
+      "description": "shadcn/ui's ToggleGroup parts (Radix, single or multiple) on Vois tokens, from the Figma Toggle Group Button set: joined 40 by 32 outline buttons with one shared --border-default line, --toggle-group-unselected, -hover, -selected and -disabled fills, a 2px --border-state-focus ring, and arrow keys with one tab stop.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/toggle-group/toggle-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toggle-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-stepper",
       "type": "registry:ui",
       "title": "Vois Stepper",
@@ -454,6 +492,80 @@
           "path": "vois/hover-card/hover-card.tsx",
           "type": "registry:ui",
           "target": "components/ui/hover-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-navigation-menu",
+      "type": "registry:ui",
+      "title": "Vois Navigation Menu",
+      "description": "shadcn/ui's NavigationMenu parts (Radix) from the Figma Nav Menu Button, Nav Menu Content Block and Nav Menu: 40 tall triggers with a chevron that turns, one shared viewport panel (--bg-subtle, 24 padding), described link blocks, and a hero column. Adds NavigationMenuTitle, NavigationMenuDescription and NavigationMenuHero.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/navigation-menu/navigation-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/navigation-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-calendar",
+      "type": "registry:ui",
+      "title": "Vois Calendar",
+      "description": "shadcn/ui's Calendar parts (react-day-picker) from the Figma Calendar Picker: a card with the month and year, two 12 chevrons, 19 by 24 date cells in 10/12 text with hover, selected and disabled looks. The Figma sizes are under the 44 by 44 target size (DS-A11Y-001), so check it before using it on touch.",
+      "dependencies": [
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/calendar/calendar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/calendar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-pagination",
+      "type": "registry:ui",
+      "title": "Vois Pagination",
+      "description": "shadcn/ui's Pagination parts (a nav of links, no Radix) from the Figma Pagination: 32 by 32 numbers with an --action-icon-hover fill on hover, a filled active page, 28 tall Previous and Next with 16 chevrons, and an ellipsis. The active page uses --select-solid-active, not Figma's --action-icon-selected, which gives white text about 3.4:1.",
+      "dependencies": [],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/pagination/pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/pagination.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-popover",
+      "type": "registry:ui",
+      "title": "Vois Popover",
+      "description": "shadcn/ui's Popover (Radix) on the Figma Popover surface, the same as the Hover Card but opened by a click: Bg-Card with a border, a tail, 320 wide, on the overlay layer, kept inside the viewport, with a motion-token fade.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/popover/popover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/popover.tsx"
         }
       ]
     },
@@ -596,6 +708,25 @@
       ]
     },
     {
+      "name": "vois-menubar",
+      "type": "registry:ui",
+      "title": "Vois Menubar",
+      "description": "shadcn/ui's Menubar parts (Radix) from the Figma Menubar, Menubar Item and Menubar Menu: a bordered bar of 12 by 6 triggers, and menus of 40 tall items with shortcuts, a sub menu, checked items and full-width group lines. The roving focus and the open-next-menu behavior are Radix's.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/menubar/menubar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/menubar.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-dialog",
       "type": "registry:ui",
       "title": "Vois Dialog",
@@ -611,6 +742,44 @@
           "path": "vois/dialog/dialog.tsx",
           "type": "registry:ui",
           "target": "components/ui/dialog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-alert-dialog",
+      "type": "registry:ui",
+      "title": "Vois Alert Dialog",
+      "description": "shadcn/ui's AlertDialog (Radix) on the Vois Dialog surface from the Figma Dialog: a --width-dialog-sm (344) card on --z-modal over a scrim, no close button, the alertdialog role, a press on the scrim does nothing, and Action and Cancel as Buttons (Cancel is focused on open). Install vois-button with it. For a destructive confirmation, pass variant=\"destructive\" to the Action.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/alert-dialog/alert-dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert-dialog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-toast",
+      "type": "registry:ui",
+      "title": "Vois Toast",
+      "description": "Radix Toast on Vois tokens, from the Figma Toast Notification set: a 312 wide box in five states (default dark, notice, negative, positive, info), a 24 icon before the message and a close button after it, --shadow-large, a slide-in. It has ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastAction and ToastClose, and no imperative toast() call.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/toast/toast.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toast.tsx"
         }
       ]
     },

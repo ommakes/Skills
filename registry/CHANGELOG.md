@@ -1,5 +1,66 @@
 # Changelog
 
+## [0.30.0] - 2026-11-24
+
+- **`vois-menubar`: three behaviors Radix does not have.**
+  - **Safe triangle.** While a menu is open, moving the mouse from its trigger toward the menu no longer switches to a trigger the pointer crosses on the way. A move along the bar still switches. Mouse only.
+  - **Arrow Up** on a trigger opens its menu on the last item.
+  - **Tab** inside an open menu closes it and moves focus to the next tab stop after the bar (Shift+Tab, the one before). Radix blocks Tab there.
+  - `Menubar` now owns the open value when you do not pass `value`, so a trigger can open its own menu. Controlled use (`value` and `onValueChange`) works as before.
+- **`vois-calendar`:** today's day button has `aria-current="date"`.
+- **`vois-pagination`:** `PaginationContent` has `role="list"`, so the list is still announced when CSS removes the bullets.
+
+## [0.29.0] - 2026-11-24
+
+- **`vois-dialog` and `vois-alert-dialog` rebuilt to the Figma Dialog frames (`8305:27515`).** The visuals change, so check any layout that depends on them:
+  - Width does not change: `--width-dialog-sm` stays 344 and `--width-dialog-lg` 560. The rule is that a modal may be 340 to 560 wide, and the Figma frames (360 and 480) are inside it.
+  - Header padding is 16 top and left, 12 right, 8 bottom (was 24). The description is `--text-subtle` (was `--text-secondary`). The close button is 36 and sits 16 from the top and 12 from the right (was 40 and 8 from the corner).
+  - The footer has 16 padding on every side and wraps (was 24 at the sides).
+  - **New part `DialogBody`**: 16/24 text, 16 at the sides, 12 above and below. Figma puts the message in a body, not the header.
+  - `AlertDialogDescription` is now the message: 16/24 `--text-primary` with its own 16 and 12 padding. Put it after `AlertDialogHeader`, not inside it. A description inside the header gets extra side padding.
+  - `AlertDialog` still has no close button (the Figma "Required" frame). Figma draws the destructive action as a soft negative Button, so the story uses `variant="destructive-soft"`.
+
+## [0.28.0] - 2026-11-24
+
+- **Five new items, built from the Figma sets of the same names:** `vois-pagination`, `vois-calendar`, `vois-menubar`, `vois-navigation-menu` and `vois-toast`. Each is on a harness page with its states in both themes.
+- **`vois-toast` is Radix Toast, not Sonner.** There is no imperative `toast()` function: the caller holds the `open` state. Close button and icon are on by default (`closeButton`, `icon`). There is no `--z-toast` token, so the viewport uses `--z-overlay`.
+- **`vois-calendar` adds a dependency:** `react-day-picker` 10.0.2, pinned exactly.
+- **Known deviations, all in `FIGMA-TODO.md`:** the Pagination active fill is about 3.5:1 in the dark theme (5.4:1 in light). The Calendar is sized up from Figma (44 by 44 cells, 14/20 text, 332 wide) so it passes `DS-A11Y-001`. Figma draws 19 by 24 cells with 10px text. Gaps of 2px and 5px in Figma are 4 here, to stay on the grid.
+- `RUNTIME` gains the Radix menu and navigation variables the new items read. No new design tokens.
+
+## [0.27.0] - 2026-11-23
+
+- **`vois-alert-dialog`, a new item: shadcn's AlertDialog (Radix) on the Vois Dialog surface.** Parts: `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPortal`, `AlertDialogOverlay`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogFooter`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogAction`, `AlertDialogCancel`. The card, scrim and motion match `vois-dialog`. There is no close button. The role is `alertdialog`, outside press does nothing, and Cancel has focus on open. Install `vois-button` with it. No new tokens and no new `RUNTIME` variable. On a harness page (`alert-dialog`, open state).
+- No Figma frame was read for this item. The look is the Dialog's. Check it once Om shares an alert frame.
+
+## [0.26.1] - 2026-11-23
+
+- `vois-collapsible`: a comment now points to `vois-accordion` instead of saying it is not in the registry. No behavior change.
+
+## [0.26.0] - 2026-11-23
+
+- **Breaking: `vois-segmented-control` no longer exports `ToggleGroup` and `ToggleGroupItem`.** It exports `SegmentedControl` and `SegmentedControlItem` only. The new `vois-toggle-group` (0.25.0) owns the two old names, so one import name now means one component. To migrate, change `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/segmented-control"` to `SegmentedControl` and `SegmentedControlItem`. The behavior and the look do not change.
+- The `data-slot` values follow the names: `segmented-control`, `segmented-control-item` and `segmented-control-indicator` (were `toggle-group`, `toggle-group-item` and `toggle-group-indicator`). A selector or test that used the old values needs the new ones. Nothing in this repo did.
+- This corrects the 0.25.0 note about a name overlap.
+
+## [0.25.0] - 2026-11-23
+
+- **`vois-toggle-group`, a new item: shadcn's ToggleGroup (Radix) from the Figma Toggle Group Button set** (`3488:2898` in the Vois Figma file). Joined 40 by 32 outline buttons with one shared line, a fill for hover, on and disabled, and a 2px focus ring. `type` is up to the caller (`single` or `multiple`). Parts: `ToggleGroup`, `ToggleGroupItem`. No new `RUNTIME` variable. On a harness page (`toggle-group`, all states, both themes).
+- **Four tokens are pending in Figma** (`source/figma-pending.json`, `FIGMA-TODO.md`): `--toggle-group-unselected`, `-hover`, `-selected` and `-disabled`. The variables exist in the Figma file, but the export does not have them yet. Light values match Figma exactly (`White`, `Black-A1`, `Black-A2`, `Gray-2`). The dark values are a first pass, because Figma shows no dark set.
+- **A name overlap to know about:** `vois-segmented-control` already exports `ToggleGroup` and `ToggleGroupItem` (its one-choice version). This item exports the same names from `toggle-group.tsx`. They are different files, so both can be installed, but an import must name the right one.
+- **Read, not drawn in Figma:** the set's `Focus-Pressed` state is built here as focused and on. A label inside an item takes the glyph color of its state (Figma only draws glyphs). In the Figma group example the right button's edge is `--system/border/border-opaque` (`#e2e2e2`), while the standalone Selected button uses `--border-default`. The item uses `--border-default` everywhere.
+
+## [0.24.0] - 2026-11-23
+
+- **`vois-accordion`, a new item: shadcn's Accordion (Radix) from the Figma Accordian set** (`4508:6933` in the Vois Figma file). Each item is a card: `--bg-default` at rest, `--bg-subtle` on hover, a 20/28 title, and a plus that becomes a close icon when open. The content opens by height on `--motion-duration-base` and opens at once under reduced motion. `RUNTIME` gains `--radix-accordion-content-height`. On a harness page (`accordion`, closed and open, both themes).
+- Two things are not in Figma and were chosen here: the gap between items (`--space-v-between-items`) and the disabled look. Add them to the Figma set, or change the item.
+- The Figma Accordian draws a fixed-height Expanded card (220) that cuts its text with an ellipsis. The item does not clip: the content takes the height it needs.
+
+## [0.23.0] - 2026-11-23
+
+- **`vois-popover`, a new item: shadcn's Popover (Radix) on the Figma Popover surface.** The same surface as `vois-hover-card`, opened by a click, with focus moving in and returning to the trigger. Parts: `Popover`, `PopoverTrigger`, `PopoverAnchor`, `PopoverClose`, `PopoverContent` (with `arrow`). `RUNTIME` gains the two Radix Popover variables. On a harness page (`popover`, closed and open, both themes).
+- Not built from the library nodes. The Personify Design System library has a newer Popover (`8258:1695`), but that node is not in the Vois Figma file (`Aou007Vh0uQPohJonhdadk`) and could not be opened. This item follows the Popover in the Vois file (`5938:11483`), which the hover card already follows. Check the two against each other when the library source is reachable.
+
 ## [0.22.3] - 2026-11-23
 
 - **`vois-button`: the label inset is 4px at sm and 8px at default and lg.** Container padding is now 8px at every size (default and lg were 12px), and the label frame's inset on each side is 4px at sm and 8px at default and lg (was 4px for all). Text-only buttons are the same width as before (text sits 12 / 16 / 16 from the edge). A Button with `leadingIcon` or `trailingIcon` is the same width too: the icon side is 8px from the edge (was 12px at default and lg) and the gap between icon and text is 8px (was 4px). Sizes sm and the icon-only sizes are unchanged. Visible change: icons in default and lg buttons sit closer to the edge and further from the text. Follows `vois-tokens` 1.48.6 (`DS-SURFACE-004`). Figma still has 4px, see `FIGMA-TODO.md`.

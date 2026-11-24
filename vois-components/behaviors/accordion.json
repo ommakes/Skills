@@ -1,0 +1,234 @@
+{
+  "id": "accordion",
+  "name": "Accordion",
+  "purpose": "Show and hide sections of content from their headings.",
+  "notFor": [],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/accordion and collapsible",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date."
+  },
+  "anatomy": [
+    {
+      "part": "Accordion (root)",
+      "required": true,
+      "note": "Holds the items and the open values. Pass type."
+    },
+    {
+      "part": "AccordionItem",
+      "required": true,
+      "note": "One section. Give it a unique value."
+    },
+    {
+      "part": "AccordionHeader",
+      "required": true,
+      "note": "Radix renders an h3. In vois-accordion the trigger wraps it for you."
+    },
+    {
+      "part": "AccordionTrigger",
+      "required": true,
+      "note": "The button inside the heading."
+    },
+    {
+      "part": "AccordionContent",
+      "required": true,
+      "note": "The panel. Radix calls it Content. Notion calls it AccordionPanel."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-ACCORDION-001",
+      "group": "interaction",
+      "text": "Pressing a heading opens its panel. Pressing the same heading again closes it.",
+      "support": "differs",
+      "evidence": "accordion.tsx: in single mode onItemClose clears the value only when collapsible is true",
+      "note": "Pass collapsible with type=single. Without it, the open item cannot be closed by pressing it again.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-002",
+      "group": "interaction",
+      "text": "By default only one section stays open at a time, so opening a new section closes the one that was open.",
+      "support": "differs",
+      "evidence": "accordion.tsx: type is single or multiple and has no default",
+      "note": "Radix has no default. Always pass type. Use single for one section at a time.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-003",
+      "group": "interaction",
+      "text": "Several sections can stay open at once, and each one closes on its own.",
+      "support": "native",
+      "evidence": "accordion.tsx: AccordionImplMultiple, selected by type=multiple",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-004",
+      "group": "interaction",
+      "text": "A section can be set so its panel stays open until another heading is chosen instead.",
+      "support": "native",
+      "evidence": "accordion.tsx: with collapsible false the open item stays open until another replaces it",
+      "note": "This is the default for type=single.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-005",
+      "group": "interaction",
+      "text": "Opening or closing a panel animates its height. A panel that starts open appears at once without animation.",
+      "support": "native",
+      "evidence": "collapsible.tsx: sets --radix-collapsible-content-height and skips the animation on first mount; accordion.tsx re-exposes it as --radix-accordion-content-height",
+      "note": "You still write the keyframes. vois-accordion does (vois-accordion-down and vois-accordion-up).",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-006",
+      "group": "interaction",
+      "text": "An open-all control opens every section that is allowed to open. A close-all control closes every section that is allowed to close.",
+      "support": "supply",
+      "note": "Radix has none. Control the value array of a type=multiple accordion yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-007",
+      "group": "interaction",
+      "text": "A section nested inside another section's panel works on its own, without closing the outer section.",
+      "support": "unchecked",
+      "note": "Each Accordion is its own root, so this is likely. Arrow keys from a nested trigger were not checked.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-008",
+      "group": "interaction",
+      "text": "Searching within a page can open a closed panel that contains a match, without animation. A link to something inside a closed panel opens that panel and moves to the linked content.",
+      "support": "supply",
+      "note": "Radix does not use hidden=until-found. Open the panel yourself from a hash or a find handler.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-009",
+      "group": "interaction",
+      "text": "Filtering questions through a search field can open the matching answers while leaving their headings usable.",
+      "support": "supply",
+      "note": "Control the value array and set it from your filter.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-010",
+      "group": "keyboard",
+      "text": "Tab moves between the section headings.",
+      "support": "native",
+      "evidence": "collapsible.tsx: the trigger is a button",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-011",
+      "group": "keyboard",
+      "text": "Enter or Space opens and closes the focused section's panel.",
+      "support": "native",
+      "evidence": "collapsible.tsx: the trigger is a button and onClick toggles open",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-012",
+      "group": "keyboard",
+      "text": "Arrow keys, Home and End do nothing here, because screen-reader heading navigation already reaches each heading.",
+      "support": "differs",
+      "evidence": "accordion.tsx: ACCORDION_KEYS handles Home, End and the four arrows by moving focus between enabled triggers",
+      "note": "Radix adds the WAI-ARIA accordion keys. They do no harm, so keeping them is fine. Remove them only if your spec says so.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-013",
+      "group": "focus",
+      "text": "A disabled heading stays in the tab order so people can still find it, but pressing it leaves its panel closed.",
+      "support": "differs",
+      "evidence": "collapsible.tsx: the trigger sets the disabled attribute on the button; accordion.tsx: the key handler skips disabled triggers",
+      "note": "A disabled heading leaves the tab order. Decide if that is acceptable. If not, use aria-disabled and block the press yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-014",
+      "group": "focus",
+      "text": "Disabling the whole set disables every section in it. A disabled fieldset around it disables it too.",
+      "support": "native",
+      "evidence": "accordion.tsx: an item is disabled when the accordion or the item is disabled; a disabled fieldset disables the button elements inside it",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-015",
+      "group": "state",
+      "text": "A change to which sections are open can be refused, for example after a confirmation is cancelled. Refusing one part of a change cancels the whole change.",
+      "support": "differs",
+      "evidence": "accordion.tsx: value and onValueChange through useControllableState; the event has no cancel",
+      "note": "Use a controlled value and do not update it. There is no cancel call on the event.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-016",
+      "group": "state",
+      "text": "A closed panel normally disappears from the page, but it can be kept hidden in place so local state inside it, such as a draft message, is preserved.",
+      "support": "native",
+      "evidence": "collapsible.tsx: Presence present={forceMount || open}",
+      "note": "The prop is forceMount on AccordionContent.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-017",
+      "group": "state",
+      "text": "Each open or closed change carries a reason, such as a press or a find-in-page match.",
+      "support": "supply",
+      "note": "Radix reports the new value only.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-018",
+      "group": "accessibility",
+      "text": "Each panel is a region labelled by its heading, so screen readers can list open panels as landmarks.",
+      "support": "native",
+      "evidence": "accordion.tsx: Content sets role=region and aria-labelledby to the trigger id",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-019",
+      "group": "accessibility",
+      "text": "A heading that cannot close its panel because the panel must stay open reports itself as disabled to assistive technology.",
+      "support": "native",
+      "evidence": "accordion.tsx: Trigger sets aria-disabled when the item is open and collapsible is false",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-020",
+      "group": "accessibility",
+      "text": "The heading level fits the surrounding document.",
+      "support": "differs",
+      "evidence": "accordion.tsx: Header renders an h3",
+      "note": "Radix always renders h3 unless you use asChild. vois-accordion wraps the trigger in the header and gives no way to change the level yet.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-ACCORDION-021",
+      "group": "mistake",
+      "text": "Do not scroll in the open change callback. Scroll only after the panel has its full height.",
+      "support": "supply",
+      "note": "Radix has no completion event. Wait for onAnimationEnd on the content.",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-022",
+      "group": "mistake",
+      "text": "Do not trust a controlled value on its own. Check it against your items first, because the accordion can hold a value that no item renders.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-ACCORDION-023",
+      "group": "mistake",
+      "text": "Do not let many open panels pile up. With several panels open at once, keep the number of items modest so the list of open regions that screen readers can reach stays short.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

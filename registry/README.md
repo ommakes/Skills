@@ -2,7 +2,7 @@
 
 A shadcn-style registry of Vois core components, so an agent can install a real component instead of hand-building a lookalike. It is a reference implementation of the Vois skills on shadcn/ui and Tailwind v4, not a competing component library.
 
-**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Thirty-seven items:
+**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Forty-six items:
 
 - `vois-tokens`: default values for every Vois token, plus the motion tokens.
 - `vois-theme`: shadcn's variables pointed at those tokens.
@@ -16,12 +16,16 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-input-group`: an input with icons, a prefix, a clear or show-password button, or an inline button.
 - `vois-avatar`, `vois-badge` and `vois-tooltip`: the Figma Avatar, Labels and Status Labels, and Tooltip.
 - `vois-segmented-control` and `vois-stepper`: the Figma Segments set, and a step indicator for a flow of 2 to 5 steps.
+- `vois-toggle-group`: the Figma Toggle Group Button set, joined outline buttons where one or more can be on (bold, italic, align).
 - `vois-choice-list` and `vois-choice-card`: full-width radio or checkbox rows, and radio or checkbox cards.
 - `vois-card`, `vois-hover-card` and `vois-panel`: the container with a whole-card link, the hover preview, and the persistent secondary pane.
+- `vois-popover`: the click-opened popover on the same surface as the hover card, for one field or one short choice next to the item it changes.
+- `vois-accordion`: a set of cards that open and close one by one, from the Figma Accordian set.
 - `vois-panel-layout`: places a `vois-panel` by the panel rules (`vois-tokens` `DS-PANEL-002` to `006`). `PanelLayout`, `PanelLayoutMain` and `PanelLayoutPanel` push the page over when the panel fits, show a non-modal docked overlay with the Large side shadow when it does not, and go full screen below `--breakpoint-md`. `usePanelLayout` returns the mode and what navigation the app shell should show (bottom bar, rail or sidebar, with the `DS-PANEL-004` fold). It reads the numbers from the token variables. Needs React 19.
 - `vois-page-grid`: the page grid (`vois-tokens` `DS-GRID-003` to `007`). `PageFrame` is the page region (a size container, the content max, margins from `--grid-margin` that clear the safe area, a `fill` opt-out). `CollectionGrid` and `CollectionGridItem` are a list of equal cards whose column count comes from the width of an item (`itemMin`) and a `cap` per grid class, with the gap from `--grid-gutter`. Put the grid inside a `PageFrame`.
 
-- Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog` and `vois-command`.
+- Wave 0, the primitives the AI components need: `vois-button-group`, `vois-collapsible`, `vois-scroll-area`, `vois-dropdown-menu`, `vois-dialog`, `vois-alert-dialog` and `vois-command`.
+- Batch 2, from the Figma sets of the same names: `vois-pagination` (page links), `vois-calendar` (a date grid on `react-day-picker`), `vois-menubar` (a row of menus), `vois-navigation-menu` (site navigation with rich panels) and `vois-toast` (a message that shows for a while, on Radix Toast).
 - The inspector controls: `vois-slider` (Slider for a continuous value, StepSlider for a short named scale, both on a native range input), `vois-inspector` (the sections, label and control rows, control groups and toggle inside a properties pane, for `vois-panel`) and `vois-swatch-picker` (one color from a fixed set).
 - `vois-questionnaire`: the respondent side of a survey, intake form, quiz or poll (`vois-patterns` `PATH-H`): `Question`, `ChoiceGroup`, `LikertScale`, `LikertBattery`, `TapToRank` and `PollResults`, with default copy in `lib/questionnaire/copy.ts`. It installs `@dnd-kit` for the rank list, reads the Vois tokens and the `vois-theme` variables (success colors are `--bg-positive`, `--border-positive` and `--text-positive`, so there is no extra CSS), and needs the `utils` item. The engine that picks the component (`question-engine.js`, installed under `lib/questionnaire`) is a byte-for-byte copy of `vois-patterns/scripts/question-engine.mjs`, and `check-questions.mjs` fails if they differ. The engine is plain ESM JavaScript with a `.d.ts` beside it, which works with a bundler (Next, Vite) and `moduleResolution: bundler`. It does not work under `node16` or `nodenext` resolution, or in Jest without an ESM transform.
 
@@ -35,7 +39,7 @@ The built files are not committed. Build them, then add the items from the build
 
 ```bash
 cd registry && npm ci --ignore-scripts && npm run build      # writes public/r/*.json
-cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-icon-button.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-panel.json <path to>/registry/public/r/vois-button-group.json <path to>/registry/public/r/vois-collapsible.json <path to>/registry/public/r/vois-scroll-area.json <path to>/registry/public/r/vois-dropdown-menu.json <path to>/registry/public/r/vois-dialog.json <path to>/registry/public/r/vois-command.json <path to>/registry/public/r/vois-slider.json <path to>/registry/public/r/vois-inspector.json <path to>/registry/public/r/vois-swatch-picker.json <path to>/registry/public/r/vois-glass.json <path to>/registry/public/r/vois-page-grid.json <path to>/registry/public/r/vois-panel-layout.json <path to>/registry/public/r/vois-questionnaire.json
+cd <your app> && npx shadcn@4.23.0 add <path to>/registry/public/r/vois-tokens.json <path to>/registry/public/r/vois-theme.json <path to>/registry/public/r/vois-spinner.json <path to>/registry/public/r/vois-button.json <path to>/registry/public/r/vois-input.json <path to>/registry/public/r/vois-select.json <path to>/registry/public/r/vois-checkbox.json <path to>/registry/public/r/vois-switch.json <path to>/registry/public/r/vois-radio-group.json <path to>/registry/public/r/vois-tabs.json <path to>/registry/public/r/vois-textarea.json <path to>/registry/public/r/vois-field.json <path to>/registry/public/r/vois-input-group.json <path to>/registry/public/r/vois-avatar.json <path to>/registry/public/r/vois-badge.json <path to>/registry/public/r/vois-tooltip.json <path to>/registry/public/r/vois-icon-button.json <path to>/registry/public/r/vois-segmented-control.json <path to>/registry/public/r/vois-toggle-group.json <path to>/registry/public/r/vois-stepper.json <path to>/registry/public/r/vois-choice-list.json <path to>/registry/public/r/vois-choice-card.json <path to>/registry/public/r/vois-card.json <path to>/registry/public/r/vois-hover-card.json <path to>/registry/public/r/vois-pagination.json <path to>/registry/public/r/vois-calendar.json <path to>/registry/public/r/vois-navigation-menu.json <path to>/registry/public/r/vois-popover.json <path to>/registry/public/r/vois-accordion.json <path to>/registry/public/r/vois-panel.json <path to>/registry/public/r/vois-button-group.json <path to>/registry/public/r/vois-collapsible.json <path to>/registry/public/r/vois-scroll-area.json <path to>/registry/public/r/vois-dropdown-menu.json <path to>/registry/public/r/vois-menubar.json <path to>/registry/public/r/vois-dialog.json <path to>/registry/public/r/vois-alert-dialog.json <path to>/registry/public/r/vois-toast.json <path to>/registry/public/r/vois-command.json <path to>/registry/public/r/vois-slider.json <path to>/registry/public/r/vois-inspector.json <path to>/registry/public/r/vois-swatch-picker.json <path to>/registry/public/r/vois-glass.json <path to>/registry/public/r/vois-page-grid.json <path to>/registry/public/r/vois-panel-layout.json <path to>/registry/public/r/vois-questionnaire.json
 ```
 
 Where the built registry is hosted (so you can install by URL) is not decided yet.
@@ -50,7 +54,7 @@ Then import them right after Tailwind, tokens first:
 @import "./styles/vois-theme.css";
 ```
 
-`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-dialog` imports `vois-button`, `vois-command` imports `vois-dialog` (for `CommandDialog`), and `vois-button-group` is meant for `vois-button`. `vois-icon-button` imports `vois-button` and `vois-tooltip`. `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`. `vois-inspector` imports `vois-collapsible`, and `vois-swatch-picker` imports the Input's field classes (add `vois-input`).
+`vois-button` overwrites `components/ui/button.tsx`. It needs both token files, because it reads the motion tokens and `--hit-area-min`, and it needs `vois-spinner`, which it imports from `components/ui/spinner`. Add them together. `registryDependencies` can't point one local item at another until the registry has a URL. The same goes for these pairs: `vois-textarea` and `vois-input-group` import the Input's field classes (add `vois-input`), and `vois-dialog` and `vois-alert-dialog` import `vois-button`, `vois-command` imports `vois-dialog` (for `CommandDialog`), and `vois-button-group` is meant for `vois-button`. `vois-icon-button` imports `vois-button` and `vois-tooltip`. `vois-choice-card` imports from `vois-choice-list`, which composes `vois-radio-group` and `vois-checkbox`. `vois-inspector` imports `vois-collapsible`, and `vois-swatch-picker` imports the Input's field classes (add `vois-input`).
 
 ## Where the values come from
 
@@ -376,9 +380,17 @@ Icon-only buttons need an `aria-label`. Inside a `vois-field`, `FieldControl` wo
 
 ### `vois-segmented-control`
 
-`vois/segmented-control/segmented-control.tsx` is shadcn's ToggleGroup fixed to one choice (no `type` prop, always `single`), from the Figma Segments set. It exports `ToggleGroup` and `ToggleGroupItem`, and the same parts as `SegmentedControl` and `SegmentedControlItem`, the names `vois-components` uses.
+`vois/segmented-control/segmented-control.tsx` is shadcn's ToggleGroup fixed to one choice (no `type` prop, always `single`), from the Figma Segments set. It exports `SegmentedControl` and `SegmentedControlItem`, the names `vois-components` uses. It no longer exports `ToggleGroup` or `ToggleGroupItem`: those names are `vois-toggle-group`'s.
 
 A 32 tall track (`--segment-inactive`, `--shape-subtle`). The active segment is a 28 tall indicator (`--segment-active`, 1px `--border-default`, `--shadow-base`). Inactive labels use `--text-state-resting`, active labels `--text-on-light`. Focus is a 2px `--segment-focus-ring`, on the indicator when active and inside the cell (over `--segment-focus-inactive`) when not. Every item uses the active padding, so the control does not change width when the choice moves. One tab stop, arrow keys move, and the chosen item cannot be cleared. Use it for 2 to 5 short views or modes (`vois-components` Job 5).
+
+### `vois-toggle-group`
+
+`vois/toggle-group/toggle-group.tsx` is shadcn's ToggleGroup (Radix) with `ToggleGroup` and `ToggleGroupItem`, from the Figma Toggle Group Button set (`3488:2898`). `type="single"` or `type="multiple"` is up to the caller. For exactly one choice that always stays on, use `vois-segmented-control`.
+
+Joined outline buttons: 12 by 8 padding around a 16 glyph (40 by 32 icon-only), `--shape-subtle` outer corners, and one shared 1px `--border-default` line between items. The fills are `--toggle-group-unselected`, `-hover`, `-selected` and `-disabled`, and the glyph is `--icon-state-resting`, then `--icon-primary` when hovered, focused or on, then `--icon-state-disabled`. Focus is a 2px `--border-state-focus` ring drawn inside the edge, over `--select-resting` (or `--select-pressed` when on). One tab stop, arrow keys move and skip disabled items. An icon-only item needs an `aria-label`. Horizontal only: Figma has no vertical set.
+
+The four `--toggle-group-*` fills are not in the Figma export yet, so they come from `source/figma-pending.json` (light values are the exact Figma values, dark values are a first pass). `FIGMA-TODO.md` says what to create.
 
 ### `vois-stepper`
 
@@ -428,11 +440,25 @@ A static card (no `interactive`) does nothing on hover. Disabled wins over focus
 
 For a card that is itself the action (`vois-components` `JOB-CONTAIN-CONTENT`), put one `CardLink` in it, usually around the title. Its `::after` layer covers the whole card, so a screen reader reads one link named by the title, not a link around a block of text. `asChild` wraps a router `Link` or a `<button>`. `CardAction` sits above that layer, so a menu or button in it works on its own. In Figma, the Card's `Action`, `Content` and `Footer` are slots and `Title` and `Description` are text properties, which map to `CardAction`, `CardContent`, `CardFooter`, `CardTitle` and `CardDescription`. Anything else clickable inside the card needs `relative z-10`. The card draws the focus ring (even without `interactive`, because the link hides its own outline), so the ring is the card's edge. On a disabled card the link loses its `href` (so "open in a new tab" does nothing), and with `asChild` the child gets the real `disabled` attribute.
 
+### `vois-accordion`
+
+`vois/accordion/accordion.tsx` is shadcn's Accordion (Radix) with `Accordion`, `AccordionItem`, `AccordionTrigger` and `AccordionContent`, from the Figma Accordian set (`4508:6933`, four variants: closed or open, resting or hover). Each item is its own card: `--bg-default` at rest and `--bg-subtle` on hover (the whole item, open or closed), `--shape-rounded` corners, 24 padding (`--space-padding-large`) and 16 between the header and the content. The title is 20/28 semibold `--text-primary` and the content is 16/24 `--text-subtle`. A 24 icon ends the header: a plus when closed and a close (X) when open. The icon is decorative; Radix sets `aria-expanded` on the header.
+
+The content opens and closes by height in `--motion-duration-base` and stops animating under reduced motion. Tab reaches each header, Enter or Space toggles it, and Up, Down, Home and End move between headers. `type="single"` opens one item at a time (add `collapsible` to let the open one close) and `type="multiple"` lets several be open. Use it for short related answers the reader scans and opens one by one, such as a FAQ. For one block of optional detail use `vois-collapsible`, and for panels the reader switches between use `vois-tabs`. Do not hide content people must read to finish the task.
+
+Not in Figma, so chosen here: the gap between items (`--space-v-between-items`, Figma draws each item alone), and the disabled look (`--text-state-disabled` and a not-allowed cursor).
+
 ### `vois-hover-card`
 
 `vois/hover-card/hover-card.tsx` is shadcn's HoverCard (Radix) with `HoverCard`, `HoverCardTrigger` and `HoverCardContent`, from the Figma Popover set (the same surface). `--bg-card` with a 1px `--border-default` edge, `--shape-rounded` corners, `--shadow-small`, 16 padding, 320 wide, `--z-overlay`. A 20 by 10 tail points at the trigger (`arrow={false}` removes it). Its fill covers the card's edge at the join and only the two slanted sides are stroked, so the join has no line.
 
 It opens when the pointer rests on the trigger (700ms) or the trigger gets keyboard focus, and closes after the pointer leaves (300ms), on blur, or on Escape. Radix keeps it 8px inside the viewport and never wider than the space left. The fade uses `--motion-duration-fast` in and `--motion-duration-instant` out, and stops under reduced motion. The keyframes ship as a React 19 `<style href precedence>`. In Figma the Popover's `Content` is a slot (code: `HoverCardContent`). Body text is 14/20 `--text-secondary`; put a 16/24 semibold `--text-primary` title first if there is one. Use it for a passive preview of a linked thing (`JOB-CONTEXTUAL-INFO`). Touch devices never see it, so everything in it must also be on the page the trigger leads to. For content the user must read or act on, use a Popover, which opens on click.
+
+### `vois-popover`
+
+`vois/popover/popover.tsx` is shadcn's Popover (Radix) with `Popover`, `PopoverTrigger`, `PopoverAnchor`, `PopoverClose` and `PopoverContent`, on the same Figma Popover surface as `vois-hover-card` (Indicators page, `5938:11483`): `--elevation-surface-popup` with a 1px `--border-default` edge, `--shape-rounded` corners, `--shadow-small`, 16 padding, 320 wide, `--z-overlay`, and a 20 by 10 tail (`arrow={false}` removes it).
+
+A click or Enter or Space on the trigger opens it. Escape, a press outside or focus leaving closes it. Focus moves into the content when it opens and returns to the trigger when it closes, so it can hold a field or a button. The page behind it stays usable: it is not a modal. Give it a title or an `aria-label` on `PopoverContent`, so a screen reader can name it. The fade uses `--motion-duration-fast` in and `--motion-duration-instant` out, and stops under reduced motion. Use it for exactly one field or one short choice next to the item it changes (`vois-components` Quick Reference, "Focused overlay, exactly one field anchored to a row/item"). For a task with several fields use a Sheet or a Dialog. For a passive preview on hover use `vois-hover-card`.
 
 ### `vois-panel`
 
@@ -483,9 +509,47 @@ Figma binds the label and shortcut to `--text-state-instruction`, which was gray
 
 ### `vois-dialog`
 
-`vois/dialog/dialog.tsx` is shadcn's Dialog (Radix) with `Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogContent`, `DialogClose`, `DialogHeader`, `DialogFooter`, `DialogTitle` and `DialogDescription`, from the Figma Dialog. Install `vois-button` with it.
+`vois/dialog/dialog.tsx` is shadcn's Dialog (Radix) with `Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogContent`, `DialogClose`, `DialogHeader`, `DialogBody`, `DialogFooter`, `DialogTitle` and `DialogDescription`, from the Figma Dialog frames (`8305:27515`). Install `vois-button` with it.
 
-A card of `--width-dialog-sm` (344, never wider than the screen minus 16 each side), or `--width-dialog-lg` (560) with `size="lg"` for a textarea or a short list (vois-patterns `PATH-D-SIZE`; the large value is proposed and not yet drawn in Figma): `--bg-card`, 1px `--border-default`, `--shape-rounded` (Figma binds the 12 radius), `--shadow-large`, centered on `--z-modal` over a `--bg-overlay-dark` scrim. The header has 24 padding, a 20/28 semibold title and a 14/20 `--text-secondary` description. The close button is a 40 by 40 ghost icon Button, 8 from the corner (`showCloseButton={false}` removes it). The footer aligns actions to the end, 16 apart. The scrim and the card fade in `--motion-duration-fast`, and under reduced motion they appear at once. Radix traps and returns focus, closes on Escape and makes the page behind inert. Do not pass your own `id` to `DialogTitle` or `DialogDescription`: Radix points `aria-labelledby` and `aria-describedby` at its own ids. A destructive confirmation is an AlertDialog, which is not in the registry yet.
+A card of `--width-dialog-sm` (344, never wider than the screen minus 16 each side), or `--width-dialog-lg` (560) with `size="lg"` for a textarea or a short list (vois-patterns `PATH-D-SIZE`; a modal may be anywhere from 340 to 560 wide, and the Figma frames at 360 and 480 are inside that range): `--bg-card`, 1px `--border-default`, `--shape-rounded` (Figma binds the 12 radius), `--shadow-large`, centered on `--z-modal` over a `--bg-overlay-dark` scrim. The header has 16 top and left, 12 right and 8 bottom padding, a 20/28 semibold title and a 14/20 `--text-subtle` description. `DialogBody` holds the content: 16/24 text, 16 at the sides and 12 above and below. The close button is a 36 by 36 ghost icon Button, 16 from the top and 12 from the right (`showCloseButton={false}` removes it). The footer has 16 padding all round, aligns actions to the end, 16 apart, and wraps. The scrim and the card fade in `--motion-duration-fast`, and under reduced motion they appear at once. Radix traps and returns focus, closes on Escape and makes the page behind inert. Do not pass your own `id` to `DialogTitle` or `DialogDescription`: Radix points `aria-labelledby` and `aria-describedby` at its own ids. A destructive confirmation is an AlertDialog (`vois-alert-dialog`).
+
+### `vois-alert-dialog`
+
+`vois/alert-dialog/alert-dialog.tsx` is shadcn's AlertDialog (Radix) with `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPortal`, `AlertDialogOverlay`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogFooter`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogAction` and `AlertDialogCancel`. It uses the Dialog frames, following the "Required" one (no close button). Install `vois-button` with it.
+
+The card is `--width-dialog-sm`, `--bg-card`, 1px `--border-default`, `--shape-rounded`, `--shadow-large`, on `--z-modal` over a `--bg-overlay-dark` scrim. The header holds the 20/28 title (16 top and left, 12 right, 8 bottom). `AlertDialogDescription` is the message, 16/24, with 16 side and 12 vertical padding, so put it after the header and not inside it. The footer has 16 padding all round and wraps. It has no close button and no size prop. The role is `alertdialog`, and a press on the scrim does nothing, so the person must pick Cancel, the Action or Escape. Radix focuses Cancel when it opens, which is the safe answer, not the first one in the footer order. Action is a default Button, Cancel is a secondary Button, and both take `variant` so a delete can pass `variant="destructive-soft"` (what Figma draws) or `variant="destructive"`. Write the title as the question and the Action as the verb ("Delete project"), not "OK". Use a Dialog when the person can leave without answering.
+
+### `vois-pagination`
+
+`vois/pagination/pagination.tsx` is shadcn's Pagination with `Pagination`, `PaginationContent`, `PaginationItem`, `PaginationLink`, `PaginationPrevious`, `PaginationNext` and `PaginationEllipsis`. It is plain markup: a `nav` with `aria-label="pagination"` around a list of links. It does not know your page count. You pass `isActive` to the current page, which sets `aria-current="page"`, and `disabled` to Previous on page 1 or Next on the last page. A disabled link gets `aria-disabled`, leaves the tab order and ignores the click. The ellipsis hides its dots from a screen reader and says "More pages" instead.
+
+Number links are 32 by 32. Previous and Next are `h-7` with an icon. The active page fills with `--select-solid-active` and `--text-on-dark`, hover uses `--action-icon-hover`, and the list wraps on a narrow screen. The active fill is about 3.5:1 in the dark theme (5.4:1 in light). It is what Figma draws, and `FIGMA-TODO.md` lists it.
+
+### `vois-calendar`
+
+`vois/calendar/calendar.tsx` wraps `react-day-picker` (exact version 10.0.2, a dependency) and exports `Calendar` and `CalendarDayButton`. It takes the library's props: `mode` (`single`, `multiple` or `range`), `selected`, `onSelect`, `disabled`, `showOutsideDays`. The library owns the keyboard model (arrow keys move by day, Page Up and Down by month) and the state data attributes. The styles read those attributes.
+
+Figma draws 19 by 24 cells with 10px text. That fails `DS-A11Y-001`, so this item is sized up. Every date and both nav buttons are `--hit-area-min` (44) square with no gap, so hit areas do not overlap, and 48 (`--hit-area-coarse`) on a coarse pointer. The visible fill is a 36 square, the text is 14/20, and the card is 332 wide. Selected is `--select-solid-active`, the middle of a range is `--select-soft-active`, and today has a 1px `--border-default` edge.
+
+### `vois-menubar`
+
+`vois/menubar/menubar.tsx` is shadcn's Menubar (Radix) with every shadcn part: `Menubar`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarShortcut`, `MenubarGroup`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent` and `MenubarPortal`. Left and right arrows move between menus, and once one is open, hover opens its neighbors. Down opens a menu and Escape closes it. It is for an app's top-level command row (File, Edit, View). For one menu on one button use `vois-dropdown-menu`.
+
+Items are 40 tall with a `--space-4` gap and a full-width `--border-pretty` separator. The menu uses `--shadow-large` and shares its keyframes with the other menus (`vois-menu-keyframes`).
+
+Three behaviors are added on top of Radix: a safe triangle for mouse hover (moving toward the open menu does not switch to a trigger on the way), Arrow Up on a trigger opens the menu on its last item, and Tab inside a menu closes it and moves on to the next tab stop. The bar keeps the open value itself unless you pass `value`.
+
+### `vois-navigation-menu`
+
+`vois/navigation-menu/navigation-menu.tsx` is shadcn's NavigationMenu (Radix) with `NavigationMenu` (it renders the viewport), `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, `NavigationMenuLink`, `NavigationMenuViewport`, plus three Figma-driven parts: `NavigationMenuTitle`, `NavigationMenuDescription` and `NavigationMenuHero`. It also exports `navigationMenuTriggerStyle` for a plain link that should look like a trigger. Use it for a site's main navigation with grouped links. It is not an app menu (`vois-menubar`) and not a list of links with no panels (a plain `nav`).
+
+Triggers are 40 tall and the chevron turns when the panel opens. The panel is the viewport: `--bg-subtle`, `--radius-small-container` and `--shadow-large`. There is no indicator, because Figma draws none.
+
+### `vois-toast`
+
+`vois/toast/toast.tsx` is Radix Toast, not Sonner, so there is no imperative `toast()` call. You hold the `open` state and render `Toast` inside a `ToastProvider` with a `ToastViewport`. Parts: `ToastProvider`, `ToastViewport`, `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction` and `ToastClose`. `Toast` draws the icon and a close button by default (`icon={false}` and `closeButton={false}` remove them). `ToastAction` needs an `altText` that says what the action does, for a screen reader.
+
+Variants: `default` (the inverse of the page), `notice`, `negative`, `positive` and `info`, each with its own icon. The viewport is fixed at the bottom right on `--z-overlay`. There is no `--z-toast` token yet. Radix pauses the timer on hover and focus, and swipe closes it. The slide-in and the fade-out stop under reduced motion.
 
 ### `vois-command`
 

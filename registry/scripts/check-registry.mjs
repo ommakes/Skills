@@ -316,9 +316,21 @@ export const RUNTIME = new Set([
   "--radix-tooltip-content-available-width",
   "--radix-hover-card-content-transform-origin",
   "--radix-hover-card-content-available-width",
+  // Radix Popover (Content)
+  "--radix-popover-content-transform-origin",
+  "--radix-popover-content-available-width",
   "--radix-collapsible-content-height",
+  "--radix-accordion-content-height",
   "--radix-dropdown-menu-content-transform-origin",
   "--radix-dropdown-menu-content-available-height",
+  // Radix Menubar (Content and SubContent)
+  "--radix-menubar-content-transform-origin",
+  "--radix-menubar-content-available-height",
+  // Radix NavigationMenu (Viewport)
+  "--radix-navigation-menu-viewport-width",
+  "--radix-navigation-menu-viewport-height",
+  // Radix Toast (Root, while swiping)
+  "--radix-toast-swipe-move-x",
 ]);
 
 export function tokenRefProblems(text, known) {

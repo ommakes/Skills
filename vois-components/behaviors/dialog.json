@@ -1,0 +1,48 @@
+{
+  "id": "dialog",
+  "name": "Dialog",
+  "purpose": "Open a focused task over the page.",
+  "notFor": [
+    { "use": "AlertDialog", "when": "The question needs an explicit answer." },
+    { "use": "Drawer", "when": "The task should show as a sheet from an edge of the screen, for example on small touch screens." }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/dialog",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date. Nested dialog code lives in the dismissable-layer package, which was not read."
+  },
+  "anatomy": [
+    { "part": "Dialog (root)", "required": true, "note": "Holds the open state." },
+    { "part": "DialogTrigger", "required": false, "note": "Opens the dialog from the page. Needed for focus to return on close." },
+    { "part": "DialogContent", "required": true, "note": "The dialog itself." },
+    { "part": "DialogTitle", "required": true, "note": "Names the dialog. Hide it visually if the design shows none." },
+    { "part": "DialogDescription", "required": false, "note": "Gives context. It describes the dialog only while one is rendered." },
+    { "part": "DialogOverlay", "required": false, "note": "Dims the page behind a modal dialog." },
+    { "part": "DialogClose", "required": false, "note": "A dialog can have several Close parts." }
+  ],
+  "behaviors": [
+    { "id": "BHV-DIALOG-001", "group": "interaction", "text": "Closing the dialog returns focus to where you started.", "support": "native", "evidence": "dialog.tsx: modal onCloseAutoFocus focuses the trigger", "note": "Works only when a Trigger exists. See BHV-DIALOG-008 for a dialog opened from code.", "rules": ["DS-A11Y-021"] },
+    { "id": "BHV-DIALOG-002", "group": "interaction", "text": "Either close button, Escape, or a press outside closes the dialog. A form inside that submits as a dialog closes it on a valid submission, and the pressed button's value is the result.", "support": "unchecked", "note": "Close button, Escape and outside press are Radix features. The form-as-dialog result is not part of Radix. Escape and outside press code sits in dismissable-layer, which was not read.", "rules": ["DS-A11Y-022"] },
+    { "id": "BHV-DIALOG-003", "group": "interaction", "text": "An ordinary form stays open until you close the dialog yourself.", "support": "supply", "rules": [] },
+    { "id": "BHV-DIALOG-004", "group": "interaction", "text": "A keyboard shortcut on the trigger opens the dialog from anywhere on the page. It uses Command on Apple platforms and Control elsewhere, and the trigger shows the keys.", "support": "supply", "note": "Radix has no shortcut part.", "rules": [] },
+    { "id": "BHV-DIALOG-005", "group": "interaction", "text": "The dialog stays mounted until its closing animation finishes. A callback runs after opening or closing has finished.", "support": "unchecked", "note": "Radix uses Presence for the exit animation. The completion callback was not found in the dialog source.", "rules": [] },
+    { "id": "BHV-DIALOG-006", "group": "interaction", "text": "A dialog opened inside another dialog joins its stack. Closing the parent closes its children. The topmost dialog closes first.", "support": "decide", "note": "Not checked in Radix. The Vois rule says never nest modals. Replace the content of the same dialog, or use a page.", "rules": ["DS-MODAL-006"] },
+    { "id": "BHV-DIALOG-007", "group": "keyboard", "text": "Enter or Space on the trigger opens the dialog.", "support": "native", "evidence": "dialog.tsx: Trigger is a button", "rules": [] },
+    { "id": "BHV-DIALOG-008", "group": "focus", "text": "Where focus starts and where it goes after closing can each be chosen. The default returns to the trigger, or to the element focused before a dialog was opened from code.", "support": "differs", "evidence": "dialog.tsx: modal onCloseAutoFocus calls preventDefault then focuses the trigger", "note": "Pass onOpenAutoFocus and onCloseAutoFocus to choose. With no Trigger, nothing receives focus on close unless you set it.", "rules": ["DS-A11Y-021"] },
+    { "id": "BHV-DIALOG-009", "group": "focus", "text": "Focusing the dialog itself makes reading start at the top. Keeping the header and actions outside the scrolling area keeps them in view while long content scrolls.", "support": "supply", "rules": ["DS-MODAL-004"] },
+    { "id": "BHV-DIALOG-010", "group": "state", "text": "In the default modal mode the page is blocked, scrolling locks, and Tab stays inside.", "support": "native", "evidence": "dialog.tsx: hideOthers, RemoveScroll, FocusScope trapped", "note": "Radix hides the page from screen readers and blocks pointer events. It does not use the inert attribute. DS-MODAL-001 asks for inert on custom dialogs.", "rules": ["DS-MODAL-001"] },
+    { "id": "BHV-DIALOG-011", "group": "state", "text": "In focus-trap mode, Tab stays inside while the page can still scroll and receive clicks. A click on the page also closes the dialog unless closing on outside press is turned off.", "support": "unchecked", "note": "Radix has modal and non-modal. A separate focus-trap mode was not found.", "rules": ["DS-A11Y-022", "DS-MODAL-001"] },
+    { "id": "BHV-DIALOG-012", "group": "state", "text": "In non-modal mode the dialog sits beside the page and focus can leave it. Escape closes it while focus is inside. Outside presses close it only when that is enabled.", "support": "native", "evidence": "dialog.tsx: modal={false} sets trapFocus false and disableOutsidePointerEvents false", "rules": ["DS-A11Y-022"] },
+    { "id": "BHV-DIALOG-013", "group": "state", "text": "Selected parts of the page, such as a chat launcher, can stay usable while a modal dialog is open.", "support": "native", "evidence": "dialog.tsx: FocusScopeBranchProvider and branch registry", "note": "Which parts qualify is a product decision.", "rules": [] },
+    { "id": "BHV-DIALOG-014", "group": "state", "text": "When dismissal is turned off, Escape, an outside press or a back gesture keeps the dialog open and reports the attempt. Explicit close buttons and closing from code still work.", "support": "native", "evidence": "dialog.tsx: onEscapeKeyDown, onPointerDownOutside and onInteractOutside accept preventDefault", "note": "Block dismissal only while closing would lose money, a delete or a legal step.", "rules": ["DS-A11Y-022"] },
+    { "id": "BHV-DIALOG-015", "group": "state", "text": "One dialog can serve several triggers, each passing its own content. Opening it from code returns a promise that resolves when it closes, with how it closed and any result value.", "support": "supply", "rules": [] },
+    { "id": "BHV-DIALOG-016", "group": "state", "text": "As a sheet on small touch screens, a swipe down closes a dismissible sheet. A protected sheet springs back and reports the attempt.", "support": "supply", "note": "Radix Dialog has no sheet mode. Use a Drawer item for this.", "rules": ["DS-RESPONSIVE-008"] },
+    { "id": "BHV-DIALOG-017", "group": "accessibility", "text": "The dialog is labelled by its title. It is described by its description only while one is shown. It is marked as modal while it is modal.", "support": "native", "evidence": "dialog.tsx: aria-labelledby and aria-describedby set only when the parts exist; hideOthers replaces aria-modal", "rules": ["DS-A11Y-019"] },
+    { "id": "BHV-DIALOG-018", "group": "accessibility", "text": "An icon-only close button needs an accessible name.", "support": "supply", "rules": ["DS-A11Y-007", "DS-A11Y-019"] }
+  ],
+  "mistakes": [
+    { "id": "BHV-DIALOG-019", "group": "mistake", "text": "Do not apply the centered dialog's translation to a sheet presentation. The sheet manages its own position and movement.", "support": "supply", "rules": [] },
+    { "id": "BHV-DIALOG-020", "group": "mistake", "text": "Do not put the header and actions inside the scrolling area. Keep them outside so they stay in view while long content scrolls.", "support": "supply", "rules": ["DS-MODAL-004"] }
+  ]
+}

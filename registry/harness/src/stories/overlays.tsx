@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import {
   DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import type { Story } from "../frame"
 
@@ -23,8 +25,9 @@ export const dialog: Story = {
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Delete project Atlas?</DialogTitle>
-          <DialogDescription>This removes its 14 files for everyone on the team. You cannot undo it.</DialogDescription>
+          <DialogDescription>You cannot undo this.</DialogDescription>
         </DialogHeader>
+        <DialogBody>This removes its 14 files for everyone on the team.</DialogBody>
         <DialogFooter>
           <DialogClose asChild><Button variant="secondary">Cancel</Button></DialogClose>
           <Button variant="destructive-soft">Delete</Button>
@@ -33,6 +36,27 @@ export const dialog: Story = {
     </Dialog>
   ),
   states: { open: { expect: "[role=dialog]" } },
+}
+
+export const alertDialog: Story = {
+  title: "Alert dialog",
+  items: ["vois-alert-dialog"],
+  render: ({ state }) => (
+    <AlertDialog open={state === "open" ? true : undefined}>
+      {state === "open" ? null : <AlertDialogTrigger asChild><Button variant="destructive-soft">Delete project</Button></AlertDialogTrigger>}
+      <AlertDialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete project Atlas?</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>This removes its 14 files for everyone on the team. You cannot undo it.</AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction variant="destructive-soft">Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ),
+  states: { open: { expect: "[role=alertdialog]" } },
 }
 
 export const dropdownMenu: Story = {
@@ -125,6 +149,24 @@ export const hoverCard: Story = {
     </HoverCard>
   ),
   states: { open: { expect: "[data-slot=hover-card-content]" } },
+}
+
+export const popover: Story = {
+  title: "Popover",
+  items: ["vois-popover"],
+  render: ({ state }) => (
+    <Popover open={state === "open" ? true : undefined}>
+      <PopoverTrigger asChild><Button variant="secondary">Change status</Button></PopoverTrigger>
+      <PopoverContent aria-label="Change status" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <p className="[font-weight:var(--font-weight-semi-bold)] text-[color:var(--text-primary)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)]">Change status</p>
+        <p>Pick the status for this row. It saves when you choose one.</p>
+        <div className="mt-3 flex justify-end">
+          <PopoverClose asChild><Button variant="secondary">Done</Button></PopoverClose>
+        </div>
+      </PopoverContent>
+    </Popover>
+  ),
+  states: { open: { expect: "[data-slot=popover-content]" } },
 }
 
 /**

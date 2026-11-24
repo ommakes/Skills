@@ -1,0 +1,63 @@
+{
+  "id": "combobox",
+  "name": "Combobox",
+  "purpose": "Search a list of options and choose one or several values.",
+  "notFor": [
+    { "use": "Autocomplete", "when": "The value is the text itself, such as a search box, an address or a free-form field where anything typed is valid and suggestions only help fill it in." }
+  ],
+  "basis": {
+    "library": "@base-ui/react (through the shadcn combobox)",
+    "checkedAt": "2026-11-23",
+    "source": "shadcn-ui/ui@055aa6b, apps/v4/registry/bases/radix/ui/combobox.tsx",
+    "note": "Radix has no combobox. The shadcn combobox, even in its radix base, imports Base UI. The Notion inventory behaviors were not checked against the Base UI source, so most tags here are unchecked on purpose. Check them before the registry item is built."
+  },
+  "anatomy": [
+    { "part": "Combobox (root)", "required": true, "note": "Holds the value, the query and the open state." },
+    { "part": "ComboboxInput", "required": true, "note": "The text field that filters the list and shows the chosen label. Its label names it." },
+    { "part": "ComboboxList", "required": true, "note": "Holds the options inside the popup, with the listbox role." },
+    { "part": "ComboboxContent", "required": false, "note": "The popup that holds the list." },
+    { "part": "ComboboxItem", "required": true, "note": "One option. Each needs a unique value." },
+    { "part": "ComboboxGroup and ComboboxGroupLabel", "required": false, "note": "Name groups of options." },
+    { "part": "ComboboxTrigger", "required": false, "note": "Opens and closes the list. Kept out of the tab order while the input sits beside it." },
+    { "part": "ComboboxClear", "required": false, "note": "Clears the selection and the query, then keeps focus in the input." },
+    { "part": "ComboboxChips, ComboboxChip and ComboboxChipRemove", "required": false, "note": "Multiple mode. Each chosen value is a chip with its own remove button." },
+    { "part": "ComboboxEmpty and ComboboxStatus", "required": false, "note": "Loading, error and empty messages." }
+  ],
+  "behaviors": [
+    { "id": "BHV-COMBOBOX-001", "group": "interaction", "text": "Typing filters the options. Choosing one puts its label in the input.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-002", "group": "interaction", "text": "Closing the list without choosing restores the label of the selected value. The form submits the value, not the typed text.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-003", "group": "interaction", "text": "The clear button clears the selection and the typed text, keeps focus in the input, and shows only while either one has a value.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-004", "group": "interaction", "text": "Deleting all the text clears a single selection right away. Escape while the list is still open brings the selection back. Closing any other way leaves it cleared.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-005", "group": "interaction", "text": "Matching ignores case and accents for the current language. Each label keeps its original spelling. The matching letters are marked in the results.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-006", "group": "interaction", "text": "Groups and their separators disappear when filtering leaves them empty.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-007", "group": "interaction", "text": "When the options change while the list is open, the selection and highlight stay with their items. Removing the highlighted item clears the highlight.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-008", "group": "interaction", "text": "With no text typed, the list can show suggestions such as recent items. Typing switches to searching the full collection.", "support": "decide", "note": "Which suggestions to show is a product choice.", "rules": [] },
+    { "id": "BHV-COMBOBOX-009", "group": "interaction", "text": "In multiple mode, choosing an option toggles it, keeps the list open and clears the typed text. Each chosen value shows as a chip with its own remove button.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-010", "group": "interaction", "text": "A select-all option toggles every matching enabled option, or only its own group inside a group. It shows a mixed state while only some options are chosen.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-011", "group": "interaction", "text": "When chips no longer fit on one line, the extra ones hide behind a count. The selection can also show as a short text summary.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-012", "group": "interaction", "text": "Once a maximum number of selections is reached, the other options become unavailable until one is removed.", "support": "decide", "note": "The maximum is a product choice.", "rules": [] },
+    { "id": "BHV-COMBOBOX-013", "group": "interaction", "text": "A create option appears when the typed text matches no label exactly and is long enough. Saving it does not change the selection until the new item is added and chosen.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-014", "group": "interaction", "text": "Unmatched text can become the value when you press Enter with nothing highlighted, or when the list closes. It does not create a new item in the collection.", "support": "decide", "note": "Use Autocomplete if free text should be the normal path.", "rules": [] },
+    { "id": "BHV-COMBOBOX-015", "group": "interaction", "text": "The search field can live inside the popup behind a button that shows the current value. Closing the popup returns focus to that button.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-016", "group": "interaction", "text": "Scrolling or moving the highlight to the last option loads another page of results, once per page and not while a page is already loading.", "support": "supply", "rules": [] },
+    { "id": "BHV-COMBOBOX-017", "group": "interaction", "text": "On small touch screens the list can open as a sheet with the search field in its header. Choosing an item closes it unless several values are allowed. Swiping down closes it.", "support": "supply", "rules": ["DS-RESPONSIVE-008"] },
+    { "id": "BHV-COMBOBOX-018", "group": "keyboard", "text": "Down Arrow highlights a match and Enter chooses it. Highlighting the first match while typing lets Enter choose it at once.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-019", "group": "keyboard", "text": "Keyboard navigation skips disabled options. A disabled option cannot be chosen.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-020", "group": "keyboard", "text": "Backspace in an empty input removes the last chip in one press. Arrow keys move between chips.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-021", "group": "keyboard", "text": "Focus leaving the input closes the popup, even when something else takes focus.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-022", "group": "focus", "text": "A disabled combobox cannot be focused or changed and submits nothing.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-023", "group": "focus", "text": "A read-only combobox stays focusable and submits its value, but does not open or accept changes.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-024", "group": "state", "text": "While a new option is saving, it reports that it is busy and unavailable. A failed save makes its error available.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-025", "group": "state", "text": "While server results load, the list reports that it is busy. Without a custom status message, the result count is announced once typing pauses.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-026", "group": "state", "text": "The selection, the typed text and whether the popup is open are separate pieces of state. A proposed change to any of them can be rejected so the current value stays.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-027", "group": "state", "text": "The page stays usable while the list is open. A modal mode can make an outside press only close the list, and another can also lock scrolling and block the rest of the page.", "support": "unchecked", "note": "The Notion page cited DS-MODAL-001 here. That rule covers custom modal dialogs, not a popup list, so the link was dropped.", "rules": [] },
+    { "id": "BHV-COMBOBOX-028", "group": "state", "text": "The form submits the selected value, or separate entries for several values. Required blocks an empty submission. A reset restores the starting selection and its label.", "support": "unchecked", "rules": [] },
+    { "id": "BHV-COMBOBOX-029", "group": "accessibility", "text": "In a field, the field supplies the input's accessible name, description and error. Submitting a required field without a selection marks the input invalid.", "support": "supply", "rules": ["DS-A11Y-030"] },
+    { "id": "BHV-COMBOBOX-030", "group": "accessibility", "text": "Decorative icons stay out of accessible names, filtering and match marks. An icon-only option still needs an accessible name.", "support": "supply", "rules": ["DS-A11Y-007", "DS-A11Y-008"] },
+    { "id": "BHV-COMBOBOX-031", "group": "accessibility", "text": "When only a few rows render from a very long list, each rendered item still carries its position in the full list for screen readers.", "support": "supply", "rules": [] }
+  ],
+  "mistakes": [
+    { "id": "BHV-COMBOBOX-032", "group": "mistake", "text": "Do not leave an icon-only option without an accessible name.", "support": "supply", "rules": ["DS-A11Y-007"] },
+    { "id": "BHV-COMBOBOX-033", "group": "mistake", "text": "When virtualizing a long list, do not let the real row height drift from the virtualizer's measurement. Use the scroller's visible height when revealing a row.", "support": "supply", "rules": [] }
+  ]
+}
