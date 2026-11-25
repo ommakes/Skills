@@ -5,7 +5,7 @@ import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "n
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoMatch, lookups, tokensOf, summarize, buildPrompt } from "./baseline.mjs";
+import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks } from "./baseline.mjs";
 
 const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
 const SCRIPT = fileURLToPath(new URL("./baseline.mjs", import.meta.url));
@@ -57,6 +57,13 @@ test("a file reached by the real path counts when the run directory is a link to
     ], link);
     assert.deepEqual([l.read_calls, l.files_read, l.skill_bytes_read], [2, 1, 400]);
   } finally { for (const d of [real, link, outside]) rmSync(d, { recursive: true, force: true }); }
+});
+test("a Read of a path under the run directory that does not exist is a call but not a file read", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-miss-"));
+  try {
+    const l = lookups([{ name: "Read", input: { file_path: join(dir, "skills", "nope", "SKILL.md") } }], dir);
+    assert.deepEqual([l.read_calls, l.files_read, l.skill_bytes_read], [1, 0, 0]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 test("a sibling folder that shares the run directory's name as a prefix is outside it", () => {
   const dir = mkdtempSync(join(tmpdir(), "bl-"));
@@ -141,4 +148,50 @@ test("bad arguments stop before any call", () => {
   const noModel = run(["--bin", FAKE]);
   assert.notEqual(noModel.status, 0);
   assert.match(noModel.stderr, /--model is required/, "stops on the missing model, before any call");
+});
+
+test("the normal prompt keeps its exact wording, with no stray backslash", () => {
+  assert.ok(buildPrompt("T").includes("Do not write code. Do not read the `vois-eval` folder. Reply in exactly three lines:"));
+});
+test("the control prompt does not mention skills; the normal prompt does", () => {
+  const off = buildPrompt("Pick a date", { skills: false });
+  assert.match(off, /Pick a date/);
+  assert.doesNotMatch(off, /skill|Vois|\.\/skills/i);
+  assert.match(buildPrompt("Pick a date"), /skills/i);
+});
+
+test("loadTasks takes a tasks file, and rejects a missing prompt, a blank or non-string id, a duplicate id and an empty list", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-tasks-"));
+  const w = (name, v) => { const p = join(dir, name); writeFileSync(p, JSON.stringify(v)); return p; };
+  try {
+    assert.equal(loadTasks(w("a.json", { tasks: [{ id: "H-1", user_prompt: "x" }] })).length, 1);
+    assert.equal(loadTasks(w("b.json", [{ id: "H-1", user_prompt: "x" }])).length, 1, "a bare list works too");
+    for (const bad of [{ tasks: [] }, {}, { tasks: [{ id: "H-1" }] }, { tasks: [{ id: "H-1", user_prompt: "  " }] },
+      { tasks: [{ id: " ", user_prompt: "x" }] }, { tasks: [{ id: 1, user_prompt: "x" }] }, { tasks: [null] },
+      { tasks: [{ id: "H-1", user_prompt: "x" }, { id: "H-1", user_prompt: "y" }] }]) {
+      assert.throws(() => loadTasks(w("bad.json", bad)), /no tasks|every task needs|duplicate/, JSON.stringify(bad));
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--tasks with --no-skills: no skills are copied, there is no auto_match, and the file says no skills", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-ctl-"));
+  const out = join(dir, "r.json");
+  const tasks = join(dir, "t.json");
+  try {
+    writeFileSync(tasks, JSON.stringify({ tasks: [{ id: "HELD-01", user_prompt: "Confirm a delete", om_answer: "never sent" }] }));
+    const r = run(["--model", "claude-sonnet-5-5", "--tasks", tasks, "--no-skills", "--samples", "1", "--bin", FAKE, "--out", out], ok);
+    assert.equal(r.status, 0, r.stderr);
+    const f = JSON.parse(readFileSync(out, "utf8"));
+    assert.deepEqual(f.skills, []);
+    assert.equal(f.rows[0].scenario, "HELD-01");
+    assert.equal(f.rows[0].auto_match, null);
+    assert.equal(f.rows[0].lookups.read_calls, 1, "the fake model still tried to read a skill file");
+    assert.equal(f.rows[0].lookups.files_read, 0, "but no skills folder was there to find");
+    assert.equal(f.rows[0].lookups.skill_bytes_read, 0);
+    assert.equal(f.summary.auto_match_rate, null);
+    const withSkills = join(dir, "s.json");
+    assert.equal(run(["--model", "claude-sonnet-5-5", "--tasks", tasks, "--samples", "1", "--bin", FAKE, "--out", withSkills], ok).status, 0);
+    assert.ok(JSON.parse(readFileSync(withSkills, "utf8")).rows[0].lookups.skill_bytes_read > 1000, "without --no-skills the same task does find the skills");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
