@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.39.0] - 2026-11-25
+
+### Changed
+- **`JOB-TRANSIENT-FEEDBACK`: a field error is Helper Text.** The branch "Error tied to a specific input, field, or section" recommended an inline Alert, while vois-patterns and righter put a field error in Helper Text under the field. Phase 0 (Sonnet 5.5, 3 samples) followed vois-patterns every time on EVAL-005. The branch is now two: one field gets Helper Text under it (copy from righter); several errors in a section, or an error about the section, get an inline Alert at the top of the section plus Helper Text under each field with an error.
+- **`JOB-OVERLAY-INTERACTION`: the phone filter Drawer is full screen.** The branch said "slides from the bottom", which reads as a half-height bottom sheet, and vois-patterns said "a full screen panel". Phase 0 answered "a full screen Sheet" on EVAL-043 and EVAL-055. The branch now says the Drawer is full screen on phone, slides up from the bottom, and is never a half-height bottom sheet because filters take text (`DS-RESPONSIVE-009`). The behavior is unchanged (`DS-PANEL-002`: every panel is full screen below `--breakpoint-md`); only the component name is now the same in both skills.
+
 ## [1.38.0] - 2026-11-25
 
 ### Added

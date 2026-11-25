@@ -6,6 +6,11 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.5] - 2026-11-25
+
+### Changed
+- `PATH-PAGE-OVERLAY`, `PATH-PAGE-SORT-FILTER`, the Collection table template and `references/page-templates.md` name the component for filters on a phone: a full screen Drawer (vois-components `JOB-OVERLAY-INTERACTION`), where they said "a full screen panel" and vois-components said "slides from the bottom". Behavior is unchanged (every panel is full screen on a phone, `DS-PANEL-002`). A row edit or preview is still a right Sheet on tablet and desktop, now stated with its name. Found by Phase 0, where the models answered "a full screen Sheet" for filters on EVAL-043 and EVAL-055.
+
 ## [1.23.4] - 2026-11-16
 
 ### Changed

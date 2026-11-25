@@ -156,12 +156,13 @@
       "decision_tree": [
         { "condition": "Pure acknowledgment, no action required (saved, copied, sent)", "recommendation": "Toast" },
         { "condition": "User needs to act on the message before continuing", "recommendation": "Alert (inline, persistent until dismissed)" },
-        { "condition": "Error tied to a specific input, field, or section", "recommendation": "Alert inline (positioned adjacent to the source — proximity = relationship)" },
+        { "condition": "Error tied to one specific input or field", "recommendation": "Helper Text under the field, with the field in its error state (the copy comes from righter)" },
+        { "condition": "Several errors in one section, or an error about a section as a whole", "recommendation": "Alert inline (at the top of the section, below its header), plus Helper Text under each field that has an error" },
         { "condition": "System-wide announcement (maintenance, outage, account issue)", "recommendation": "Alert (sticky to top of page, not dismissible until resolved)" }
       ],
       "rationale": [
         { "question": "Why not Toast for actionable messages?", "answer": "If the toast disappears before the user reads or acts, the message is lost. Anything requiring action needs a persistent surface." },
-        { "question": "Why not Toast for errors on inputs?", "answer": "Toast places feedback far from the source. Users have to read the toast, track back to the form, and figure out which field the error belongs to. Inline Alert eliminates that mapping step." }
+        { "question": "Why not Toast for errors on inputs?", "answer": "Toast places feedback far from the source. Users have to read the toast, track back to the form, and figure out which field the error belongs to. Helper Text under the field eliminates that mapping step, and for a group of errors the inline Alert at the top of the section does the same for the section." }
       ]
     },
     {
@@ -313,7 +314,7 @@
         ] },
         { "condition": "Simple contextual input on mobile (quick select, number entry, confirmation)", "recommendation": "Drawer (the bottom sheet pattern on mobile)" },
         { "condition": "A transient mobile flow of two or more steps, one job per step (explain, then confirm, then a final check), where the user should keep seeing the screen behind it", "recommendation": "Drawer used as a tray: one container that stays mounted while the steps swap inside it (see vois-components/references/motion-tray.md)" },
-        { "condition": "Filters or sort controls for a list or table on a mobile layout", "recommendation": "Drawer (slides from the bottom, closes when done). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone" }
+        { "condition": "Filters or sort controls for a list or table on a mobile layout", "recommendation": "Drawer (full screen on phone, slides up from the bottom, closes when done; filters take text, so never a half-height bottom sheet, DS-RESPONSIVE-009). This takes precedence over the Sheet branches above: on a narrow screen a right-anchored Sheet covers most of the list, so its reason for being there is gone" }
       ],
       "rationale": [
         { "question": "Why not Sheet for filters on mobile, when the user wants to see the list?", "answer": "On a phone a right-anchored Sheet leaves little of the list showing, so the reason to prefer it over a Drawer does not hold. Filters are a temporary task that opens and closes, which is what the Drawer is for (see JOB-SECONDARY-CONTENT). On wider layouts the Sheet branch above still applies." },
