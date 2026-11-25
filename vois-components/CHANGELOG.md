@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.34.0] - 2026-11-25
+
+### Added
+- **Icons in labeled buttons.** A new "Icons in Labeled Buttons" section in `SKILL.md` extends Job 8 (`JOB-TRIGGER-ACTION`): default is no icon, a trailing icon for a button that opens a menu or navigates away, a leading icon only for the approved symbols, and rules for groups, one icon per button, the ellipsis, loading, destructive buttons, accessibility and RTL. Three Quick Reference rows for it. `JOB-TRIGGER-ACTION` in `data/components-rules.json` gains a decision branch and three rationale entries.
+
+---
+
 ## [1.33.0] - 2026-11-24
 
 ### Added
