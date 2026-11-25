@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +41,22 @@ test("lookups counts Read calls, search calls and only files under the run direc
     assert.equal(lookups(undefined, dir).read_calls, 0);
     assert.equal(lookups([{ name: "Read", input: {} }, { name: "Read" }], dir).files_read, 0);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("a file reached by the real path counts when the run directory is a link to it (macOS /var -> /private/var)", () => {
+  const real = mkdtempSync(join(tmpdir(), "bl-real-"));
+  const link = real + "-link";
+  const outside = mkdtempSync(join(tmpdir(), "bl-out-"));
+  try {
+    symlinkSync(real, link);
+    writeFileSync(join(real, "a.md"), "x".repeat(400));
+    writeFileSync(join(outside, "secret.md"), "y".repeat(900));
+    symlinkSync(join(outside, "secret.md"), join(real, "escape.md"));
+    const l = lookups([
+      { name: "Read", input: { file_path: join(real, "a.md") } },     // real spelling, directory given as the link (the old check missed this)
+      { name: "Read", input: { file_path: join(real, "escape.md") } }, // a link inside the directory that leaves it
+    ], link);
+    assert.deepEqual([l.read_calls, l.files_read, l.skill_bytes_read], [2, 1, 400]);
+  } finally { for (const d of [real, link, outside]) rmSync(d, { recursive: true, force: true }); }
 });
 test("a sibling folder that shares the run directory's name as a prefix is outside it", () => {
   const dir = mkdtempSync(join(tmpdir(), "bl-"));
