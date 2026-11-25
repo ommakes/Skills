@@ -81,7 +81,7 @@
       "id": "EVAL-006",
       "source_job": "JOB-OVERLAY-INTERACTION",
       "tree_path": [2, 0],
-      "user_prompt": "Let a user edit a row's assignee, due date, and priority inline from a data table, without losing their place in the table.",
+      "user_prompt": "Let a user edit a row's assignee, due date, and priority from a data table, without losing their place in the table.",
       "condition": "User will likely want to see the page behind it while working",
       "expected_outcome": "Sheet (right-anchored, partial overlap)",
       "forbidden_outcomes": [
@@ -91,7 +91,7 @@
         "Full navigation to a separate edit page (loses the table context entirely)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "revision_note": "Originally worded as a single-field edit ('a row's status'), which run 1 (2026-09-12) showed was genuinely ambiguous against the then-current decision tree -- a fresh agent chose Popover, a defensible answer the tree didn't rule out. Reworded to an unambiguous multi-field edit so this scenario tests the Sheet branch as originally intended; the single-field case now has its own scenario (EVAL-011) testing the Popover branch added to JOB-OVERLAY-INTERACTION in response."
+      "revision_note": "Originally worded as a single-field edit ('a row's status'), which run 1 (2026-09-12) showed was genuinely ambiguous against the then-current decision tree -- a fresh agent chose Popover, a defensible answer the tree didn't rule out. Reworded to an unambiguous multi-field edit so this scenario tests the Sheet branch as originally intended; the single-field case now has its own scenario (EVAL-011) testing the Popover branch added to JOB-OVERLAY-INTERACTION in response. Phase 0 (2026-11-25) split: all 3 samples read 'inline' as an inline cell edit (vois-patterns PATH-TABLE-INLINE-EDIT) and skipped the Sheet. Removed 'inline' from the prompt so it asks for the overlay choice, not for a cell edit."
     },
     {
       "id": "EVAL-007",
@@ -149,7 +149,7 @@
       "id": "EVAL-011",
       "source_job": "JOB-OVERLAY-INTERACTION",
       "tree_path": [0],
-      "user_prompt": "Let a user change a single row's status inline from a data table, without leaving the table view.",
+      "user_prompt": "Let a user change a single row's status from a data table, without leaving the table view.",
       "condition": "Editing or acting on exactly one field or value, anchored to the specific row/item that triggered it (not a multi-field task)",
       "expected_outcome": "Popover (anchored to the trigger element, no Dialog/Sheet/Drawer chrome)",
       "forbidden_outcomes": [
@@ -158,7 +158,7 @@
         "Full navigation to a separate edit page (loses the table context entirely)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result."
+      "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result. Phase 0 (2026-11-25): all 3 samples answered with an inline cell edit (a Select in the cell, PATH-TABLE-INLINE-EDIT) because the prompt said 'inline'. Removed 'inline' from the prompt."
     },
     {
       "id": "EVAL-012",
