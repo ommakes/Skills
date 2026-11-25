@@ -223,3 +223,10 @@ The five variables below were changed in the Vois Figma file (variable aliases o
    - **Toast:** there is no `--z-toast` token. The viewport uses `--z-overlay`.
    - **Alert dialog:** no Figma frame was read. The code copies the Dialog (see 0.27.0).
 10. **Dialog frames (2026-11-24).** The frames at `8305:27515` are 360 and 480 wide (min 360, max 480) and hardcode them. The Size variables are `--width-dialog-sm` 344 and `--width-dialog-lg` 560. The rule is that a modal may be 340 to 560 wide, so both are fine and the code keeps the variables. The frames have no separate alert dialog: the Confirmation frame has a close button, the Required frame does not, and the code follows Required.
+
+## To do in Figma (contrast, registry 0.32.1)
+
+Two variables changed in code only (`source/figma-pending.json`, `change`). Change them in the Vois Figma file, re-export, then remove the entries. Found by the rendered accessibility check on `main`.
+
+- **`--select-soft-active`**: Light `Bg-Accent` (as now). Dark `Blue-A3`, was `Bg-Accent` (`Blue-A5`). The checked Menubar item had accent text at 3.8:1 on `#495e73`, and its shortcut at 3.1:1.
+- **`--text-negative`**: Light `Tomato-9` (as now). Dark `Tomato-6`, was `Tomato-7`. A destructive menu item was 4.3:1 on the popup surface.

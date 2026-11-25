@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.32.1] - 2026-11-25
+
+Contrast fixes found by the rendered accessibility check on `main` (axe-core 4.14.1, Chromium 1255).
+
+- **Dark `--select-soft-active` is `Blue-A3`, was `Blue-A5`.** `Blue-A5` over the popup surface gave `#495e73`, so the checked Menubar item had `--text-accent` at 3.8:1 and its shortcut at 3.1:1. On `Blue-A3` the accent text is 4.9:1. Light is unchanged. It is a pending Figma change (`source/figma-pending.json`, `FIGMA-TODO.md`).
+- **Dark `--text-negative` is `Tomato-6`, was `Tomato-7`.** A destructive Menubar item was 4.3:1 on the popup surface. `Tomato-6` is 5.7:1 there and 5.2:1 on the highlighted row. Light is unchanged. Also a pending Figma change.
+- **A shortcut in a checked Menubar or Dropdown Menu item uses `--text-secondary`.** `--text-hint` is 4.0:1 on the `Blue-A3` row.
+- **Calendar weekday headers use `--text-hint`, were `--text-state-disabled`.** They are labels, not disabled controls, and the disabled color was 4.05:1 on white and 3.8:1 on the dark surface.
+
+Not fixed here: Calendar days from the next or last month (drawn as disabled but still clickable, 4.05:1) and the selected day in dark (white on `Blue-9`, 3.5:1).
+
+---
+
 ## [0.32.0] - 2026-11-25
 
 - **New item: `vois-drawer`**, shadcn's Drawer on Vaul 1.1.2 (an exact dependency). Parts: `Drawer`, `DrawerTrigger`, `DrawerPortal`, `DrawerOverlay`, `DrawerContent`, `DrawerClose`, `DrawerHeader`, `DrawerBody`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`. It is a modal that slides in from the bottom, top, left or right and can be dragged away. The `DS-MODAL` and `DS-PANEL` rules apply.

@@ -161,7 +161,7 @@ function DropdownMenuCheckboxItem({ className, children, checked, ...props }: Re
       className={cn(
         itemBase,
         "min-h-[var(--size-40)]",
-        "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]",
+        "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:[&_[data-slot$=-shortcut]]:text-[color:var(--text-secondary)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]",
         className
       )}
       {...props}
@@ -187,7 +187,7 @@ function DropdownMenuRadioItem({ className, children, ...props }: React.Componen
       className={cn(
         itemBase,
         "min-h-[var(--size-40)]",
-        "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]",
+        "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:[&_[data-slot$=-shortcut]]:text-[color:var(--text-secondary)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]",
         className
       )}
       {...props}

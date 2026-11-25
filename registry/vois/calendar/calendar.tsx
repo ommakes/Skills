@@ -80,7 +80,7 @@ function Calendar({
         caption_label: "text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-semi-bold)] text-[color:var(--text-primary)]",
         month_grid: "w-full border-collapse",
         weekdays: "flex",
-        weekday: "flex w-[var(--cal-cell)] items-center justify-center text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-medium)] text-[color:var(--text-state-disabled)]",
+        weekday: "flex w-[var(--cal-cell)] items-center justify-center text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-medium)] text-[color:var(--text-hint)]",
         weeks: "mt-[var(--space-8)] flex flex-col",
         week: "flex",
         day: "group/day relative w-[var(--cal-cell)] p-0 text-center select-none",
