@@ -1781,7 +1781,7 @@
       "source_file": "vois-patterns/references/table-list.md",
       "pattern_name": "Row open container",
       "condition": "A user opens a row to see its record.",
-      "outcome": "Record has 8 or fewer fields and no related records: right-side drawer (the Sheet component in vois-components), view first with an Edit action or edit directly. Record has tabs, a timeline, related records, or a long form: full page, reached from an Open action in the drawer. Only a confirmation: Dialog. The open row id is in the URL and the active row stays highlighted.",
+      "outcome": "Record has 8 or fewer fields and no related records: right-side drawer (the Sheet component in vois-components), view first with an Edit action or edit directly. From --breakpoint-md the drawer pushes the table aside when DS-PANEL-003 passes (the table stays usable beside it), and otherwise overlays it. Below --breakpoint-md it is full screen (DS-PANEL-002). Record has tabs, a timeline, related records, or a long form: full page, reached from an Open action in the drawer. Only a confirmation: Dialog. The open row id is in the URL and the active row stays highlighted.",
       "builds_on": [
         "PATH-B",
         "JOB-CONTAIN-CONTENT",
