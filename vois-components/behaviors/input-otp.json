@@ -1,0 +1,258 @@
+{
+  "id": "input-otp",
+  "name": "InputOTP",
+  "purpose": "A field for a short one time code sent by text or email. Each character gets its own slot, and the whole code is one input underneath.",
+  "notFor": [
+    {
+      "use": "Text field",
+      "when": "The value is not a short code of fixed length."
+    },
+    {
+      "use": "Password field",
+      "when": "The value is a secret the person chose, not a code they were sent."
+    }
+  ],
+  "basis": {
+    "library": "input-otp",
+    "checkedAt": "2026-11-24",
+    "source": "guilhermerodz/input-otp@3daad8f, packages/input-otp/src",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The Notion page gives no alternative component and lists one mistake; the others come from the source and the vois-fields paste rule."
+  },
+  "anatomy": [
+    {
+      "part": "InputOTP",
+      "required": true,
+      "note": "The one native input. Holds the code, the pattern and the length."
+    },
+    {
+      "part": "InputOTPGroup",
+      "required": true,
+      "note": "Lays out a run of slots."
+    },
+    {
+      "part": "InputOTPSlot",
+      "required": true,
+      "note": "Shows the character at its index. One per character."
+    },
+    {
+      "part": "InputOTPSeparator",
+      "required": false,
+      "note": "Goes between groups when the code reads better in sections. Hidden from screen readers."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-INPUT-OTP-001",
+      "group": "interaction",
+      "text": "Typing a character fills the next empty slot. When the code is full, typing replaces the selected slot.",
+      "support": "native",
+      "evidence": "input.tsx: _changeListener slices the value to maxLength; the caret sits at the last filled slot when full",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-002",
+      "group": "interaction",
+      "text": "Clicking a slot lets you edit that character.",
+      "support": "native",
+      "evidence": "input.tsx: focus and select handlers place the selection on the clicked index",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-003",
+      "group": "interaction",
+      "text": "Pasting a whole code fills every slot at once and strips separators such as spaces and hyphens.",
+      "support": "differs",
+      "evidence": "input.tsx: the library paste handler runs only with pasteTransformer (or on iOS) and inserts at the caret; vois-input-otp sets pasteTransformer to strip spaces and dashes and selects the field when the paste fills it",
+      "note": "Without the transformer a pasted '123-456' is rejected whole by the pattern. A whole code replaces what is there, a short paste is inserted at the caret, and a long one is cut to the length.",
+      "rules": [
+        "DS-A11Y-006"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-004",
+      "group": "interaction",
+      "text": "Autofill from a browser or password manager can fill the whole code at once.",
+      "support": "native",
+      "evidence": "input.tsx: autoComplete defaults to one-time-code and the change listener takes any value that passes the pattern",
+      "rules": [
+        "DS-A11Y-006"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-005",
+      "group": "interaction",
+      "text": "Characters that do not match the pattern are rejected. Touch devices get a keyboard that suits the pattern.",
+      "support": "differs",
+      "evidence": "input.tsx: a value that fails the regexp is dropped (empty is allowed); inputMode defaults to numeric and the pattern attribute comes from the regexp source",
+      "note": "A letters pattern still opens the numeric keyboard unless you set inputMode. Pass the pattern and inputMode together.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-006",
+      "group": "interaction",
+      "text": "Undo and redo work with the usual shortcuts.",
+      "support": "native",
+      "evidence": "input.tsx: one real input, so the browser keeps the undo stack",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-007",
+      "group": "interaction",
+      "text": "An outside control can read, fill, clear or focus the input, and those writes go through the same filter as typing.",
+      "support": "supply",
+      "note": "Pass value and onChange, and a ref for focus. Writes made through value are not run through the pattern by the library, so filter them yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-008",
+      "group": "keyboard",
+      "text": "Arrow keys, Home and End move the selection between slots.",
+      "support": "native",
+      "evidence": "input.tsx: the browser moves the caret in the one input and the selection handler maps it to a slot",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-009",
+      "group": "keyboard",
+      "text": "Backspace deletes the selected character.",
+      "support": "native",
+      "evidence": "input.tsx: a native input edit goes through _changeListener",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-010",
+      "group": "focus",
+      "text": "The slots are a visual display only. The group adds no tab stops beyond the one input.",
+      "support": "native",
+      "evidence": "input.tsx: one input inside a pointer events none wrapper; the slots are plain divs",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-011",
+      "group": "focus",
+      "text": "The active slot is marked only while the field is focused. An empty active slot shows a blinking caret.",
+      "support": "differs",
+      "evidence": "input.tsx: hasFakeCaret is true only for an active empty slot; the blink is not drawn by the library",
+      "note": "vois-input-otp draws the caret with a step keyframe that stops under reduced motion.",
+      "rules": [
+        "DS-ANIMATION-004"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-012",
+      "group": "focus",
+      "text": "The active slot shows the focus ring as an external ring that keeps its offset in the error state.",
+      "support": "supply",
+      "note": "The library gives isActive. The ring, its width and its offset come from the focus tokens. Read-only slots show no ring on the slot.",
+      "rules": [
+        "DS-A11Y-002"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-013",
+      "group": "state",
+      "text": "The code length is set by maxLength and defaults to the number of slots you render.",
+      "support": "native",
+      "evidence": "input.tsx: maxLength is required and sets the input's maxLength",
+      "note": "Render one slot per character. A mismatch leaves empty slots that can never fill.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-014",
+      "group": "state",
+      "text": "The completion event fires when the code becomes full by typing, pasting, autofill or an outside write. It does not fire again when a full code is replaced by another full code.",
+      "support": "differs",
+      "evidence": "input.tsx: onComplete fires only on the change from shorter than maxLength to exactly maxLength",
+      "note": "The inventory says changing a full code fires it again. It does not. Select all and paste a new code and no event fires; handle the change event if you need it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-015",
+      "group": "state",
+      "text": "A partial code fails length validation. A required field blocks an empty submit. A form reset restores the default value.",
+      "support": "supply",
+      "note": "The library sets no minLength. Validate the length yourself and show the error through the field.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-016",
+      "group": "state",
+      "text": "An invalid code shows an error message tied to the field and marks it invalid. Editing a digit clears the error.",
+      "support": "supply",
+      "note": "The library has no error state. vois-input-otp reads aria-invalid for the slot look. Connect the message with aria-describedby and clear it in onChange.",
+      "rules": [
+        "DS-A11Y-006"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-017",
+      "group": "state",
+      "text": "Disabled blocks focus, changes and submission. Read-only keeps the field focusable and in the form data but blocks changes.",
+      "support": "differs",
+      "evidence": "input.tsx: disabled passes to the input, which then cannot take focus; readOnly is not handled by the library",
+      "note": "vois-input-otp blocks typing and paste in read-only itself and draws a flat look with no edge.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-018",
+      "group": "accessibility",
+      "text": "A screen reader meets one input that holds the whole code. The slots, groups and separators are hidden from it.",
+      "support": "native",
+      "evidence": "input.tsx: one real input; the slot divs carry no role and the separator is aria-hidden in vois-input-otp",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-019",
+      "group": "accessibility",
+      "text": "The field is named by its label and offers itself for one-time-code autofill.",
+      "support": "supply",
+      "note": "The library adds autocomplete one-time-code but no name. Pass aria-label or connect a visible label with id.",
+      "rules": [
+        "DS-A11Y-006"
+      ]
+    },
+    {
+      "id": "BHV-INPUT-OTP-020",
+      "group": "accessibility",
+      "text": "The field reports an error to assistive technology.",
+      "support": "supply",
+      "note": "The library sets no aria-invalid or aria-describedby. Pass both.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-INPUT-OTP-021",
+      "group": "mistake",
+      "text": "Do not leave a slot without relative positioning. Keep position relative on each slot so its caret stays inside it.",
+      "support": "supply",
+      "note": "vois-input-otp already does this.",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-022",
+      "group": "mistake",
+      "text": "Do not reject a pasted code because it has a space or a dash. Clean the value after it arrives.",
+      "support": "differs",
+      "evidence": "input.tsx: the regexp rejects the whole paste unless a pasteTransformer runs first",
+      "note": "This is the vois-fields paste rule (FIELD-PASTE).",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-023",
+      "group": "mistake",
+      "text": "Do not leave the field without a name. Nothing warns you.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-INPUT-OTP-024",
+      "group": "mistake",
+      "text": "Do not rely on the completion event to submit a code that was replaced by another full code.",
+      "support": "differs",
+      "evidence": "input.tsx: onComplete fires only on the change to full",
+      "note": "Handle the change event when a replaced full code must submit again.",
+      "rules": []
+    }
+  ]
+}

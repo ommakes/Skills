@@ -1,5 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
@@ -76,4 +78,57 @@ export const tooltip: Story = {
     </TooltipProvider>
   ),
   states: { open: { expect: "[data-slot=tooltip-content]" } },
+}
+
+function ProgressRow({ id, label, value, text }: { id: string; label: string; value?: number | null; text?: string }) {
+  return (
+    <div className="flex w-80 flex-col gap-2">
+      <div className="flex items-center justify-between text-[length:var(--font-size-small)]">
+        <span id={id}>{label}</span>
+        {text ? <span aria-hidden="true" className="text-[color:var(--text-secondary)]">{text}</span> : null}
+      </div>
+      <Progress aria-labelledby={id} value={value} />
+    </div>
+  )
+}
+
+export const progress: Story = {
+  title: "Progress",
+  items: ["vois-progress"],
+  render: ({ id }) => (
+    <div className="flex flex-col gap-6">
+      <ProgressRow id={id("p-empty")} label="Not started" value={0} text="0%" />
+      <ProgressRow id={id("p-half")} label="Uploading photos" value={40} text="40%" />
+      <ProgressRow id={id("p-full")} label="Upload complete" value={100} text="100%" />
+      <ProgressRow id={id("p-over")} label="A value past the maximum is clamped to full" value={140} text="100%" />
+      <ProgressRow id={id("p-indet")} label="Working, length unknown" />
+    </div>
+  ),
+}
+
+export const separator: Story = {
+  title: "Separator",
+  items: ["vois-separator"],
+  render: () => (
+    <div className="flex flex-col gap-6">
+      <Row label="Horizontal, between two groups of text">
+        <div className="w-80">
+          <p className="font-[number:var(--font-weight-medium)]">Billing</p>
+          <p className="text-[color:var(--text-secondary)]">Plans, invoices and payment methods.</p>
+          <Separator className="my-3" />
+          <p className="font-[number:var(--font-weight-medium)]">Team</p>
+          <p className="text-[color:var(--text-secondary)]">Members and roles.</p>
+        </div>
+      </Row>
+      <Row label="Vertical, in a row of links">
+        <div className="flex h-5 items-center gap-3">
+          <span>Docs</span>
+          <Separator orientation="vertical" />
+          <span>Blog</span>
+          <Separator orientation="vertical" />
+          <span>Changelog</span>
+        </div>
+      </Row>
+    </div>
+  ),
 }

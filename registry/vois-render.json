@@ -183,6 +183,22 @@
       "path": "/input-group"
     },
     {
+      "id": "input-otp",
+      "path": "/input-otp",
+      "states": [
+        {
+          "id": "active",
+          "path": "/input-otp?state=active&theme=light",
+          "expect": "[data-slot=input-otp-slot][data-active=true]"
+        },
+        {
+          "id": "active-dark",
+          "path": "/input-otp?state=active&theme=dark",
+          "expect": "[data-slot=input-otp-slot][data-active=true]"
+        }
+      ]
+    },
+    {
       "id": "menubar",
       "path": "/menubar",
       "states": [
@@ -313,6 +329,14 @@
     {
       "id": "slider",
       "path": "/slider"
+    },
+    {
+      "id": "progress",
+      "path": "/progress"
+    },
+    {
+      "id": "separator",
+      "path": "/separator"
     },
     {
       "id": "spinner",

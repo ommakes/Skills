@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.31.0] - 2026-11-25
+
+- **New item: `vois-input-otp`**, built from the Figma OTP Input frame (`3454:4086`) on the `input-otp` library (1.5.0, a dependency). Parts: `InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`. It is for a short one-time code, with one real input under the slots.
+  - **Paste is not blocked.** A paste with spaces or dashes ("986 354", "986-354") is cleaned and fills the field. A whole code replaces what is there, a short paste goes in at the caret, and a long one is cut to the length. Pass `pasteTransformer` to change the cleaning. A read-only or disabled field ignores paste.
+  - **Slot looks:** resting, filled, active, invalid (set `aria-invalid` on `InputOTP`), read-only and disabled. The active slot shows an external focus ring and a blinking caret on an empty slot. The caret does not blink when reduced motion is on.
+  - **You supply:** the label, the error message, and `aria-describedby`. The library adds neither a name nor `aria-invalid`. The harness page composes the label, a status icon and a Resend link from `vois-field` and `vois-button`.
+  - The completion event (`onComplete`) fires only when the code goes from partial to full, not when one full code is replaced by another.
+- **New items: `vois-progress` and `vois-separator`**, shadcn's Progress and Separator (Radix) on Vois tokens. They have no Figma frame, so they take the shadcn look.
+  - **Progress** clamps the value to 0 through `max` before Radix sees it (Radix turns an out of range value into indeterminate and logs an error). No value means indeterminate: a 40% fill sweeps on `--motion-duration-spin`, and under reduced motion it is still and full width. It is display only, and you name it with `aria-label` or `aria-labelledby`.
+  - **Separator** is a 1px `--border-default` line, horizontal or vertical, and decorative by default. Set `decorative={false}` when the line alone shows a division.
+- Browser test: `npm run input-otp:test` (typing, paste, read-only, disabled, looks). It skips where Playwright or Chromium is missing.
+
+---
+
 ## [0.30.0] - 2026-11-24
 
 - **`vois-menubar`: three behaviors Radix does not have.**
