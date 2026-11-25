@@ -175,6 +175,7 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
       const stopped = j.subtype && j.subtype !== "success" ? j.subtype : undefined;
       resolveP({
         result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0, tool_uses,
+        usage: j.usage, model_usage: j.modelUsage,
         models: Object.keys(j.modelUsage ?? {}), truncated, stop_reason: stopped,
         error: truncated ? undefined : j.is_error || stopped ? `claude stopped${stopped ? ` (${stopped})` : ""}: ${String(j.result).slice(0, 200)}` : undefined,
       });

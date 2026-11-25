@@ -46,6 +46,21 @@ All 21 jobs in `components-rules.json` have at least one scenario: 55 in total. 
 
 Scenarios EVAL-014 to EVAL-053 were written for the 15 jobs that had none, EVAL-054 was added afterwards for the back link branch, and EVAL-055 for the mobile filters branch of `JOB-OVERLAY-INTERACTION`. Not every branch has one: 54 of the 99 branches that recommend something do, and the checker prints that count. The gaps include the Plain and Alert branches of the empty-content job, the Table, Tabs and Card branches of the data-visualization job, and the Input, Radio and Command branches of the text, binary-choice and list jobs.
 
+## Phase 0 baseline: what one decision costs today
+
+`run/baseline.mjs` runs the 55 scenarios' `user_prompt` through the `claude` CLI with the Vois skills copied in, asks for the decision only, and records tokens, cost, turns and lookups per sample. It exists to give the JIT retrieval plan (`prds/jit-retrieval.md` in the private repo) a number to beat. It measures cost, not quality: `auto_match` is a crude check on the first line of the report, and the reports are kept so a person can read them. Rule recall is a Phase 2 measure and is not here.
+
+```
+node vois-eval/run/baseline.mjs --dry-run
+node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --scenarios EVAL-001,EVAL-006 --samples 1   # a small run first
+node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --samples 3 --limit-seconds 500              # stops starting samples after 500 s
+node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --samples 3 --resume                         # continues the same file
+```
+
+It calls a model, so it costs money and is run by hand on a machine where `claude` is signed in. CI never runs it, only `baseline.test.mjs`, which uses the fake CLI. Results go to `vois-eval/baseline/phase0-<model>.json` (not `results/`, which `check-results.mjs` validates in its own format). A sample that errors, or that was answered by another model than the one named, is recorded as an error and run again on `--resume`. The runner stops after 5 errors in a row. The tools are the same four as the task runner and file access is logged, not blocked, so a run on a machine whose user-level memory mentions Vois is not a clean baseline.
+
+Lookups are `Read` calls and `Grep` or `Glob` calls. `skill_tokens_est` is the size of each distinct skill file that was read, divided by 4, and counts a file whole even when a `Read` used an offset, so it is an upper bound. `total_in` adds the cache write and cache read tokens to the input tokens. To compare with the retrieval packets, run `node vois-components/scripts/baseline.mjs --scenarios vois-eval/scenarios.json` in the private repo (it is not mirrored yet).
+
 ## Running the task runner
 
 `run/run.mjs` takes the lookalike prompts (`LP-*`, `HP-*`) and the design tasks in `tasks/design-tasks.json` (`DT-*`), builds each screen with the `claude` CLI, and scores the TSX with scripts. It runs every task with the skills on and with them off, several times each, and writes one results file to `results/`.

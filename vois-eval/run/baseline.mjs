@@ -1,0 +1,145 @@
+#!/usr/bin/env node
+// Phase 0 baseline (prds/jit-retrieval.md in the private repo): what does one design decision cost today?
+// Runs each scenario's user_prompt through the `claude` CLI with the Vois skills copied in, asks for the decision only,
+// and records tokens, cost, turns and lookups. It calls a model, so it costs money and is run by hand. CI never runs it.
+//
+//   node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --samples 3
+//   node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --scenarios EVAL-001,EVAL-002 --samples 1
+//   node vois-eval/run/baseline.mjs --dry-run
+//   ... --resume          continue the same output file; finished samples are skipped
+//
+// It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
+// a forbidden one). The reports are kept so a person can read them. A pass here says nothing about rule recall: that
+// is Phase 2.
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+import { copySkills, invokeClaude, SKILLS_UNDER_TEST } from "./run.mjs";
+
+const HERE = fileURLToPath(new URL(".", import.meta.url));
+const OUT_DIR = join(HERE, "..", "baseline");
+const SKILLS_HINT = "The skills are in ./skills/, one folder each, each starting with SKILL.md. Use the ones that apply.";
+
+export function buildPrompt(userPrompt) {
+  return `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code. Do not read the \`vois-eval\` folder. Reply in exactly three lines:\n1. What you would use.\n2. Which rule files, ids or sections you looked up.\n3. What was unclear, or "nothing".`;
+}
+
+const words = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean);
+/** The lead of an outcome: the text before the first bracket, dash or full stop. */
+const lead = (s) => String(s ?? "").split(/[(\[—–]| - |\.\s/)[0];
+
+/** A crude check. The first line of the report must contain the expected lead's first word, and no forbidden lead's first word unless the expected one is also there. */
+export function autoMatch(report, scenario) {
+  const first = words(String(report ?? "").split("\n").find((l) => l.trim()) ?? "");
+  const has = (w) => w && first.includes(w);
+  const want = words(lead(scenario.expected_outcome))[0];
+  const forbidden = (scenario.forbidden_outcomes ?? []).map((f) => words(lead(typeof f === "string" ? f : f?.outcome ?? ""))[0]).filter((w) => w && w !== want);
+  const bad = forbidden.filter(has);
+  return { match: Boolean(has(want)) && bad.length === 0, expected: want ?? null, forbidden_named: bad };
+}
+
+/** Lookups: file-tool calls. Skill bytes: the size of each distinct file under ./skills that was read (whole file, so an upper bound when a Read used offset or limit). */
+export function lookups(toolUses, dir) {
+  const root = resolve(dir) + sep;
+  const files = new Set();
+  let calls = 0, searches = 0;
+  for (const u of toolUses ?? []) {
+    if (u.name === "Read") {
+      calls++;
+      const p = resolve(dir, String(u.input?.file_path ?? ""));
+      if (p.startsWith(root)) files.add(p);
+    } else if (u.name === "Grep" || u.name === "Glob") searches++;
+  }
+  let bytes = 0;
+  for (const f of files) { try { bytes += statSync(f).size; } catch { /* gone */ } }
+  return { read_calls: calls, search_calls: searches, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
+}
+
+export function tokensOf(usage) {
+  const u = usage ?? {};
+  const input = (u.input_tokens ?? 0), cacheW = (u.cache_creation_input_tokens ?? 0), cacheR = (u.cache_read_input_tokens ?? 0);
+  return { input_tokens: input, cache_write_tokens: cacheW, cache_read_tokens: cacheR, output_tokens: u.output_tokens ?? 0, total_in: input + cacheW + cacheR };
+}
+
+function parseArgs(argv) {
+  const o = { samples: 3, budget: 1, maxTurns: 40, concurrency: 2, bin: "claude" };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (["--dry-run", "--resume"].includes(a)) o[a.slice(2).replace("-", "")] = true;
+    else if (["--model", "--scenarios", "--samples", "--budget", "--max-turns", "--concurrency", "--out", "--bin", "--limit-seconds"].includes(a)) {
+      const v = argv[++i]; if (v === undefined) throw new Error(`${a} needs a value`);
+      const k = a.slice(2).replace(/-(\w)/g, (_, c) => c.toUpperCase());
+      o[k] = ["samples", "budget", "maxTurns", "concurrency", "limitSeconds"].includes(k) ? Number(v) : v;
+    } else throw new Error(`unknown argument ${a}`);
+  }
+  for (const k of ["samples", "budget", "maxTurns", "concurrency"]) if (!Number.isFinite(o[k]) || o[k] <= 0) throw new Error(`--${k} must be a positive number`);
+  return o;
+}
+
+const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
+const sum = (a) => a.reduce((x, y) => x + y, 0);
+
+export function summarize(rows) {
+  const ok = rows.filter((r) => !r.error);
+  const pick = (f) => ok.map(f);
+  return {
+    samples: rows.length, errored: rows.length - ok.length,
+    cost_usd: { total: +sum(pick((r) => r.cost_usd)).toFixed(4), median: median(pick((r) => r.cost_usd)) },
+    total_in_tokens: { median: median(pick((r) => r.tokens.total_in)), max: Math.max(0, ...pick((r) => r.tokens.total_in)) },
+    output_tokens: { median: median(pick((r) => r.tokens.output_tokens)) },
+    turns: { median: median(pick((r) => r.turns)) },
+    read_calls: { median: median(pick((r) => r.lookups.read_calls)), max: Math.max(0, ...pick((r) => r.lookups.read_calls)) },
+    search_calls: { median: median(pick((r) => r.lookups.search_calls)) },
+    files_read: { median: median(pick((r) => r.lookups.files_read)) },
+    skill_tokens_est: { median: median(pick((r) => r.lookups.skill_tokens_est)), max: Math.max(0, ...pick((r) => r.lookups.skill_tokens_est)) },
+    auto_match_rate: ok.length ? +(ok.filter((r) => r.auto_match.match).length / ok.length).toFixed(3) : null,
+  };
+}
+
+async function main() {
+  const o = parseArgs(process.argv.slice(2));
+  const all = JSON.parse(readFileSync(join(HERE, "..", "scenarios.json"), "utf8")).scenarios;
+  const want = o.scenarios ? new Set(o.scenarios.split(",")) : null;
+  const scenarios = all.filter((s) => !want || want.has(s.id));
+  if (want && scenarios.length !== want.size) throw new Error(`unknown scenario in --scenarios: ${[...want].filter((w) => !all.some((s) => s.id === w)).join(", ")}`);
+  const plan = scenarios.flatMap((s) => Array.from({ length: o.samples }, (_, i) => ({ s, sample: i + 1 })));
+  if (o.dryrun) { console.log(`${scenarios.length} scenarios x ${o.samples} samples = ${plan.length} calls, model ${o.model ?? "(none given)"}, budget cap $${o.budget} each`); return; }
+  if (!o.model) throw new Error("--model is required, and should be a full model id");
+  mkdirSync(OUT_DIR, { recursive: true });
+  const outPath = resolve(o.out ?? join(OUT_DIR, `phase0-${o.model}.json`));
+  let file = { model: o.model, samples_per_scenario: o.samples, skills: SKILLS_UNDER_TEST, started: new Date().toISOString(), rows: [] };
+  if (o.resume && existsSync(outPath)) file = JSON.parse(readFileSync(outPath, "utf8"));
+  else if (existsSync(outPath)) throw new Error(`${outPath} exists. Use --resume to continue it, or --out for a new file.`);
+  const done = new Set(file.rows.filter((r) => !r.error).map((r) => `${r.scenario}#${r.sample}`));
+  file.rows = file.rows.filter((r) => !r.error); // errored samples are run again
+  const todo = plan.filter((p) => !done.has(`${p.s.id}#${p.sample}`));
+  const deadline = o.limitSeconds ? Date.now() + o.limitSeconds * 1000 : Infinity;
+  const save = () => writeFileSync(outPath, JSON.stringify({ ...file, summary: summarize(file.rows) }, null, 2) + "\n");
+  let next = 0, errorsInARow = 0;
+  const worker = async () => {
+    while (next < todo.length && Date.now() < deadline && errorsInARow < 5) {
+      const { s, sample } = todo[next++];
+      const dir = mkdtempSync(join(tmpdir(), "vois-phase0-"));
+      try {
+        copySkills(dir);
+        const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin });
+        const mismatch = r.models && r.models.length && !r.models.some((m) => m.startsWith(o.model));
+        const row = { scenario: s.id, job: s.source_job, sample, error: r.error ?? (mismatch ? `answered by ${r.models.join(", ")}, not ${o.model}` : undefined),
+          cost_usd: r.cost_usd ?? 0, cost_unknown: Boolean(r.cost_unknown), turns: r.turns ?? 0, duration_ms: r.duration_ms ?? 0, truncated: Boolean(r.truncated),
+          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir), auto_match: autoMatch(r.result, s), report: String(r.result ?? "").slice(0, 1500) };
+        errorsInARow = row.error ? errorsInARow + 1 : 0;
+        file.rows.push(row); save();
+        console.log(`${row.error ? "ERR " : "ok  "} ${s.id}#${sample} $${row.cost_usd.toFixed(3)} in=${row.tokens.total_in} reads=${row.lookups.read_calls} match=${row.auto_match.match}${row.error ? ` ${row.error.slice(0, 80)}` : ""}`);
+      } finally { rmSync(dir, { recursive: true, force: true }); }
+    }
+  };
+  await Promise.all(Array.from({ length: o.concurrency }, worker));
+  file.finished = new Date().toISOString(); save();
+  const left = todo.length - next;
+  console.log(JSON.stringify(summarize(file.rows), null, 2));
+  if (errorsInARow >= 5) { console.error("stopped: 5 errors in a row. Fix the cause, then run again with --resume."); process.exit(1); }
+  if (left > 0) console.log(`${left} samples not started (time limit). Run again with --resume.`);
+  console.log(`written: ${outPath}`);
+}
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((e) => { console.error(e.message); process.exit(1); });
