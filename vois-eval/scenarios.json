@@ -69,13 +69,15 @@
       "source_job": "JOB-TRANSIENT-FEEDBACK",
       "tree_path": [2],
       "user_prompt": "Show a validation error under the email field on a signup form when the address is malformed.",
-      "condition": "Error tied to a specific input, field, or section",
-      "expected_outcome": "Alert inline, positioned adjacent to the source field",
+      "condition": "Error tied to one specific input or field",
+      "expected_outcome": "Helper Text under the field, with the field in its error state (the copy comes from righter)",
       "forbidden_outcomes": [
         "Toast (places feedback far from the source -- see 'Why not Toast for errors on inputs?')",
-        "A single generic 'form has errors' banner at the top of the page with no per-field message"
+        "A single generic 'form has errors' banner at the top of the page with no per-field message",
+        "An inline Alert for one field's error (heavier than the error needs; the error belongs in Helper Text under the field)"
       ],
-      "score_categories_checked": ["component_selection", "decision_layer_adherence"]
+      "score_categories_checked": ["component_selection", "decision_layer_adherence"],
+      "revision_note": "Phase 0 (2026-11-25): all 3 samples answered Helper Text under the field, not an inline Alert, because vois-patterns and righter put a field error there while the tree said Alert. Decided 2026-11-25: one field gets Helper Text; several errors in a section get an inline Alert plus Helper Text under each field (vois-components 1.39.0). Expected outcome changed from Alert inline to Helper Text."
     },
     {
       "id": "EVAL-006",
@@ -609,7 +611,8 @@
         "A centered Dialog (a full-height task, not a short one)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed."
+      "added_note": "Added 2026-10-06 to cover a job with no scenario. Run blind 2026-10-06: passed.",
+      "revision_note": "Phase 0 (2026-11-25): all 3 samples answered a full screen Sheet, because vois-patterns called the phone filter surface a full screen panel. vois-patterns 1.23.5 and vois-components 1.39.0 now name it a full screen Drawer. Expected outcome unchanged."
     },
     {
       "id": "EVAL-044",
@@ -766,13 +769,14 @@
       "tree_path": [6],
       "user_prompt": "On the mobile layout of the customers table, add filters for plan and status, and a sort control. People set them, then go back to the table.",
       "condition": "Filters or sort controls for a list or table on a mobile layout",
-      "expected_outcome": "Drawer (slides from the bottom, closes when done)",
+      "expected_outcome": "Drawer (full screen on phone, slides up from the bottom, closes when done)",
       "forbidden_outcomes": [
         "Sheet (a right-anchored Sheet covers most of a phone screen, so seeing the list behind it is no reason to choose it here)",
         "A centered Dialog (filters and sort are more than a short, self-contained task)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added 2026-10-26 for the branch vois-components 1.17.0 added to JOB-OVERLAY-INTERACTION, after the lookalike and design-task runs showed agents choosing Sheet for mobile filters. Not yet run blind."
+      "added_note": "Added 2026-10-26 for the branch vois-components 1.17.0 added to JOB-OVERLAY-INTERACTION, after the lookalike and design-task runs showed agents choosing Sheet for mobile filters. Not yet run blind.",
+      "revision_note": "Phase 0 (2026-11-25): 2 of 3 samples answered a full screen Sheet or full screen panel (vois-patterns wording), 1 a modal bottom sheet. The branch now says the Drawer is full screen on phone and slides up from the bottom (vois-components 1.39.0). Expected outcome text follows the branch."
     }
   ]
 }

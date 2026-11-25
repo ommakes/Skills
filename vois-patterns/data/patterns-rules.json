@@ -2678,7 +2678,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "pattern_name": "Collection table",
       "condition": "Level 2 (Index), saas. A list of records people scan, filter, and act on in bulk.",
-      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen panel because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right.",
+      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen Drawer because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right.",
       "builds_on": [
         "PATH-DENSITY-STANDARD",
         "PATH-B",
@@ -3112,7 +3112,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Which overlay opens",
       "condition": "A page action opens something on top of the page.",
-      "outcome": "A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
+      "outcome": "A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row: right panel (a Sheet) on tablet and desktop, full screen on phone. Filters: right panel on tablet and desktop, and on phone a full screen Drawer (vois-components JOB-OVERLAY-INTERACTION). Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
       "builds_on": [
         "PATH-D",
         "PATH-D-SIZE",
@@ -3180,7 +3180,7 @@
       "source_file": "vois-patterns/references/page-templates.md",
       "rule_name": "Sort and filter position",
       "condition": "A table, list or card grid can be sorted or filtered.",
-      "outcome": "Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen panel on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.",
+      "outcome": "Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen Drawer on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.",
       "builds_on": [
         "PATH-B",
         "PATH-B-SIMPLE",
