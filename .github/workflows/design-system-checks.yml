@@ -42,6 +42,8 @@ jobs:
 
       - name: Eval runner tests, with the model stubbed (vois-eval)
         run: node --test vois-eval/run/run.test.mjs
+      - name: Phase 0 baseline runner tests
+        run: node --test vois-eval/run/baseline.test.mjs
 
       - name: Committed eval results are well formed and have not regressed (vois-eval)
         run: node vois-eval/check-results.mjs

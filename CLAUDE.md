@@ -29,6 +29,7 @@ node vois-tokens/scripts/elevation-map.test.mjs
 node vois-tokens/scripts/elevation-map.mjs
 node vois-eval/check-scenarios.mjs
 node --test vois-eval/run/run.test.mjs
+node --test vois-eval/run/baseline.test.mjs
 node vois-eval/check-results.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-components/scripts/motion-logic.test.mjs
