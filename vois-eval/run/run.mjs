@@ -30,7 +30,8 @@ const REPO = fileURLToPath(new URL("../../", import.meta.url));
 // The isolation flags are written once. The args passed to the CLI and the `isolation` list recorded in every results
 // file both come from here, so the file cannot claim a flag the run did not have.
 export const TOOLS = ["Read", "Write", "Glob", "Grep"];
-export const ISOLATION_FLAGS = ["--setting-sources", "project", "--strict-mcp-config", "--tools", TOOLS.join(",")];
+export const isolationFlags = (tools = TOOLS) => ["--setting-sources", "project", "--strict-mcp-config", "--tools", tools.join(",")];
+export const ISOLATION_FLAGS = isolationFlags(TOOLS);
 export const ISOLATION = [
   `tools:${TOOLS.join(",")}`, `setting-sources:${ISOLATION_FLAGS[ISOLATION_FLAGS.indexOf("--setting-sources") + 1]}`, "strict-mcp-config",
   "file-access:logged-not-blocked", "user-memory:not-controlled",
@@ -147,10 +148,12 @@ export function outsideAccess(toolUses, dir) {
 }
 
 // One `claude -p` call. Resolves with whatever the CLI reported; never rejects.
-export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000 }) {
+// `extraAllowed` is for one narrow extra permission, such as a single Bash command pattern. The tool is made available
+// by name, and only the patterns given here are allowed to run. Without it the tool list is exactly TOOLS.
+export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000, extraAllowed = [] }) {
   return new Promise((resolveP) => {
     const args = ["-p", prompt, "--model", model, "--output-format", "stream-json", "--verbose", "--no-session-persistence",
-      ...ISOLATION_FLAGS, "--allowedTools", ...TOOLS,
+      ...(extraAllowed.length ? isolationFlags([...TOOLS, ...new Set(extraAllowed.map((e) => e.split("(")[0]))]) : ISOLATION_FLAGS), "--allowedTools", ...TOOLS, ...extraAllowed,
       "--max-turns", String(maxTurns), "--max-budget-usd", String(budget)];
     const child = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
     let out = "", err = "", timedOut = false;

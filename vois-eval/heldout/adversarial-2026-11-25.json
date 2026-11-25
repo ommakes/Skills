@@ -1,0 +1,78 @@
+{
+  "author": "ADV-01, ADV-02 and ADV-03 from Om's wording (ADV-01 and ADV-02 reworded to avoid keywords, ADV-03 verbatim). ADV-04 to ADV-10 written by Claude from Om's list of kinds.",
+  "written": "2026-11-25",
+  "note": "Adversarial tasks for Phase 2 of prds/jit-retrieval.md: indirect wording, near neighbors, and cases where the right answer is a gap or a refusal. The runner sends only user_prompt. kind, answer and why are for the person comparing results and are never sent to the model. Every answer here is PROPOSED by Claude from reading the rules, and Om has not corrected it yet. Rule ids were checked against the repo. Treat ADV-04 to ADV-10 as less independent than a set written by Om, because Claude knows the trees.",
+  "status": "answers proposed, not yet corrected by Om",
+  "tasks": [
+    {
+      "id": "ADV-01",
+      "kind": "indirect wording",
+      "user_prompt": "Let people see everything about a record without leaving the list.",
+      "answer": "Row drawer. It pushes the table when DS-PANEL-003 passes, overlays otherwise, and is full screen below --breakpoint-md (DS-PANEL-002). PATH-B-ROW-OPEN.",
+      "why": "A modal, a new page or an expandable row are plausible wrong picks."
+    },
+    {
+      "id": "ADV-02",
+      "kind": "cross-skill",
+      "user_prompt": "People clean up old entries 30 at a time and sometimes remove the wrong ones.",
+      "answer": "Bulk action bar with the destructive action last and distinct (PATH-TABLE-BULK-BAR), and a confirmation for the destructive bulk action (PATH-TABLE-BULK-DESTRUCTIVE). PATH-TABLE-ERROR-BULK-PARTIAL is a bonus.",
+      "why": "The wording never says delete or bulk. Open question: whether the rules support undo, or only confirm. Check before scoring undo."
+    },
+    {
+      "id": "ADV-03",
+      "kind": "near neighbor",
+      "user_prompt": "Show the full data string when the user hovers over a table cell",
+      "answer": "Tooltip for short text (25 words or under, hover and focus). Not Popover (needs a click). Not HoverCard (touch never sees it).",
+      "why": "The length is not stated, so a long string changes the answer. Kept verbatim from Om. A good answer notes the cell must also be reachable by keyboard focus."
+    },
+    {
+      "id": "ADV-04",
+      "kind": "missing component",
+      "user_prompt": "While setting up an account, let people pick a few interests from a short list of tags.",
+      "answer": "ToggleChip (a pill that toggles on and off, in a wrapping row, Select all and Clear over 6 chips). It is not in the registry yet (component-names status: build), so the answer should say so.",
+      "why": "Tests whether the skill says a component is not built, instead of inventing one or defaulting to a checkbox list."
+    },
+    {
+      "id": "ADV-05",
+      "kind": "wrong tool, right goal",
+      "user_prompt": "Use a modal to show each order's details when someone clicks a row in the orders table.",
+      "answer": "Push back: use a row drawer, not a modal (PATH-B-ROW-OPEN, DS-PANEL-003).",
+      "why": "Tests whether the skills correct the request or just obey it."
+    },
+    {
+      "id": "ADV-06",
+      "kind": "constraint changes the answer",
+      "user_prompt": "On a phone, show the full text of a truncated address in a table cell.",
+      "answer": "Not Tooltip and not HoverCard, because touch never sees hover. Needs something a tap opens (a Popover, or the row detail). UNSURE which one the rules prefer: Om to correct.",
+      "why": "Same need as ADV-03 with a touch constraint."
+    },
+    {
+      "id": "ADV-07",
+      "kind": "form field",
+      "user_prompt": "Ask for a date of birth when someone signs up.",
+      "answer": "UNSURE. Expect the date field rules from vois-fields, and the rule that a date of birth stays out of URLs and analytics events. Om to correct, or I will read the fields rules before scoring.",
+      "why": "Tests whether the chain reaches vois-fields and not only vois-components."
+    },
+    {
+      "id": "ADV-08",
+      "kind": "copy mixed in",
+      "user_prompt": "Add a button that clears all the filters on a list, and say what it should be called.",
+      "answer": "A Button (UNSURE which variant). The label goes to righter and should be a short verb phrase, not made up from the component rules.",
+      "why": "Tests hand-off to righter for words."
+    },
+    {
+      "id": "ADV-09",
+      "kind": "nothing matches",
+      "user_prompt": "Build a live overlay that shows where each teammate's cursor is in a shared document.",
+      "answer": "The skills have no spec for this (the presence indicator has no spec or token, see EVAL-026). The right answer says so, or says no match, and does not invent a rule.",
+      "why": "Tests whether it admits a gap."
+    },
+    {
+      "id": "ADV-10",
+      "kind": "two rules collide",
+      "user_prompt": "On a phone, let people remove several saved items at once and make sure they mean it.",
+      "answer": "Selection mode entered by an explicit Select action, a bulk bar at the bottom with the destructive action last, and a confirmation (PATH-TABLE-NARROW-SELECT, PATH-TABLE-BULK-DESTRUCTIVE). A half-height sheet may also apply (DS-RESPONSIVE-008). A good answer names both and picks one.",
+      "why": "Mobile bulk bar vs a half-height sheet for the confirm."
+    }
+  ]
+}

@@ -195,3 +195,54 @@ test("--tasks with --no-skills: no skills are copied, there is no auto_match, an
     assert.ok(JSON.parse(readFileSync(withSkills, "utf8")).rows[0].lookups.skill_bytes_read > 1000, "without --no-skills the same task does find the skills");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("retrieval arm: the one-line hint is in the prompt only with --retrieval, and only with skills", async () => {
+  const { buildPrompt: bp, QUERY_CMD, RETRIEVAL_ALLOWED } = await import("./baseline.mjs");
+  assert.ok(bp("x", { skills: true, retrieval: true }).includes(QUERY_CMD));
+  assert.ok(!bp("x", { skills: true }).includes("query.mjs"), "the plain skills arm does not mention the script");
+  assert.ok(!bp("x", { skills: false, retrieval: true }).includes("query.mjs"), "the no-skills control never mentions it");
+  assert.deepEqual(RETRIEVAL_ALLOWED, [`Bash(${QUERY_CMD}:*)`], "Bash is allowed for that one command only");
+});
+
+test("retrieval arm: Bash is made available and allowed only for the query command, and never without --retrieval", async () => {
+  const { invokeClaude, TOOLS } = await import("./run.mjs");
+  const { RETRIEVAL_ALLOWED } = await import("./baseline.mjs");
+  const dir = mkdtempSync(join(tmpdir(), "bl-argv-"));
+  try {
+    process.env.FAKE_CLAUDE = JSON.stringify({ events: [] });
+    await invokeClaude({ prompt: "p", cwd: dir, model: "m", maxTurns: 1, budget: 1, bin: FAKE, extraAllowed: RETRIEVAL_ALLOWED });
+    let argv = JSON.parse(readFileSync(join(dir, "argv.json"), "utf8"));
+    assert.equal(argv[argv.indexOf("--tools") + 1], [...TOOLS, "Bash"].join(","));
+    const allowed = argv.slice(argv.indexOf("--allowedTools") + 1, argv.indexOf("--max-turns"));
+    assert.deepEqual(allowed, [...TOOLS, ...RETRIEVAL_ALLOWED]);
+    assert.ok(!allowed.includes("Bash"), "a bare Bash permission would allow any command");
+    await invokeClaude({ prompt: "p", cwd: dir, model: "m", maxTurns: 1, budget: 1, bin: FAKE });
+    argv = JSON.parse(readFileSync(join(dir, "argv.json"), "utf8"));
+    assert.equal(argv[argv.indexOf("--tools") + 1], TOOLS.join(","), "no Bash on the other arms");
+    assert.ok(!argv.join(" ").includes("Bash"));
+  } finally { delete process.env.FAKE_CLAUDE; rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("retrieval arm: query calls are counted, the arm is recorded, and it cannot be combined with --no-skills", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-ret-"));
+  const out = join(dir, "r.json");
+  try {
+    const events = { events: [
+      { type: "assistant", message: { content: [
+        { type: "tool_use", name: "Bash", input: { command: "node skills/vois-components/scripts/query.mjs --jobs" } },
+        { type: "tool_use", name: "Bash", input: { command: "ls" } },
+      ] } },
+      ok.events[1],
+    ] };
+    const base = ["--model", "claude-sonnet-5-5", "--scenarios", "EVAL-006", "--samples", "1", "--bin", FAKE];
+    const r = run([...base, "--retrieval", "--out", out], events);
+    assert.equal(r.status, 0, r.stderr);
+    const f = JSON.parse(readFileSync(out, "utf8"));
+    assert.equal(f.arm, "retrieval");
+    assert.equal(f.rows[0].lookups.query_calls, 1, "only the query.mjs command counts");
+    assert.equal(f.summary.query_calls.median, 1);
+    const bad = run([...base, "--retrieval", "--no-skills", "--out", join(dir, "x.json")], events);
+    assert.notEqual(bad.status, 0);
+    assert.match(bad.stderr, /cannot be combined/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
