@@ -207,7 +207,7 @@ test("query: exit codes and modes", () => {
 
 test("query: a packet says what it lacks", () => {
   const all = loadAll(join(ROOT, "vois-components"));
-  const p = JSON.parse(main(["Carousel", "--json"], all).out);
+  const p = JSON.parse(main(["Meter", "--json"], all).out);
   assert.ok(p.missing.includes("no behavior card"));
   assert.ok(p.missing.includes("no registry item"));
 });

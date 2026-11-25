@@ -17,6 +17,9 @@ A shadcn-style registry of Vois core components, so an agent can install a real 
 - `vois-input-otp`: a one-time code field, one slot per character over one real input (on `input-otp`).
 - `vois-progress`: a bar that shows how far a task has come, or an indeterminate sweep (Radix).
 - `vois-separator`: a 1px line between groups (Radix).
+- `vois-drawer`: a modal that slides in from an edge and can be dragged away (on `vaul`).
+- `vois-carousel`: a slide region with Previous and Next buttons (on `embla-carousel-react`).
+- `vois-resizable`: panels split by a handle that a pointer drags and the arrow keys move (on `react-resizable-panels`). Not `vois-panel-layout`.
 - `vois-avatar`, `vois-badge` and `vois-tooltip`: the Figma Avatar, Labels and Status Labels, and Tooltip.
 - `vois-segmented-control` and `vois-stepper`: the Figma Segments set, and a step indicator for a flow of 2 to 5 steps.
 - `vois-toggle-group`: the Figma Toggle Group Button set, joined outline buttons where one or more can be on (bold, italic, align).
@@ -574,6 +577,26 @@ It is display only. Name it with `aria-label` or `aria-labelledby`; nothing warn
 
 `vois/separator/separator.tsx` is shadcn's Separator (Radix): a 1px line in `--border-default`, with `orientation` `horizontal` (default) or `vertical`. A vertical one takes its row's height, so put it in a flex row with `items-center` and a height, or let it stretch. `decorative` is on by default, so screen readers skip it. Set `decorative={false}` when the line alone shows a division. The vois-patterns marketing rules say no dividers on a marketing page; for air use spacing and for separate surfaces use `vois-card`.
 
+
+### `vois-drawer`
+
+`vois/drawer/drawer.tsx` is shadcn's Drawer on `vaul` (exact version 1.1.2, a dependency). It exports `Drawer`, `DrawerTrigger`, `DrawerPortal`, `DrawerOverlay`, `DrawerContent`, `DrawerClose`, `DrawerHeader`, `DrawerBody`, `DrawerFooter`, `DrawerTitle` and `DrawerDescription`. Set `direction` to `bottom` (default), `top`, `left` or `right`. Install `vois-button` with it.
+
+Every drawer needs a `DrawerTitle`, even a visually hidden one. Do not pass your own `id` to the title or description. `autoFocus` is on, so focus moves into the drawer when it opens and returns to the trigger when it closes. The close button is the way out that needs no dragging. Do not open a drawer from a dialog or another drawer (`DS-MODAL-006`); the nested drawer is not exported. A second step replaces the content of the same drawer.
+
+Bottom and top drawers are at most 90dvh. A bottom drawer shows a drag handle. Left and right drawers take a `size` of the `--panel-overlay-sm`, `-md` or `-lg` width and go full screen below `md`. The slide and the scrim run on `--motion-duration-slow` and stop under reduced motion.
+
+### `vois-carousel`
+
+`vois/carousel/carousel.tsx` is shadcn's Carousel on `embla-carousel-react` (exact version 8.6.0, a dependency). It exports `Carousel`, `CarouselContent`, `CarouselItem`, `CarouselPrevious`, `CarouselNext` and `useCarousel`. `orientation` is `horizontal` (default) or `vertical`. Pass `opts` to Embla and `setApi` to reach its API. Install `vois-button` with it.
+
+The arrow keys move the slides, except when focus is in a text field, select or editable area, or a modifier key is held. The Previous and Next buttons use `aria-disabled` at the ends, so they keep focus. Name the carousel with `aria-label`. Under reduced motion, presses jump to the next slide. Embla moves slides by physics, not CSS, so there is no motion token for the glide.
+
+### `vois-resizable`
+
+`vois/resizable/resizable.tsx` is shadcn's Resizable on `react-resizable-panels` (exact version 4.24.2, a dependency). It exports `ResizablePanelGroup`, `ResizablePanel` and `ResizableHandle`. Put `withHandle` on the handle for a grip. A pointer drags the handle and the arrow keys move it, and it has a visible `--border-default` line and a focus ring.
+
+This is not `vois-panel-layout`. That item places one side panel by the `DS-PANEL` rules. Use this one when the user needs to change how much room each pane gets.
 ### `vois-command`
 
 `vois/command/command.tsx` is shadcn's Command (cmdk) with `Command`, `CommandDialog`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandShortcut` and `CommandSeparator`, from the Figma Command Menu. Install `vois-dialog` with it.

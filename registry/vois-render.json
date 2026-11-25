@@ -63,6 +63,10 @@
       "path": "/card"
     },
     {
+      "id": "carousel",
+      "path": "/carousel"
+    },
+    {
       "id": "card-disabled",
       "path": "/card-disabled"
     },
@@ -131,6 +135,32 @@
           "id": "open-dark",
           "path": "/dialog?state=open&theme=dark",
           "expect": "[role=dialog]"
+        }
+      ]
+    },
+    {
+      "id": "drawer",
+      "path": "/drawer",
+      "states": [
+        {
+          "id": "open",
+          "path": "/drawer?state=open&theme=light",
+          "expect": "[data-slot=drawer-content][data-vaul-drawer-direction=bottom]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/drawer?state=open&theme=dark",
+          "expect": "[data-slot=drawer-content][data-vaul-drawer-direction=bottom]"
+        },
+        {
+          "id": "right",
+          "path": "/drawer?state=right&theme=light",
+          "expect": "[data-slot=drawer-content][data-vaul-drawer-direction=right]"
+        },
+        {
+          "id": "right-dark",
+          "path": "/drawer?state=right&theme=dark",
+          "expect": "[data-slot=drawer-content][data-vaul-drawer-direction=right]"
         }
       ]
     },
@@ -297,6 +327,10 @@
     {
       "id": "radio-group",
       "path": "/radio-group"
+    },
+    {
+      "id": "resizable",
+      "path": "/resizable"
     },
     {
       "id": "scroll-area",

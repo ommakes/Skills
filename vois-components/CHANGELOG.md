@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.38.0] - 2026-11-25
+
+### Added
+- **Behavior cards: Drawer, Carousel, Resizable.** They come from the library source (Vaul 1.1.2, Embla 8.6.0, react-resizable-panels 4.24.2) and from browser tests, not from the Notion inventory pages. Each card says so in its basis note. Rows that were not checked are tagged `unchecked`: Vaul snap points and `dismissible`, Embla `loop` and right to left, and resizable collapse, Enter, F6, double click and saved layouts.
+- **Registry items for all three** (registry 0.32.0): `vois-drawer`, `vois-carousel`, `vois-resizable`. Drawer, Carousel and Resizable are now `have` in `component-names.json` with their `card` field, and the retrieval index is regenerated.
+
+### Changed
+- The `registry.json` count in the `component-names.json` note said 37 items. It is 52.
+- **The `shadcn` and `registry` fields of the ten names added in 1.37.1 are filled in.** Checked against shadcn-ui/ui at 055aa6b and `registry/registry.json`. Spinner, Badge, Card and Form ship in shadcn. Spinner, Stepper, Badge, Card and Panel have registry items (`vois-spinner`, `vois-stepper`, `vois-badge`, `vois-card`, `vois-panel`), which 1.37.1 left off, so their packets said "registry none". Stepper, Wizard, List, Panel and RichTextEditor ship no shadcn file of that name. AvatarGroup is exported from shadcn's `avatar` file, which is Avatar's name here, so its field stays null.
+- **`JOB-SHOW-POLL-RESULTS` now names PollResults.** The job named no component, so the index could not send an agent to it. `PollResults` is in the `vois-questionnaire` registry item and is now in `component-names.json`. The two recommendations that show results (quiz and poll) end with "(PollResults in the vois-questionnaire registry item)". The wording before the bracket is unchanged, so no eval scenario changes.
+- `retrieval.test.mjs` used Carousel as its example of a component with no card and no registry item. It uses Meter now, since Carousel has both.
+
 ## [1.37.1] - 2026-11-25
 
 ### Fixed

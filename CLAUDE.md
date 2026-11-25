@@ -38,7 +38,7 @@ node vois-dataviz/scripts/dataviz.test.mjs
 node registry/scripts/build-tokens.test.mjs
 node registry/scripts/check-registry.test.mjs
 node registry/scripts/check-registry.mjs
-(cd registry && npm ci --ignore-scripts && npm run syntax && npm run syntax:test && npm run panel:test && npm run typecheck && npm run typecheck:test && npm run icon-button:test && npm run menubar:test && npm run input-otp:test && npm run harness:test && npm run harness:check && npm run build)
+(cd registry && npm ci --ignore-scripts && npm run syntax && npm run syntax:test && npm run panel:test && npm run typecheck && npm run typecheck:test && npm run icon-button:test && npm run menubar:test && npm run input-otp:test && npm run drawer:test && npm run carousel:test && npm run resizable:test && npm run harness:test && npm run harness:check && npm run build)
 node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
 

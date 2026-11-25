@@ -602,11 +602,11 @@
       "decision_tree": [
         {
           "condition": "The question has a right answer",
-          "recommendation": "Quiz mode. Result rows with a check icon and the words 'Correct answer' on the right option, and 'Your answer' on the respondent's pick"
+          "recommendation": "Quiz mode. Result rows with a check icon and the words 'Correct answer' on the right option, and 'Your answer' on the respondent's pick (PollResults in the vois-questionnaire registry item)"
         },
         {
           "condition": "The question has no right answer",
-          "recommendation": "Poll mode. Result rows with the respondent's pick marked and the most chosen option emphasised"
+          "recommendation": "Poll mode. Result rows with the respondent's pick marked and the most chosen option emphasised (PollResults in the vois-questionnaire registry item)"
         },
         {
           "condition": "Fewer than 10 votes",
