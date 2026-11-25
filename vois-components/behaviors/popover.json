@@ -1,0 +1,272 @@
+{
+  "id": "popover",
+  "name": "Popover",
+  "purpose": "A small panel that opens beside its trigger to hold a short task, such as editing a profile or sharing a link, handling placement, focus and dismissal.",
+  "notFor": [],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/popover, popper, dismissable-layer and focus-scope",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date. The popper, dismissable-layer and focus-scope packages were read only for the lines cited."
+  },
+  "anatomy": [
+    {
+      "part": "Popover (root)",
+      "required": true,
+      "note": "Holds the open state."
+    },
+    {
+      "part": "PopoverTrigger",
+      "required": true,
+      "note": "The button that opens the popover. It can sit apart from the content."
+    },
+    {
+      "part": "PopoverContent",
+      "required": true,
+      "note": "The panel. It has the dialog role."
+    },
+    {
+      "part": "PopoverTitle",
+      "required": false,
+      "note": "Names the popover. Radix has it. vois-popover does not export it yet."
+    },
+    {
+      "part": "PopoverDescription",
+      "required": false,
+      "note": "Adds context. Radix has it. vois-popover does not export it yet."
+    },
+    {
+      "part": "PopoverArrow",
+      "required": false,
+      "note": "In vois-popover this is the arrow prop on PopoverContent. It follows the side the panel lands on."
+    },
+    {
+      "part": "PopoverClose",
+      "required": false,
+      "note": "Closes the popover. A popover can have several."
+    },
+    {
+      "part": "PopoverAnchor",
+      "required": false,
+      "note": "Places the panel against something other than the trigger."
+    },
+    {
+      "part": "PopoverShortcut",
+      "required": false,
+      "note": "Shows the keys for a shortcut. Radix has no such part."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-POPOVER-001",
+      "group": "interaction",
+      "text": "Pressing the trigger opens the popover. It closes from a Close control, Escape or a press outside it.",
+      "support": "native",
+      "evidence": "popover.tsx: Trigger onClick toggles open; PopoverClose; DismissableLayer onDismiss sets open false",
+      "note": "The Vois item keeps all of this.",
+      "rules": [
+        "DS-A11Y-036"
+      ]
+    },
+    {
+      "id": "BHV-POPOVER-002",
+      "group": "interaction",
+      "text": "A form inside can save a value and then close. A form that submits as a dialog closes on submission and returns its submit button's value.",
+      "support": "supply",
+      "note": "Radix does not close on submit. Set open to false in your submit handler, or put a PopoverClose on the submit button.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-003",
+      "group": "interaction",
+      "text": "Hovering the trigger can open it after a short pause. Moving the pointer across the gap into the panel keeps it open so its contents can be used.",
+      "support": "supply",
+      "note": "Radix Popover opens on press only. Opening on hover is the job of the hover card (vois-hover-card).",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-004",
+      "group": "interaction",
+      "text": "Opening another hover popover closes the current one, unless the new one is inside it, so a row of hover triggers shows one at a time.",
+      "support": "supply",
+      "note": "Same as the line above. Radix has no hover group.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-005",
+      "group": "interaction",
+      "text": "A keyboard shortcut can toggle the popover, using Command on Apple platforms and Control elsewhere, and the trigger advertises the shortcut.",
+      "support": "supply",
+      "note": "Radix has no shortcut part. Add a key handler and show the keys yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-006",
+      "group": "interaction",
+      "text": "The panel flips or shifts to stay visible when its requested position does not fit near a window edge. Its arrow follows the side it actually lands on.",
+      "support": "native",
+      "evidence": "popper.tsx: avoidCollisions defaults to true and adds shift and flip; the arrow uses the floating-ui arrow middleware",
+      "note": "The Vois item sets collisionPadding to 8.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-007",
+      "group": "interaction",
+      "text": "One controller can serve a whole list. Each trigger passes its own row of data, so one editor panel works for every row, and opening from another row updates the same panel.",
+      "support": "supply",
+      "note": "Radix has one trigger per root. For a list, keep one controlled Popover, move its anchor to the active row, and hold the row data in your own state.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-008",
+      "group": "interaction",
+      "text": "As a sheet on small touch screens, it can be swiped down to dismiss. If dismissal is disabled, it springs back and reports the attempt.",
+      "support": "supply",
+      "note": "Radix has no sheet presentation. Use a Drawer or Sheet for small touch screens.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-009",
+      "group": "keyboard",
+      "text": "Escape closes the popover and returns focus to the trigger, unless dismissal has been turned off.",
+      "support": "native",
+      "evidence": "popover.tsx: onEscapeKeyDown goes to DismissableLayer; non-modal onCloseAutoFocus focuses the trigger unless the user interacted outside",
+      "note": "Focus goes back to the trigger after Escape. After a press outside, focus stays where the press landed.",
+      "rules": [
+        "DS-A11Y-036"
+      ]
+    },
+    {
+      "id": "BHV-POPOVER-010",
+      "group": "keyboard",
+      "text": "The configured keyboard shortcut opens and closes it.",
+      "support": "supply",
+      "note": "See the shortcut line under Interaction.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-011",
+      "group": "focus",
+      "text": "Focus moves into the panel when it opens, starting on the first field or a chosen element, and returns to the trigger when it closes.",
+      "support": "native",
+      "evidence": "popover.tsx: FocusScope with onMountAutoFocus (onOpenAutoFocus prop) and onUnmountAutoFocus (onCloseAutoFocus prop)",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-012",
+      "group": "focus",
+      "text": "Focus leaving the panel closes it by default. A focus-trapping mode keeps Tab inside while the page can still scroll and receive clicks. A fully modal mode also makes the rest of the page inert and locks scrolling.",
+      "support": "differs",
+      "evidence": "popover.tsx: non-modal closes on focus outside; modal sets trapFocus, calls hideOthers and wraps the content in RemoveScroll; there is no mode that traps focus and leaves scrolling alone",
+      "note": "Radix has two modes, not three. The modal mode hides the rest of the page from assistive tech with aria-hidden. It does not use the inert attribute. For a trap with no scroll lock, build it with FocusScope.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-013",
+      "group": "focus",
+      "text": "Opening on hover leaves focus alone. Opening by touch focuses the panel itself, so no on-screen keyboard appears.",
+      "support": "supply",
+      "note": "Radix focuses the first focusable element on open. Change it with onOpenAutoFocus.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-014",
+      "group": "focus",
+      "text": "Focus leaving is refused quietly while dismissal is turned off. The trigger, Close controls and controller can still close it.",
+      "support": "supply",
+      "note": "Radix has no dismissal flag. Call preventDefault in onFocusOutside, onInteractOutside and onEscapeKeyDown.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-015",
+      "group": "state",
+      "text": "Setting dismissal off keeps Escape and outside presses from closing it while there is unsaved work. It reports each refused dismissal so the app can ask whether to discard it.",
+      "support": "supply",
+      "note": "Same as above. Use the same three handlers, and ask your question from inside them.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-016",
+      "group": "state",
+      "text": "An open or close change can be rejected by the surrounding code.",
+      "support": "native",
+      "evidence": "popover.tsx: open and onOpenChange through useControllableState; a controlled open that is not updated stays as it is",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-017",
+      "group": "state",
+      "text": "The panel stays mounted until its exit animation finishes. It can also be kept mounted while closed but hidden.",
+      "support": "native",
+      "evidence": "popover.tsx: Presence present={forceMount || context.open}; forceMount on Portal and Content",
+      "note": "The Vois item writes the exit keyframes (vois-popover-out).",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-018",
+      "group": "state",
+      "text": "A completion event fires after the open or close transition.",
+      "support": "supply",
+      "note": "Radix has no completion event. Listen for onAnimationEnd on the content.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-019",
+      "group": "state",
+      "text": "The panel can be positioned against another element, such as a search field. Its position is re-read as that anchor moves.",
+      "support": "native",
+      "evidence": "popover.tsx: PopoverAnchor; popper.tsx: autoUpdate keeps the position current",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-020",
+      "group": "state",
+      "text": "The panel can be positioned against a point on the page or a text range.",
+      "support": "unchecked",
+      "note": "PopoverAnchor takes an element. Whether it accepts a virtual reference for a point or a range is not checked.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-021",
+      "group": "state",
+      "text": "The trigger is marked while its popover is open. With several triggers, only the active one is marked and receives focus back.",
+      "support": "differs",
+      "evidence": "popover.tsx: every Trigger under one root sets aria-expanded and data-state from the root's open value",
+      "note": "Every trigger in one root shows as open. Use one Popover per trigger, or track the active trigger yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-022",
+      "group": "accessibility",
+      "text": "The content has the dialog role. Its title names it, and its description adds context.",
+      "support": "native",
+      "evidence": "popover.tsx: Content sets role=dialog, aria-labelledby when a Title is present and aria-describedby when a Description is present",
+      "note": "vois-popover does not export PopoverTitle or PopoverDescription yet. Until it does, name the panel with aria-label on PopoverContent.",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-023",
+      "group": "accessibility",
+      "text": "The trigger is a button that opens a dialog, and focus inside follows the dialog pattern.",
+      "support": "native",
+      "evidence": "popover.tsx: Trigger sets aria-haspopup=dialog, aria-expanded and aria-controls",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-POPOVER-024",
+      "group": "mistake",
+      "text": "Do not hide overflow around an arrow that extends outside the panel. Keep overflow visible around it.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-POPOVER-025",
+      "group": "mistake",
+      "text": "Do not move a sheet yourself. The sheet manages its own position, so leave its translation alone and avoid the floating panel's fixed width.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

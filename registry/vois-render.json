@@ -3,6 +3,38 @@
   "requiredStates": [],
   "surfaces": [
     {
+      "id": "accordion",
+      "path": "/accordion",
+      "states": [
+        {
+          "id": "open",
+          "path": "/accordion?state=open&theme=light",
+          "expect": "[data-slot=accordion-content][data-state=open]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/accordion?state=open&theme=dark",
+          "expect": "[data-slot=accordion-content][data-state=open]"
+        }
+      ]
+    },
+    {
+      "id": "alert-dialog",
+      "path": "/alert-dialog",
+      "states": [
+        {
+          "id": "open",
+          "path": "/alert-dialog?state=open&theme=light",
+          "expect": "[role=alertdialog]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/alert-dialog?state=open&theme=dark",
+          "expect": "[role=alertdialog]"
+        }
+      ]
+    },
+    {
       "id": "avatar",
       "path": "/avatar"
     },
@@ -21,6 +53,10 @@
     {
       "id": "button-group",
       "path": "/button-group"
+    },
+    {
+      "id": "calendar",
+      "path": "/calendar"
     },
     {
       "id": "card",
@@ -147,8 +183,44 @@
       "path": "/input-group"
     },
     {
+      "id": "menubar",
+      "path": "/menubar",
+      "states": [
+        {
+          "id": "open",
+          "path": "/menubar?state=open&theme=light",
+          "expect": "[role=menu]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/menubar?state=open&theme=dark",
+          "expect": "[role=menu]"
+        }
+      ]
+    },
+    {
+      "id": "navigation-menu",
+      "path": "/navigation-menu",
+      "states": [
+        {
+          "id": "open",
+          "path": "/navigation-menu?state=open&theme=light",
+          "expect": "[data-slot=navigation-menu-viewport][data-state=open]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/navigation-menu?state=open&theme=dark",
+          "expect": "[data-slot=navigation-menu-viewport][data-state=open]"
+        }
+      ]
+    },
+    {
       "id": "page-grid",
       "path": "/page-grid"
+    },
+    {
+      "id": "pagination",
+      "path": "/pagination"
     },
     {
       "id": "panel",
@@ -167,6 +239,22 @@
           "id": "open-dark",
           "path": "/panel-layout?state=open&theme=dark",
           "expect": "[data-slot=panel]"
+        }
+      ]
+    },
+    {
+      "id": "popover",
+      "path": "/popover",
+      "states": [
+        {
+          "id": "open",
+          "path": "/popover?state=open&theme=light",
+          "expect": "[data-slot=popover-content]"
+        },
+        {
+          "id": "open-dark",
+          "path": "/popover?state=open&theme=dark",
+          "expect": "[data-slot=popover-content]"
         }
       ]
     },
@@ -235,6 +323,10 @@
       "path": "/stepper"
     },
     {
+      "id": "toggle-group",
+      "path": "/toggle-group"
+    },
+    {
       "id": "step-slider",
       "path": "/step-slider"
     },
@@ -253,6 +345,10 @@
     {
       "id": "textarea",
       "path": "/textarea"
+    },
+    {
+      "id": "toast",
+      "path": "/toast"
     },
     {
       "id": "tooltip",

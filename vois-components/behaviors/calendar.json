@@ -1,0 +1,248 @@
+{
+  "id": "calendar",
+  "name": "Calendar",
+  "purpose": "A grid of days for picking a date or a range. It supports single, multiple and range selection.",
+  "notFor": [
+    {
+      "use": "DatePicker",
+      "when": "The person wants a date in a form field, with a calendar that opens from it."
+    },
+    {
+      "use": "Input",
+      "when": "The person knows the date and can type it."
+    }
+  ],
+  "basis": {
+    "library": "react-day-picker",
+    "checkedAt": "2026-11-24",
+    "source": "react-day-picker@10.0.2 (registry/node_modules/react-day-picker/dist/esm), plus registry/vois/calendar/calendar.tsx",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The library is not Radix. Rows for a read only mode, a refusal and a controller were not found in the source and are tagged supply."
+  },
+  "anatomy": [
+    {
+      "part": "Calendar (root)",
+      "required": true,
+      "note": "The picker. It takes mode, selected and onSelect."
+    },
+    {
+      "part": "Month caption",
+      "required": true,
+      "note": "The month and year, or two selects."
+    },
+    {
+      "part": "Navigation",
+      "required": true,
+      "note": "Previous and Next buttons."
+    },
+    {
+      "part": "Weekday row",
+      "required": true,
+      "note": "The short day names."
+    },
+    {
+      "part": "CalendarDayButton",
+      "required": true,
+      "note": "One day. It is 44 square in vois-calendar."
+    },
+    {
+      "part": "Footer",
+      "required": false,
+      "note": "Optional text under the grid."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-CALENDAR-001",
+      "group": "keyboard",
+      "text": "One tab stop. Arrow Left and Right move a day, and Arrow Up and Down move a week.",
+      "support": "native",
+      "evidence": "react-day-picker DayPicker.js lines 173 to 199: arrows move by day and week",
+      "note": "The tab stop is the selected day, then today, then the first day of the month.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-002",
+      "group": "keyboard",
+      "text": "Page Up and Page Down move a month. Shift with them moves a year. Shift with the arrows moves a month or a year.",
+      "support": "native",
+      "evidence": "react-day-picker DayPicker.js lines 173 to 199: PageUp and PageDown by month, with Shift by year",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-003",
+      "group": "keyboard",
+      "text": "Home and End go to the start and end of the week.",
+      "support": "native",
+      "evidence": "react-day-picker DayPicker.js: Home and End go to start and end of week",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-004",
+      "group": "keyboard",
+      "text": "Escape cancels a range that is half chosen.",
+      "support": "supply",
+      "note": "DayPicker has no Escape handling. Keep the draft range in your own state and drop it on Escape.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-005",
+      "group": "interaction",
+      "text": "Choosing a day selects it. In single mode, choosing it again clears it unless the picker is required.",
+      "support": "differs",
+      "evidence": "react-day-picker: single mode deselects on a second press; required keeps it selected",
+      "note": "Set required when the field must have a date.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-006",
+      "group": "interaction",
+      "text": "In range mode, the days between the start and the hovered day are shown while the person picks.",
+      "support": "supply",
+      "note": "DayPicker draws no range preview. Track the hovered day and add a modifier.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-007",
+      "group": "interaction",
+      "text": "Multiple mode keeps the dates in order.",
+      "support": "differs",
+      "evidence": "react-day-picker: multiple selection is not sorted",
+      "note": "Sort them in onSelect if order matters.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-008",
+      "group": "interaction",
+      "text": "A selection can be refused, with a reason.",
+      "support": "supply",
+      "note": "There is no cancel or reason. Use the disabled matcher and your own onSelect check.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-009",
+      "group": "interaction",
+      "text": "The calendar can be read only.",
+      "support": "supply",
+      "note": "DayPicker has no read only mode. Disable the days and keep the labels readable.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-010",
+      "group": "interaction",
+      "text": "The visible month can be set by code, and a change is reported.",
+      "support": "native",
+      "evidence": "react-day-picker: month, defaultMonth and onMonthChange props",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-011",
+      "group": "interaction",
+      "text": "Previous and Next change the month. The year and month can come from native selects.",
+      "support": "native",
+      "evidence": "react-day-picker: captionLayout dropdown uses native selects",
+      "note": "The default year range is 100 years back to the end of this year. Set startMonth and endMonth to narrow it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-012",
+      "group": "state",
+      "text": "Days outside the allowed range cannot be reached. Disabled days cannot be focused.",
+      "support": "differs",
+      "evidence": "react-day-picker: a disabled day button gets the disabled attribute",
+      "note": "The inventory says a disabled day stays focusable. In this library it leaves the tab order, so screen reader users do not discover it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-013",
+      "group": "state",
+      "text": "Two or more months can show side by side, and paging can move one or all months.",
+      "support": "native",
+      "evidence": "react-day-picker: numberOfMonths and pagedNavigation props",
+      "note": "Outside days across a shared edge in a multi month view are unchecked.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-014",
+      "group": "state",
+      "text": "Today is marked, and the week starts on the locale's first day. Six rows can be kept for a steady height.",
+      "support": "native",
+      "evidence": "react-day-picker: data-today, weekStartsOn, locale and fixedWeeks props",
+      "note": "The library marks today with data-today only. vois-calendar adds aria-current date to that day.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-015",
+      "group": "state",
+      "text": "Dates follow a chosen time zone.",
+      "support": "native",
+      "evidence": "react-day-picker: timeZone and today props",
+      "note": "Dates are Date objects, not ISO strings. Convert at the edge of your form.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-016",
+      "group": "accessibility",
+      "text": "The grid has a label, and each day has the full date as its name. Selected days are announced as selected.",
+      "support": "native",
+      "evidence": "react-day-picker: role grid with aria-labelledby; day button aria-label is the full date; gridcell has aria-selected",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-017",
+      "group": "accessibility",
+      "text": "The month and year are announced when they change.",
+      "support": "differs",
+      "evidence": "react-day-picker: the caption is a span with role status and aria-live polite",
+      "note": "It is not a heading, so screen reader users cannot jump to it with heading keys.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-018",
+      "group": "accessibility",
+      "text": "Previous and Next have clear names.",
+      "support": "differs",
+      "evidence": "react-day-picker: the previous button label defaults to Go to the Previous Month",
+      "note": "Set labelPrevious and labelNext to match your copy.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-019",
+      "group": "accessibility",
+      "text": "Each target is large enough to press.",
+      "support": "differs",
+      "evidence": "registry/vois/calendar/calendar.tsx: day buttons use the --cal-cell size, 44 square on a coarse pointer and the minimum hit area otherwise",
+      "note": "The library has no size rule. The Vois item sets it.",
+      "rules": [
+        "DS-A11Y-001"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-CALENDAR-020",
+      "group": "mistake",
+      "text": "Do not sort out dates with strings. DayPicker uses Date objects, and a time zone shift can move a day.",
+      "support": "native",
+      "evidence": "react-day-picker: selected and onSelect use Date",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-021",
+      "group": "mistake",
+      "text": "Do not rely on disabled days to explain why they are off. Say why in text near the calendar.",
+      "support": "differs",
+      "evidence": "react-day-picker: a disabled day button is not focusable",
+      "note": "Screen reader users cannot reach it to read a reason.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CALENDAR-022",
+      "group": "mistake",
+      "text": "Do not shrink the day buttons under the minimum hit area to fit a small space. Let the calendar scroll or use a drawer.",
+      "support": "supply",
+      "rules": [
+        "DS-A11Y-001"
+      ]
+    }
+  ]
+}

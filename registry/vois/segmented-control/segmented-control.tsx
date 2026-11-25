@@ -1,6 +1,7 @@
-// Vois Segmented Control. shadcn/ui's ToggleGroup parts (ToggleGroup, ToggleGroupItem) on Radix ToggleGroup,
-// fixed to one choice: there is no `type` prop, the group is always type="single". SegmentedControl and
-// SegmentedControlItem are the same parts under the name the vois-components jobs use.
+// Vois Segmented Control. SegmentedControl and SegmentedControlItem, built on Radix ToggleGroup (shadcn/ui's
+// ToggleGroup parts) and fixed to one choice: there is no `type` prop, the group is always type="single".
+// The names are the ones the vois-components jobs use. This file does not export ToggleGroup or
+// ToggleGroupItem: those names belong to vois-toggle-group (joined outline buttons, one or many on).
 //
 // From the Figma Segments set (Selectors page):
 //   Track: 32 tall (--size-32), --segment-inactive, outer corners --shape-subtle (Figma binds
@@ -31,7 +32,7 @@ import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
-type ToggleGroupProps = Omit<
+type SegmentedControlProps = Omit<
   React.ComponentProps<typeof ToggleGroupPrimitive.Root>,
   "type" | "value" | "defaultValue" | "onValueChange"
 > & {
@@ -40,7 +41,7 @@ type ToggleGroupProps = Omit<
   onValueChange?: (value: string) => void
 }
 
-function ToggleGroup({ className, value: valueProp, defaultValue, onValueChange, ...props }: ToggleGroupProps) {
+function SegmentedControl({ className, value: valueProp, defaultValue, onValueChange, ...props }: SegmentedControlProps) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue ?? "")
   const controlled = valueProp !== undefined
   const value = controlled ? valueProp : uncontrolled
@@ -56,7 +57,7 @@ function ToggleGroup({ className, value: valueProp, defaultValue, onValueChange,
   )
   return (
     <ToggleGroupPrimitive.Root
-      data-slot="toggle-group"
+      data-slot="segmented-control"
       type="single"
       value={value}
       onValueChange={handleValueChange}
@@ -89,17 +90,14 @@ const toggleGroupIndicatorClasses = [
   "group-data-[state=on]/segment:group-disabled/segment:shadow-[inset_0_0_0_1px_var(--border-state-disabled)]",
 ]
 
-function ToggleGroupItem({ className, children, ...props }: React.ComponentProps<typeof ToggleGroupPrimitive.Item>) {
+function SegmentedControlItem({ className, children, ...props }: React.ComponentProps<typeof ToggleGroupPrimitive.Item>) {
   return (
-    <ToggleGroupPrimitive.Item data-slot="toggle-group-item" className={cn(toggleGroupItemClasses, className)} {...props}>
-      <span data-slot="toggle-group-indicator" className={cn(toggleGroupIndicatorClasses)}>
+    <ToggleGroupPrimitive.Item data-slot="segmented-control-item" className={cn(toggleGroupItemClasses, className)} {...props}>
+      <span data-slot="segmented-control-indicator" className={cn(toggleGroupIndicatorClasses)}>
         {children}
       </span>
     </ToggleGroupPrimitive.Item>
   )
 }
 
-const SegmentedControl = ToggleGroup
-const SegmentedControlItem = ToggleGroupItem
-
-export { ToggleGroup, ToggleGroupItem, SegmentedControl, SegmentedControlItem }
+export { SegmentedControl, SegmentedControlItem }

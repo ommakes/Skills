@@ -1,0 +1,267 @@
+{
+  "id": "menubar",
+  "name": "Menubar",
+  "purpose": "A row of top-level menus for commands in a tool, such as File, Edit and View. It works like the menu bar of a desktop app.",
+  "notFor": [
+    {
+      "use": "DropdownMenu",
+      "when": "One menu is enough, or the menu opens from a button rather than a bar."
+    },
+    {
+      "use": "NavigationMenu",
+      "when": "The items are links that change the page."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-24",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/menubar and menu",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The Notion page lists no common mistakes; the three here come from the source."
+  },
+  "anatomy": [
+    {
+      "part": "Menubar (root)",
+      "required": true,
+      "note": "The bar. It holds the roving focus and the open menu."
+    },
+    {
+      "part": "MenubarMenu",
+      "required": true,
+      "note": "One menu with its trigger and content."
+    },
+    {
+      "part": "MenubarTrigger",
+      "required": true,
+      "note": "The top-level button. It has the menuitem role."
+    },
+    {
+      "part": "MenubarContent",
+      "required": true,
+      "note": "The open list. It is not modal."
+    },
+    {
+      "part": "MenubarItem",
+      "required": true,
+      "note": "A command."
+    },
+    {
+      "part": "MenubarCheckboxItem",
+      "required": false,
+      "note": "A command that toggles."
+    },
+    {
+      "part": "MenubarRadioGroup",
+      "required": false,
+      "note": "A group where one item is on."
+    },
+    {
+      "part": "MenubarSub",
+      "required": false,
+      "note": "A submenu with MenubarSubTrigger and MenubarSubContent."
+    },
+    {
+      "part": "MenubarSeparator",
+      "required": false,
+      "note": "A line between groups."
+    },
+    {
+      "part": "MenubarLabel",
+      "required": false,
+      "note": "A heading inside a menu."
+    },
+    {
+      "part": "MenubarShortcut",
+      "required": false,
+      "note": "Shows the keys for an item. Radix has no such part; vois-menubar adds it."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-MENUBAR-001",
+      "group": "keyboard",
+      "text": "Tab moves focus into the bar once. Arrow Left and Right then move between the top-level triggers, and Tab leaves the bar.",
+      "support": "native",
+      "evidence": "menubar.tsx: Root wraps the triggers in RovingFocusGroup, orientation horizontal",
+      "note": "The bar remembers the last trigger you were on and returns to it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-002",
+      "group": "keyboard",
+      "text": "Home moves to the first trigger and End to the last. Arrow keys wrap from the last trigger to the first.",
+      "support": "native",
+      "evidence": "menubar.tsx and roving-focus-group.tsx: Home and End map to first and last; loop defaults to true",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-003",
+      "group": "keyboard",
+      "text": "Enter, Space or Arrow Down on a trigger opens its menu and focuses the first item.",
+      "support": "native",
+      "evidence": "menubar.tsx: trigger keydown handles Enter and Space (toggle) and ArrowDown (open); onEntryFocus focuses the first item after a keyboard open",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-004",
+      "group": "keyboard",
+      "text": "Arrow Up on a trigger opens its menu on the last item.",
+      "support": "differs",
+      "evidence": "menubar.tsx: trigger keydown handles Enter, Space and ArrowDown only; registry/vois/menubar/menubar.tsx: MenubarTrigger adds ArrowUp and LastItemEntry focuses the last item",
+      "note": "Radix does not open on Arrow Up. vois-menubar adds it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-005",
+      "group": "keyboard",
+      "text": "With a menu open, Arrow Left and Right move to the neighbor menu and keep it open. Submenu triggers are skipped.",
+      "support": "native",
+      "evidence": "menubar.tsx: Content onKeyDown moves to the previous or next enabled menu, loop-aware and RTL-aware; submenu triggers are skipped",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-006",
+      "group": "keyboard",
+      "text": "Typing a letter jumps to the next item that starts with it.",
+      "support": "differs",
+      "evidence": "menu.tsx: typeahead matches items in the open menu only",
+      "note": "Typeahead does not search the top-level triggers.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-007",
+      "group": "keyboard",
+      "text": "Tab inside an open menu closes it and moves focus to the next tab stop after the bar. Shift and Tab moves to the one before. Escape closes the menu and keeps focus on its trigger.",
+      "support": "differs",
+      "evidence": "menu.tsx line 583: Tab keydown in the content calls preventDefault; registry/vois/menubar/menubar.tsx: MenubarContent onKeyDown closes the menu and focuses tabStopOutside",
+      "note": "Radix blocks Tab. vois-menubar closes the menu and moves on, as the ARIA menubar pattern says.",
+      "rules": [
+        "DS-A11Y-036"
+      ]
+    },
+    {
+      "id": "BHV-MENUBAR-008",
+      "group": "focus",
+      "text": "Escape closes the menu and returns focus to its trigger.",
+      "support": "native",
+      "evidence": "menubar.tsx: onCloseAutoFocus focuses the trigger unless the bar is still open or the close came from an outside press",
+      "note": "If the close came from an outside press, focus stays where the person clicked.",
+      "rules": [
+        "DS-A11Y-021",
+        "DS-A11Y-036"
+      ]
+    },
+    {
+      "id": "BHV-MENUBAR-009",
+      "group": "focus",
+      "text": "A disabled trigger is skipped by Tab and by arrow keys.",
+      "support": "differs",
+      "evidence": "menubar.tsx: trigger sets focusable to not disabled",
+      "note": "Radix drops it from the tab order. Screen reader users then cannot discover it. Use aria-disabled yourself if it must be found.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-010",
+      "group": "focus",
+      "text": "Focus can enter the bar from a shortcut such as Alt plus M.",
+      "support": "supply",
+      "note": "Radix has no global shortcut. Add a key handler that focuses the first trigger.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-011",
+      "group": "interaction",
+      "text": "Pointing at a trigger while another menu is open switches to that menu. Pointing at one while the bar is closed does nothing.",
+      "support": "differs",
+      "evidence": "menubar.tsx: pointer enter opens a menu only when the bar is already open and that menu is closed; registry/vois/menubar/menubar.tsx: MenubarTrigger onPointerEnter calls preventDefault inside the safe triangle",
+      "note": "Radix has no safe-triangle check, so a diagonal move toward the open menu can switch menus by mistake. vois-menubar adds one: the triangle runs from where the pointer left to the near corners of the open menu. A move along the bar is outside it, so switching still works. Mouse only.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-012",
+      "group": "interaction",
+      "text": "Clicking an open trigger closes it. Clicking an outside element closes the menu and the click goes through to that element.",
+      "support": "differs",
+      "evidence": "menubar.tsx and menu.tsx: modal is false, so the page is not made inert and outside presses pass through",
+      "note": "Radix does not block the outside click. Do not rely on the first click being swallowed.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-013",
+      "group": "interaction",
+      "text": "The whole bar can be disabled in one prop.",
+      "support": "supply",
+      "note": "Radix Menubar has no disabled prop. Disable each trigger, or wrap the bar and set aria-disabled yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-014",
+      "group": "interaction",
+      "text": "The bar reports which menu is open, and it can be controlled.",
+      "support": "native",
+      "evidence": "menubar.tsx: Root takes value, defaultValue and onValueChange",
+      "note": "The value is the id of the open menu, or empty when none is open.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-015",
+      "group": "interaction",
+      "text": "A reason comes with every close: outside press, Escape, item chosen.",
+      "support": "supply",
+      "note": "onValueChange gives the new value only. Track the reason in your own handlers.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-016",
+      "group": "state",
+      "text": "The bar can run vertically.",
+      "support": "differs",
+      "evidence": "menubar.tsx: RovingFocusGroup orientation is fixed to horizontal; Root has no orientation prop",
+      "note": "Use NavigationMenu or a different pattern for a vertical bar.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-017",
+      "group": "accessibility",
+      "text": "The bar has the menubar role. Each trigger has the menuitem role, aria-haspopup and aria-expanded. The menu is named by its trigger.",
+      "support": "native",
+      "evidence": "menubar.tsx: Root role menubar; trigger role menuitem, aria-haspopup menu, aria-expanded; Content aria-labelledby the trigger",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-018",
+      "group": "accessibility",
+      "text": "Right to left languages swap Left and Right, and the submenu opens to the other side.",
+      "support": "native",
+      "evidence": "menubar.tsx and menu.tsx: dir is read from the Root and passed to the roving group and the submenu keys",
+      "note": "Pass dir on the Root, or set it on the document.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-MENUBAR-019",
+      "group": "mistake",
+      "text": "Do not use a menubar for site navigation. Links in a menubar are announced as menu commands, not as page links.",
+      "support": "supply",
+      "note": "Use NavigationMenu for links that change the page.",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-020",
+      "group": "mistake",
+      "text": "Do not rely on Tab to move between menus. Tab leaves the bar. Use the arrow keys.",
+      "support": "native",
+      "evidence": "menubar.tsx: Root RovingFocusGroup keeps one tab stop",
+      "rules": []
+    },
+    {
+      "id": "BHV-MENUBAR-021",
+      "group": "mistake",
+      "text": "Do not disable a trigger and expect it to stay reachable. It leaves the tab order.",
+      "support": "differs",
+      "evidence": "menubar.tsx: trigger sets focusable to not disabled",
+      "note": "Add your own message elsewhere if the reason matters.",
+      "rules": []
+    }
+  ]
+}

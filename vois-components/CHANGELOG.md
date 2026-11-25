@@ -6,12 +6,76 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [1.30.0] - 2026-11-25
+## [1.34.0] - 2026-11-25
 
 ### Added
 - **Icons in labeled buttons.** A new "Icons in Labeled Buttons" section in `SKILL.md` extends Job 8 (`JOB-TRIGGER-ACTION`): default is no icon, a trailing icon for a button that opens a menu or navigates away, a leading icon only for the approved symbols, and rules for groups, one icon per button, the ellipsis, loading, destructive buttons, accessibility and RTL. Three Quick Reference rows for it. `JOB-TRIGGER-ACTION` in `data/components-rules.json` gains a decision branch and three rationale entries.
 
 ---
+
+## [1.33.0] - 2026-11-24
+
+### Added
+- **Behavior cards: Menubar, Pagination, Toast, Navigation menu, Calendar** (`behaviors/<id>.json` with the generated `.md`), for the five registry 0.28.0 items. Menubar, Toast and Navigation menu were checked against `radix-ui/primitives@eb3a2b7`. Calendar was checked against `react-day-picker@10.0.2`. Pagination is plain shadcn markup, so its evidence is the Vois item file.
+- What the cards found that differs from the Notion inventory:
+  - **Menubar:** Radix has no safe triangle, does not open on Arrow Up, and blocks Tab inside an open menu. `vois-menubar` now adds all three (registry 0.30.0). A disabled trigger still leaves the tab order, and an outside click still passes through.
+  - **Toast:** Radix `type` is urgency only, so success and error looks come from the Vois `variant`. Swipe direction is one per provider. The timer pauses on window blur, not on a hidden tab.
+  - **Navigation menu:** hover is always on, only Cmd keeps a panel open on link click, arrow keys do not wrap, and panels have no collision flip.
+  - **Calendar:** disabled days are not focusable, the caption is a status span and not a heading, today has no `aria-current` in the library (`vois-calendar` adds it in registry 0.30.0), and single mode deselects unless `required` is set.
+  - **Pagination:** the shadcn `ul` has no `role="list"`. `vois-pagination` now adds it (registry 0.30.0).
+- Stacking, promise toasts, range preview, read only mode and page-count math are tagged `supply`.
+- `component-names.json`: Menubar, Pagination, Toast, NavigationMenu and Calendar are now `have`. The Toast note says the item is built on Radix Toast, not Sonner.
+
+---
+
+## [1.32.0] - 2026-11-23
+
+### Added
+- **Behavior card: Alert dialog** (`behaviors/alert-dialog.json`, with the generated `.md`), for the new `vois-alert-dialog` item (`registry` 0.27.0). Checked against `radix-ui/primitives@eb3a2b7` (alert-dialog, dialog, dismissable-layer).
+- What the card found that differs from the Notion inventory:
+  - **Focus on open:** Radix focuses `AlertDialogCancel`, not the first answer in the footer. If you pass your own `onOpenAutoFocus` and call `preventDefault`, the Cancel focus is skipped.
+  - **Tab trap:** the page behind is hidden with `aria-hidden`, not `inert`. The card does not cite `DS-MODAL-001` for the same reason as the Popover card.
+  - **Motion:** the Vois item fades and scales, as `vois-dialog` does. It does not slide up.
+  - **Nested dialogs:** only Escape handling is native. Radix does not mark the dialog underneath.
+  - **Missing description:** this Radix version does not warn about it.
+- Pending state, shortcut and the confirm helper are tagged `supply`.
+- `component-names.json`: AlertDialog is now `have` (`vois-alert-dialog`).
+
+## [1.31.0] - 2026-11-23
+
+### Added
+- **Three more behavior cards: Popover, Accordion and Toggle group** (`behaviors/popover.json`, `accordion.json`, `toggle-group.json`, with the generated `.md`). They cover the three registry items built in `registry` 0.23.0 to 0.25.0. The tags were checked against the Radix source (`radix-ui/primitives@eb3a2b7`, packages popover, accordion, collapsible, toggle-group, toggle, roving-focus, popper, dismissable-layer and focus-scope).
+- Things the cards found that differ from the Notion inventory, each marked `differs` with a note:
+  - **Popover:** Radix has two modal modes, not three, and the modal mode uses `aria-hidden`, not `inert`. Every trigger under one root shows as open.
+  - **Accordion:** Radix has no default `type`, a single accordion needs `collapsible` to close by pressing again, Arrow, Home and End move focus (the inventory says they do nothing), a disabled heading leaves the tab order, and the heading is always an `h3`.
+  - **Toggle group:** Arrow keys skip disabled toggles, and Radix gives a single group radio roles and a multiple group the toolbar role.
+- The Popover card does not cite `DS-MODAL-001`: that rule is for custom, non-Radix dialogs and asks for `inert`, which Radix Popover does not use.
+- The Toggle group card leaves out the Notion lines about a single Toggle, because there is no `vois-toggle` item.
+
+### Fixed
+- `scripts/behaviors.mjs`, found by a fresh review (a reviewer that had not seen the work):
+  - A leftover `.md` with no card, and a card file named like `Tabs.JSON` (never read as a card), now fail.
+  - A field of only spaces counts as empty (`text`, `evidence`, `note` and the other required strings). Before, `evidence: "   "` passed a `native` row.
+  - A behavior id must be the card prefix plus exactly three digits. Before, a `tabs` card could use `BHV-TABS-TWO-001`, which belongs to a `tabs-two` card.
+  - `basis.checkedAt` must be a real date. Before, `9999-99-99` passed.
+  - Only `native` and `differs` rows can carry evidence. Before, only `unchecked` was blocked.
+  - Schema shapes the checker skips are now errors: an object `additionalProperties`, keywords next to `$ref`, and a list `type`. An invalid `pattern` is reported, not thrown.
+  - The generated `.md` keeps free text on one line, so a newline in a card cannot start a heading.
+  - The schema text named `scripts/check-behaviors.mjs`. The file is `scripts/behaviors.mjs`.
+  - 22 tests (was 14). Each new guard was removed in a copy, and a test failed every time.
+
+## [1.30.0] - 2026-11-23
+
+### Added
+- **Component behavior cards (pilot).** `behaviors/<id>.json` holds, for one component, how it must behave: interaction, keyboard, focus, state and accessibility. Each line has a stable ID (`BHV-TABS-004`) and a support tag: `native`, `differs`, `supply`, `decide` or `unchecked`. The tag says what the library gives you and what you must build. The first three cards are Tabs, Dialog and Combobox. The `.md` next to each card is generated from the JSON. The behaviors come from the Notion UI SDK inventory (2026-11-21). The `native` and `differs` tags for Tabs and Dialog were checked against the Radix source (`radix-ui/primitives@eb3a2b7`). Every `native` or `differs` line carries its evidence.
+- `data/behavior-card.schema.json` and `scripts/behaviors.mjs` check the cards. They fail on a `native` line without evidence, an `unchecked` line with evidence, a wrong or repeated ID, a rule link that is not in `vois-rules.json`, and a stale `.md`. Tests are in `scripts/behaviors.test.mjs`.
+- `data/component-names.json` maps the 55 components in the Notion inventory to one name, with the shadcn/ui file, the Vois registry item and a status (`have`, `covered`, `build`, `compose`, `defer`, `skip`).
+
+### Notes
+- Combobox has 23 of 33 lines tagged `unchecked`. shadcn's Combobox is built on Base UI, not Radix, and that source has not been read yet.
+- The Dialog card keeps nested dialogs as `decide`: the inventory describes a dialog stack, and `DS-MODAL-006` says never nest modals.
+- The Tabs card has three `differs` lines where Radix does not match the inventory: no default selected tab, disabled tabs skipped by arrow keys, and every panel is a tab stop.
+- The Notion Combobox page cited `DS-MODAL-001` for "the page stays usable while the list is open". That rule is about custom modal dialogs, so the card does not link it.
 
 ## [1.29.0] - 2026-11-19
 
@@ -529,4 +593,4 @@ Found a rubric that's unclear or incomplete? Here are three ways to surface it:
 
 **Maintained by:** Om Suthar and the Vois team  
 **Repository:** [github.com/ommakes/Skills](https://github.com/ommakes/Skills)  
-**Last updated:** 2026-11-25
+**Last updated:** 2026-05-23

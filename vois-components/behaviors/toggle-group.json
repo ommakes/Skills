@@ -1,0 +1,249 @@
+{
+  "id": "toggle-group",
+  "name": "Toggle group",
+  "purpose": "Keep a button pressed until it is pressed again, such as turning on bold, in a group that shares one value.",
+  "notFor": [
+    {
+      "use": "RadioGroup",
+      "when": "The arrow keys should select an option as they move, or it is one form choice."
+    },
+    {
+      "use": "Checkbox",
+      "when": "The user picks several choices in a form."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/toggle-group, toggle and roving-focus",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date. The Notion Toggle page also covers a single Toggle. Those lines are left out, because there is no vois-toggle item yet."
+  },
+  "anatomy": [
+    {
+      "part": "ToggleGroup (root)",
+      "required": true,
+      "note": "Holds the value. type is single or multiple."
+    },
+    {
+      "part": "ToggleGroupItem",
+      "required": true,
+      "note": "One toggle. Give each a unique value. An icon-only item needs an aria-label."
+    },
+    {
+      "part": "ToggleIcon",
+      "required": false,
+      "note": "Notion names it. Radix has no such part. Hide the icon from screen readers yourself."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-TOGGLE-GROUP-001",
+      "group": "interaction",
+      "text": "Pressing a toggle switches it between pressed and unpressed. Its label stays the same in both states.",
+      "support": "native",
+      "evidence": "toggle.tsx: onClick sets pressed to the opposite and aria-pressed follows it",
+      "note": "Keeping the label fixed is up to the author.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-002",
+      "group": "interaction",
+      "text": "Pressing it never submits a form.",
+      "support": "native",
+      "evidence": "toggle.tsx: the button has type=button",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-003",
+      "group": "interaction",
+      "text": "In a group, pressing one toggle unpresses the others. Pressing the pressed one again clears the selection.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: type=single holds one string value; pressing the pressed item sends an empty value",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-004",
+      "group": "interaction",
+      "text": "A group can be set to always keep one toggle pressed.",
+      "support": "supply",
+      "note": "Radix has no such prop. Ignore the empty value in onValueChange, as vois-segmented-control does.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-005",
+      "group": "interaction",
+      "text": "A group can allow several toggles to stay pressed at once.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: type=multiple holds an array of values",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-006",
+      "group": "interaction",
+      "text": "In a group, the toggles' own pressed state does not apply, because the group owns which ones are pressed.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: ToggleGroupItemProps omits pressed and computes it from the group value",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-007",
+      "group": "interaction",
+      "text": "A change can be cancelled from its callback, so the current state is kept.",
+      "support": "differs",
+      "evidence": "toggle-group.tsx: value and onValueChange through useControllableState; the callback has no cancel",
+      "note": "Use a controlled value and do not update it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-008",
+      "group": "interaction",
+      "text": "A controller can change a group's value from anywhere, such as from a keyboard shortcut.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: value is controllable",
+      "note": "Radix has no shortcut part. Add the key handler yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-009",
+      "group": "keyboard",
+      "text": "Enter or Space presses or unpresses the focused toggle.",
+      "support": "native",
+      "evidence": "toggle.tsx: the toggle is a button and onClick toggles it",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-010",
+      "group": "keyboard",
+      "text": "In a group, Left and Right move focus in a horizontal group, and Up and Down move focus in a vertical group, without changing which toggles are pressed.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: orientation is passed to RovingFocusGroup",
+      "note": "vois-toggle-group draws a horizontal group only. A vertical group needs its own edge and corner rules.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-011",
+      "group": "keyboard",
+      "text": "Home moves focus to the first toggle and End moves it to the last.",
+      "support": "native",
+      "evidence": "roving-focus-group.tsx: MAP_KEY_TO_FOCUS_INTENT maps Home and PageUp to first, End and PageDown to last",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-012",
+      "group": "keyboard",
+      "text": "Arrow keys wrap from the last toggle to the first by default, or can be set to stop at the ends.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: loop defaults to true and goes to RovingFocusGroup",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-013",
+      "group": "keyboard",
+      "text": "In right-to-left text, Left and Right swap.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: dir goes to RovingFocusGroup through useDirection",
+      "note": "Pass dir for right-to-left pages. Whether the group reads the page's own direction is not checked.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-014",
+      "group": "focus",
+      "text": "A group has one tab stop. It enters on the first enabled pressed toggle, or the first enabled toggle, and later returns to the toggle focused last.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: items pass active={pressed} to the roving focus group; roving-focus-group.tsx keeps one tab stop",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-015",
+      "group": "state",
+      "text": "A toggle can start pressed.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: defaultValue on the group",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-016",
+      "group": "state",
+      "text": "In a group, disabled toggles stay reachable with the arrow keys, are reported as disabled, and ignore presses.",
+      "support": "differs",
+      "evidence": "toggle-group.tsx: the item passes focusable={!disabled}, so roving focus skips it",
+      "note": "Arrow keys skip disabled toggles. This is the same as Tabs. Decide if that is acceptable. If not, build the focus rule yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-017",
+      "group": "state",
+      "text": "A disabled toggle can be kept focusable, still ignoring presses, with an explanation of why it is unavailable.",
+      "support": "supply",
+      "note": "Radix does not support this. Use aria-disabled and block the press yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-018",
+      "group": "state",
+      "text": "A disabled toggle can still start pressed, and a surrounding fieldset disables it too.",
+      "support": "native",
+      "evidence": "toggle-group.tsx: pressed comes from the group value whether or not the item is disabled; a disabled fieldset disables the button elements inside it",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-019",
+      "group": "state",
+      "text": "Toggles do not submit values, so a group kept in a form needs its value copied into hidden fields by hand.",
+      "support": "supply",
+      "note": "Radix has no form value for a toggle group.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-020",
+      "group": "accessibility",
+      "text": "A toggle is a native button that reports whether it is pressed, so screen readers announce the state while the label stays unchanged.",
+      "support": "native",
+      "evidence": "toggle.tsx: aria-pressed on a button; toggle-group.tsx: only type=single replaces it with role=radio and aria-checked",
+      "note": "True for type=multiple. A type=single group announces radios, not toggles. See the group role line.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-021",
+      "group": "accessibility",
+      "text": "An icon-only toggle needs an accessible label, and an icon inside a toggle is hidden from screen readers.",
+      "support": "supply",
+      "note": "vois-toggle-group sets neither. Add aria-label to the item and aria-hidden to the icon.",
+      "rules": [
+        "DS-A11Y-007"
+      ]
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-022",
+      "group": "accessibility",
+      "text": "A group has the group role rather than toolbar or radio group, so it can sit inside a toolbar, and its toggles remain buttons.",
+      "support": "differs",
+      "evidence": "toggle-group.tsx: type=single renders role=radiogroup with role=radio items; type=multiple renders role=toolbar",
+      "note": "Radix gives a single group radio roles and a multiple group the toolbar role. Listen to a screen reader before you ship. Decide if radio or toolbar is acceptable.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-TOGGLE-GROUP-023",
+      "group": "mistake",
+      "text": "Do not change the label between pressed and unpressed. Keep the label the same in both states.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-024",
+      "group": "mistake",
+      "text": "Do not use a toggle group where the arrow keys should select an option as they move. Use a radio group, because a toggle group moves focus first and waits for a press.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOGGLE-GROUP-025",
+      "group": "mistake",
+      "text": "Do not rely on toggles to submit form values. Copy a toggle group's value into hidden inputs yourself if you keep it in a form.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

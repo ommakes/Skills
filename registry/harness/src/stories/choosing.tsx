@@ -2,6 +2,7 @@ import * as React from "react"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SegmentedControl, SegmentedControlItem } from "@/components/ui/segmented-control"
+import { ToggleGroup as IconToggleGroup, ToggleGroupItem as IconToggleGroupItem } from "@/components/ui/toggle-group"
 import { Stepper, StepperItem } from "@/components/ui/stepper"
 import { ChoiceCheckboxGroup, ChoiceListItem, ChoiceRadioGroup } from "@/components/ui/choice-list"
 import { ChoiceCardItem } from "@/components/ui/choice-card"
@@ -109,6 +110,34 @@ export const segmentedControl: Story = {
         <SegmentedControlItem value="week">Week</SegmentedControlItem>
         <SegmentedControlItem value="month" disabled>Month</SegmentedControlItem>
       </SegmentedControl>
+    </div>
+  ),
+}
+
+function AlignIcon({ kind }: { kind: "left" | "center" | "right" }) {
+  const middle = kind === "left" ? "M2 8h8" : kind === "center" ? "M4 8h8" : "M6 8h8"
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+      <path d={`M2 4h12${middle}M2 12h12`} />
+    </svg>
+  )
+}
+
+export const toggleGroup: Story = {
+  title: "Toggle group",
+  items: ["vois-toggle-group"],
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <IconToggleGroup type="single" aria-label="Text alignment" defaultValue="right">
+        <IconToggleGroupItem value="left" aria-label="Align left"><AlignIcon kind="left" /></IconToggleGroupItem>
+        <IconToggleGroupItem value="center" aria-label="Align center"><AlignIcon kind="center" /></IconToggleGroupItem>
+        <IconToggleGroupItem value="right" aria-label="Align right"><AlignIcon kind="right" /></IconToggleGroupItem>
+      </IconToggleGroup>
+      <IconToggleGroup type="multiple" aria-label="Text style, one option unavailable" defaultValue={["bold"]}>
+        <IconToggleGroupItem value="bold">Bold</IconToggleGroupItem>
+        <IconToggleGroupItem value="italic">Italic</IconToggleGroupItem>
+        <IconToggleGroupItem value="underline" disabled>Underline</IconToggleGroupItem>
+      </IconToggleGroup>
     </div>
   ),
 }

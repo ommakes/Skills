@@ -1,19 +1,22 @@
 // Vois Dialog. shadcn/ui's components/ui/dialog.tsx (Radix Dialog) with the same parts: Dialog, DialogTrigger,
 // DialogPortal, DialogOverlay, DialogContent, DialogClose, DialogHeader, DialogFooter, DialogTitle and
-// DialogDescription. DialogContent takes `showCloseButton` (on by default) and `size`: "sm" (default,
+// DialogDescription, plus DialogBody (the padded middle, as Figma draws it). DialogContent takes `showCloseButton` (on by default) and `size`: "sm" (default,
 // --width-dialog-sm, 344) for confirmations and a few stacked fields, or "lg" (--width-dialog-lg, 560) for a textarea or a
 // short list. Pick the tier by what the content needs (vois-patterns PATH-D-SIZE). Both are maximums.
 //
-// From the Figma Dialog (Molecules page, 3613:6593):
+// From the Figma Dialog frames (8305:27515: Confirmation, Form, Required and Scrollable; the master header and footer
+// are 8312:28523 and 8312:28524):
 //   Surface: --elevation-surface-raised (white in light, a lighter step in dark), a 1px --border-default edge, --shape-rounded corners (Figma binds --radius-small-container, 12),
 //     --shadow-large, --width-dialog-sm wide (344; never wider than the screen minus 16 each side). It sits in the middle of the screen on
 //     --z-modal, over a --bg-overlay-dark scrim.
-//   Header: 24 padding, a 20/28 semibold --text-primary title, and an optional 14/20 --text-secondary description under it.
-//   Close: a 40 by 40 ghost icon Button at the top right, 8 from the edges. Its accessible name is the visually hidden
+//   Header: 16 top and left, 12 right, 8 bottom, a 20/28 semibold --text-primary title, and an optional 14/20
+//     --text-subtle description under it.
+//   Body (DialogBody): 16 at the sides and 12 above and below, 16/24 text.
+//   Close: a 36 by 36 ghost icon Button at the top right, 16 from the top and 12 from the right (48 on a coarse pointer). Its accessible name is the visually hidden
 //     "Close" text in the Button; Radix adds no name of its own, so keep that text, or give a custom DialogClose a label.
 //     It stays put when tall content scrolls: the content scrolls inside it, and the button sits outside the scroller.
-//   Footer: actions at the end, 16 apart, 16 above and below and 24 at the sides.
-// Content goes between the header and the footer; give it its own 24 side padding.
+//   Footer: actions at the end, 16 apart, 16 padding on every side, and it wraps when the buttons do not fit.
+// Content goes between the header and the footer, in a DialogBody.
 // Motion: the scrim fades and the card fades and grows in --motion-duration-fast, and both fade out in
 // --motion-duration-instant. Under reduced motion they appear and go at once.
 //
@@ -25,7 +28,7 @@
 // aria-describedby at its own generated ids, so a custom id breaks the link and the dialog loses its name.
 //
 // Serves vois-components JOB-OVERLAY-INTERACTION. A confirmation of a destructive action is an AlertDialog
-// (JOB-CONFIRM-DESTRUCTIVE), which is not in the registry yet; do not use a Dialog for it.
+// (JOB-CONFIRM-DESTRUCTIVE), which is `vois-alert-dialog`; do not use a Dialog for it.
 import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
@@ -119,7 +122,7 @@ function DialogContent({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-[var(--space-8)] right-[var(--space-8)]"
+              className="absolute top-[var(--space-padding-medium)] right-[var(--space-padding-small)]"
             >
               <X />
               <span className="sr-only">Close</span>
@@ -136,9 +139,22 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-header"
       className={cn(
-        // 48 on the right keeps the title clear of the close button (8 + 36), and only when there is one. On a
-        // coarse pointer the close is 48 (DS-ICON-003), so it is 56 (8 + 48).
-        "flex flex-col gap-[var(--space-v-between-text)] pt-[var(--space-padding-large)] pr-[var(--space-padding-large)] pb-[var(--space-padding-small)] pl-[var(--space-padding-large)] in-data-[close=true]:pr-[var(--space-48)] [@media(any-pointer:coarse)]:in-data-[close=true]:pr-[var(--space-56)]",
+        // 48 on the right keeps the title clear of the close button (12 + 36), and only when there is one. On a
+        // coarse pointer the close is 48 (DS-ICON-003), so it is 60 (12 + 48).
+        "flex flex-col gap-[var(--space-v-between-text)] pt-[var(--space-padding-medium)] pr-[var(--space-padding-small)] pb-[var(--space-padding-x-small)] pl-[var(--space-padding-medium)] in-data-[close=true]:pr-[var(--space-48)] [@media(any-pointer:coarse)]:in-data-[close=true]:pr-[calc(var(--space-12)+var(--size-action-x-large))]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        "px-[var(--space-padding-medium)] py-[var(--space-padding-small)] text-[color:var(--text-primary)] text-[length:var(--font-size-small)] leading-[var(--line-height-small)] [font-weight:var(--font-weight-regular)]",
         className
       )}
       {...props}
@@ -151,7 +167,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex items-center justify-end gap-[var(--space-h-between-actions)] px-[var(--space-padding-large)] py-[var(--space-padding-medium)]",
+        "flex flex-wrap items-center justify-end gap-[var(--space-h-between-actions)] p-[var(--space-padding-medium)]",
         className
       )}
       {...props}
@@ -177,7 +193,7 @@ function DialogDescription({ className, ...props }: React.ComponentProps<typeof 
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-[color:var(--text-secondary)] text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-regular)]",
+        "text-[color:var(--text-subtle)] text-[length:var(--font-size-xsmall)] leading-[var(--line-height-xsmall)] [font-weight:var(--font-weight-regular)]",
         className
       )}
       {...props}
@@ -185,4 +201,4 @@ function DialogDescription({ className, ...props }: React.ComponentProps<typeof 
   )
 }
 
-export { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogClose, DialogHeader, DialogFooter, DialogTitle, DialogDescription }
+export { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogClose, DialogHeader, DialogBody, DialogFooter, DialogTitle, DialogDescription }

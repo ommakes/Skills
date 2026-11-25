@@ -1,0 +1,236 @@
+{
+  "id": "navigation-menu",
+  "name": "Navigation menu",
+  "purpose": "The main site navigation, with panels that open from the top bar. Each item is a link or a trigger that opens a group of links.",
+  "notFor": [
+    {
+      "use": "Menubar",
+      "when": "The items are commands, not links."
+    },
+    {
+      "use": "Tabs",
+      "when": "The items change a view on the same page."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-24",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/navigation-menu",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date."
+  },
+  "anatomy": [
+    {
+      "part": "NavigationMenu (root)",
+      "required": true,
+      "note": "The nav landmark. It sets the delays and the direction."
+    },
+    {
+      "part": "NavigationMenuList",
+      "required": true,
+      "note": "The top-level list."
+    },
+    {
+      "part": "NavigationMenuItem",
+      "required": true,
+      "note": "One entry."
+    },
+    {
+      "part": "NavigationMenuTrigger",
+      "required": false,
+      "note": "Opens a panel."
+    },
+    {
+      "part": "NavigationMenuContent",
+      "required": false,
+      "note": "The panel with links."
+    },
+    {
+      "part": "NavigationMenuLink",
+      "required": true,
+      "note": "A link. Pass active for the current page."
+    },
+    {
+      "part": "NavigationMenuViewport",
+      "required": false,
+      "note": "The shared panel frame. vois-navigation-menu renders it."
+    },
+    {
+      "part": "NavigationMenuIndicator",
+      "required": false,
+      "note": "The marker under the hovered trigger. vois-navigation-menu does not use it."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-NAVIGATION-MENU-001",
+      "group": "interaction",
+      "text": "Pointing at a trigger opens its panel after a short delay. Moving to the next trigger switches with no delay.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: delayDuration 200 and skipDelayDuration 300",
+      "note": "Hover is always on. There is no click-only mode.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-002",
+      "group": "interaction",
+      "text": "Clicking a trigger toggles its panel, and a click closes a panel that hover opened.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: trigger click toggles; pointer enter does not reopen a panel closed by click or Escape",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-003",
+      "group": "interaction",
+      "text": "The menu can be set to open on click only.",
+      "support": "differs",
+      "evidence": "navigation-menu.tsx: trigger pointer enter and move always open",
+      "note": "Touch screens work because tap triggers click. Desktop users always get hover.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-004",
+      "group": "interaction",
+      "text": "Choosing a link closes the panel. A modified click, such as Ctrl or Shift, leaves it open.",
+      "support": "differs",
+      "evidence": "navigation-menu.tsx: Link click dispatches a dismiss unless onSelect calls preventDefault or event.metaKey is set",
+      "note": "Only the Cmd key keeps it open. Ctrl and Shift close it. Call preventDefault in onSelect to change that.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-005",
+      "group": "interaction",
+      "text": "The panels do not move off screen near the edge of the window.",
+      "support": "differs",
+      "evidence": "navigation-menu.tsx: there is no collision flip or shift",
+      "note": "A panel near the edge can overflow. Place the viewport yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-006",
+      "group": "interaction",
+      "text": "Closed panels stay in the page for search and for find in page.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: Content supports forceMount through Presence",
+      "note": "Mount only what you need. A big hidden menu costs load time.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-007",
+      "group": "keyboard",
+      "text": "Arrow Down on a trigger opens its panel and moves focus into it. Escape closes it and returns focus to the trigger.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: entry key is ArrowDown for horizontal; Escape sets wasEscapeCloseRef and focus returns to the trigger",
+      "rules": [
+        "DS-A11Y-036"
+      ]
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-008",
+      "group": "keyboard",
+      "text": "Arrow Left and Right move between triggers. Home and End go to the first and last. The arrows do not wrap.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: FocusGroupItem handles Home, End and the arrows, and slices the list instead of wrapping",
+      "note": "The Menubar wraps. This one stops at the ends.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-009",
+      "group": "keyboard",
+      "text": "Tab moves from the trigger into its open panel, then on to the next trigger.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx lines 1051 to 1070: hidden focus proxies keep the tab order between trigger and content",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-010",
+      "group": "keyboard",
+      "text": "A disabled trigger is skipped.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: the trigger takes disabled",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-011",
+      "group": "state",
+      "text": "The link for the current page is marked and shown as current.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: Link active sets data-active and aria-current page; vois-navigation-menu passes it through",
+      "note": "The Indicator does not follow the current page. It shows only for the hovered or open trigger.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-012",
+      "group": "state",
+      "text": "The open item can be controlled.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: Root takes value, defaultValue and onValueChange",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-013",
+      "group": "state",
+      "text": "A sub menu nests inside a panel.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: NavigationMenu.Sub renders a div, not a nav",
+      "note": "This avoids a second navigation landmark.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-014",
+      "group": "state",
+      "text": "The panel opens in a direction that matches the move, so it slides from the side you came from.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: Content sets data-motion to from-start, from-end, to-start or to-end",
+      "note": "Style it with the data-motion attribute. It stops under reduced motion.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-015",
+      "group": "accessibility",
+      "text": "The menu is a navigation landmark with a label. The default label is Main.",
+      "support": "native",
+      "evidence": "navigation-menu.tsx: Root renders a nav with aria-label Main",
+      "note": "Change it when the page has more than one navigation.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-016",
+      "group": "accessibility",
+      "text": "An icon-only link has an accessible name.",
+      "support": "supply",
+      "note": "Radix gives no warning for an icon-only link. Add aria-label yourself.",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-017",
+      "group": "accessibility",
+      "text": "Right to left languages swap the arrows, and chevrons and arrows flip.",
+      "support": "supply",
+      "note": "dir is passed down, but icons do not flip by themselves.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-NAVIGATION-MENU-018",
+      "group": "mistake",
+      "text": "Do not make an icon-only link without a name. Nothing warns you.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-019",
+      "group": "mistake",
+      "text": "Do not put padding on the Content for spacing. The viewport sizes to the content, so put it on an inner wrapper.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-NAVIGATION-MENU-020",
+      "group": "mistake",
+      "text": "Do not use it for commands. It is for links. Use Menubar for commands.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "vois-registry",
-  "version": "0.22.3",
+  "version": "0.30.0",
   "private": true,
   "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
   "type": "module",
@@ -16,6 +16,7 @@
     "typecheck": "node scripts/typecheck.mjs",
     "typecheck:test": "node scripts/typecheck.test.mjs",
     "icon-button:test": "node scripts/icon-button.test.mjs",
+    "menubar:test": "node scripts/menubar.test.mjs",
     "build": "shadcn build registry.json -o public/r",
     "harness": "node harness/build.mjs && node harness/serve.mjs",
     "harness:test": "node scripts/check-harness.test.mjs",
@@ -34,6 +35,7 @@
     "esbuild": "0.24.0",
     "radix-ui": "1.8.1",
     "react": "19.3.1",
+    "react-day-picker": "10.0.2",
     "react-dom": "19.3.1",
     "shadcn": "4.23.0",
     "tailwind-merge": "3.7.0",

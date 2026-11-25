@@ -1,0 +1,46 @@
+{
+  "id": "tabs",
+  "name": "Tabs",
+  "purpose": "Switch between related panels that share the same space, with one tab selected at a time.",
+  "notFor": [],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-23",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/tabs and roving-focus",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the Radix source on the checked date."
+  },
+  "anatomy": [
+    { "part": "Tabs (root)", "required": true, "note": "Holds the selected value." },
+    { "part": "TabsList", "required": true, "note": "The list of tabs. Give it an accessible name." },
+    { "part": "TabsTrigger", "required": true, "note": "One per panel. Give each tab and its panel the same unique value." },
+    { "part": "TabsContent", "required": true, "note": "The panel shown for the selected tab." },
+    { "part": "Indicator", "required": false, "note": "Follows the selected tab. Radix does not ship one." }
+  ],
+  "behaviors": [
+    { "id": "BHV-TABS-001", "group": "interaction", "text": "Choosing a tab shows the panel with the same value.", "support": "native", "evidence": "tabs.tsx: Content renders when its value equals the selected value", "rules": [] },
+    { "id": "BHV-TABS-002", "group": "interaction", "text": "The first enabled tab is selected when no starting tab is given.", "support": "differs", "evidence": "tabs.tsx: no default selection when value and defaultValue are both missing", "note": "Radix selects nothing. Always pass defaultValue or value. This also matters on server-rendered pages.", "rules": [] },
+    { "id": "BHV-TABS-003", "group": "interaction", "text": "A disabled tab cannot be selected. Arrow keys can still focus it, so people can find it.", "support": "differs", "evidence": "tabs.tsx: Trigger sets focusable={!disabled}; roving focus skips it", "note": "Radix skips disabled tabs with arrow keys. Decide if that is acceptable. If not, build the focus rule yourself.", "rules": [] },
+    { "id": "BHV-TABS-004", "group": "interaction", "text": "In manual activation mode, arrow keys move focus only. Enter or Space selects the focused tab. Use it when a panel is slow to open, such as a view that fetches data.", "support": "native", "evidence": "tabs.tsx: activationMode prop; onFocus selects only in automatic mode; Enter and Space select on keydown", "rules": [] },
+    { "id": "BHV-TABS-005", "group": "interaction", "text": "Arrow keys wrap around at either end by default. Turning wrapping off makes focus stop at the ends.", "support": "native", "evidence": "tabs.tsx: TabsList loop defaults to true", "rules": [] },
+    { "id": "BHV-TABS-006", "group": "interaction", "text": "The indicator measures the selected tab and follows it. It measures again when a tab or the list changes size. It does not animate on its first placement.", "support": "supply", "note": "Radix has no indicator part.", "rules": [] },
+    { "id": "BHV-TABS-007", "group": "interaction", "text": "Panels unmount when another tab is selected by default. Keeping a panel mounted keeps its hidden content and local state, such as a draft.", "support": "native", "evidence": "tabs.tsx: Content is wrapped in Presence with present={forceMount || isSelected}", "rules": [] },
+    { "id": "BHV-TABS-008", "group": "interaction", "text": "A closed panel can stay available to the browser's Find command. A match in closed content selects its tab and keeps that panel mounted.", "support": "supply", "note": "Radix does not use hidden=until-found.", "rules": [] },
+    { "id": "BHV-TABS-009", "group": "interaction", "text": "The previous panel stays mounted through its exit animation, then unmounts or hides.", "support": "native", "evidence": "tabs.tsx: Presence", "rules": [] },
+    { "id": "BHV-TABS-010", "group": "interaction", "text": "Panels can slide in the direction the selection moved.", "support": "supply", "note": "Radix gives no direction. Track the last selection yourself and set a data attribute.", "rules": [] },
+    { "id": "BHV-TABS-011", "group": "interaction", "text": "The app can own the selected tab. It can reject a requested change. The change callback does not run for the initial selection.", "support": "native", "evidence": "tabs.tsx: value, defaultValue and onValueChange on the root", "note": "Radix has no controller object. Another control selects a tab by setting the value.", "rules": [] },
+    { "id": "BHV-TABS-012", "group": "interaction", "text": "A tab can render as a link so selection navigates. Arrow keys follow the link when they select it. A modified click such as Command-click keeps its normal browser behavior and does not select the tab.", "support": "supply", "note": "Radix selects on mouse down and does not check the Command key. Handle modified clicks yourself.", "rules": [] },
+    { "id": "BHV-TABS-013", "group": "interaction", "text": "The selection can come from the URL, a hash or a route, and browser navigation stays in sync. A page that uses a hash needs an initial tab while it loads, because the server cannot read the hash.", "support": "supply", "rules": [] },
+    { "id": "BHV-TABS-014", "group": "interaction", "text": "When the tab list scrolls, selecting a tab scrolls it into view inside the list. This holds for a click, an arrow key, a controller or the URL.", "support": "supply", "rules": [] },
+    { "id": "BHV-TABS-015", "group": "interaction", "text": "Decorative icons stay out of a tab's spoken name. Directional icons flip in right-to-left text. An icon-only tab still needs a spoken label.", "support": "supply", "rules": ["DS-A11Y-008", "DS-A11Y-032"] },
+    { "id": "BHV-TABS-016", "group": "keyboard", "text": "Tab enters the list at the selected tab. The next Tab leaves the list.", "support": "native", "evidence": "roving-focus-group.tsx: one tab stop for the group", "rules": [] },
+    { "id": "BHV-TABS-017", "group": "keyboard", "text": "Left and Right arrows move between tabs and select them. In a vertical list, Up and Down do the same. In manual mode they only move focus.", "support": "native", "evidence": "tabs.tsx: orientation and activationMode go to the roving focus group", "rules": [] },
+    { "id": "BHV-TABS-018", "group": "keyboard", "text": "Home and End move to the first and last tabs.", "support": "native", "evidence": "roving-focus-group.tsx: Home and End map to first and last", "rules": [] },
+    { "id": "BHV-TABS-019", "group": "keyboard", "text": "Left and Right follow the page's reading direction with no extra setup.", "support": "unchecked", "note": "Radix takes a dir prop. Whether it reads the page direction by itself is not checked. Set dir on the root for right-to-left pages.", "rules": [] },
+    { "id": "BHV-TABS-020", "group": "focus", "text": "A panel is a tab stop only when it has no focusable content. A panel that holds a field lets Tab go straight to that field.", "support": "differs", "evidence": "tabs.tsx: Content always sets tabIndex={0}", "note": "Radix makes every panel a tab stop. If the panel holds a field, pass tabIndex={-1} or accept the extra stop.", "rules": [] },
+    { "id": "BHV-TABS-021", "group": "accessibility", "text": "The list is a tab list. Each tab controls its panel. Each panel is labelled by its tab.", "support": "native", "evidence": "tabs.tsx: role tablist, tab and tabpanel; aria-controls; aria-labelledby", "note": "Give each tab list its own aria-label when a page has more than one.", "rules": ["DS-A11Y-032"] }
+  ],
+  "mistakes": [
+    { "id": "BHV-TABS-022", "group": "mistake", "text": "Do not render panels before the list on a server-rendered page without a starting value or a controlled value. Panels do not know which tab is selected before hydration.", "support": "supply", "rules": [] },
+    { "id": "BHV-TABS-023", "group": "mistake", "text": "Do not leave an icon-only tab without a spoken label.", "support": "supply", "rules": ["DS-A11Y-032"] }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "id": "toast",
+  "name": "Toast",
+  "purpose": "A short message about something that just happened, such as a save or an undo. It appears by itself and goes away.",
+  "notFor": [
+    {
+      "use": "Alert",
+      "when": "The message is part of the page and must stay."
+    },
+    {
+      "use": "AlertDialog",
+      "when": "The person must answer before going on."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-24",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/toast",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The skills say Sonner. The id is Toast and the library for this card is Radix Toast, which is what the Vois item uses."
+  },
+  "anatomy": [
+    {
+      "part": "ToastProvider",
+      "required": true,
+      "note": "Sets the duration, swipe direction and label."
+    },
+    {
+      "part": "ToastViewport",
+      "required": true,
+      "note": "The region where toasts show. It holds the hotkey."
+    },
+    {
+      "part": "Toast",
+      "required": true,
+      "note": "One message."
+    },
+    {
+      "part": "ToastTitle",
+      "required": true,
+      "note": "The short line."
+    },
+    {
+      "part": "ToastDescription",
+      "required": false,
+      "note": "The detail."
+    },
+    {
+      "part": "ToastAction",
+      "required": false,
+      "note": "A button with a required altText."
+    },
+    {
+      "part": "ToastClose",
+      "required": false,
+      "note": "The close button."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-TOAST-001",
+      "group": "interaction",
+      "text": "A toast closes by itself after five seconds. A toast with a duration of Infinity stays until someone closes it.",
+      "support": "native",
+      "evidence": "toast.tsx: Provider duration defaults to 5000; a duration of Infinity or 0 starts no timer",
+      "note": "A toast with an action should stay longer, or stay until it is closed.",
+      "rules": [
+        "DS-A11Y-034"
+      ]
+    },
+    {
+      "id": "BHV-TOAST-002",
+      "group": "interaction",
+      "text": "The timer pauses while the pointer is over the toasts or focus is inside them, and resumes after.",
+      "support": "native",
+      "evidence": "toast.tsx: Viewport pauses on pointermove and focus, and resumes on pointerleave and blur",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-003",
+      "group": "interaction",
+      "text": "The timer also pauses when the tab is hidden.",
+      "support": "differs",
+      "evidence": "toast.tsx: Viewport pauses on window blur and resumes on window focus; there is no visibilitychange listener",
+      "note": "A tab in the background can still run the timer if the window keeps focus.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-004",
+      "group": "interaction",
+      "text": "Swiping a toast away closes it.",
+      "support": "differs",
+      "evidence": "toast.tsx: Provider takes one swipeDirection, default right, and swipeThreshold 50",
+      "note": "One direction for all toasts. A toast on the left of the screen should swipe left, so set it on the Provider.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-005",
+      "group": "interaction",
+      "text": "Several toasts stack, with a limit, and expand on hover.",
+      "support": "supply",
+      "note": "Radix draws no stack. Each toast is placed by your own CSS. Cap the queue in your own code.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-006",
+      "group": "interaction",
+      "text": "A toast can be updated or closed by id from anywhere in the app.",
+      "support": "supply",
+      "note": "Radix has no imperative API. Keep the toasts in your own state, or add a helper.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-007",
+      "group": "interaction",
+      "text": "A promise toast shows loading, then success or error.",
+      "support": "supply",
+      "note": "The Vois item has no loading variant. Add one with your own state.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-008",
+      "group": "interaction",
+      "text": "A toast action such as Undo closes the toast and runs the action.",
+      "support": "native",
+      "evidence": "toast.tsx: ToastAction renders ToastClose; ToastClose takes asChild and onClick, and preventDefault in onClick keeps it open",
+      "note": "ToastAction needs a non-empty altText or it throws.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-009",
+      "group": "keyboard",
+      "text": "F8 moves focus into the notifications. Tab then moves through them in order, and Escape closes the focused toast.",
+      "support": "differs",
+      "evidence": "toast.tsx: Viewport hotkey defaults to F8; Escape closes via onEscapeKeyDown",
+      "note": "F8 focuses the viewport, not the newest toast. Change hotkey on the Viewport if F8 clashes with the app.",
+      "rules": [
+        "DS-A11Y-034"
+      ]
+    },
+    {
+      "id": "BHV-TOAST-010",
+      "group": "focus",
+      "text": "When focus was inside a toast that closes, focus moves to the viewport.",
+      "support": "differs",
+      "evidence": "toast.tsx line 540: focus moves to the viewport",
+      "note": "It does not return to the control that opened the action. Move focus yourself if that matters.",
+      "rules": [
+        "DS-A11Y-021"
+      ]
+    },
+    {
+      "id": "BHV-TOAST-011",
+      "group": "focus",
+      "text": "A toast never takes focus on its own.",
+      "support": "native",
+      "evidence": "toast.tsx: the toast is announced through a hidden live copy, and focus stays where it was",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-012",
+      "group": "state",
+      "text": "A toast has types: neutral, success, warning and error, each with its own icon.",
+      "support": "differs",
+      "evidence": "toast.tsx: Radix type is foreground or background and only sets urgency; vois-toast adds variant with icons",
+      "note": "Radix type and Vois variant are different things. There is no loading variant.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-013",
+      "group": "accessibility",
+      "text": "Screen readers hear the toast without moving focus. An error interrupts, and the rest wait their turn.",
+      "support": "native",
+      "evidence": "toast.tsx: foreground renders aria-live assertive, background renders aria-live polite; a hidden ToastAnnounce copy is portaled",
+      "note": "Use the foreground type for errors only. Everything else should be background.",
+      "rules": [
+        "DS-A11Y-009",
+        "DS-A11Y-034"
+      ]
+    },
+    {
+      "id": "BHV-TOAST-014",
+      "group": "accessibility",
+      "text": "The notification area is a labeled region.",
+      "support": "differs",
+      "evidence": "toast.tsx: Viewport role region, label Notifications (F8), tabIndex -1",
+      "note": "The label includes the hotkey. It only renders with toasts in it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-015",
+      "group": "accessibility",
+      "text": "A toast does not hold the only copy of something the person needs.",
+      "support": "supply",
+      "note": "A toast can disappear before it is read. Put anything that matters on the page as well.",
+      "rules": [
+        "DS-A11Y-034"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-TOAST-016",
+      "group": "mistake",
+      "text": "Do not put critical content only in a toast. It can close before it is read.",
+      "support": "supply",
+      "rules": [
+        "DS-A11Y-034"
+      ]
+    },
+    {
+      "id": "BHV-TOAST-017",
+      "group": "mistake",
+      "text": "Do not give ToastAction an empty altText. It throws.",
+      "support": "native",
+      "evidence": "toast.tsx: ToastAction throws when altText is empty",
+      "rules": []
+    },
+    {
+      "id": "BHV-TOAST-018",
+      "group": "mistake",
+      "text": "Do not set every toast to foreground. Each one would interrupt the screen reader.",
+      "support": "native",
+      "evidence": "toast.tsx: foreground uses aria-live assertive",
+      "rules": [
+        "DS-A11Y-009"
+      ]
+    }
+  ]
+}
