@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.40.1] - 2026-11-25
+
+### Changed
+- **`query.mjs` tells the model to say so when nothing fits.** In the Phase 2 run, a live-cursor overlay task (ADV-09) got an invented answer from Avatar and Tooltip with the retrieval script, while the skills-only runs said no skill covers it. The job list now ends its first line with "If no job fits, say the skills have no rule for this task. Do not use the nearest job.", and the message for an unknown component says "If nothing fits, say the skills have no rule for it." Model-facing text only. No rule data changed.
+
 ## [1.40.0] - 2026-11-25
 
 ### Added
