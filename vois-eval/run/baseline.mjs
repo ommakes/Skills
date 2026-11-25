@@ -14,7 +14,7 @@
 // It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
 // a forbidden one). The reports are kept so a person can read them. A pass here says nothing about rule recall: that
 // is Phase 2.
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,9 +25,17 @@ const OUT_DIR = join(HERE, "..", "baseline");
 const SKILLS_HINT = "The skills are in ./skills/, one folder each, each starting with SKILL.md. Use the ones that apply.";
 
 // The retrieval arm (Phase 2 of the JIT plan): the same skills, plus one line that points at the lookup script.
+const QUERY_ONLY = /^node skills\/vois-components\/scripts\/query\.mjs(?: (?:--[a-z]+|[A-Za-z0-9_.:-]+))*$/; // same shape as query-only-hook.cjs
 export const QUERY_CMD = "node skills/vois-components/scripts/query.mjs";
 export const RETRIEVAL_ALLOWED = [`Bash(${QUERY_CMD}:*)`];
 const RETRIEVAL_HINT = `To look up a rule, run \`${QUERY_CMD}\` first: \`--jobs\` lists the jobs, \`--job <ID>\` gives a job's decision tree, \`<Component>\` gives the rules for one component, \`--id <ID>\` gives one rule.`;
+
+/** The run directory gets a project hook that blocks every Bash command except one plain query.mjs call (see query-only-hook.cjs for why the allow rule alone is not enough). */
+export function installQueryOnlyHook(dir) {
+  mkdirSync(join(dir, ".claude"), { recursive: true });
+  copyFileSync(new URL("./query-only-hook.cjs", import.meta.url), join(dir, ".claude", "query-only-hook.cjs"));
+  writeFileSync(join(dir, ".claude", "settings.json"), JSON.stringify({ hooks: { PreToolUse: [{ matcher: "Bash", hooks: [{ type: "command", command: "node .claude/query-only-hook.cjs" }] }] } }, null, 2));
+}
 
 export function buildPrompt(userPrompt, { skills = true, retrieval = false } = {}) {
   const context = skills
@@ -57,18 +65,18 @@ export function lookups(toolUses, dir) {
   const real = (p) => { try { return realpathSync(p); } catch { return resolve(p); } };
   const root = real(dir) + sep;
   const files = new Set();
-  let calls = 0, searches = 0, queries = 0;
+  let calls = 0, searches = 0, queries = 0, otherBash = 0;
   for (const u of toolUses ?? []) {
     if (u.name === "Read") {
       calls++;
       const p = real(resolve(dir, String(u.input?.file_path ?? "")));
       if (p.startsWith(root) && existsSync(p)) files.add(p); // a path the model guessed that is not there is a call, not a file read
     } else if (u.name === "Grep" || u.name === "Glob") searches++;
-    else if (u.name === "Bash" && String(u.input?.command ?? "").includes("vois-components/scripts/query.mjs")) queries++;
+    else if (u.name === "Bash") { if (QUERY_ONLY.test(String(u.input?.command ?? ""))) queries++; else otherBash++; }
   }
   let bytes = 0;
   for (const f of files) { try { bytes += statSync(f).size; } catch { /* gone */ } }
-  return { read_calls: calls, search_calls: searches, query_calls: queries, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
+  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
 }
 
 export function tokensOf(usage) {
@@ -108,6 +116,7 @@ export function summarize(rows) {
     read_calls: { median: median(pick((r) => r.lookups.read_calls)), max: Math.max(0, ...pick((r) => r.lookups.read_calls)) },
     search_calls: { median: median(pick((r) => r.lookups.search_calls)) },
     query_calls: { median: median(pick((r) => r.lookups.query_calls ?? 0)) },
+    other_bash_attempts: { total: sum(pick((r) => r.lookups.other_bash_attempts ?? 0)) },
     files_read: { median: median(pick((r) => r.lookups.files_read)) },
     skill_tokens_est: { median: median(pick((r) => r.lookups.skill_tokens_est)), max: Math.max(0, ...pick((r) => r.lookups.skill_tokens_est)) },
     auto_match_rate: ok.some((r) => r.auto_match) ? +(ok.filter((r) => r.auto_match?.match).length / ok.filter((r) => r.auto_match).length).toFixed(3) : null,
@@ -155,6 +164,7 @@ async function main() {
       const dir = mkdtempSync(join(tmpdir(), "vois-phase0-"));
       try {
         if (!o.noskills) copySkills(dir);
+        if (o.retrieval) installQueryOnlyHook(dir);
         const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt, { skills: !o.noskills, retrieval: Boolean(o.retrieval) }), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin, extraAllowed: o.retrieval ? RETRIEVAL_ALLOWED : [] });
         const mismatch = r.models && r.models.length && !r.models.some((m) => m.startsWith(o.model));
         const row = { scenario: s.id, job: s.source_job, sample, error: r.error ?? (mismatch ? `answered by ${r.models.join(", ")}, not ${o.model}` : undefined),

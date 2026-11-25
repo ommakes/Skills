@@ -239,10 +239,39 @@ test("retrieval arm: query calls are counted, the arm is recorded, and it cannot
     assert.equal(r.status, 0, r.stderr);
     const f = JSON.parse(readFileSync(out, "utf8"));
     assert.equal(f.arm, "retrieval");
-    assert.equal(f.rows[0].lookups.query_calls, 1, "only the query.mjs command counts");
+    assert.equal(f.rows[0].lookups.query_calls, 1, "only a plain query.mjs command counts");
+    assert.equal(f.rows[0].lookups.other_bash_attempts, 1, "any other Bash attempt is counted apart");
     assert.equal(f.summary.query_calls.median, 1);
     const bad = run([...base, "--retrieval", "--no-skills", "--out", join(dir, "x.json")], events);
     assert.notEqual(bad.status, 0);
     assert.match(bad.stderr, /cannot be combined/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("query-only hook: one plain query.mjs call passes, every way of adding another command is blocked", () => {
+  const HOOK = fileURLToPath(new URL("./query-only-hook.cjs", import.meta.url));
+  const Q = "node skills/vois-components/scripts/query.mjs";
+  const verdict = (command) => spawnSync("node", [HOOK], { input: JSON.stringify({ tool_name: "Bash", tool_input: { command } }), encoding: "utf8" }).status;
+  for (const ok of [`${Q} --jobs`, `${Q} --job JOB-CONFIRM-DESTRUCTIVE`, `${Q} AlertDialog`, `${Q} --id DS-MODAL-004 --full`]) assert.equal(verdict(ok), 0, ok);
+  for (const bad of [
+    `${Q} --jobs; ls`, `${Q} --jobs && ls`, `${Q} --jobs | head`, `${Q} --jobs\nls`, `${Q} $(ls)`, `${Q} \`ls\``, `${Q} > out.txt`, `${Q} --jobs & ls`,
+    `${Q} "x"`, `${Q} 'x'`, `${Q} --jobs || ls`, `ls`, `cat skills/vois-patterns/SKILL.md`, "node ./skills/vois-components/scripts/query.mjs", ` ${Q}`, `${Q}  --jobs`, `node skills/vois-components/scripts/query.mjs.evil`,
+    `node skills/vois-components/scripts/query.mjs --jobs\r`, "",
+  ]) assert.equal(verdict(bad), 2, JSON.stringify(bad));
+  for (const input of ["", "not json", "{}", JSON.stringify({ tool_input: { command: 5 } })]) assert.equal(spawnSync("node", [HOOK], { input, encoding: "utf8" }).status, 2, `bad input fails closed: ${input}`);
+});
+
+test("query-only hook: the counter in baseline.mjs and the hook use the same pattern, and the hook is installed into the run directory", async () => {
+  const { installQueryOnlyHook } = await import("./baseline.mjs");
+  const src = (f) => readFileSync(new URL(f, import.meta.url), "utf8").match(/\/(\^node skills[^\n]*?\$)\/[;\s]/)?.[1];
+  assert.ok(src("./baseline.mjs"), "pattern found in baseline.mjs");
+  assert.equal(src("./baseline.mjs"), src("./query-only-hook.cjs"));
+  const dir = mkdtempSync(join(tmpdir(), "bl-hook-"));
+  try {
+    installQueryOnlyHook(dir);
+    const s = JSON.parse(readFileSync(join(dir, ".claude", "settings.json"), "utf8"));
+    assert.equal(s.hooks.PreToolUse[0].matcher, "Bash");
+    assert.equal(s.hooks.PreToolUse[0].hooks[0].command, "node .claude/query-only-hook.cjs");
+    assert.ok(readFileSync(join(dir, ".claude", "query-only-hook.cjs"), "utf8").includes("exit(2)"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
