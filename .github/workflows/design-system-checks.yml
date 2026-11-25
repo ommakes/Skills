@@ -143,6 +143,8 @@ jobs:
       - name: IconButton renders its label as the name, and keeps its tooltip closed when disabled
         run: npm run icon-button:test
       # Needs playwright and Chromium; where they are missing the test reports itself skipped.
+      - name: Menubar keys and safe triangle in a real browser
+        run: npm run menubar:test
       - name: InputOTP typing, paste and states in a real browser
         run: npm run input-otp:test
 
