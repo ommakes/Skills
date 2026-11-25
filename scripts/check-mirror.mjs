@@ -34,6 +34,13 @@ const SHARED_CODE = [
   "vois-tokens/scripts/jsx-tags.mjs",
   "vois-tokens/scripts/css-blocks.mjs",
   "vois-tokens/scripts/grid-checks.mjs",
+  // The retrieval pilot (prds/jit-retrieval.md): one build path, so both repos ship the same index and query tool.
+  // The index is generated from the rule files checked below, so it matching here also means the links match.
+  "vois-components/scripts/retrieval.mjs",
+  "vois-components/scripts/query.mjs",
+  "vois-components/scripts/retrieval.test.mjs",
+  "vois-components/data/component-names.json",
+  "vois-components/data/retrieval-index.json",
 ];
 
 for (const f of SHARED_CODE) {

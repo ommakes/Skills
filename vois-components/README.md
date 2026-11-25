@@ -82,6 +82,22 @@ If a `vois_record_component_choice` MCP tool is available in your environment, e
 
 If the tool isn't available, this skill still works standalone — just make the selection and move on.
 
+## Retrieval (pilot)
+
+`scripts/query.mjs` answers one question with a small packet, so you do not have to read the whole skill to build one component. See `prds/jit-retrieval.md` in the repo for the plan; the skill text is unchanged while the pilot is measured.
+
+```
+node vois-components/scripts/query.mjs Dialog          # rules, behavior card, lookalikes and registry item for one component
+node vois-components/scripts/query.mjs --jobs          # the 24 jobs, one line each, to pick from
+node vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE --job JOB-TRANSIENT-FEEDBACK
+node vois-components/scripts/query.mjs --id DS-MODAL-004
+node vois-components/scripts/query.mjs --audit         # jobs and components with gaps
+```
+
+A name resolves in any spelling (`AlertDialog`, `alert-dialog`, `Alert Dialog`, `vois-alert-dialog`). Exit codes: 0 found, 2 ambiguous (the candidates are listed), 3 not found (the nearest names are listed). `--full` adds the card rows and job rationale, `--json` prints data.
+
+The packet reads `data/retrieval-index.json`, which `scripts/retrieval.mjs --write` builds from `component-names.json`, `components-rules.json`, the behavior cards and `vois-tokens/data/vois-rules.json`. A component reaches a rule when its category is in `ruleScopes` in `component-names.json`, its behavior card cites it, a lookalike row that names it as the fix cites it, or the rule text names it (listed by id only). The other rules are cross-cutting and stay in vois-tokens. `scripts/retrieval.mjs` with no flag fails when the index is stale, a `card` or `ruleScopes` entry is broken, a card has no component, or an id or inventory name belongs to two components. A shadcn or registry name two components share resolves to the one whose registry item it is, and is reported as ambiguous otherwise.
+
 ## Related Skills
 
 - **`vois-patterns`** — Read first. Determines the container type and structure.
@@ -90,7 +106,7 @@ If the tool isn't available, this skill still works standalone — just make the
 
 ## Version
 
-**v1.34.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.36.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 

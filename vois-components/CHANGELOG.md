@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.36.0] - 2026-11-25
+
+### Added
+- **Retrieval pilot (Phase 1 of `prds/jit-retrieval.md`).** `scripts/query.mjs` returns one small packet: for a component, its rules, behavior card summary, jobs, lookalikes, registry item and what is missing; for one or more jobs, their decision trees merged, with each named component listed once. Packets run 6 to 25 lines, against about 7,000 words for this skill and vois-tokens' `SKILL.md`. `SKILL.md` text is unchanged while the pilot is measured.
+- `scripts/retrieval.mjs` builds `data/retrieval-index.json` and checks it. It fails when the index is stale, a `card` names no file, two components claim one card, a card has no component, a `ruleScopes` category or component does not exist, a scope is not a list (it never widens to every component), a `registry` value names a missing item, a cited rule does not exist, or an id or inventory name belongs to two components (a shared shadcn or registry name is allowed and resolves to the registry item, else comes back ambiguous). Malformed sources (a null card, rows that are not a list, a rule list given as a string) are reported, not crashes. `scripts/retrieval.test.mjs` tries to get past each check. 
+- `component-names.json`: a `card` field on the 12 components with a behavior card, and `ruleScopes` (`DS-MODAL`: Dialog, AlertDialog, Drawer, Sheet; `DS-PANEL`: Sheet, Drawer; `DS-TABLE`: Table). 64 of the 247 vois-tokens rules link to a component; the other 183 are cross-cutting.
+- What `--audit` shows today: `JOB-LABEL-CONTENT` and `JOB-SHOW-POLL-RESULTS` name no known component (Badge and the poll rows are not in `component-names.json`), and 26 components are named by no job, among them `Menubar` and `NavigationMenu`, which have cards (the decision trees say "Navigation", not the component names).
+
+---
+
 ## [1.34.0] - 2026-11-25
 
 ### Added
