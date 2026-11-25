@@ -1178,7 +1178,7 @@
   --select-negative: var(--bg-negative);
   --select-pressed: var(--white-a3);
   --select-resting: oklch(1 0 0 / 0);
-  --select-soft-active: var(--bg-accent);
+  --select-soft-active: var(--blue-a3);
   --select-solid-active: var(--base-accent-solid);
   --size-action-circular: var(--size-56);
   --size-action-large: var(--size-36);
@@ -1248,7 +1248,7 @@
   --text-auxiliary: var(--black);
   --text-hint: var(--gray-5);
   --text-info: var(--blue-6);
-  --text-negative: var(--tomato-7);
+  --text-negative: var(--tomato-6);
   --text-notice: var(--yellow-7);
   --text-on-dark: var(--white);
   --text-on-light: var(--black);

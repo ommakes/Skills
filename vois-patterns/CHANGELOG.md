@@ -6,6 +6,13 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.6] - 2026-11-25
+
+### Changed
+- **`PATH-B-ROW-OPEN`: the row drawer pushes or overlays by width.** The rule said only that the table stays visible. Held-out task HELD-03 expected a side panel that is inline on desktop and overlays on narrower windows. The rule now says it pushes the table aside from `--breakpoint-md` when `DS-PANEL-003` passes, overlays it otherwise, and is full screen below `--breakpoint-md` (`DS-PANEL-002`). No token changed: the push and overlay logic was already in `DS-PANEL-002`, `DS-PANEL-003` and `DS-PANEL-006`.
+
+---
+
 ## [1.23.5] - 2026-11-25
 
 ### Changed

@@ -76,7 +76,7 @@ const itemBase = [
 ]
 
 const checkedItem =
-  "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]"
+  "data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:bg-[color:var(--select-soft-active)] data-[state=checked]:not-data-[highlighted]:not-data-[disabled]:[&_[data-slot$=-shortcut]]:text-[color:var(--text-secondary)] data-[state=checked]:not-data-[disabled]:text-[color:var(--text-accent)]"
 
 // Shared by the bar, its triggers and its menus.
 type MenubarIntent = {

@@ -19,5 +19,23 @@
       "=--white-a1"
     ]
   },
-  "change": {}
+  "change": {
+    "--select-soft-active": {
+      "from": "=--bg-accent",
+      "to": [
+        "=--bg-accent",
+        "=--blue-a3"
+      ]
+    },
+    "--text-negative": {
+      "from": [
+        "=--tomato-9",
+        "=--tomato-7"
+      ],
+      "to": [
+        "=--tomato-9",
+        "=--tomato-6"
+      ]
+    }
+  }
 }
