@@ -30,7 +30,8 @@ const REPO = fileURLToPath(new URL("../../", import.meta.url));
 // The isolation flags are written once. The args passed to the CLI and the `isolation` list recorded in every results
 // file both come from here, so the file cannot claim a flag the run did not have.
 export const TOOLS = ["Read", "Write", "Glob", "Grep"];
-export const ISOLATION_FLAGS = ["--setting-sources", "project", "--strict-mcp-config", "--tools", TOOLS.join(",")];
+export const isolationFlags = (tools = TOOLS) => ["--setting-sources", "project", "--strict-mcp-config", "--tools", tools.join(",")];
+export const ISOLATION_FLAGS = isolationFlags(TOOLS);
 export const ISOLATION = [
   `tools:${TOOLS.join(",")}`, `setting-sources:${ISOLATION_FLAGS[ISOLATION_FLAGS.indexOf("--setting-sources") + 1]}`, "strict-mcp-config",
   "file-access:logged-not-blocked", "user-memory:not-controlled",
@@ -147,10 +148,12 @@ export function outsideAccess(toolUses, dir) {
 }
 
 // One `claude -p` call. Resolves with whatever the CLI reported; never rejects.
-export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000 }) {
+// `extraAllowed` is for one narrow extra permission, such as a single Bash command pattern. The tool is made available
+// by name, and only the patterns given here are allowed to run. Without it the tool list is exactly TOOLS.
+export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "claude", timeoutMs = 15 * 60 * 1000, extraAllowed = [] }) {
   return new Promise((resolveP) => {
     const args = ["-p", prompt, "--model", model, "--output-format", "stream-json", "--verbose", "--no-session-persistence",
-      ...ISOLATION_FLAGS, "--allowedTools", ...TOOLS,
+      ...(extraAllowed.length ? isolationFlags([...TOOLS, ...new Set(extraAllowed.map((e) => e.split("(")[0]))]) : ISOLATION_FLAGS), "--allowedTools", ...TOOLS, ...extraAllowed,
       "--max-turns", String(maxTurns), "--max-budget-usd", String(budget)];
     const child = spawn(bin, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
     let out = "", err = "", timedOut = false;
@@ -165,16 +168,19 @@ export function invokeClaude({ prompt, cwd, model, maxTurns, budget, bin = "clau
       const j = events.findLast?.((e) => e.type === "result") ?? [...events].reverse().find((e) => e.type === "result");
       // No result event means the model was probably paid for but we cannot say how much: flag the cost as unknown.
       const tool_uses = events.filter((e) => e.type === "assistant").flatMap((e) => (e.message?.content ?? []).filter((c) => c?.type === "tool_use"));
+      // What each tool call returned (id -> text), so a caller can measure packet size and see which calls were blocked.
+      const text = (c) => (typeof c === "string" ? c : Array.isArray(c) ? c.map((x) => x?.text ?? "").join("") : "");
+      const tool_results = Object.fromEntries(events.filter((e) => e.type === "user").flatMap((e) => (Array.isArray(e.message?.content) ? e.message.content : []).filter((c) => c?.type === "tool_result").map((c) => [c.tool_use_id, { text: text(c.content), is_error: Boolean(c.is_error) }])));
       // A timeout is like hitting the turn limit: the agent may already have written a whole screen, so it is scored and
       // flagged. Its cost is unknown (no result event). Any other missing result is an error.
-      if (!j && timedOut) { resolveP({ result: "", tool_uses, truncated: true, stop_reason: "timeout", cost_unknown: true }); return; }
-      if (!j) { resolveP({ error: `exit ${code}, no result event: ${(err || out).slice(0, 200)}`, cost_unknown: true, tool_uses }); return; }
+      if (!j && timedOut) { resolveP({ result: "", tool_uses, tool_results, truncated: true, stop_reason: "timeout", cost_unknown: true }); return; }
+      if (!j) { resolveP({ error: `exit ${code}, no result event: ${(err || out).slice(0, 200)}`, cost_unknown: true, tool_uses, tool_results }); return; }
       // Hitting the turn or budget limit is not a failure of the run: the agent may already have written a whole screen.
       // That sample is scored and flagged `truncated`, so a skills-on run that reads many files first is not marked down for it.
       const truncated = TRUNCATED_SUBTYPES.includes(j.subtype);
       const stopped = j.subtype && j.subtype !== "success" ? j.subtype : undefined;
       resolveP({
-        result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0, tool_uses,
+        result: j.result ?? "", cost_usd: j.total_cost_usd ?? 0, duration_ms: j.duration_ms ?? 0, turns: j.num_turns ?? 0, tool_uses, tool_results,
         usage: j.usage, model_usage: j.modelUsage,
         models: Object.keys(j.modelUsage ?? {}), truncated, stop_reason: stopped,
         error: truncated ? undefined : j.is_error || stopped ? `claude stopped${stopped ? ` (${stopped})` : ""}: ${String(j.result).slice(0, 200)}` : undefined,

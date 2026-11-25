@@ -9,11 +9,12 @@
 //   ... --resume          continue the same output file; finished samples are skipped
 //   ... --tasks <file>    run the tasks in a file ({"tasks":[{"id","user_prompt",...}]}) instead of scenarios.json (held-out tasks, vois-eval/heldout/)
 //   ... --no-skills       the control: an empty run directory and a prompt that does not mention skills
+//   ... --retrieval       Phase 2 arm: the skills plus one line telling the model to use vois-components/scripts/query.mjs (Bash is allowed for that one command only)
 //
 // It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
 // a forbidden one). The reports are kept so a person can read them. A pass here says nothing about rule recall: that
 // is Phase 2.
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,12 +24,34 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 const OUT_DIR = join(HERE, "..", "baseline");
 const SKILLS_HINT = "The skills are in ./skills/, one folder each, each starting with SKILL.md. Use the ones that apply.";
 
-export function buildPrompt(userPrompt, { skills = true } = {}) {
+// The retrieval arm (Phase 2 of the JIT plan): the same skills, plus one line that points at the lookup script.
+const QUERY_ONLY = /^node skills\/vois-components\/scripts\/query\.mjs(?: (?:--[a-z]+|[A-Za-z0-9_.:-]+))*$/; // same shape as query-only-hook.cjs
+export const QUERY_CMD = "node skills/vois-components/scripts/query.mjs";
+export const RETRIEVAL_ALLOWED = [`Bash(${QUERY_CMD}:*)`];
+const RETRIEVAL_HINT = `To look up a rule, run \`${QUERY_CMD}\` first: \`--jobs\` lists the jobs, \`--job <ID>\` gives a job's decision tree, \`<Component>\` gives the rules for one component, \`--id <ID>\` gives one rule.`;
+
+/** The run directory gets a project hook that blocks every Bash command except one plain query.mjs call (see query-only-hook.cjs for why the allow rule alone is not enough). */
+export function installQueryOnlyHook(dir) {
+  mkdirSync(join(dir, ".claude"), { recursive: true });
+  copyFileSync(new URL("./query-only-hook.cjs", import.meta.url), join(dir, ".claude", "query-only-hook.cjs"));
+  writeFileSync(join(dir, ".claude", "settings.json"), JSON.stringify({ hooks: { PreToolUse: [{ matcher: "Bash", hooks: [{ type: "command", command: "node .claude/query-only-hook.cjs" }] }] } }, null, 2));
+}
+
+export function buildPrompt(userPrompt, { skills = true, retrieval = false } = {}) {
   const context = skills
-    ? `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}`
+    ? `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}${retrieval ? ` ${RETRIEVAL_HINT}` : ""}`
     : "You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui.";
   const lookedUp = skills ? "Which rule files, ids or sections you looked up." : "Which rules or sources you relied on, or \"none\".";
   return `${context}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code.${skills ? " Do not read the `vois-eval` folder." : ""} Reply in exactly three lines:\n1. What you would use.\n2. ${lookedUp}\n3. What was unclear, or "nothing".`;
+}
+
+/** Share of the required rule ids that the report names. An id counts only as a whole token: DS-MODAL-00 is not found inside DS-MODAL-004. Null when the task lists none. */
+export function ruleRecall(report, required) {
+  if (!Array.isArray(required) || !required.length) return null;
+  const text = String(report ?? "").toUpperCase();
+  const ids = [...new Set(required.map((r) => String(r).toUpperCase()))];
+  const found = ids.filter((id) => new RegExp(`(?<![A-Z0-9-])${id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Z0-9-])`).test(text));
+  return { recall: found.length / ids.length, missing: ids.filter((i) => !found.includes(i)) };
 }
 
 const words = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean);
@@ -46,22 +69,29 @@ export function autoMatch(report, scenario) {
 }
 
 /** Lookups: file-tool calls. Skill bytes: the size of each distinct file under ./skills that was read (whole file, so an upper bound when a Read used offset or limit). */
-export function lookups(toolUses, dir) {
+export function lookups(toolUses, dir, toolResults = {}) {
   // Compare real paths: on macOS the temp folder is a link (/var -> /private/var), and the model may report either spelling.
   const real = (p) => { try { return realpathSync(p); } catch { return resolve(p); } };
   const root = real(dir) + sep;
   const files = new Set();
-  let calls = 0, searches = 0;
+  let calls = 0, searches = 0, queries = 0, otherBash = 0;
+  const packets = [], bash = [];
   for (const u of toolUses ?? []) {
     if (u.name === "Read") {
       calls++;
       const p = real(resolve(dir, String(u.input?.file_path ?? "")));
       if (p.startsWith(root) && existsSync(p)) files.add(p); // a path the model guessed that is not there is a call, not a file read
     } else if (u.name === "Grep" || u.name === "Glob") searches++;
+    else if (u.name === "Bash") {
+      const command = String(u.input?.command ?? ""), res = toolResults[u.id];
+      if (QUERY_ONLY.test(command)) { queries++; if (res && !res.is_error) packets.push(res.text.trimEnd().split("\n").length); }
+      else otherBash++;
+      bash.push({ command: command.slice(0, 200), blocked: res ? res.is_error : null });
+    }
   }
   let bytes = 0;
   for (const f of files) { try { bytes += statSync(f).size; } catch { /* gone */ } }
-  return { read_calls: calls, search_calls: searches, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
+  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, packet_lines: packets, bash_commands: bash, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
 }
 
 export function tokensOf(usage) {
@@ -74,7 +104,7 @@ function parseArgs(argv) {
   const o = { samples: 3, budget: 1, maxTurns: 40, concurrency: 2, bin: "claude" };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (["--dry-run", "--resume", "--no-skills"].includes(a)) o[a.slice(2).replace("-", "")] = true; // --dry-run -> dryrun, --no-skills -> noskills
+    if (["--dry-run", "--resume", "--no-skills", "--retrieval"].includes(a)) o[a.slice(2).replace("-", "")] = true; // --dry-run -> dryrun, --no-skills -> noskills
     else if (["--model", "--scenarios", "--samples", "--budget", "--max-turns", "--concurrency", "--out", "--bin", "--limit-seconds", "--tasks"].includes(a)) {
       const v = argv[++i]; if (v === undefined) throw new Error(`${a} needs a value`);
       const k = a.slice(2).replace(/-(\w)/g, (_, c) => c.toUpperCase());
@@ -82,6 +112,7 @@ function parseArgs(argv) {
     } else throw new Error(`unknown argument ${a}`);
   }
   for (const k of ["samples", "budget", "maxTurns", "concurrency"]) if (!Number.isFinite(o[k]) || o[k] <= 0) throw new Error(`--${k} must be a positive number`);
+  if (o.retrieval && o.noskills) throw new Error("--retrieval needs the skills, so it cannot be combined with --no-skills");
   return o;
 }
 
@@ -99,6 +130,10 @@ export function summarize(rows) {
     turns: { median: median(pick((r) => r.turns)) },
     read_calls: { median: median(pick((r) => r.lookups.read_calls)), max: Math.max(0, ...pick((r) => r.lookups.read_calls)) },
     search_calls: { median: median(pick((r) => r.lookups.search_calls)) },
+    query_calls: { median: median(pick((r) => r.lookups.query_calls ?? 0)) },
+    other_bash_attempts: { total: sum(pick((r) => r.lookups.other_bash_attempts ?? 0)) },
+    packet_lines: (() => { const all = ok.flatMap((r) => r.lookups.packet_lines ?? []); return { count: all.length, median: median(all), max: all.length ? Math.max(...all) : null, over_40: all.filter((n) => n > 40).length }; })(),
+    rule_recall: (() => { const x = ok.map((r) => r.rule_recall).filter((n) => typeof n === "number"); return x.length ? { samples: x.length, mean: +(sum(x) / x.length).toFixed(3), full: x.filter((n) => n === 1).length } : null; })(),
     files_read: { median: median(pick((r) => r.lookups.files_read)) },
     skill_tokens_est: { median: median(pick((r) => r.lookups.skill_tokens_est)), max: Math.max(0, ...pick((r) => r.lookups.skill_tokens_est)) },
     auto_match_rate: ok.some((r) => r.auto_match) ? +(ok.filter((r) => r.auto_match?.match).length / ok.filter((r) => r.auto_match).length).toFixed(3) : null,
@@ -130,8 +165,8 @@ async function main() {
   if (!o.model) throw new Error("--model is required, and should be a full model id");
   mkdirSync(OUT_DIR, { recursive: true });
   const stem = o.tasks ? `tasks-${basename(o.tasks).replace(/\.json$/, "")}` : "phase0";
-  const outPath = resolve(o.out ?? join(OUT_DIR, `${stem}-${o.model}${o.noskills ? "-noskills" : ""}.json`));
-  let file = { model: o.model, samples_per_scenario: o.samples, skills: o.noskills ? [] : SKILLS_UNDER_TEST, started: new Date().toISOString(), rows: [] };
+  const outPath = resolve(o.out ?? join(OUT_DIR, `${stem}-${o.model}${o.noskills ? "-noskills" : ""}${o.retrieval ? "-retrieval" : ""}.json`));
+  let file = { model: o.model, samples_per_scenario: o.samples, skills: o.noskills ? [] : SKILLS_UNDER_TEST, arm: o.noskills ? "no-skills" : o.retrieval ? "retrieval" : "skills", started: new Date().toISOString(), rows: [] };
   if (o.resume && existsSync(outPath)) file = JSON.parse(readFileSync(outPath, "utf8"));
   else if (existsSync(outPath)) throw new Error(`${outPath} exists. Use --resume to continue it, or --out for a new file.`);
   const done = new Set(file.rows.filter((r) => !r.error).map((r) => `${r.scenario}#${r.sample}`));
@@ -146,11 +181,12 @@ async function main() {
       const dir = mkdtempSync(join(tmpdir(), "vois-phase0-"));
       try {
         if (!o.noskills) copySkills(dir);
-        const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt, { skills: !o.noskills }), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin });
+        if (o.retrieval) installQueryOnlyHook(dir);
+        const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt, { skills: !o.noskills, retrieval: Boolean(o.retrieval) }), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin, extraAllowed: o.retrieval ? RETRIEVAL_ALLOWED : [] });
         const mismatch = r.models && r.models.length && !r.models.some((m) => m.startsWith(o.model));
         const row = { scenario: s.id, job: s.source_job, sample, error: r.error ?? (mismatch ? `answered by ${r.models.join(", ")}, not ${o.model}` : undefined),
           cost_usd: r.cost_usd ?? 0, cost_unknown: Boolean(r.cost_unknown), turns: r.turns ?? 0, duration_ms: r.duration_ms ?? 0, truncated: Boolean(r.truncated),
-          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir), auto_match: s.expected_outcome ? autoMatch(r.result, s) : null, report: String(r.result ?? "").slice(0, 1500) };
+          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir, r.tool_results), rule_recall: ruleRecall(r.result, s.required_rules)?.recall, rules_missing: ruleRecall(r.result, s.required_rules)?.missing, auto_match: s.expected_outcome ? autoMatch(r.result, s) : null, report: String(r.result ?? "").slice(0, 1500) };
         errorsInARow = row.error ? errorsInARow + 1 : 0;
         file.rows.push(row); save();
         console.log(`${row.error ? "ERR " : "ok  "} ${s.id}#${sample} $${row.cost_usd.toFixed(3)} in=${row.tokens.total_in} reads=${row.lookups.read_calls} match=${row.auto_match?.match ?? "n/a"}${row.error ? ` ${row.error.slice(0, 80)}` : ""}`);
