@@ -1,0 +1,196 @@
+{
+  "id": "carousel",
+  "name": "Carousel",
+  "purpose": "A row or column of slides that the person moves through one at a time, with Previous and Next buttons, the arrow keys, and a drag or swipe.",
+  "notFor": [
+    {
+      "use": "Tabs",
+      "when": "The views are peers a person picks between by name, and each one should stay reachable at once."
+    },
+    {
+      "use": "Accordion",
+      "when": "The sections are text that a person reads in order and may want open together."
+    },
+    {
+      "use": "Pagination",
+      "when": "The pages are a long list or a table, and the person needs to know the page count and jump to a page."
+    },
+    {
+      "use": "Stepper",
+      "when": "The steps gate a flow, and the person must finish one before the next."
+    }
+  ],
+  "basis": {
+    "library": "embla-carousel-react",
+    "checkedAt": "2026-11-25",
+    "source": "davidjerleke/embla-carousel@8.6.0, esm/embla-carousel.esm.js",
+    "note": "Behaviors come from the vois-carousel source and its browser test (registry/scripts/carousel.test.mjs). The Notion UI SDK inventory page for Carousel was not read for this card. The support tag on each row was checked against Embla 8.6.0 on the checked date, and the rows marked unchecked were not."
+  },
+  "anatomy": [
+    {
+      "part": "Carousel (root)",
+      "required": true,
+      "note": "The region. It owns the Embla instance, the keys and the end state. Pass aria-label."
+    },
+    {
+      "part": "CarouselContent",
+      "required": true,
+      "note": "The viewport and the track that holds the slides."
+    },
+    {
+      "part": "CarouselItem",
+      "required": true,
+      "note": "One slide, a group with the slide role description. Pass aria-label such as 1 of 5."
+    },
+    {
+      "part": "CarouselPrevious",
+      "required": false,
+      "note": "A Vois outline icon button named Previous slide."
+    },
+    {
+      "part": "CarouselNext",
+      "required": false,
+      "note": "A Vois outline icon button named Next slide."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-CAROUSEL-001",
+      "group": "interaction",
+      "text": "The Previous and Next buttons move one slide, and a press at the end of the run does nothing.",
+      "support": "supply",
+      "note": "Embla has no buttons. vois-carousel's buttons call scrollPrev and scrollNext.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-002",
+      "group": "interaction",
+      "text": "Dragging or swiping moves the slides, and they settle on a slide.",
+      "support": "native",
+      "evidence": "esm/embla-carousel.esm.js: DragHandler follows the pointer and settles on a snap; it does not start on an input, a select or a textarea",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-003",
+      "group": "keyboard",
+      "text": "Left and Right (Up and Down when vertical) move between slides while focus is inside the carousel. They do nothing in a text field, a select or an editable area, with a modifier held, or when another handler took the key.",
+      "support": "supply",
+      "note": "Embla has no keyboard control. vois-carousel listens on the region in the capture phase and skips an element that owns arrow keys. The browser test checks each skip.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-004",
+      "group": "focus",
+      "text": "A slide that takes focus is scrolled into view.",
+      "support": "native",
+      "evidence": "esm/embla-carousel.esm.js: watchFocus is true by default and a focus listener on each slide scrolls to it",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-005",
+      "group": "focus",
+      "text": "A button at the end of the run stays focusable, so a keyboard user who pressed it to the end is not dropped to the top of the page.",
+      "support": "differs",
+      "evidence": "vois-carousel: the end button gets aria-disabled, not disabled, and vois-button stops its presses",
+      "note": "shadcn disables the button, which removes it from the tab order and drops focus. Here it reads as disabled and keeps focus.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-006",
+      "group": "state",
+      "text": "Scrolling is by position and a duration in Embla's own units, not by a CSS duration.",
+      "support": "native",
+      "evidence": "esm/embla-carousel.esm.js: defaultOptions duration is 25 and the scroll body is moved by physics in script",
+      "note": "There is no CSS duration to bind to a motion token.",
+      "rules": [
+        "DS-MOTION-001"
+      ]
+    },
+    {
+      "id": "BHV-CAROUSEL-007",
+      "group": "state",
+      "text": "Under reduced motion a button or a key press jumps to the slide at once.",
+      "support": "supply",
+      "note": "scrollPrev and scrollNext take a jump argument. vois-carousel passes the reduced motion setting. A drag still settles with Embla's friction.",
+      "rules": [
+        "DS-MOTION-007"
+      ]
+    },
+    {
+      "id": "BHV-CAROUSEL-008",
+      "group": "state",
+      "text": "The carousel can run horizontally or vertically. A vertical one needs a height on its content.",
+      "support": "native",
+      "evidence": "esm/embla-carousel.esm.js: the axis option, set from orientation",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-009",
+      "group": "state",
+      "text": "With loop on, the buttons never reach an end.",
+      "support": "unchecked",
+      "note": "Embla has a loop option. vois-carousel passes it through and the end state was not tested with it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-010",
+      "group": "state",
+      "text": "Right to left content reverses the direction of the slides and of the keys.",
+      "support": "unchecked",
+      "note": "Embla has a direction option. The arrow keys in vois-carousel are not mirrored.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-011",
+      "group": "accessibility",
+      "text": "The root is a region with the carousel role description and each slide is a group with the slide role description.",
+      "support": "supply",
+      "note": "Embla sets no roles. vois-carousel sets them. A region is a landmark only with a name, so the caller passes aria-label.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-012",
+      "group": "accessibility",
+      "text": "A screen reader hears which slide it is on, such as 1 of 5.",
+      "support": "supply",
+      "note": "Pass aria-label on each CarouselItem. Nothing announces a change of slide on its own.",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-013",
+      "group": "accessibility",
+      "text": "The buttons are named and reach 36 px, 48 on a coarse pointer.",
+      "support": "supply",
+      "note": "The names come from the visually hidden text in each button.",
+      "rules": [
+        "DS-ICON-003",
+        "DS-A11Y-007"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-CAROUSEL-014",
+      "group": "mistake",
+      "text": "Do not put essential content on a slide a person may never reach. Anything they must read goes on the page.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-CAROUSEL-015",
+      "group": "mistake",
+      "text": "Do not start a carousel moving on its own. An autoplay plugin needs a visible pause control.",
+      "support": "supply",
+      "rules": [
+        "DS-MOTION-007"
+      ]
+    },
+    {
+      "id": "BHV-CAROUSEL-016",
+      "group": "mistake",
+      "text": "Do not leave the region without a name or the slides without a position. Nothing warns you.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "id": "drawer",
+  "name": "Drawer",
+  "purpose": "A modal panel that slides in from the bottom, top, left or right of the screen, and can be dragged back toward its edge to dismiss it. On a phone it is the bottom sheet for a choice or a short task.",
+  "notFor": [
+    {
+      "use": "Dialog",
+      "when": "The task is a short confirmation or a small form that belongs in the middle of the screen on a wide window."
+    },
+    {
+      "use": "AlertDialog",
+      "when": "The person must answer before anything else, such as a destructive confirmation."
+    },
+    {
+      "use": "Panel",
+      "when": "The pane stays beside the page while the person works (a push panel), with no scrim."
+    },
+    {
+      "use": "Popover",
+      "when": "The content is small, belongs to one control and does not block the page."
+    }
+  ],
+  "basis": {
+    "library": "vaul",
+    "checkedAt": "2026-11-25",
+    "source": "emilkowalski/vaul@1.1.2, dist/index.mjs, on radix-ui Dialog",
+    "note": "Behaviors come from the vois-drawer source and its browser test (registry/scripts/drawer.test.mjs). The Notion UI SDK inventory page for Drawer was not read for this card. The support tag on each row was checked against vaul 1.1.2 on the checked date, and the rows marked unchecked were not."
+  },
+  "anatomy": [
+    {
+      "part": "Drawer (root)",
+      "required": true,
+      "note": "Holds the open state and the direction. vois-drawer turns on autoFocus, which Vaul leaves off."
+    },
+    {
+      "part": "DrawerTrigger",
+      "required": false,
+      "note": "The control that opens it. Focus returns to it when the drawer closes."
+    },
+    {
+      "part": "DrawerContent",
+      "required": true,
+      "note": "The surface. It is the drag target and the dialog. Takes size for a left or right drawer, and showCloseButton."
+    },
+    {
+      "part": "DrawerOverlay",
+      "required": true,
+      "note": "The scrim. DrawerContent draws it."
+    },
+    {
+      "part": "DrawerHeader, DrawerTitle, DrawerDescription",
+      "required": true,
+      "note": "The title names the dialog and the description describes it. A title is required."
+    },
+    {
+      "part": "DrawerBody",
+      "required": false,
+      "note": "The middle. It scrolls and keeps the header and the footer in view."
+    },
+    {
+      "part": "DrawerFooter",
+      "required": false,
+      "note": "The actions, right aligned. Stacked with the primary action on top below md."
+    },
+    {
+      "part": "DrawerClose",
+      "required": false,
+      "note": "Closes the drawer. The ghost close button is one, and so is a Cancel in the footer."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-DRAWER-001",
+      "group": "interaction",
+      "text": "Dragging the drawer toward its edge and letting go past a quarter of its height closes it. A shorter, slower drag snaps it back.",
+      "support": "native",
+      "evidence": "index.mjs: CLOSE_THRESHOLD is 0.25 and onRelease closes past it; the browser test drags 10% and 40% slowly",
+      "note": "A release faster than 0.4 px per ms closes it at any distance (VELOCITY_THRESHOLD). The whole drawer is the drag target, not only the handle.",
+      "rules": []
+    },
+    {
+      "id": "BHV-DRAWER-002",
+      "group": "interaction",
+      "text": "A person who cannot drag has a visible way to close it: a close button, or a Cancel in the footer.",
+      "support": "supply",
+      "note": "Vaul draws no close control. vois-drawer adds a ghost icon button named Close, on by default (showCloseButton).",
+      "rules": [
+        "DS-A11Y-023",
+        "DS-RESPONSIVE-008"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-003",
+      "group": "interaction",
+      "text": "Escape and a click on the scrim close it.",
+      "support": "native",
+      "evidence": "index.mjs: Content hands onPointerDownOutside to the Radix Dialog content, and dismissible defaults to true; the browser test presses Escape and clicks the scrim",
+      "rules": [
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-004",
+      "group": "interaction",
+      "text": "The drawer can refuse to be dismissed by drag, scrim or key while an action is in flight.",
+      "support": "unchecked",
+      "note": "Vaul has a dismissible prop. Whether it also stops Escape was not checked.",
+      "rules": [
+        "DS-A11Y-022"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-005",
+      "group": "interaction",
+      "text": "The drawer can rest at several heights (snap points) and the person drags between them.",
+      "support": "unchecked",
+      "note": "Vaul has snapPoints. vois-drawer does not style or test them, and the slide motion override was not checked against them.",
+      "rules": []
+    },
+    {
+      "id": "BHV-DRAWER-006",
+      "group": "focus",
+      "text": "When the drawer opens, focus moves into it. Tab stays inside, and when it closes focus goes back to the trigger.",
+      "support": "differs",
+      "evidence": "index.mjs: Content cancels Radix's open auto focus unless autoFocus is true, and autoFocus defaults to false",
+      "note": "Out of the box a keyboard user who opens a Vaul drawer keeps focus on the trigger under the scrim. vois-drawer sets autoFocus to true. The trap and the return come from Radix Dialog.",
+      "rules": [
+        "DS-A11Y-020",
+        "DS-A11Y-021",
+        "DS-MODAL-001"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-007",
+      "group": "accessibility",
+      "text": "The page behind the drawer is hidden from assistive technology and takes no clicks.",
+      "support": "native",
+      "evidence": "Radix Dialog (modal) hides the other content with aria-hidden and sets pointer-events none on the body; the browser test reads both",
+      "rules": [
+        "DS-MODAL-001"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-008",
+      "group": "accessibility",
+      "text": "The drawer is a dialog with a name and a description.",
+      "support": "native",
+      "evidence": "Radix Dialog: role dialog, aria-labelledby and aria-describedby point at the Title and Description it generates",
+      "note": "Radix warns when there is no title. Do not pass an id to the title or the description.",
+      "rules": [
+        "DS-A11Y-019"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-009",
+      "group": "state",
+      "text": "The drawer docks to the bottom, top, left or right edge, and the surface follows it: the edge that faces the page, the rounded free corners, and a shadow that falls away from the dock.",
+      "support": "supply",
+      "note": "Vaul sets the direction as data-vaul-drawer-direction and draws nothing else. vois-drawer styles each edge.",
+      "rules": [
+        "DS-ELEVATION-006"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-010",
+      "group": "state",
+      "text": "A left or right drawer takes a width tier (--panel-overlay-sm, -md or -lg), half the window at most and never under --panel-overlay-min. Below md it is the whole screen.",
+      "support": "supply",
+      "note": "Vaul sets no width. The tier is CSS, so it follows the window.",
+      "rules": [
+        "DS-PANEL-002",
+        "DS-PANEL-006"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-011",
+      "group": "state",
+      "text": "A bottom or top drawer is at most 90dvh tall. Its body scrolls inside, with the header and footer in view, and the scroll never reaches the page.",
+      "support": "supply",
+      "note": "Put overscroll-behavior contain on the scrolling part. vois-drawer's DrawerBody does. A body with nothing focusable in it needs tabIndex 0 so a keyboard can scroll it.",
+      "rules": [
+        "DS-MODAL-002",
+        "DS-MODAL-004",
+        "DS-RESPONSIVE-008"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-012",
+      "group": "state",
+      "text": "The slide and the scrim run on a motion token, and stop under reduced motion.",
+      "support": "differs",
+      "evidence": "index.mjs: the injected stylesheet sets animation-duration .5s and a cubic-bezier curve, and the release code sets the same inline",
+      "note": "Vaul's own timing is a literal. vois-drawer overrides it with !important on --motion-duration-slow and --motion-ease-emphasized, and removes the animation under reduced motion. A drag still follows the pointer.",
+      "rules": [
+        "DS-MOTION-001",
+        "DS-MOTION-002"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-013",
+      "group": "state",
+      "text": "On a phone the footer stacks and the primary action is on top.",
+      "support": "supply",
+      "note": "Put the secondary action first in the markup. vois-drawer reverses the column below md.",
+      "rules": [
+        "DS-RESPONSIVE-008"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-014",
+      "group": "state",
+      "text": "Safe areas: the edges that touch the screen pad by the safe-area insets.",
+      "support": "supply",
+      "rules": [
+        "DS-RESPONSIVE-010"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-DRAWER-015",
+      "group": "mistake",
+      "text": "Do not open a drawer from a dialog, a sheet or another drawer. A second step replaces the content.",
+      "support": "supply",
+      "rules": [
+        "DS-MODAL-006"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-016",
+      "group": "mistake",
+      "text": "Do not use a drawer for navigation. A list of places to go is a menu or a page.",
+      "support": "supply",
+      "rules": [
+        "DS-MODAL-007"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-017",
+      "group": "mistake",
+      "text": "Do not leave out the title. Hide it with a visually hidden title if the design shows none.",
+      "support": "supply",
+      "rules": [
+        "DS-A11Y-019"
+      ]
+    },
+    {
+      "id": "BHV-DRAWER-018",
+      "group": "mistake",
+      "text": "Do not make dragging the only way to close it.",
+      "support": "supply",
+      "rules": [
+        "DS-A11Y-023"
+      ]
+    }
+  ]
+}

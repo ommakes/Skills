@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Panel, PanelContent, PanelDescription, PanelFooter, PanelHeader, PanelTitle } from "@/components/ui/panel"
 import { PageFrame } from "@/components/ui/page-frame"
 import { CollectionGrid, CollectionGridItem } from "@/components/ui/collection-grid"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { PanelLayout, PanelLayoutMain, PanelLayoutPanel } from "@/components/ui/panel-layout"
 import type { Story } from "../frame"
 
@@ -75,4 +76,37 @@ export const panelLayout: Story = {
   items: ["vois-panel-layout", "vois-panel"],
   render: ({ state }) => <PanelLayoutDemo initiallyOpen={state === "open"} />,
   states: { open: { expect: "[data-slot=panel]" } },
+}
+
+function Pane({ children }: { children: React.ReactNode }) {
+  return <div className="flex h-full items-center justify-center p-4 text-[color:var(--text-primary)]">{children}</div>
+}
+
+export const resizable: Story = {
+  title: "Resizable",
+  items: ["vois-resizable"],
+  render: ({ id }) => (
+    <div className="flex flex-col gap-6">
+      <div className="h-64 rounded-[var(--shape-rounded)] border border-[color:var(--border-default)]">
+        <ResizablePanelGroup orientation="horizontal" id={id("split")}>
+          <ResizablePanel id={id("list")} defaultSize="30%" minSize="20%"><Pane>Inbox</Pane></ResizablePanel>
+          <ResizableHandle id={id("handle")} withHandle aria-label="Resize inbox" />
+          <ResizablePanel id={id("detail")} defaultSize="70%" minSize="30%">
+            <ResizablePanelGroup orientation="vertical" id={id("nested")}>
+              <ResizablePanel id={id("top")} defaultSize="60%"><Pane>Message</Pane></ResizablePanel>
+              <ResizableHandle id={id("nested-handle")} aria-label="Resize message" />
+              <ResizablePanel id={id("bottom")} defaultSize="40%"><Pane>Reply</Pane></ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+      <div className="h-24 rounded-[var(--shape-rounded)] border border-[color:var(--border-default)]">
+        <ResizablePanelGroup orientation="horizontal" id={id("locked")}>
+          <ResizablePanel id={id("a")} defaultSize="50%"><Pane>Fixed</Pane></ResizablePanel>
+          <ResizableHandle id={id("locked-handle")} disabled aria-label="Resize fixed split" />
+          <ResizablePanel id={id("b")} defaultSize="50%"><Pane>Fixed</Pane></ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+    </div>
+  ),
 }

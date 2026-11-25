@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.32.0] - 2026-11-25
+
+- **New item: `vois-drawer`**, shadcn's Drawer on Vaul 1.1.2 (an exact dependency). Parts: `Drawer`, `DrawerTrigger`, `DrawerPortal`, `DrawerOverlay`, `DrawerContent`, `DrawerClose`, `DrawerHeader`, `DrawerBody`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`. It is a modal that slides in from the bottom, top, left or right and can be dragged away. The `DS-MODAL` and `DS-PANEL` rules apply.
+  - **Focus:** `autoFocus` is on by default. Vaul's default is off, so a keyboard user who opened a drawer kept focus on the trigger, under the scrim.
+  - **Size:** bottom and top are at most 90dvh. Left and right use the `--panel-overlay-sm`, `-md` and `-lg` widths and go full screen below `md`.
+  - **Motion:** the slide and the scrim run on `--motion-duration-slow`. Vaul's own 0.5s is overridden, and motion stops under reduced motion.
+  - **Not exported:** the nested drawer (`DS-MODAL-006`). A second step replaces the content of the same drawer.
+  - **You supply:** a `DrawerTitle` on every drawer, even a visually hidden one.
+- **New item: `vois-carousel`**, shadcn's Carousel on `embla-carousel-react` 8.6.0 (exact). Parts: `Carousel`, `CarouselContent`, `CarouselItem`, `CarouselPrevious`, `CarouselNext`, `useCarousel`. Horizontal or vertical.
+  - Arrow keys move the slides, but not when the focus is in a text field, select or editable area, and not when a modifier key is held.
+  - The end buttons use `aria-disabled`, not `disabled`, so they keep focus.
+  - Under reduced motion, button and key presses jump. Embla moves slides by physics, not CSS, so there is no motion token to bind.
+- **New item: `vois-resizable`**, shadcn's Resizable on `react-resizable-panels` 4.24.2 (exact). Parts: `ResizablePanelGroup`, `ResizablePanel`, `ResizableHandle` (with an optional grip). It is separate from `vois-panel-layout`, which places one side panel by the `DS-PANEL` rules.
+  - A `--border-default` line, a grip, and a focus ring. The ring needed `focus-visible:outline-solid`, because Tailwind's `outline-hidden` sets the outline style to none.
+- Each item has a harness story, a rendered surface in `vois-render.json`, and a browser test (`npm run drawer:test`, `carousel:test`, `resizable:test`). The tests share `scripts/harness-browser.mjs`. They skip when Playwright or Chromium is missing.
+
 ## [0.31.0] - 2026-11-25
 
 - **New item: `vois-input-otp`**, built from the Figma OTP Input frame (`3454:4086`) on the `input-otp` library (1.5.0, a dependency). Parts: `InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`. It is for a short one-time code, with one real input under the slots.

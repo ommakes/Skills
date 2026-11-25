@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Drawer, DrawerBody, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import {
   DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
@@ -186,4 +187,46 @@ export const commandSeparator: Story = {
       </CommandList>
     </Command>
   ),
+}
+
+const LINES = ["Atlas", "Borealis", "Cinder", "Delta", "Ember", "Fjord", "Gale", "Harbor", "Isle", "Juniper", "Kestrel", "Lumen"]
+
+type Edge = "bottom" | "top" | "left" | "right"
+
+function DrawerExample({ direction, open, size }: { direction: Edge; open: boolean; size?: "sm" | "md" | "lg" }) {
+  return (
+    <Drawer direction={direction} open={open ? true : undefined}>
+      {open ? null : <DrawerTrigger asChild><Button variant="secondary">Open {direction}</Button></DrawerTrigger>}
+      <DrawerContent size={size} onOpenAutoFocus={open ? (e) => e.preventDefault() : undefined}>
+        <DrawerHeader>
+          <DrawerTitle>Move 3 projects</DrawerTitle>
+          <DrawerDescription>Pick where they go. You can move them back later.</DrawerDescription>
+        </DrawerHeader>
+        <DrawerBody tabIndex={0}>
+          <ul className="flex flex-col gap-2">
+            {LINES.map((n) => <li key={n}>Project {n}</li>)}
+          </ul>
+        </DrawerBody>
+        <DrawerFooter>
+          <DrawerClose asChild><Button variant="secondary">Cancel</Button></DrawerClose>
+          <Button>Move</Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+export const drawer: Story = {
+  title: "Drawer",
+  items: ["vois-drawer", "vois-button"],
+  render: ({ state }) => {
+    if (state === "open") return <DrawerExample direction="bottom" open />
+    if (state === "right") return <DrawerExample direction="right" open />
+    return (
+      <div className="flex flex-wrap gap-3">
+        {(["bottom", "top", "left", "right"] as const).map((d) => <DrawerExample key={d} direction={d} open={false} />)}
+      </div>
+    )
+  },
+  states: { open: { expect: "[data-slot=drawer-content][data-vaul-drawer-direction=bottom]" }, right: { expect: "[data-slot=drawer-content][data-vaul-drawer-direction=right]" } },
 }
