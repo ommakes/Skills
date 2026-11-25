@@ -90,7 +90,7 @@ If the tool isn't available, this skill still works standalone — just make the
 
 ## Version
 
-**v1.29.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.30.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 
@@ -100,6 +100,6 @@ If you think a decision tree is ambiguous or incomplete and `vois_record_compone
 
 ---
 
-**Last updated:** 2026-07-21  
+**Last updated:** 2026-11-25  
 **Maintained by:** Om Suthar / Vois team  
 **Repository:** [github.com/ommakes/Skills](https://github.com/ommakes/Skills)

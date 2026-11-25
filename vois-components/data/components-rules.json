@@ -37,12 +37,20 @@
           { "condition": "Single action", "recommendation": "IconButton (the registry's vois-icon-button) with a `label` that names the action, not the icon (\"Add to favorites\", not \"Heart\"). The label is required, so the name cannot be left out; it is the accessible name and the tooltip, which shows on hover and focus and is dropped while the button is disabled. Ghost by default, `variant=\"soft\"` when it must read as a button at rest. Sizes `icon-sm` 28, `icon` 36 and `icon-lg` 48, each one step up on a coarse pointer, and `circular` 56, which stays 56. No IconButton in the project and none can be added: Button with an icon size and an aria-label. Size, spacing, placement and style: vois-tokens DS-ICON-003 to DS-ICON-007" },
           { "condition": "Grouped with other icon actions", "recommendation": "Toggle (for on/off) or IconButton (for one-shot). Several one-shot icon actions on the same thing that should read as one control: IconButtons with `variant=\"outline\"` in a ButtonGroup" }
         ] },
-        { "condition": "Action is a removable selection or filter (user created it, they can remove it)", "recommendation": "Badge with dismiss (Chip pattern) — not a Button" }
+        { "condition": "Action is a removable selection or filter (user created it, they can remove it)", "recommendation": "Badge with dismiss (Chip pattern) — not a Button" },
+        { "condition": "Button already has a text label: does it need an icon? Default is no icon. Walk in order and stop at the first yes", "sub_branches": [
+          { "condition": "Button opens a menu or navigates away", "recommendation": "Trailing icon: chevron down for a menu, arrow for an external link (Export with a chevron). Never a leading icon for this case" },
+          { "condition": "Button's symbol is on the approved list (plus, download, upload, share, trash, copy, edit, search, filter)", "recommendation": "Leading icon, decorative (aria-hidden=\"true\"). A symbol not on the list gets no icon. Add to the list in one place only" },
+          { "condition": "Anything else", "recommendation": "No icon (Publish). One icon per button, never leading and trailing together. Inside one group of actions every button has an icon or none does. If the action needs more input before it runs, end the label with an ellipsis (Rename...): that is label punctuation and is decided apart from the icon. Details: SKILL.md, Icons in Labeled Buttons" }
+        ] }
       ],
       "rationale": [
         { "question": "Why not a custom div or span?", "answer": "Buttons handle keyboard focus, Enter/Space activation, disabled state, and role=\"button\" automatically. A div with onClick doesn't. Never fake a button." },
         { "question": "Why use Button for icon-only instead of a bare icon?", "answer": "The button element provides a hit area of at least var(--hit-area-min) (var(--hit-area-coarse) on a coarse pointer, when styled correctly), focus ring, and accessible label via aria-label. An icon on its own has none of that." },
-        { "question": "Why IconButton instead of Button with an icon size?", "answer": "IconButton makes the name a required prop, so an icon button cannot ship without one, and it adds the tooltip the icon-button rules ask for. Button keeps its loose types on purpose (shadcn's own components name icon buttons with sr-only text, which TypeScript cannot see), so with Button the name is only checked by the vois-tokens DS-ICON-005 detector." }
+        { "question": "Why IconButton instead of Button with an icon size?", "answer": "IconButton makes the name a required prop, so an icon button cannot ship without one, and it adds the tooltip the icon-button rules ask for. Button keeps its loose types on purpose (shadcn's own components name icon buttons with sr-only text, which TypeScript cannot see), so with Button the name is only checked by the vois-tokens DS-ICON-005 detector." },
+        { "question": "Why is the default no icon on a labeled button?", "answer": "A label alone is clearer than a label plus decoration. Icons earn their place only when they add meaning or signal behavior." },
+        { "question": "Why a trailing icon for menus and navigation?", "answer": "It signals \"this opens something\" and keeps the leading slot free for the action symbol." },
+        { "question": "Why is the ellipsis separate from icons?", "answer": "It describes what happens after the click, not what the button looks like. A button can have an icon and an ellipsis." }
       ]
     },
     {

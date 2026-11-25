@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.29.0
+version: 1.30.0
 ---
 
 # Vois Component Selection Skill
@@ -94,6 +94,34 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Table first load | Skeleton rows under real headers | Spinner |
 | Persistent app navigation | Sidebar | Drawer |
 | Contextual tools for selected item | Sheet or Panel | Sidebar, Drawer |
+| Button opens a menu or navigates away | Button with trailing icon | Leading icon |
+| Button with a familiar action symbol | Button with leading icon (approved list only) | Custom or unfamiliar icon |
+| Button needs more input before it runs | Label ends with an ellipsis | Icon |
+
+---
+
+## Icons in Labeled Buttons (extends Job 8, Trigger an action)
+
+Default: no icon. A button with a clear label does not need one. Add an icon only when a rule below says so. Icon-only buttons are a different case (see Job 8). Icon size and stroke live in vois-tokens.
+
+Walk these in order. Stop at the first yes.
+
+1. Does it open a menu or navigate away? Use a trailing icon. Chevron down for a menu, arrow for an external link. Example: Export with a chevron.
+2. Is its symbol on the approved list? Use a leading icon. Approved list: plus (create), download, upload, share, trash (delete), copy (duplicate), edit, search, filter. Add to this list in one place only. If the symbol is not on the list, do not add an icon.
+3. Otherwise: no icon. Example: Publish.
+
+Rules that apply on top:
+
+- **Group consistency.** Inside one group of actions, every button has an icon or none does. If one action has no good symbol, drop all the icons in that group. Do not force an icon onto a button just to match its neighbors.
+- **One icon per button.** Never a leading and a trailing icon together.
+- **Ellipsis is label punctuation, not an icon.** End the label with "..." when the action needs more input before it happens (a dialog, a name field, a choice). "Rename..." opens a prompt. A Delete that goes straight to a confirm dialog does not need one. Apply this rule on its own, whatever the icon decision was.
+- **Loading.** While the action runs, show only a spinner. Hide the label and any icon, and keep the button width fixed so nothing jumps. Keep the label in the markup so the button keeps its name, and set `aria-busy`. The registry Button's `loading` prop does all of this.
+- **Destructive buttons.** Trash icon is allowed. Color and variant come from vois-tokens, not from the icon.
+- **Accessibility.** The label already names the action, so the icon is decorative. Give it `aria-hidden="true"`. This matches the existing decorative-icon rule in vois-tokens (`DS-A11Y-008`).
+- **RTL.** Mirror directional icons (arrows, chevrons) and swap leading and trailing sides. Do not mirror symbols like plus or download.
+- **Copy.** Label text goes through righter. This section says nothing about words.
+
+Related vois-tokens rules, not changed here: `DS-ICON-001` (one stroke width), `DS-ICON-002` (icon sizes) and `DS-SURFACE-004` (less padding on the icon side of a text and icon button).
 
 ---
 
