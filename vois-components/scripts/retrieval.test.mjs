@@ -205,6 +205,15 @@ test("query: exit codes and modes", () => {
   assert.equal(main(["--audit"], all).code, 0);
 });
 
+test("query: the job list and a component miss both tell the model to say so when nothing fits", () => {
+  const all = loadAll();
+  const jobs = main(["--jobs"], all).out;
+  assert.match(jobs, /If no job fits, say the skills have no rule for this task\. Do not use the nearest job\./);
+  const miss = main(["CursorOverlay"], all);
+  assert.equal(miss.code, 3);
+  assert.match(miss.out, /If nothing fits, say the skills have no rule for it\./);
+});
+
 test("query: a packet says what it lacks", () => {
   const all = loadAll(join(ROOT, "vois-components"));
   const p = JSON.parse(main(["Meter", "--json"], all).out);
