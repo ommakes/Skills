@@ -45,13 +45,17 @@
       "id": "HELD-05",
       "user_prompt": "When a section has multiple errors, display clearly to the user what needs to be addressed and the severity",
       "om_answer": "Use an inline alert at the top of the section, below the header to draw attention to the user that several items need addressing. Use helper text below the input, and input state error or notice for respective fields to help users pinpoint and fix each item.",
-      "om_why": "The inline alert does the job of calling the user's attention to a specific section of the page. The input state and helper text does the job of calling attention to specific items that need addressing."
+      "om_why": "The inline alert does the job of calling the user's attention to a specific section of the page. The input state and helper text does the job of calling attention to specific items that need addressing.",
+      "required_rules": [
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
     },
     {
       "id": "HELD-06",
       "user_prompt": "Communicate to the user there is a promotion site wide that's now available",
       "om_answer": "Use a preheader banner sticky to the top with a cta button to take action.",
-      "om_why": "Since the information is important enough for all users visiting the site, it's worth putting at the top, making it dismissible but hard to miss at first glance. This can also be used to communicate site wide issues in outages and errors affecting the system."
+      "om_why": "Since the information is important enough for all users visiting the site, it's worth putting at the top, making it dismissible but hard to miss at first glance. This can also be used to communicate site wide issues in outages and errors affecting the system.",
+      "gap_note": "No rule covers a promotion banner. Om: create a new rule for preheader banners, and he will give a Figma link for the component. Add required_rules once the rule exists."
     },
     {
       "id": "HELD-07",
@@ -75,14 +79,16 @@
       "id": "HELD-09",
       "user_prompt": "Allow the user to input a date either by picking a date or typing it in",
       "om_answer": "Use DateInput",
-      "om_why": "A specialized input field that allows users to input numeric values in a date format or pick from a calendar menu"
+      "om_why": "A specialized input field that allows users to input numeric values in a date format or pick from a calendar menu",
+      "gap_note": "DateInput has no job or rule id. Om: use DateInput when a calendar date must be selected, so people can pick or type the date. It can also have a date range variant. Add required_rules once the rule exists."
     },
     {
       "id": "HELD-10",
       "user_prompt": "Allow the user to pick a range of min to max values",
       "om_answer": "Use slider with discrete values that allows the user to pick min and max values. Max value cannot be less than min and vice versa",
-      "om_why": "It's an error proof format to get values while encouraging the user to understand what their choices are"
+      "om_why": "It's an error proof format to get values while encouraging the user to understand what their choices are",
+      "gap_note": "No rule covers a min-max range input. Om: a new slider component with two points at opposite ends that move along discrete steps. Add required_rules once the rule and component exist."
     }
   ],
-  "required_rules_status": "required_rules added by Claude on 2026-11-25 for the 6 tasks where the deciding rule or job id is clear. HELD-05, 06, 09 and 10 have none yet. Not corrected by Om. Om text above is unchanged. A report earns recall only by naming the whole id."
+  "required_rules_status": "required_rules added for HELD-01 to 05, 07 and 08, checked by Om on 2026-11-25 for HELD-05. HELD-06, 09 and 10 have no rule yet (see gap_note), so recall is not measured for them. Om text above is unchanged. A report earns recall only by naming the whole id."
 }

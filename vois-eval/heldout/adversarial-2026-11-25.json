@@ -2,7 +2,7 @@
   "author": "ADV-01, ADV-02 and ADV-03 from Om's wording (ADV-01 and ADV-02 reworded to avoid keywords, ADV-03 verbatim). ADV-04 to ADV-10 written by Claude from Om's list of kinds.",
   "written": "2026-11-25",
   "note": "Adversarial tasks for Phase 2 of prds/jit-retrieval.md: indirect wording, near neighbors, and cases where the right answer is a gap or a refusal. The runner sends only user_prompt. kind, answer and why are for the person comparing results and are never sent to the model. Every answer here is PROPOSED by Claude from reading the rules, and Om has not corrected it yet. Rule ids were checked against the repo. Treat ADV-04 to ADV-10 as less independent than a set written by Om, because Claude knows the trees.",
-  "status": "answers proposed, not yet corrected by Om",
+  "status": "ADV-02, 06, 07 and 08 corrected by Om. The rest still proposed by Claude.",
   "tasks": [
     {
       "id": "ADV-01",
@@ -19,8 +19,8 @@
       "id": "ADV-02",
       "kind": "cross-skill",
       "user_prompt": "People clean up old entries 30 at a time and sometimes remove the wrong ones.",
-      "answer": "Bulk action bar with the destructive action last and distinct (PATH-TABLE-BULK-BAR), and a confirmation for the destructive bulk action (PATH-TABLE-BULK-DESTRUCTIVE). PATH-TABLE-ERROR-BULK-PARTIAL is a bonus.",
-      "why": "The wording never says delete or bulk. Open question: whether the rules support undo, or only confirm. Check before scoring undo.",
+      "answer": "Bulk action bar with the destructive action last and distinct (PATH-TABLE-BULK-BAR). Then either a confirmation that states the count, when the removal cannot be undone, or an undo toast and no dialog, when it can (PATH-TABLE-BULK-DESTRUCTIVE). A good answer names the condition and says which applies. PATH-TABLE-ERROR-BULK-PARTIAL is a bonus.",
+      "why": "The wording never says delete or bulk. The task does not say whether removal can be undone, so Om accepts either branch if the answer names the condition.",
       "required_rules": [
         "PATH-TABLE-BULK-BAR",
         "PATH-TABLE-BULK-DESTRUCTIVE"
@@ -61,29 +61,38 @@
       "id": "ADV-06",
       "kind": "constraint changes the answer",
       "user_prompt": "On a phone, show the full text of a truncated address in a table cell.",
-      "answer": "Not Tooltip and not HoverCard, because touch never sees hover. Needs something a tap opens (a Popover, or the row detail). UNSURE which one the rules prefer: Om to correct.",
-      "why": "Same need as ADV-03 with a touch constraint."
+      "answer": "Not Tooltip and not HoverCard, because touch never sees hover. Either a Popover opened by tapping the address, or the row's detail view with the full address (PATH-TABLE-NARROW-OPEN). Both count.",
+      "why": "Same need as ADV-03 with a touch constraint.",
+      "required_rules": [
+        "JOB-CONTEXTUAL-INFO"
+      ]
     },
     {
       "id": "ADV-07",
       "kind": "form field",
       "user_prompt": "Ask for a date of birth when someone signs up.",
-      "answer": "UNSURE. Expect the date field rules from vois-fields, and the rule that a date of birth stays out of URLs and analytics events. Om to correct, or I will read the fields rules before scoring.",
-      "why": "Tests whether the chain reaches vois-fields and not only vois-components."
+      "answer": "A typed date field (field type `date`: text, numeric keyboard, MM/DD/YYYY hint in the user's locale order, stored as ISO, checked on blur), with no calendar popup. Keep the date of birth out of URLs and analytics (FIELD-SENSITIVE-STORAGE).",
+      "why": "The date field type's own test note says birth dates need a different picker than near dates. A calendar popup is a poor fit for a birth year decades back.",
+      "required_rules": [
+        "FIELD-SENSITIVE-STORAGE"
+      ]
     },
     {
       "id": "ADV-08",
       "kind": "copy mixed in",
       "user_prompt": "Add a button that clears all the filters on a list, and say what it should be called.",
-      "answer": "A Button (UNSURE which variant). The label goes to righter and should be a short verb phrase, not made up from the component rules.",
-      "why": "Tests hand-off to righter for words."
+      "answer": "A text Button with the ghost or link variant, no icon. The label goes to righter and should be a short verb phrase.",
+      "why": "Om chose ghost or link only. JOB-TRIGGER-ACTION does not say which variant fits a clear-filters action, so this part is Om's judgement, not a rule.",
+      "required_rules": [
+        "JOB-TRIGGER-ACTION"
+      ]
     },
     {
       "id": "ADV-09",
       "kind": "nothing matches",
       "user_prompt": "Build a live overlay that shows where each teammate's cursor is in a shared document.",
       "answer": "The skills have no spec for this (the presence indicator has no spec or token, see EVAL-026). The right answer says so, or says no match, and does not invent a rule.",
-      "why": "Tests whether it admits a gap."
+      "why": "Tests whether it admits a gap. No rule id to require. Om reads the reports: a made-up answer from the nearest component counts as a fail."
     },
     {
       "id": "ADV-10",
@@ -97,5 +106,5 @@
       ]
     }
   ],
-  "required_rules_status": "required_rules proposed by Claude for 6 tasks; ADV-06 to ADV-09 have none yet. Not corrected by Om."
+  "required_rules_status": "Om reviewed ADV-02, 06, 07 and 08 on 2026-11-25 and chose how each is scored. ADV-01, 03, 04, 05, 09 and 10 are still as Claude proposed them, not yet reviewed by Om. ADV-09 has no rule id and is scored by reading the reports."
 }
