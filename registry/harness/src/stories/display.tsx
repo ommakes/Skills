@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Row, type Story } from "../frame"
 
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const
@@ -129,6 +130,41 @@ export const separator: Story = {
           <span>Changelog</span>
         </div>
       </Row>
+    </div>
+  ),
+}
+
+const SLIDES = ["Front", "Rear", "Left side", "Right side", "Interior"]
+
+function Slide({ label, index, total, tall }: { label: string; index: number; total: number; tall?: boolean }) {
+  return (
+    <CarouselItem aria-label={`${index + 1} of ${total}`}>
+      <div className={`flex ${tall ? "h-full" : "h-40"} items-center justify-center rounded-[var(--shape-rounded)] border border-[color:var(--border-default)] bg-[color:var(--bg-card)] text-[length:var(--font-size-medium)] text-[color:var(--text-primary)]`}>
+        {label}
+      </div>
+    </CarouselItem>
+  )
+}
+
+export const carousel: Story = {
+  title: "Carousel",
+  items: ["vois-carousel", "vois-button"],
+  render: ({ id }) => (
+    <div className="flex flex-col gap-12 px-12 py-4">
+      <Carousel aria-label="Vehicle photos" id={id("horizontal")}>
+        <CarouselContent>
+          {SLIDES.map((s, i) => <Slide key={s} label={s} index={i} total={SLIDES.length} />)}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+      <Carousel aria-label="Damage notes" orientation="vertical" id={id("vertical")} className="mx-auto w-64 py-12">
+        <CarouselContent className="h-40">
+          {SLIDES.slice(0, 3).map((s, i) => <Slide key={s} label={s} index={i} total={3} tall />)}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
   ),
 }

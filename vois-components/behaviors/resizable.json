@@ -1,0 +1,193 @@
+{
+  "id": "resizable",
+  "name": "Resizable",
+  "purpose": "A split view with a divider that a person drags, or moves with the keyboard, to give one side more room.",
+  "notFor": [
+    {
+      "use": "PanelLayout",
+      "when": "One side panel is placed beside the page by the panel rules, and the person does not drag the divider."
+    },
+    {
+      "use": "Tabs",
+      "when": "The views are alternatives, not parts of one screen."
+    },
+    {
+      "use": "Accordion",
+      "when": "The sections open and close; they do not share one box."
+    }
+  ],
+  "basis": {
+    "library": "react-resizable-panels",
+    "checkedAt": "2026-11-25",
+    "source": "bvaughn/react-resizable-panels@4.24.2, dist/react-resizable-panels.js",
+    "note": "Behaviors come from the vois-resizable source and its browser test (registry/scripts/resizable.test.mjs). The Notion UI SDK inventory page for Resizable was not read for this card. The support tag on each row was checked against version 4.24.2 on the checked date, and the rows marked unchecked were not. The shadcn component names the parts ResizablePanelGroup, ResizablePanel and ResizableHandle, and the library names them Group, Panel and Separator."
+  },
+  "anatomy": [
+    {
+      "part": "ResizablePanelGroup",
+      "required": true,
+      "note": "The row or column. Needs a height, and orientation says which way the panels sit."
+    },
+    {
+      "part": "ResizablePanel",
+      "required": true,
+      "note": "One pane. A number is pixels and a string without a unit is a percentage."
+    },
+    {
+      "part": "ResizableHandle",
+      "required": true,
+      "note": "The divider. A focusable separator. Pass aria-label. withHandle draws a grip."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-RESIZABLE-001",
+      "group": "interaction",
+      "text": "Dragging the divider resizes the two panels beside it, and a drag starting a few pixels from the line works too.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: the group listens for pointer events on the document and the separator hit area is wider than the line (resizeTargetMinimumSize, fine 10 and coarse 20); the browser test drags from 4 px off the line",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-002",
+      "group": "interaction",
+      "text": "A panel stops at its minimum and maximum size, and the other panels never go under theirs.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: panel constraints are applied to every layout change; the browser test drags the inbox panel to its 20% minimum",
+      "rules": [
+        "DS-PANEL-005"
+      ]
+    },
+    {
+      "id": "BHV-RESIZABLE-003",
+      "group": "interaction",
+      "text": "A double click on the divider resets the panels to their default sizes.",
+      "support": "unchecked",
+      "note": "The library has disableDoubleClick on the separator. The reset was not driven in a browser.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-004",
+      "group": "interaction",
+      "text": "A collapsible panel collapses when it is dragged under its minimum and opens again past a threshold.",
+      "support": "unchecked",
+      "note": "The library has collapsible, collapsedSize and collapsedThreshold on the panel. vois-resizable passes them through and they were not tested.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-005",
+      "group": "keyboard",
+      "text": "The arrow keys along the split move the divider by 5, Home and End go to the ends of its range, and an arrow across the split does nothing.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: the separator keydown handler moves 5 on an arrow of its own axis, -100 on Home and 100 on End; the browser test checks all of them",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-006",
+      "group": "keyboard",
+      "text": "Enter collapses or restores a collapsible panel next to the divider, and F6 moves focus to the next divider.",
+      "support": "unchecked",
+      "note": "Both are in the library's keydown handler. They were read there and not driven in a browser.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-007",
+      "group": "focus",
+      "text": "The divider takes focus, and the ring shows for the keyboard only.",
+      "support": "supply",
+      "note": "The library gives the separator tabindex 0 and a data-separator state of focus. vois-resizable draws the ring with focus-visible and the shared ring tokens; the browser test checks that a pointer focus draws none.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-008",
+      "group": "state",
+      "text": "A disabled divider does not move by pointer or key, and says so to assistive technology.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: the separator sets aria-disabled and the pointer and key handlers return when it is disabled; the browser test checks both",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-009",
+      "group": "state",
+      "text": "The divider shows hover and drag with a color change, and a disabled one shows a not-allowed cursor.",
+      "support": "supply",
+      "note": "The library sets data-separator to hover, active, focus, inactive or disabled. vois-resizable colors the line from it.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-010",
+      "group": "state",
+      "text": "Sizes can be remembered between visits.",
+      "support": "unchecked",
+      "note": "The library has defaultLayout, onLayoutChanged and useDefaultLayout. Not wired or tested here.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-011",
+      "group": "accessibility",
+      "text": "The divider is a separator with its orientation, its value and the panel it controls.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: role separator, aria-orientation, aria-valuenow, aria-valuemin, aria-valuemax and aria-controls; the browser test reads orientation, value and controls",
+      "note": "aria-orientation is the line's own direction: vertical for a divider between two columns.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-012",
+      "group": "accessibility",
+      "text": "The divider has an accessible name that says what it moves.",
+      "support": "supply",
+      "note": "The library adds no name. Pass aria-label such as Resize sidebar.",
+      "rules": [
+        "DS-A11Y-007"
+      ]
+    },
+    {
+      "id": "BHV-RESIZABLE-013",
+      "group": "accessibility",
+      "text": "Dragging has an alternative: the arrow keys, and Home and End.",
+      "support": "native",
+      "evidence": "dist/react-resizable-panels.js: see the keydown handler in BHV-RESIZABLE-005",
+      "rules": [
+        "DS-A11Y-023"
+      ]
+    },
+    {
+      "id": "BHV-RESIZABLE-014",
+      "group": "state",
+      "text": "Panel widths are token names, never a raw number in a template.",
+      "support": "supply",
+      "note": "A number is pixels in this library. Read the push panel tokens, or pass the same sizes as the tokens hold, and keep the main area over --main-min.",
+      "rules": [
+        "DS-PANEL-005",
+        "DS-PANEL-008"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-RESIZABLE-015",
+      "group": "mistake",
+      "text": "Do not forget a height. A group is as tall as its parent, and a parent with no height collapses it.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-016",
+      "group": "mistake",
+      "text": "Do not pass 30 for a 30 percent panel. A bare number is 30 pixels. Write \"30%\".",
+      "support": "differs",
+      "evidence": "dist/react-resizable-panels.d.ts: numbers are pixels, strings without units are percentages",
+      "note": "Earlier versions of the library and the shadcn examples written for them read a number as a percentage.",
+      "rules": []
+    },
+    {
+      "id": "BHV-RESIZABLE-017",
+      "group": "mistake",
+      "text": "Do not leave a divider without a name.",
+      "support": "supply",
+      "rules": [
+        "DS-A11Y-007"
+      ]
+    }
+  ]
+}

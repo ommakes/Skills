@@ -1,6 +1,6 @@
 {
   "name": "vois-registry",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "private": true,
   "description": "shadcn-style registry of Vois core components. Build output goes to public/r and is not committed.",
   "type": "module",
@@ -18,6 +18,9 @@
     "icon-button:test": "node scripts/icon-button.test.mjs",
     "menubar:test": "node scripts/menubar.test.mjs",
     "input-otp:test": "node scripts/input-otp.test.mjs",
+    "drawer:test": "node scripts/drawer.test.mjs",
+    "carousel:test": "node scripts/carousel.test.mjs",
+    "resizable:test": "node scripts/resizable.test.mjs",
     "build": "shadcn build registry.json -o public/r",
     "harness": "node harness/build.mjs && node harness/serve.mjs",
     "harness:test": "node scripts/check-harness.test.mjs",
@@ -33,15 +36,18 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
+    "embla-carousel-react": "8.6.0",
     "esbuild": "0.24.0",
     "input-otp": "1.5.0",
     "radix-ui": "1.8.1",
     "react": "19.3.1",
     "react-day-picker": "10.0.2",
     "react-dom": "19.3.1",
+    "react-resizable-panels": "4.24.2",
     "shadcn": "4.23.0",
     "tailwind-merge": "3.7.0",
     "tailwindcss": "4.3.5",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vaul": "1.1.2"
   }
 }

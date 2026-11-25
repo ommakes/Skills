@@ -2,14 +2,14 @@ import type { Story } from "../frame"
 import { button, buttonDestructive, iconButton } from "./button"
 import { input, inputOtp, textarea } from "./inputs"
 import { checkbox, radioGroup, switchStory } from "./toggles"
-import { avatar, badge, progress, separator, spinner, tooltip } from "./display"
+import { avatar, badge, carousel, progress, separator, spinner, tooltip } from "./display"
 import { choiceCard, choiceCardDisabled, choiceList, segmentedControl, select, selectPlaceholder, stepper, tabs, toggleGroup } from "./choosing"
 import { inspector, slider, stepSlider, swatchPicker } from "./controls"
 import { questionnaire, questionnaireNps } from "./questionnaire"
-import { alertDialog, command, commandSeparator, dialog, dropdownMenu, hoverCard, popover } from "./overlays"
+import { alertDialog, command, commandSeparator, dialog, drawer, dropdownMenu, hoverCard, popover } from "./overlays"
 import { calendar, menubar, navigationMenu, pagination } from "./navigation"
 import { toast } from "./feedback"
-import { pageGrid, panel, panelLayout } from "./layout"
+import { pageGrid, panel, panelLayout, resizable } from "./layout"
 import { accordion, buttonGroup, card, cardDisabled, collapsible, inputGroup, scrollArea } from "./containers"
 
 /** Page id (the path) -> story. The id is also the surface id in vois-render.json, so keep it lowercase with dashes. */
@@ -23,6 +23,7 @@ export const STORIES: Record<string, Story> = {
   "button-group": buttonGroup,
   calendar,
   card,
+  carousel,
   "card-disabled": cardDisabled,
   "choice-card": choiceCard,
   "choice-card-disabled": choiceCardDisabled,
@@ -32,6 +33,7 @@ export const STORIES: Record<string, Story> = {
   command,
   "command-separator": commandSeparator,
   dialog,
+  drawer,
   "dropdown-menu": dropdownMenu,
   "hover-card": hoverCard,
   "icon-button": iconButton,
@@ -49,6 +51,7 @@ export const STORIES: Record<string, Story> = {
   questionnaire,
   "questionnaire-nps": questionnaireNps,
   "radio-group": radioGroup,
+  resizable,
   "scroll-area": scrollArea,
   "segmented-control": segmentedControl,
   select,

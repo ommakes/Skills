@@ -1,6 +1,6 @@
 {
   "source": "vois-components/SKILL.md",
-  "note": "One row per component in the UI SDK Component Behavior Inventory (Notion, 55 pages). `id` is the canonical name an agent uses and matches shadcn/ui's PascalCase export where one exists. `inventory` is the page title in the Notion inventory. `shadcn` is the file name under shadcn/ui's radix base, or null when shadcn ships nothing for it. `registry` is the Vois registry item that already themes it, or null. Checked against shadcn-ui/ui at commit 055aa6b (2026-11-23) and registry/registry.json (37 items). `card` names the component's behavior card (behaviors/<card>.json) where one exists.",
+  "note": "One row per component in the UI SDK Component Behavior Inventory (Notion, 55 pages). `id` is the canonical name an agent uses and matches shadcn/ui's PascalCase export where one exists. `inventory` is the page title in the Notion inventory. `shadcn` is the file name under shadcn/ui's radix base, or null when shadcn ships nothing for it. `registry` is the Vois registry item that already themes it, or null. Checked against shadcn-ui/ui at commit 055aa6b (2026-11-23) and registry/registry.json (52 items). `card` names the component's behavior card (behaviors/<card>.json) where one exists.",
   "statuses": {
     "have": "A vois-* registry item already exists.",
     "covered": "No item of its own: another vois-* item does the job. `coveredBy` names it.",
@@ -16,7 +16,7 @@
     { "id": "Avatar", "inventory": "Avatar", "shadcn": "avatar", "registry": "vois-avatar", "status": "have" },
     { "id": "Button", "inventory": "Button", "shadcn": "button", "registry": "vois-button", "status": "have" },
     { "id": "Calendar", "card": "calendar", "inventory": "Calendar", "shadcn": "calendar", "registry": "vois-calendar", "status": "have", "note": "Added in registry 0.28.0." },
-    { "id": "Carousel", "inventory": "Carousel", "shadcn": "carousel", "registry": null, "status": "build" },
+    { "id": "Carousel", "card": "carousel", "inventory": "Carousel", "shadcn": "carousel", "registry": "vois-carousel", "status": "have", "note": "Built on Embla. Arrow keys skip a text field. The end button is aria-disabled so it keeps focus. Pass aria-label on the root and on each slide." },
     { "id": "Checkbox", "inventory": "Checkbox", "shadcn": "checkbox", "registry": "vois-checkbox", "status": "have" },
     { "id": "Collapsible", "inventory": "Collapsible", "shadcn": "collapsible", "registry": "vois-collapsible", "status": "have" },
     { "id": "ColorPicker", "inventory": "Color Picker", "shadcn": null, "registry": null, "status": "defer", "note": "SwatchPicker (vois-swatch-picker) covers a fixed set only, not a free color picker." },
@@ -25,7 +25,7 @@
     { "id": "DateInput", "inventory": "Date Input", "shadcn": null, "registry": null, "status": "defer", "note": "vois-fields has a `date` field type for the value rules." },
     { "id": "DatePicker", "inventory": "Date Picker", "shadcn": null, "registry": null, "status": "compose", "composedFrom": ["Popover", "Calendar", "Input"] },
     { "id": "Dialog", "card": "dialog", "inventory": "Dialog", "shadcn": "dialog", "registry": "vois-dialog", "status": "have" },
-    { "id": "Drawer", "inventory": "Drawer", "shadcn": "drawer", "registry": null, "status": "build" },
+    { "id": "Drawer", "card": "drawer", "inventory": "Drawer", "shadcn": "drawer", "registry": "vois-drawer", "status": "have", "note": "Built on Vaul. Focus moves in on open (Vaul leaves it off). The close button is the alternative to dragging. Slide motion is on --motion-duration-slow." },
     { "id": "Field", "inventory": "Field", "shadcn": "field", "registry": "vois-field", "status": "have" },
     { "id": "FileInput", "inventory": "File Input", "shadcn": null, "registry": null, "status": "defer", "note": "Upload is listed as not covered in vois-fields." },
     { "id": "HoverCard", "inventory": "Hover Card", "shadcn": "hover-card", "registry": "vois-hover-card", "status": "have" },
@@ -46,7 +46,7 @@
     { "id": "Progress", "card": "progress", "inventory": "Progress", "shadcn": "progress", "registry": "vois-progress", "status": "have", "note": "Radix Progress. Clamps the value; the caller names it." },
     { "id": "RadioGroup", "inventory": "Radio", "shadcn": "radio-group", "registry": "vois-radio-group", "status": "have" },
     { "id": "Rating", "inventory": "Rating", "shadcn": null, "registry": null, "status": "skip" },
-    { "id": "Resizable", "inventory": "Resizable", "shadcn": "resizable", "registry": null, "status": "build" },
+    { "id": "Resizable", "card": "resizable", "inventory": "Resizable", "shadcn": "resizable", "registry": "vois-resizable", "status": "have", "note": "Built on react-resizable-panels 4 (Group, Panel, Separator). A number is pixels, so write percentages as strings. Not PanelLayout, which places one side panel." },
     { "id": "ScrollArea", "inventory": "Scroll Area", "shadcn": "scroll-area", "registry": "vois-scroll-area", "status": "have" },
     { "id": "SegmentedControl", "inventory": "Segmented Control", "shadcn": "toggle-group", "registry": "vois-segmented-control", "status": "have", "note": "Built on shadcn's ToggleGroup, fixed to one choice. Exports SegmentedControl and SegmentedControlItem only. ToggleGroup is vois-toggle-group's name." },
     { "id": "Select", "inventory": "Select", "shadcn": "select", "registry": "vois-select", "status": "have" },
@@ -75,7 +75,7 @@
     }
   },
   "outsideInventory": {
-    "note": "Names the vois-components Quick Reference uses that have a shadcn source and no registry item. They are not in the Notion inventory, so they get no behavior card yet. Listed so the gap is visible. Spinner, Stepper, Wizard, Badge, AvatarGroup, List, Form, Panel, RichTextEditor and Card were added because jobs in components-rules.json name them as answers, so `query.mjs <name>` can find them. Their shadcn field is null because it was not checked against shadcn-ui/ui, not because shadcn ships nothing.",
+    "note": "Names the vois-components Quick Reference uses that have a shadcn source and no registry item. They are not in the Notion inventory, so they get no behavior card yet. Listed so the gap is visible. Spinner, Stepper, Wizard, Badge, AvatarGroup, List, Form, Panel, RichTextEditor and Card were added because jobs in components-rules.json name them as answers, so `query.mjs <name>` can find them. Their `shadcn` and `registry` fields were checked on 2026-11-25 against shadcn-ui/ui at 055aa6b and `registry/registry.json`. A null `shadcn` means shadcn ships no file of that name (Stepper, Wizard, List, Panel, RichTextEditor, PollResults). AvatarGroup is null too, but shadcn does export it, from its `avatar` file, which is Avatar's name here. Some of these have a registry item, so the first sentence of this note does not describe them.",
     "names": [
       { "id": "Alert", "shadcn": "alert" },
       { "id": "Sheet", "shadcn": "sheet" },
@@ -85,16 +85,17 @@
       { "id": "Table", "shadcn": "table" },
       { "id": "Sidebar", "shadcn": "sidebar" },
       { "id": "EmptyState", "shadcn": "empty" },
-      { "id": "Spinner", "shadcn": null },
-      { "id": "Stepper", "shadcn": null },
+      { "id": "PollResults", "shadcn": null, "registry": "vois-questionnaire" },
+      { "id": "Spinner", "shadcn": "spinner", "registry": "vois-spinner" },
+      { "id": "Stepper", "shadcn": null, "registry": "vois-stepper" },
       { "id": "Wizard", "shadcn": null },
-      { "id": "Badge", "shadcn": null },
+      { "id": "Badge", "shadcn": "badge", "registry": "vois-badge" },
       { "id": "AvatarGroup", "shadcn": null },
       { "id": "List", "shadcn": null },
-      { "id": "Form", "shadcn": null },
-      { "id": "Panel", "shadcn": null },
+      { "id": "Form", "shadcn": "form" },
+      { "id": "Panel", "shadcn": null, "registry": "vois-panel" },
       { "id": "RichTextEditor", "shadcn": null },
-      { "id": "Card", "shadcn": null }
+      { "id": "Card", "shadcn": "card", "registry": "vois-card" }
     ]
   }
 }

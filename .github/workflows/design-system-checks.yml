@@ -149,6 +149,12 @@ jobs:
         run: npm run menubar:test
       - name: InputOTP typing, paste and states in a real browser
         run: npm run input-otp:test
+      - name: Drawer focus, keys, drag and reduced motion in a real browser
+        run: npm run drawer:test
+      - name: Carousel keys, end buttons and reduced motion in a real browser
+        run: npm run carousel:test
+      - name: Resizable drag, keys and focus ring in a real browser
+        run: npm run resizable:test
 
       # The accessibility harness (registry/harness, a dev tool) renders every registry:ui item. These check that none is
       # left off a page and that vois-render.json is what the stories give. The rendered check itself runs only in the

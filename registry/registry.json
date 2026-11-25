@@ -822,6 +822,63 @@
       ]
     },
     {
+      "name": "vois-drawer",
+      "type": "registry:ui",
+      "title": "Vois Drawer",
+      "description": "shadcn/ui's Drawer (Vaul) on Vois tokens: a modal that slides in from the bottom, top, left or right and can be dragged away. --elevation-surface-raised with a 1px edge, the Large shadow that falls away from the docked edge, on --z-modal over a scrim. Bottom and top are at most 90dvh with a drag handle on the bottom; left and right use the --panel-overlay-sm, -md or -lg width and are full screen below md. A ghost icon close button is the alternative to dragging. Slide and scrim run on --motion-duration-slow (Vaul's own 0.5s is overridden) and stop under reduced motion. Install vois-button with it.",
+      "dependencies": [
+        "vaul"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/drawer/drawer.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/drawer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-carousel",
+      "type": "registry:ui",
+      "title": "Vois Carousel",
+      "description": "shadcn/ui's Carousel (Embla) on Vois tokens: a slide region with Previous and Next icon buttons, arrow-key control, a slide group that names itself, and orientation horizontal or vertical. Reduced motion jumps between slides. Install vois-button with it.",
+      "dependencies": [
+        "embla-carousel-react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/carousel/carousel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/carousel.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-resizable",
+      "type": "registry:ui",
+      "title": "Vois Resizable",
+      "description": "shadcn/ui's Resizable (react-resizable-panels) on Vois tokens: a Group of Panels split by a Separator that a pointer drags and the arrow keys move, with a visible --border-default line, a grip, and a focus ring. Not the vois-panel-layout item, which places one side panel by the DS-PANEL rules.",
+      "dependencies": [
+        "react-resizable-panels"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/resizable/resizable.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/resizable.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-toast",
       "type": "registry:ui",
       "title": "Vois Toast",
