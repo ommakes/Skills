@@ -167,3 +167,8 @@ jobs:
 
       - name: Motion logic helpers (vois-components)
         run: node vois-components/scripts/motion-logic.test.mjs
+
+      - name: Retrieval index and query tool (vois-components)
+        run: |
+          node vois-components/scripts/retrieval.test.mjs
+          node vois-components/scripts/retrieval.mjs

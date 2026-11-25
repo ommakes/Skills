@@ -32,6 +32,8 @@ node --test vois-eval/run/run.test.mjs
 node vois-eval/check-results.mjs
 node vois-eval/lookalike-pass/scan.test.mjs
 node vois-components/scripts/motion-logic.test.mjs
+node vois-components/scripts/retrieval.test.mjs
+node vois-components/scripts/retrieval.mjs
 node vois-dataviz/scripts/dataviz.test.mjs
 node registry/scripts/build-tokens.test.mjs
 node registry/scripts/check-registry.test.mjs
