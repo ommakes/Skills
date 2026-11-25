@@ -11,7 +11,7 @@
 // It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
 // a forbidden one). The reports are kept so a person can read them. A pass here says nothing about rule recall: that
 // is Phase 2.
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,13 +41,15 @@ export function autoMatch(report, scenario) {
 
 /** Lookups: file-tool calls. Skill bytes: the size of each distinct file under ./skills that was read (whole file, so an upper bound when a Read used offset or limit). */
 export function lookups(toolUses, dir) {
-  const root = resolve(dir) + sep;
+  // Compare real paths: on macOS the temp folder is a link (/var -> /private/var), and the model may report either spelling.
+  const real = (p) => { try { return realpathSync(p); } catch { return resolve(p); } };
+  const root = real(dir) + sep;
   const files = new Set();
   let calls = 0, searches = 0;
   for (const u of toolUses ?? []) {
     if (u.name === "Read") {
       calls++;
-      const p = resolve(dir, String(u.input?.file_path ?? ""));
+      const p = real(resolve(dir, String(u.input?.file_path ?? "")));
       if (p.startsWith(root)) files.add(p);
     } else if (u.name === "Grep" || u.name === "Glob") searches++;
   }
