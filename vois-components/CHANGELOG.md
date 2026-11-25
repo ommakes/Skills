@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.37.0] - 2026-11-25
+
+### Added
+- **Behavior cards: Progress, Separator, InputOTP.** Progress and Separator were checked against `radix-ui/primitives@eb3a2b7`; InputOTP against `guilhermerodz/input-otp@3daad8f` (1.5.0).
+- What the cards found that differs from the Notion inventory:
+  - **Progress:** Radix does not clamp. A value outside 0 to max turns the bar indeterminate and logs `console.error`. There is no `min` prop. The sweep and the still fill for reduced motion are yours to draw.
+  - **InputOTP:** the completion event fires only when the code goes from partial to full, not when a full code is replaced by another full code. A pasted code with a space or a dash is rejected whole unless a paste transformer cleans it first (`vois-input-otp` does). The library has no accessible name, `aria-invalid` or `aria-describedby`.
+- `component-names.json`: InputOTP, Progress and Separator are now `have` (registry 0.31.0), and their `card` fields put the three cards in the retrieval index (15 cards).
+
+---
+
 ## [1.36.0] - 2026-11-25
 
 ### Added

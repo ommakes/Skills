@@ -362,6 +362,25 @@
       ]
     },
     {
+      "name": "vois-input-otp",
+      "type": "registry:ui",
+      "title": "Vois Input OTP",
+      "description": "shadcn/ui's InputOTP (the input-otp library) on Vois tokens, from the Figma Pin Code Input Cell and Pin Code: 40 x 40 slots that share one edge in a group, with the resting, filled, active (blue edge, caret, focus ring), error (aria-invalid), disabled and read-only looks, and a 4 px separator dot. One real input holds the value, so a paste or an SMS autofill fills every slot. The label, status icon and Resend link are not in the item: compose them with vois-field and vois-button.",
+      "dependencies": [
+        "input-otp"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/input-otp/input-otp.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-otp.tsx"
+        }
+      ]
+    },
+    {
       "name": "vois-segmented-control",
       "type": "registry:ui",
       "title": "Vois Segmented Control",
@@ -685,6 +704,44 @@
           "path": "vois/scroll-area/scroll-area.tsx",
           "type": "registry:ui",
           "target": "components/ui/scroll-area.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-progress",
+      "type": "registry:ui",
+      "title": "Vois Progress",
+      "description": "shadcn/ui's Progress (Radix) on Vois tokens: an 8 tall pill track in --control-off with a --control-on fill, a value clamped to 0 through max, and an indeterminate sweep that is still and full width under reduced motion. The caller names it.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/progress/progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/progress.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vois-separator",
+      "type": "registry:ui",
+      "title": "Vois Separator",
+      "description": "shadcn/ui's Separator (Radix) on Vois tokens: a 1px line in --border-default, horizontal or vertical, decorative by default.",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "vois/separator/separator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/separator.tsx"
         }
       ]
     },

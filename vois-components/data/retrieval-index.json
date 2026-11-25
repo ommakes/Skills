@@ -3,10 +3,10 @@
   "counts": {
     "components": 63,
     "jobs": 24,
-    "cards": 12,
+    "cards": 15,
     "rules": 247,
-    "linkedRules": 64,
-    "globalRules": 183
+    "linkedRules": 66,
+    "globalRules": 181
   },
   "aliases": {
     "accordion": [
@@ -499,6 +499,12 @@
         "kind": "registry"
       }
     ],
+    "voisinputotp": [
+      {
+        "component": "InputOTP",
+        "kind": "registry"
+      }
+    ],
     "voismenubar": [
       {
         "component": "Menubar",
@@ -523,6 +529,12 @@
         "kind": "registry"
       }
     ],
+    "voisprogress": [
+      {
+        "component": "Progress",
+        "kind": "registry"
+      }
+    ],
     "voisradiogroup": [
       {
         "component": "RadioGroup",
@@ -544,6 +556,12 @@
     "voisselect": [
       {
         "component": "Select",
+        "kind": "registry"
+      }
+    ],
+    "voisseparator": [
+      {
+        "component": "Separator",
         "kind": "registry"
       }
     ],
@@ -1416,15 +1434,42 @@
     {
       "id": "InputOTP",
       "from": "names",
-      "status": "build",
-      "registry": null,
-      "card": null,
+      "status": "have",
+      "registry": "vois-input-otp",
+      "card": {
+        "id": "input-otp",
+        "rows": 24,
+        "support": {
+          "differs": 7,
+          "native": 9,
+          "supply": 8
+        }
+      },
       "jobs": [
         "JOB-ACCEPT-TEXT"
       ],
-      "rules": [],
+      "rules": [
+        {
+          "rule": "DS-A11Y-002",
+          "via": [
+            "card"
+          ]
+        },
+        {
+          "rule": "DS-A11Y-006",
+          "via": [
+            "card"
+          ]
+        },
+        {
+          "rule": "DS-ANIMATION-004",
+          "via": [
+            "card"
+          ]
+        }
+      ],
       "lookalikes": [],
-      "note": "JOB-ACCEPT-TEXT already names InputOTP. Must take a pasted whole code (vois-fields FIELD-PASTE)."
+      "note": "Built on the input-otp library. Takes a pasted whole code and strips spaces and dashes (vois-fields FIELD-PASTE). Label, status icon and Resend are composed with vois-field and vois-button."
     },
     {
       "id": "Label",
@@ -1622,15 +1667,31 @@
     {
       "id": "Progress",
       "from": "names",
-      "status": "build",
-      "registry": null,
-      "card": null,
+      "status": "have",
+      "registry": "vois-progress",
+      "card": {
+        "id": "progress",
+        "rows": 16,
+        "support": {
+          "differs": 4,
+          "native": 4,
+          "supply": 8
+        }
+      },
       "jobs": [
         "JOB-LOADING-STATE",
         "JOB-MULTISTEP-GUIDE"
       ],
-      "rules": [],
-      "lookalikes": []
+      "rules": [
+        {
+          "rule": "DS-ANIMATION-004",
+          "via": [
+            "card"
+          ]
+        }
+      ],
+      "lookalikes": [],
+      "note": "Radix Progress. Clamps the value; the caller names it."
     },
     {
       "id": "RadioGroup",
@@ -1739,9 +1800,16 @@
     {
       "id": "Separator",
       "from": "names",
-      "status": "build",
-      "registry": null,
-      "card": null,
+      "status": "have",
+      "registry": "vois-separator",
+      "card": {
+        "id": "separator",
+        "rows": 10,
+        "support": {
+          "native": 5,
+          "supply": 5
+        }
+      },
       "jobs": [],
       "rules": [],
       "lookalikes": [],
@@ -2315,11 +2383,23 @@
       "verification": "judgment",
       "rule": "Every interactive element has a hit area of at least var(--hit-area-min) in both dimensions. The visual element can be smaller. Extend the hit area with a pseudo-element, and never size the visible control with this token. On a coarse pointer (any-pointer: coarse) the minimum is var(--hit-area-coarse) (48)."
     },
+    "DS-A11Y-002": {
+      "category": "DS-A11Y",
+      "severity": "required",
+      "verification": "rendered",
+      "rule": "`:focus-visible` — triggers only when the browser determines a visible focus indicator is needed. This covers keyboard navigation and assistive technology, but not mouse clicks. Use this for focus rings on buttons and links"
+    },
     "DS-A11Y-005": {
       "category": "DS-A11Y",
       "severity": "required",
       "verification": "judgment",
       "rule": "`<button>` for actions. `<a>` for navigation. Not `<div onClick>`."
+    },
+    "DS-A11Y-006": {
+      "category": "DS-A11Y",
+      "severity": "required",
+      "verification": "judgment",
+      "rule": "Form inputs need associated `<label>` elements, not just placeholder text."
     },
     "DS-A11Y-007": {
       "category": "DS-A11Y",

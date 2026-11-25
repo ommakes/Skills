@@ -1,0 +1,112 @@
+{
+  "id": "separator",
+  "name": "Separator",
+  "purpose": "A horizontal or vertical line that divides groups of content a reader should take as separate. Use it sparingly, mainly in lists and menus.",
+  "notFor": [
+    {
+      "use": "Card",
+      "when": "The groups are better separated by their own surfaces."
+    },
+    {
+      "use": "Spacing",
+      "when": "The groups only need air between them."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-24",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/separator",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The inventory says the docs give no alternative component for this use; the notFor list comes from the Vois marketing rules."
+  },
+  "anatomy": [
+    {
+      "part": "Separator",
+      "required": true,
+      "note": "The single part. Place it between two groups. It has no sub parts."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-SEPARATOR-001",
+      "group": "accessibility",
+      "text": "A screen reader announces a separator between the groups it divides.",
+      "support": "native",
+      "evidence": "separator.tsx: a non decorative separator has role separator and, when vertical, aria-orientation vertical",
+      "note": "Horizontal is the default for the role, so aria-orientation is left off.",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-002",
+      "group": "accessibility",
+      "text": "A line that adds no information can be marked decorative. It gets no role and no orientation for assistive technology and is skipped.",
+      "support": "native",
+      "evidence": "separator.tsx: decorative sets role none and drops aria-orientation",
+      "note": "Decorative is off by default in Radix. vois-separator turns it on by default, as shadcn does; set decorative to false when the line alone shows the division.",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-003",
+      "group": "accessibility",
+      "text": "A decorative separator keeps its orientation for styling.",
+      "support": "native",
+      "evidence": "separator.tsx: data-orientation is set in both cases",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-004",
+      "group": "state",
+      "text": "The separator can run horizontally or vertically. A bad value falls back to horizontal.",
+      "support": "native",
+      "evidence": "separator.tsx: isValidOrientation falls back to horizontal",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-005",
+      "group": "state",
+      "text": "A vertical separator takes the height of its row and stretches to the tallest item.",
+      "support": "supply",
+      "note": "Radix draws no line. Give it the size from CSS: for a vertical one, self stretch in a flex row, or an explicit height.",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-006",
+      "group": "interaction",
+      "text": "A separator never takes focus, so Tab moves past it.",
+      "support": "native",
+      "evidence": "separator.tsx: a div with no tabIndex and no handlers",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-007",
+      "group": "state",
+      "text": "The line is drawn with a token color and a 1px thickness.",
+      "support": "supply",
+      "note": "Radix has no styles. vois-separator uses a 1px line in a border token.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-SEPARATOR-008",
+      "group": "mistake",
+      "text": "Do not mark a separator decorative unless the surrounding content already conveys the division.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-009",
+      "group": "mistake",
+      "text": "Do not use a separator as a spacer. Use spacing tokens.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-SEPARATOR-010",
+      "group": "mistake",
+      "text": "Do not add dividers to marketing pages. The marketing rules say none.",
+      "support": "supply",
+      "note": "vois-patterns marketing rules. The component stays for lists and menus.",
+      "rules": []
+    }
+  ]
+}

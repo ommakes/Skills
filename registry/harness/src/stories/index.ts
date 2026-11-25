@@ -1,8 +1,8 @@
 import type { Story } from "../frame"
 import { button, buttonDestructive, iconButton } from "./button"
-import { input, textarea } from "./inputs"
+import { input, inputOtp, textarea } from "./inputs"
 import { checkbox, radioGroup, switchStory } from "./toggles"
-import { avatar, badge, spinner, tooltip } from "./display"
+import { avatar, badge, progress, separator, spinner, tooltip } from "./display"
 import { choiceCard, choiceCardDisabled, choiceList, segmentedControl, select, selectPlaceholder, stepper, tabs, toggleGroup } from "./choosing"
 import { inspector, slider, stepSlider, swatchPicker } from "./controls"
 import { questionnaire, questionnaireNps } from "./questionnaire"
@@ -38,6 +38,7 @@ export const STORIES: Record<string, Story> = {
   input,
   inspector,
   "input-group": inputGroup,
+  "input-otp": inputOtp,
   menubar,
   "navigation-menu": navigationMenu,
   "page-grid": pageGrid,
@@ -53,6 +54,8 @@ export const STORIES: Record<string, Story> = {
   select,
   "select-placeholder": selectPlaceholder,
   slider,
+  progress,
+  separator,
   spinner,
   stepper,
   "toggle-group": toggleGroup,

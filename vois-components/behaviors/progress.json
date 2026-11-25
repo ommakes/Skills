@@ -1,0 +1,189 @@
+{
+  "id": "progress",
+  "name": "Progress",
+  "purpose": "A bar that shows how far a task has come, or an indeterminate state while the progress is unknown. It is display only.",
+  "notFor": [
+    {
+      "use": "Meter",
+      "when": "The bar shows a reading, such as storage used, not a task that will finish."
+    },
+    {
+      "use": "Spinner",
+      "when": "The wait is short and has no measurable end."
+    },
+    {
+      "use": "Stepper",
+      "when": "The steps gate a flow and the person moves between them."
+    }
+  ],
+  "basis": {
+    "library": "radix-ui",
+    "checkedAt": "2026-11-24",
+    "source": "radix-ui/primitives@eb3a2b7, packages/react/progress",
+    "note": "Behaviors come from the Notion UI SDK inventory (2026-11-21). The support tag on each one was checked against the source on the checked date. The Notion page lists no common mistakes; the three here come from the source and the vois-components rules."
+  },
+  "anatomy": [
+    {
+      "part": "Progress (root)",
+      "required": true,
+      "note": "Holds the value and the range. It has the progressbar role."
+    },
+    {
+      "part": "ProgressIndicator",
+      "required": true,
+      "note": "The fill. Radix passes it the state and the value as data attributes."
+    },
+    {
+      "part": "ProgressTrack",
+      "required": false,
+      "note": "The bar's size. Radix has no such part; compose it."
+    },
+    {
+      "part": "ProgressLabel",
+      "required": false,
+      "note": "A visible name. Radix has no such part; aria-label on the root also works."
+    },
+    {
+      "part": "ProgressValue",
+      "required": false,
+      "note": "The visible number. Radix has no such part; hide it from screen readers."
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "BHV-PROGRESS-001",
+      "group": "state",
+      "text": "Leaving out the value puts the bar in an indeterminate state: no percentage, no fill width, and a sweeping highlight (a still full-width fill when reduced motion is on).",
+      "support": "differs",
+      "evidence": "progress.tsx: value null sets data-state indeterminate and leaves aria-valuenow and aria-valuetext off",
+      "note": "Radix gives the state and the attributes only. The sweep, the still fill and the reduced motion branch are yours to draw.",
+      "rules": [
+        "DS-ANIMATION-004"
+      ]
+    },
+    {
+      "id": "BHV-PROGRESS-002",
+      "group": "state",
+      "text": "While the value is below the maximum the bar is marked as progressing. At the maximum it is marked complete.",
+      "support": "native",
+      "evidence": "progress.tsx: getProgressState returns loading below max and complete at max",
+      "note": "Style with data-state. Radix names the state loading, not progressing.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-003",
+      "group": "state",
+      "text": "A value outside the range is clamped for the fill, the percentage and the announced value.",
+      "support": "differs",
+      "evidence": "progress.tsx: isValidValueNumber rejects a value below 0 or above max, logs console.error and treats it as null",
+      "note": "Radix does not clamp. An out of range value turns the bar indeterminate. vois-progress clamps to 0 through max before it passes the value on; with Radix alone, clamp in your own code.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-004",
+      "group": "state",
+      "text": "The range defaults to 0 through 100. A custom range fills the track by position.",
+      "support": "differs",
+      "evidence": "progress.tsx: max defaults to 100, min is fixed at 0, an invalid max logs console.error and falls back to 100",
+      "note": "There is no min prop, so a range that starts above 0 must be mapped to 0 through max by you.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-005",
+      "group": "state",
+      "text": "The fill width follows the value.",
+      "support": "supply",
+      "note": "Radix draws no width. Set it from data-value and data-max, or from your own math.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-006",
+      "group": "state",
+      "text": "The displayed value can be formatted with units, decimal places or custom text, in the locale's digits.",
+      "support": "supply",
+      "note": "Radix only formats the announced text, through getValueLabel (default whole percent). Format the visible value yourself, for example with Intl.NumberFormat.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-007",
+      "group": "state",
+      "text": "In right to left content the track fills from the right.",
+      "support": "supply",
+      "note": "Radix has no direction logic. Use a logical property or flip the fill with the document direction.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-008",
+      "group": "interaction",
+      "text": "The bar is display only. It takes no clicks, typing or keyboard input, and it has no change callback.",
+      "support": "native",
+      "evidence": "progress.tsx: the root is a div with no handlers and no change prop",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-009",
+      "group": "accessibility",
+      "text": "The bar exposes its range and value through the progressbar role.",
+      "support": "native",
+      "evidence": "progress.tsx: role progressbar, aria-valuemin 0, aria-valuemax max, aria-valuenow when the value is a number",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-010",
+      "group": "accessibility",
+      "text": "The bar has an accessible name, from a visible label or aria-label.",
+      "support": "supply",
+      "note": "Radix adds no name and warns about none. Pass aria-label or aria-labelledby.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-011",
+      "group": "accessibility",
+      "text": "The announced value is a percentage by default and can say more, such as a count of files. An indeterminate bar announces no percentage.",
+      "support": "native",
+      "evidence": "progress.tsx: getValueLabel defaults to the rounded percent and sets aria-valuetext; it is not called when the value is null",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-012",
+      "group": "accessibility",
+      "text": "The visible value is hidden from screen readers so it is not read twice.",
+      "support": "supply",
+      "note": "Radix has no value part. Set aria-hidden on the visible text you draw.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-013",
+      "group": "accessibility",
+      "text": "A separate label part names the bar, and a value part shows the number.",
+      "support": "supply",
+      "note": "Radix has only Progress and Progress Indicator. Compose the label, the value and the track from your own elements.",
+      "rules": []
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "BHV-PROGRESS-014",
+      "group": "mistake",
+      "text": "Do not leave the bar without a name. Nothing warns you.",
+      "support": "supply",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-015",
+      "group": "mistake",
+      "text": "Do not pass a value above the maximum and expect a full bar. Radix reads it as indeterminate and logs an error.",
+      "support": "differs",
+      "evidence": "progress.tsx: isValidValueNumber requires value at most max",
+      "note": "Clamp first.",
+      "rules": []
+    },
+    {
+      "id": "BHV-PROGRESS-016",
+      "group": "mistake",
+      "text": "Do not use it for a reading such as storage used. Use a meter.",
+      "support": "supply",
+      "rules": []
+    }
+  ]
+}
