@@ -55,7 +55,11 @@ node vois-eval/run/baseline.mjs --dry-run
 node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --scenarios EVAL-001,EVAL-006 --samples 1   # a small run first
 node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --samples 3 --limit-seconds 500              # stops starting samples after 500 s
 node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --samples 3 --resume                         # continues the same file
+node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --tasks vois-eval/heldout/om-2026-11-25.json --samples 3              # held-out tasks
+node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --tasks vois-eval/heldout/om-2026-11-25.json --samples 1 --no-skills  # the control
 ```
+
+`--tasks` runs a file of tasks (`{"tasks":[{"id","user_prompt"}]}`) instead of `scenarios.json`. Held-out tasks live in `vois-eval/heldout/`: they are written by a person without the decision trees open, with that person's own answer and reason, and the runner sends only `user_prompt`. Their rows have no `auto_match`; a person compares the reports to `om_answer`. `--no-skills` is the control: an empty run directory and a prompt that does not mention skills. Both files default to their own names under `vois-eval/baseline/`.
 
 It calls a model, so it costs money and is run by hand on a machine where `claude` is signed in. CI never runs it, only `baseline.test.mjs`, which uses the fake CLI. Results go to `vois-eval/baseline/phase0-<model>.json` (not `results/`, which `check-results.mjs` validates in its own format). A sample that errors, or that was answered by another model than the one named, is recorded as an error and run again on `--resume`. The runner stops after 5 errors in a row. The tools are the same four as the task runner and file access is logged, not blocked, so a run on a machine whose user-level memory mentions Vois is not a clean baseline.
 

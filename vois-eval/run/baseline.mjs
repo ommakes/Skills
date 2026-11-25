@@ -7,13 +7,15 @@
 //   node vois-eval/run/baseline.mjs --model claude-sonnet-5-5 --scenarios EVAL-001,EVAL-002 --samples 1
 //   node vois-eval/run/baseline.mjs --dry-run
 //   ... --resume          continue the same output file; finished samples are skipped
+//   ... --tasks <file>    run the tasks in a file ({"tasks":[{"id","user_prompt",...}]}) instead of scenarios.json (held-out tasks, vois-eval/heldout/)
+//   ... --no-skills       the control: an empty run directory and a prompt that does not mention skills
 //
 // It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
 // a forbidden one). The reports are kept so a person can read them. A pass here says nothing about rule recall: that
 // is Phase 2.
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve, sep } from "node:path";
+import { basename, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { copySkills, invokeClaude, SKILLS_UNDER_TEST } from "./run.mjs";
 
@@ -21,8 +23,12 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 const OUT_DIR = join(HERE, "..", "baseline");
 const SKILLS_HINT = "The skills are in ./skills/, one folder each, each starting with SKILL.md. Use the ones that apply.";
 
-export function buildPrompt(userPrompt) {
-  return `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code. Do not read the \`vois-eval\` folder. Reply in exactly three lines:\n1. What you would use.\n2. Which rule files, ids or sections you looked up.\n3. What was unclear, or "nothing".`;
+export function buildPrompt(userPrompt, { skills = true } = {}) {
+  const context = skills
+    ? `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}`
+    : "You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui.";
+  const lookedUp = skills ? "Which rule files, ids or sections you looked up." : "Which rules or sources you relied on, or \"none\".";
+  return `${context}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code.${skills ? " Do not read the `vois-eval` folder." : ""} Reply in exactly three lines:\n1. What you would use.\n2. ${lookedUp}\n3. What was unclear, or "nothing".`;
 }
 
 const words = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean);
@@ -50,7 +56,7 @@ export function lookups(toolUses, dir) {
     if (u.name === "Read") {
       calls++;
       const p = real(resolve(dir, String(u.input?.file_path ?? "")));
-      if (p.startsWith(root)) files.add(p);
+      if (p.startsWith(root) && existsSync(p)) files.add(p); // a path the model guessed that is not there is a call, not a file read
     } else if (u.name === "Grep" || u.name === "Glob") searches++;
   }
   let bytes = 0;
@@ -68,8 +74,8 @@ function parseArgs(argv) {
   const o = { samples: 3, budget: 1, maxTurns: 40, concurrency: 2, bin: "claude" };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (["--dry-run", "--resume"].includes(a)) o[a.slice(2).replace("-", "")] = true;
-    else if (["--model", "--scenarios", "--samples", "--budget", "--max-turns", "--concurrency", "--out", "--bin", "--limit-seconds"].includes(a)) {
+    if (["--dry-run", "--resume", "--no-skills"].includes(a)) o[a.slice(2).replace("-", "")] = true; // --dry-run -> dryrun, --no-skills -> noskills
+    else if (["--model", "--scenarios", "--samples", "--budget", "--max-turns", "--concurrency", "--out", "--bin", "--limit-seconds", "--tasks"].includes(a)) {
       const v = argv[++i]; if (v === undefined) throw new Error(`${a} needs a value`);
       const k = a.slice(2).replace(/-(\w)/g, (_, c) => c.toUpperCase());
       o[k] = ["samples", "budget", "maxTurns", "concurrency", "limitSeconds"].includes(k) ? Number(v) : v;
@@ -95,13 +101,27 @@ export function summarize(rows) {
     search_calls: { median: median(pick((r) => r.lookups.search_calls)) },
     files_read: { median: median(pick((r) => r.lookups.files_read)) },
     skill_tokens_est: { median: median(pick((r) => r.lookups.skill_tokens_est)), max: Math.max(0, ...pick((r) => r.lookups.skill_tokens_est)) },
-    auto_match_rate: ok.length ? +(ok.filter((r) => r.auto_match.match).length / ok.length).toFixed(3) : null,
+    auto_match_rate: ok.some((r) => r.auto_match) ? +(ok.filter((r) => r.auto_match?.match).length / ok.filter((r) => r.auto_match).length).toFixed(3) : null,
   };
+}
+
+/** Tasks from scenarios.json or from a held-out file. Every task needs a string id and user_prompt, and ids must be unique, or two tasks would share one result row. */
+export function loadTasks(path) {
+  const j = JSON.parse(readFileSync(path, "utf8"));
+  const list = Array.isArray(j) ? j : j?.tasks ?? j?.scenarios;
+  if (!Array.isArray(list) || !list.length) throw new Error(`${path}: no tasks found (expected {"tasks":[...]})`);
+  const seen = new Set();
+  for (const t of list) {
+    if (!t || typeof t.id !== "string" || !t.id.trim() || typeof t.user_prompt !== "string" || !t.user_prompt.trim()) throw new Error(`${path}: every task needs a non-empty string id and user_prompt`);
+    if (seen.has(t.id)) throw new Error(`${path}: duplicate task id ${t.id}`);
+    seen.add(t.id);
+  }
+  return list;
 }
 
 async function main() {
   const o = parseArgs(process.argv.slice(2));
-  const all = JSON.parse(readFileSync(join(HERE, "..", "scenarios.json"), "utf8")).scenarios;
+  const all = loadTasks(o.tasks ? resolve(o.tasks) : join(HERE, "..", "scenarios.json"));
   const want = o.scenarios ? new Set(o.scenarios.split(",")) : null;
   const scenarios = all.filter((s) => !want || want.has(s.id));
   if (want && scenarios.length !== want.size) throw new Error(`unknown scenario in --scenarios: ${[...want].filter((w) => !all.some((s) => s.id === w)).join(", ")}`);
@@ -109,8 +129,9 @@ async function main() {
   if (o.dryrun) { console.log(`${scenarios.length} scenarios x ${o.samples} samples = ${plan.length} calls, model ${o.model ?? "(none given)"}, budget cap $${o.budget} each`); return; }
   if (!o.model) throw new Error("--model is required, and should be a full model id");
   mkdirSync(OUT_DIR, { recursive: true });
-  const outPath = resolve(o.out ?? join(OUT_DIR, `phase0-${o.model}.json`));
-  let file = { model: o.model, samples_per_scenario: o.samples, skills: SKILLS_UNDER_TEST, started: new Date().toISOString(), rows: [] };
+  const stem = o.tasks ? `tasks-${basename(o.tasks).replace(/\.json$/, "")}` : "phase0";
+  const outPath = resolve(o.out ?? join(OUT_DIR, `${stem}-${o.model}${o.noskills ? "-noskills" : ""}.json`));
+  let file = { model: o.model, samples_per_scenario: o.samples, skills: o.noskills ? [] : SKILLS_UNDER_TEST, started: new Date().toISOString(), rows: [] };
   if (o.resume && existsSync(outPath)) file = JSON.parse(readFileSync(outPath, "utf8"));
   else if (existsSync(outPath)) throw new Error(`${outPath} exists. Use --resume to continue it, or --out for a new file.`);
   const done = new Set(file.rows.filter((r) => !r.error).map((r) => `${r.scenario}#${r.sample}`));
@@ -124,15 +145,15 @@ async function main() {
       const { s, sample } = todo[next++];
       const dir = mkdtempSync(join(tmpdir(), "vois-phase0-"));
       try {
-        copySkills(dir);
-        const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin });
+        if (!o.noskills) copySkills(dir);
+        const r = await invokeClaude({ prompt: buildPrompt(s.user_prompt, { skills: !o.noskills }), cwd: dir, model: o.model, maxTurns: o.maxTurns, budget: o.budget, bin: o.bin });
         const mismatch = r.models && r.models.length && !r.models.some((m) => m.startsWith(o.model));
         const row = { scenario: s.id, job: s.source_job, sample, error: r.error ?? (mismatch ? `answered by ${r.models.join(", ")}, not ${o.model}` : undefined),
           cost_usd: r.cost_usd ?? 0, cost_unknown: Boolean(r.cost_unknown), turns: r.turns ?? 0, duration_ms: r.duration_ms ?? 0, truncated: Boolean(r.truncated),
-          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir), auto_match: autoMatch(r.result, s), report: String(r.result ?? "").slice(0, 1500) };
+          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir), auto_match: s.expected_outcome ? autoMatch(r.result, s) : null, report: String(r.result ?? "").slice(0, 1500) };
         errorsInARow = row.error ? errorsInARow + 1 : 0;
         file.rows.push(row); save();
-        console.log(`${row.error ? "ERR " : "ok  "} ${s.id}#${sample} $${row.cost_usd.toFixed(3)} in=${row.tokens.total_in} reads=${row.lookups.read_calls} match=${row.auto_match.match}${row.error ? ` ${row.error.slice(0, 80)}` : ""}`);
+        console.log(`${row.error ? "ERR " : "ok  "} ${s.id}#${sample} $${row.cost_usd.toFixed(3)} in=${row.tokens.total_in} reads=${row.lookups.read_calls} match=${row.auto_match?.match ?? "n/a"}${row.error ? ` ${row.error.slice(0, 80)}` : ""}`);
       } finally { rmSync(dir, { recursive: true, force: true }); }
     }
   };
