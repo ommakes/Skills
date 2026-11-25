@@ -75,7 +75,7 @@
     }
   },
   "outsideInventory": {
-    "note": "Names the vois-components Quick Reference uses that have a shadcn source and no registry item. They are not in the Notion inventory, so they get no behavior card yet. Listed so the gap is visible.",
+    "note": "Names the vois-components Quick Reference uses that have a shadcn source and no registry item. They are not in the Notion inventory, so they get no behavior card yet. Listed so the gap is visible. Spinner, Stepper, Wizard, Badge, AvatarGroup, List, Form, Panel, RichTextEditor and Card were added because jobs in components-rules.json name them as answers, so `query.mjs <name>` can find them. Their shadcn field is null because it was not checked against shadcn-ui/ui, not because shadcn ships nothing.",
     "names": [
       { "id": "Alert", "shadcn": "alert" },
       { "id": "Sheet", "shadcn": "sheet" },
@@ -84,7 +84,17 @@
       { "id": "ContextMenu", "shadcn": "context-menu" },
       { "id": "Table", "shadcn": "table" },
       { "id": "Sidebar", "shadcn": "sidebar" },
-      { "id": "EmptyState", "shadcn": "empty" }
+      { "id": "EmptyState", "shadcn": "empty" },
+      { "id": "Spinner", "shadcn": null },
+      { "id": "Stepper", "shadcn": null },
+      { "id": "Wizard", "shadcn": null },
+      { "id": "Badge", "shadcn": null },
+      { "id": "AvatarGroup", "shadcn": null },
+      { "id": "List", "shadcn": null },
+      { "id": "Form", "shadcn": null },
+      { "id": "Panel", "shadcn": null },
+      { "id": "RichTextEditor", "shadcn": null },
+      { "id": "Card", "shadcn": null }
     ]
   }
 }
