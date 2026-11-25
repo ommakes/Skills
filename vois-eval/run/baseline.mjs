@@ -45,6 +45,15 @@ export function buildPrompt(userPrompt, { skills = true, retrieval = false } = {
   return `${context}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code.${skills ? " Do not read the `vois-eval` folder." : ""} Reply in exactly three lines:\n1. What you would use.\n2. ${lookedUp}\n3. What was unclear, or "nothing".`;
 }
 
+/** Share of the required rule ids that the report names. An id counts only as a whole token: DS-MODAL-00 is not found inside DS-MODAL-004. Null when the task lists none. */
+export function ruleRecall(report, required) {
+  if (!Array.isArray(required) || !required.length) return null;
+  const text = String(report ?? "").toUpperCase();
+  const ids = [...new Set(required.map((r) => String(r).toUpperCase()))];
+  const found = ids.filter((id) => new RegExp(`(?<![A-Z0-9-])${id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Z0-9-])`).test(text));
+  return { recall: found.length / ids.length, missing: ids.filter((i) => !found.includes(i)) };
+}
+
 const words = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean);
 /** The lead of an outcome: the text before the first bracket, dash or full stop. */
 const lead = (s) => String(s ?? "").split(/[(\[—–]| - |\.\s/)[0];
@@ -60,23 +69,29 @@ export function autoMatch(report, scenario) {
 }
 
 /** Lookups: file-tool calls. Skill bytes: the size of each distinct file under ./skills that was read (whole file, so an upper bound when a Read used offset or limit). */
-export function lookups(toolUses, dir) {
+export function lookups(toolUses, dir, toolResults = {}) {
   // Compare real paths: on macOS the temp folder is a link (/var -> /private/var), and the model may report either spelling.
   const real = (p) => { try { return realpathSync(p); } catch { return resolve(p); } };
   const root = real(dir) + sep;
   const files = new Set();
   let calls = 0, searches = 0, queries = 0, otherBash = 0;
+  const packets = [], bash = [];
   for (const u of toolUses ?? []) {
     if (u.name === "Read") {
       calls++;
       const p = real(resolve(dir, String(u.input?.file_path ?? "")));
       if (p.startsWith(root) && existsSync(p)) files.add(p); // a path the model guessed that is not there is a call, not a file read
     } else if (u.name === "Grep" || u.name === "Glob") searches++;
-    else if (u.name === "Bash") { if (QUERY_ONLY.test(String(u.input?.command ?? ""))) queries++; else otherBash++; }
+    else if (u.name === "Bash") {
+      const command = String(u.input?.command ?? ""), res = toolResults[u.id];
+      if (QUERY_ONLY.test(command)) { queries++; if (res && !res.is_error) packets.push(res.text.trimEnd().split("\n").length); }
+      else otherBash++;
+      bash.push({ command: command.slice(0, 200), blocked: res ? res.is_error : null });
+    }
   }
   let bytes = 0;
   for (const f of files) { try { bytes += statSync(f).size; } catch { /* gone */ } }
-  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
+  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, packet_lines: packets, bash_commands: bash, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
 }
 
 export function tokensOf(usage) {
@@ -117,6 +132,8 @@ export function summarize(rows) {
     search_calls: { median: median(pick((r) => r.lookups.search_calls)) },
     query_calls: { median: median(pick((r) => r.lookups.query_calls ?? 0)) },
     other_bash_attempts: { total: sum(pick((r) => r.lookups.other_bash_attempts ?? 0)) },
+    packet_lines: (() => { const all = ok.flatMap((r) => r.lookups.packet_lines ?? []); return { count: all.length, median: median(all), max: all.length ? Math.max(...all) : null, over_40: all.filter((n) => n > 40).length }; })(),
+    rule_recall: (() => { const x = ok.map((r) => r.rule_recall).filter((n) => typeof n === "number"); return x.length ? { samples: x.length, mean: +(sum(x) / x.length).toFixed(3), full: x.filter((n) => n === 1).length } : null; })(),
     files_read: { median: median(pick((r) => r.lookups.files_read)) },
     skill_tokens_est: { median: median(pick((r) => r.lookups.skill_tokens_est)), max: Math.max(0, ...pick((r) => r.lookups.skill_tokens_est)) },
     auto_match_rate: ok.some((r) => r.auto_match) ? +(ok.filter((r) => r.auto_match?.match).length / ok.filter((r) => r.auto_match).length).toFixed(3) : null,
@@ -169,7 +186,7 @@ async function main() {
         const mismatch = r.models && r.models.length && !r.models.some((m) => m.startsWith(o.model));
         const row = { scenario: s.id, job: s.source_job, sample, error: r.error ?? (mismatch ? `answered by ${r.models.join(", ")}, not ${o.model}` : undefined),
           cost_usd: r.cost_usd ?? 0, cost_unknown: Boolean(r.cost_unknown), turns: r.turns ?? 0, duration_ms: r.duration_ms ?? 0, truncated: Boolean(r.truncated),
-          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir), auto_match: s.expected_outcome ? autoMatch(r.result, s) : null, report: String(r.result ?? "").slice(0, 1500) };
+          tokens: tokensOf(r.usage), lookups: lookups(r.tool_uses, dir, r.tool_results), rule_recall: ruleRecall(r.result, s.required_rules)?.recall, rules_missing: ruleRecall(r.result, s.required_rules)?.missing, auto_match: s.expected_outcome ? autoMatch(r.result, s) : null, report: String(r.result ?? "").slice(0, 1500) };
         errorsInARow = row.error ? errorsInARow + 1 : 0;
         file.rows.push(row); save();
         console.log(`${row.error ? "ERR " : "ok  "} ${s.id}#${sample} $${row.cost_usd.toFixed(3)} in=${row.tokens.total_in} reads=${row.lookups.read_calls} match=${row.auto_match?.match ?? "n/a"}${row.error ? ` ${row.error.slice(0, 80)}` : ""}`);

@@ -275,3 +275,61 @@ test("query-only hook: the counter in baseline.mjs and the hook use the same pat
     assert.ok(readFileSync(join(dir, ".claude", "query-only-hook.cjs"), "utf8").includes("exit(2)"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("ruleRecall: whole ids only, any case, nothing required means null", async () => {
+  const { ruleRecall } = await import("./baseline.mjs");
+  assert.deepEqual(ruleRecall("used DS-MODAL-004 and ds-panel-003.", ["DS-MODAL-004", "DS-PANEL-003"]), { recall: 1, missing: [] });
+  assert.deepEqual(ruleRecall("DS-MODAL-0041, XDS-MODAL-004", ["DS-MODAL-004"]), { recall: 0, missing: ["DS-MODAL-004"] }, "an id inside a longer token is not a hit");
+  assert.equal(ruleRecall("DS-MODAL-004", ["DS-MODAL-00"]).recall, 0, "a prefix of a real id is not a hit");
+  assert.equal(ruleRecall("DS-MODAL-004", ["DS-MODAL-004", "DS-MODAL-004"]).recall, 1, "a repeated required id counts once");
+  assert.equal(ruleRecall("x", []), null);
+  assert.equal(ruleRecall("x", undefined), null);
+  assert.equal(ruleRecall(null, ["DS-A-1"]).recall, 0);
+  assert.equal(ruleRecall("a.b", ["A.B"]).recall, 1, "regex characters in an id are not special");
+  assert.equal(ruleRecall("axb", ["A.B"]).recall, 0);
+});
+
+test("lookups records packet size per query call and every Bash command, blocked or not", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-pk-"));
+  try {
+    const Q = "node skills/vois-components/scripts/query.mjs";
+    const uses = [
+      { id: "a", name: "Bash", input: { command: `${Q} --jobs` } },
+      { id: "b", name: "Bash", input: { command: `${Q} --jobs; ls` } },
+      { id: "c", name: "Bash", input: { command: `${Q} Dialog` } },
+      { id: "d", name: "Bash", input: { command: "ls" } },
+    ];
+    const results = { a: { text: "one\ntwo\nthree\n", is_error: false }, b: { text: "blocked", is_error: true }, c: { text: "x", is_error: true }, d: { text: "skills", is_error: false } };
+    const l = lookups(uses, dir, results);
+    assert.deepEqual(l.packet_lines, [3], "only a query call that was not blocked has a packet, and trailing blank lines are not counted");
+    assert.equal(l.query_calls, 2);
+    assert.equal(l.other_bash_attempts, 2);
+    assert.deepEqual(l.bash_commands.map((c) => c.blocked), [false, true, true, false]);
+    assert.equal(lookups(uses, dir).packet_lines.length, 0, "without results there is no packet size and nothing throws");
+    assert.equal(lookups(uses, dir).bash_commands[0].blocked, null);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("rows carry rule_recall for tasks that list required_rules, and the summary reports packet size and recall", () => {
+  const dir = mkdtempSync(join(tmpdir(), "bl-rr-"));
+  try {
+    const tasks = join(dir, "t.json"), out = join(dir, "r.json");
+    writeFileSync(tasks, JSON.stringify({ tasks: [{ id: "T-1", user_prompt: "x", required_rules: ["DS-MODAL-004", "DS-PANEL-003"] }, { id: "T-2", user_prompt: "y" }] }));
+    const events = { events: [
+      { type: "assistant", message: { content: [{ type: "tool_use", id: "q1", name: "Bash", input: { command: "node skills/vois-components/scripts/query.mjs --jobs" } }] } },
+      { type: "user", message: { content: [{ type: "tool_result", tool_use_id: "q1", content: [{ type: "text", text: "a\nb" }] }] } },
+      { type: "result", subtype: "success", is_error: false, result: "Sheet\nDS-MODAL-004\nnothing", total_cost_usd: 0.1, num_turns: 2,
+        usage: { input_tokens: 1, output_tokens: 1 }, modelUsage: { "claude-sonnet-5-5": {} } },
+    ] };
+    const r = run(["--model", "claude-sonnet-5-5", "--tasks", tasks, "--retrieval", "--samples", "1", "--bin", FAKE, "--out", out], events);
+    assert.equal(r.status, 0, r.stderr);
+    const f = JSON.parse(readFileSync(out, "utf8"));
+    const t1 = f.rows.find((x) => x.scenario === "T-1"), t2 = f.rows.find((x) => x.scenario === "T-2");
+    assert.equal(t1.rule_recall, 0.5);
+    assert.deepEqual(t1.rules_missing, ["DS-PANEL-003"]);
+    assert.equal(t2.rule_recall, undefined, "a task with no required rules has no recall");
+    assert.deepEqual(t1.lookups.packet_lines, [2]);
+    assert.deepEqual(f.summary.rule_recall, { samples: 1, mean: 0.5, full: 0 });
+    assert.equal(f.summary.packet_lines.count, 2);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

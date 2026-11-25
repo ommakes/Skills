@@ -7,25 +7,39 @@
       "id": "HELD-01",
       "user_prompt": "Ask the user to double confirm they want to delete their workspace and this step is irreversible",
       "om_answer": "Use confirmation dialog",
-      "om_why": "Deleting the workspace is the primary action being confirmed with a soft destructive button and a secondary button to cancel or icon x button to close the modal to cancel the permanent step in case of misclick or change of heart."
+      "om_why": "Deleting the workspace is the primary action being confirmed with a soft destructive button and a secondary button to cancel or icon x button to close the modal to cancel the permanent step in case of misclick or change of heart.",
+      "required_rules": [
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "DS-A11Y-020"
+      ]
     },
     {
       "id": "HELD-02",
       "user_prompt": "Present the user with 2 choices, they have to pick one of two",
       "om_answer": "Use radio select, card or radio group",
-      "om_why": "It's a clear single select function. When there are only 2 choices, it's a binary choice that doesn't require the additional click of a dropdown to expose options."
+      "om_why": "It's a clear single select function. When there are only 2 choices, it's a binary choice that doesn't require the additional click of a dropdown to expose options.",
+      "required_rules": [
+        "JOB-CHOOSE-FROM-LIST"
+      ]
     },
     {
       "id": "HELD-03",
       "user_prompt": "When the user clicks on a table row, they need a way to view all the entry details",
       "om_answer": "Open a sidemanel that flys out from the right side and is inline on desktop and overlays after 800px or less viewport width",
-      "om_why": "A side panel that's inline on desktop and overlaps on 800px or less viewport widths allows user ample space to view information in read only state. Dialogs should avoid scroll whenever possible and be used for more ephemeral experiences rather than fixed touchpoints and views that need to be accessible."
+      "om_why": "A side panel that's inline on desktop and overlaps on 800px or less viewport widths allows user ample space to view information in read only state. Dialogs should avoid scroll whenever possible and be used for more ephemeral experiences rather than fixed touchpoints and views that need to be accessible.",
+      "required_rules": [
+        "PATH-B-ROW-OPEN",
+        "DS-PANEL-003"
+      ]
     },
     {
       "id": "HELD-04",
       "user_prompt": "During onboarding allow the user to quickly select all the topics they are interested in",
       "om_answer": "Use chips that can be toggled to selected state with a click. Arrange an array of chips that responsively fit the viewport.",
-      "om_why": "It doesn't hide the choices behind a click to expose a dropdown menu. Paired with leading icons, the text in chips reads easily. These are not filters but rather an array of yes/no selections."
+      "om_why": "It doesn't hide the choices behind a click to expose a dropdown menu. Paired with leading icons, the text in chips reads easily. These are not filters but rather an array of yes/no selections.",
+      "required_rules": [
+        "JOB-CHOOSE-FROM-LIST"
+      ]
     },
     {
       "id": "HELD-05",
@@ -43,13 +57,19 @@
       "id": "HELD-07",
       "user_prompt": "Once a user has completed a task or updated a form successfully, communicate to the user the task was completed successfully.",
       "om_answer": "Use a toast in a positive state",
-      "om_why": "It's an ephemeral in app notification that gives the user confidence that their action was completed successfully."
+      "om_why": "It's an ephemeral in app notification that gives the user confidence that their action was completed successfully.",
+      "required_rules": [
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
     },
     {
       "id": "HELD-08",
       "user_prompt": "Allow the user to toggle between separate sections of a relation group without incurring page travel",
       "om_answer": "Use tabnav",
-      "om_why": "They are separate sections of a related group of if a section is integrations and notifications, the notification settings can be a second tab, integrations is the primary default tab."
+      "om_why": "They are separate sections of a related group of if a section is integrations and notifications, the notification settings can be a second tab, integrations is the primary default tab.",
+      "required_rules": [
+        "JOB-SWITCH-VIEWS"
+      ]
     },
     {
       "id": "HELD-09",
@@ -63,5 +83,6 @@
       "om_answer": "Use slider with discrete values that allows the user to pick min and max values. Max value cannot be less than min and vice versa",
       "om_why": "It's an error proof format to get values while encouraging the user to understand what their choices are"
     }
-  ]
+  ],
+  "required_rules_status": "required_rules added by Claude on 2026-11-25 for the 6 tasks where the deciding rule or job id is clear. HELD-05, 06, 09 and 10 have none yet. Not corrected by Om. Om text above is unchanged. A report earns recall only by naming the whole id."
 }

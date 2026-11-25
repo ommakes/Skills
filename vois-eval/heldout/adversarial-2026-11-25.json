@@ -9,35 +9,53 @@
       "kind": "indirect wording",
       "user_prompt": "Let people see everything about a record without leaving the list.",
       "answer": "Row drawer. It pushes the table when DS-PANEL-003 passes, overlays otherwise, and is full screen below --breakpoint-md (DS-PANEL-002). PATH-B-ROW-OPEN.",
-      "why": "A modal, a new page or an expandable row are plausible wrong picks."
+      "why": "A modal, a new page or an expandable row are plausible wrong picks.",
+      "required_rules": [
+        "PATH-B-ROW-OPEN",
+        "DS-PANEL-003"
+      ]
     },
     {
       "id": "ADV-02",
       "kind": "cross-skill",
       "user_prompt": "People clean up old entries 30 at a time and sometimes remove the wrong ones.",
       "answer": "Bulk action bar with the destructive action last and distinct (PATH-TABLE-BULK-BAR), and a confirmation for the destructive bulk action (PATH-TABLE-BULK-DESTRUCTIVE). PATH-TABLE-ERROR-BULK-PARTIAL is a bonus.",
-      "why": "The wording never says delete or bulk. Open question: whether the rules support undo, or only confirm. Check before scoring undo."
+      "why": "The wording never says delete or bulk. Open question: whether the rules support undo, or only confirm. Check before scoring undo.",
+      "required_rules": [
+        "PATH-TABLE-BULK-BAR",
+        "PATH-TABLE-BULK-DESTRUCTIVE"
+      ]
     },
     {
       "id": "ADV-03",
       "kind": "near neighbor",
       "user_prompt": "Show the full data string when the user hovers over a table cell",
       "answer": "Tooltip for short text (25 words or under, hover and focus). Not Popover (needs a click). Not HoverCard (touch never sees it).",
-      "why": "The length is not stated, so a long string changes the answer. Kept verbatim from Om. A good answer notes the cell must also be reachable by keyboard focus."
+      "why": "The length is not stated, so a long string changes the answer. Kept verbatim from Om. A good answer notes the cell must also be reachable by keyboard focus.",
+      "required_rules": [
+        "JOB-CONTEXTUAL-INFO"
+      ]
     },
     {
       "id": "ADV-04",
       "kind": "missing component",
       "user_prompt": "While setting up an account, let people pick a few interests from a short list of tags.",
       "answer": "ToggleChip (a pill that toggles on and off, in a wrapping row, Select all and Clear over 6 chips). It is not in the registry yet (component-names status: build), so the answer should say so.",
-      "why": "Tests whether the skill says a component is not built, instead of inventing one or defaulting to a checkbox list."
+      "why": "Tests whether the skill says a component is not built, instead of inventing one or defaulting to a checkbox list.",
+      "required_rules": [
+        "JOB-CHOOSE-FROM-LIST"
+      ]
     },
     {
       "id": "ADV-05",
       "kind": "wrong tool, right goal",
       "user_prompt": "Use a modal to show each order's details when someone clicks a row in the orders table.",
       "answer": "Push back: use a row drawer, not a modal (PATH-B-ROW-OPEN, DS-PANEL-003).",
-      "why": "Tests whether the skills correct the request or just obey it."
+      "why": "Tests whether the skills correct the request or just obey it.",
+      "required_rules": [
+        "PATH-B-ROW-OPEN",
+        "DS-PANEL-003"
+      ]
     },
     {
       "id": "ADV-06",
@@ -72,7 +90,12 @@
       "kind": "two rules collide",
       "user_prompt": "On a phone, let people remove several saved items at once and make sure they mean it.",
       "answer": "Selection mode entered by an explicit Select action, a bulk bar at the bottom with the destructive action last, and a confirmation (PATH-TABLE-NARROW-SELECT, PATH-TABLE-BULK-DESTRUCTIVE). A half-height sheet may also apply (DS-RESPONSIVE-008). A good answer names both and picks one.",
-      "why": "Mobile bulk bar vs a half-height sheet for the confirm."
+      "why": "Mobile bulk bar vs a half-height sheet for the confirm.",
+      "required_rules": [
+        "PATH-TABLE-NARROW-SELECT",
+        "PATH-TABLE-BULK-DESTRUCTIVE"
+      ]
     }
-  ]
+  ],
+  "required_rules_status": "required_rules proposed by Claude for 6 tasks; ADV-06 to ADV-09 have none yet. Not corrected by Om."
 }
