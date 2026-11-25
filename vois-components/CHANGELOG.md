@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.41.0] - 2026-11-25
+
+### Added
+- **`JOB-TRANSIENT-FEEDBACK`: a promotion branch, and `PreheaderBanner`.** Held-out task HELD-06 ("a promotion site wide that's now available") was answered with an inline Alert, because the only banner rule was for outages. A new branch covers site-wide news or a promotion: a slim bar above the header, pinned to the top, with a bold highlight, one short sentence and one action, with the dismiss control. The outage branch now points at the same component without the dismiss control, so it stays until resolved. `PreheaderBanner` is a new `component-names` entry with status `build`. Its variants come from the Banner in the Personify Design System file: Layout (Sticky or Floating), Style (Accent or Aux), the action (a labelled button or an arrow icon), and the dismiss control shown or left out. Until it is in the registry, the rule says to use a sticky Alert. It is separate from the Alert Banner that righter writes copy for.
+- **`JOB-ACCEPT-TEXT`: a date branch.** HELD-09 ("input a date either by picking a date or typing it in") has no job pointing at DateInput. The new branch says to use DateInput for a calendar date, picked or typed, with a range variant for a start and end date. A date far in the past, such as a date of birth, is typed only. The DateInput note in `component-names` links to the job.
+- **`JOB-CHOOSE-FROM-LIST`: a numeric range branch, and `RangeSlider`.** HELD-10 ("pick a range of min to max values") had no rule. A minimum and a maximum from a numeric range use one track with two thumbs, one at each end, that move along discrete steps. `RangeSlider` is a new `component-names` entry with status `build`. The single-value Slider stays `vois-slider`.
+
+Rules for these three are written from Om's answers on the held-out tasks. `retrieval-index.json` is regenerated.
+
 ## [1.40.1] - 2026-11-25
 
 ### Changed
