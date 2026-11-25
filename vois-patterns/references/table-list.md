@@ -35,6 +35,7 @@ Scroll rules and their CSS are in `vois-tokens` (`DS-TABLE-*`). A simple table n
 
 **IF: the record has 8 or fewer fields and no related records**
 → Use: **Drawer** in this file's wording, which is the right-anchored **Sheet** in vois-components (`JOB-OVERLAY-INTERACTION`). The table stays visible. View state first with an Edit action, or edit state directly when nearly every open is an edit.
+→ From `--breakpoint-md` it pushes the table aside when `DS-PANEL-003` passes (the table stays usable beside it), and otherwise overlays it. Below `--breakpoint-md` it is full screen (`DS-PANEL-002`).
 → Close button top right. Esc closes it.
 
 **IF: the record has tabs, a timeline, related records, or a long form**

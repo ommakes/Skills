@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.40.0] - 2026-11-25
+
+### Added
+- **`JOB-CHOOSE-FROM-LIST`: a toggle chip branch.** Held-out task HELD-04 ("during onboarding, let the user quickly select all the topics they are interested in") was answered with a CheckboxCard grid by all 3 samples with skills, while the author and the no-skills control chose toggle chips. The tree had no branch for picking many from short labels outside a questionnaire. The new branch recommends ToggleChip: a pill that toggles on and off, in a wrapping row, with a check beside the fill when selected. Questionnaires and options with a description keep CheckboxCard. `ToggleChip` is listed in `component-names.json` with status `build`: the registry has no such item, and `vois-toggle-group` is a joined bar for formatting or view options.
+
+### Changed
+- **`DateInput` is a composed component.** It was `defer`, so the model named a DatePicker for HELD-09. It now has status `compose` from Input, Popover and Calendar, the same recipe as DatePicker, with the value rules in the `date` field type of `vois-fields`.
+
+---
+
 ## [1.39.0] - 2026-11-25
 
 ### Changed
