@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.37.1] - 2026-11-25
+
+### Fixed
+- **Ten names that jobs recommend can now be looked up.** Spinner, Stepper, Wizard, Badge, AvatarGroup, List, Form, Panel, RichTextEditor and Card were answers in `components-rules.json` jobs but missing from `component-names.json`, so `query.mjs <name>` said "not a component in the index". They are now in `outsideInventory` and link to their jobs. Their `shadcn` field is null because it was not checked against shadcn-ui/ui. The retrieval index is regenerated. Found by the Phase 0 baseline: all 55 `vois-eval` scenarios now name a component the index can resolve.
+
 ## [1.37.0] - 2026-11-25
 
 ### Added
