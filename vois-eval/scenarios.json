@@ -158,7 +158,9 @@
         "Full navigation to a separate edit page (loses the table context entirely)"
       ],
       "score_categories_checked": ["component_selection", "decision_layer_adherence"],
-      "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result. Phase 0 (2026-11-25): all 3 samples answered with an inline cell edit (a Select in the cell, PATH-TABLE-INLINE-EDIT) because the prompt said 'inline'. Removed 'inline' from the prompt."
+      "added_note": "Added in response to run 1 (2026-09-12) finding this case ambiguous -- see EVAL-006's revision_note. Tests the Popover branch added to JOB-OVERLAY-INTERACTION as a direct result. Phase 0 (2026-11-25): all 3 samples answered with an inline cell edit (a Select in the cell, PATH-TABLE-INLINE-EDIT) because the prompt said 'inline'. Removed 'inline' from the prompt.",
+      "accepted_alternative": "A Select in the status cell that saves on pick, with Toast and Undo, counts as a pass. It is a Popover anchored to the cell in practice, and PATH-TABLE-INLINE-EDIT describes inline cell edit.",
+      "revision_note": "Phase 0 re-run (2026-11-25): 3 of 3 samples answered an inline Select in the cell, not the word Popover. Decided 2026-11-25: accept it. Expected outcome unchanged."
     },
     {
       "id": "EVAL-012",
