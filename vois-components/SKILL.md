@@ -115,7 +115,7 @@ Rules that apply on top:
 - **Group consistency.** Inside one group of actions, every button has an icon or none does. If one action has no good symbol, drop all the icons in that group. Do not force an icon onto a button just to match its neighbors.
 - **One icon per button.** Never a leading and a trailing icon together.
 - **Ellipsis is label punctuation, not an icon.** End the label with "..." when the action needs more input before it happens (a dialog, a name field, a choice). "Rename..." opens a prompt. A Delete that goes straight to a confirm dialog does not need one. Apply this rule on its own, whatever the icon decision was.
-- **Loading.** While the action runs, a spinner replaces the leading icon. Keep the button width fixed so the label does not jump.
+- **Loading.** While the action runs, show only a spinner. Hide the label and any icon, and keep the button width fixed so nothing jumps. Keep the label in the markup so the button keeps its name, and set `aria-busy`. The registry Button's `loading` prop does all of this.
 - **Destructive buttons.** Trash icon is allowed. Color and variant come from vois-tokens, not from the icon.
 - **Accessibility.** The label already names the action, so the icon is decorative. Give it `aria-hidden="true"`. This matches the existing decorative-icon rule in vois-tokens (`DS-A11Y-008`).
 - **RTL.** Mirror directional icons (arrows, chevrons) and swap leading and trailing sides. Do not mirror symbols like plus or download.
