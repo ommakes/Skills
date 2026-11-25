@@ -311,7 +311,7 @@
       "purpose": "A list of records people scan, filter, and act on in bulk.",
       "navigation": "Same sidebar shell. Search sits left in the toolbar above the table. Filter and Sort are pinned top right. A row opens a preview panel on desktop and a full detail page on smaller screens.",
       "responsive": {
-        "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen panel because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
+        "phone": "Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen Drawer because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs.",
         "tablet": "Table has four columns on every width, so nothing is hidden. Filter and Sort stay pinned top right, with applied filters as chips under the toolbar. No preview panel, so rows open the detail page.",
         "desktop": "Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right."
       },

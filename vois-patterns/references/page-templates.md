@@ -85,7 +85,7 @@ A Dense page is shown while the primary input is not a fine pointer (CSS `(point
 
 ### Which overlay opens `[PATH-PAGE-OVERLAY]`
 
-A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row, or filters: right panel on tablet and desktop, full screen on phone. Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.
+A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row: right panel (a Sheet) on tablet and desktop, full screen on phone. Filters: right panel on tablet and desktop, and on phone a full screen Drawer (vois-components JOB-OVERLAY-INTERACTION). Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.
 
 ### Button order `[PATH-PAGE-BUTTON-ORDER]`
 
@@ -101,7 +101,7 @@ Do not hide columns. Follow PATH-B-NARROW: four columns or fewer stack as list r
 
 ### Sort and filter position `[PATH-PAGE-SORT-FILTER]`
 
-Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen panel on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.
+Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen Drawer on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.
 
 ## Density at each width
 
