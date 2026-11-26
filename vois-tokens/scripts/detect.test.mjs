@@ -2557,3 +2557,53 @@ test("DS-GLASS-003 blockMap: a parent that never closes, with a child that never
   const args = { content: "{BACKDROP-FILTER: none;${-webkit-backdrop-filter: blur(2px);", lines: ["{BACKDROP-FILTER: none;${-webkit-backdrop-filter: blur(2px);"], filePath: "a.css" };
   assert.match(now.missingWebkitTwin(args)[0].message, /no -webkit-backdrop-filter in the same rule/, "the twin is in the child, not in the parent's own text");
 });
+
+test("DS-GLASS-005 reads @keyframes in linear time, and finds a backdrop-filter in a nested block", () => {
+  const fast = (what, src) => assert.ok(ruleTime("DS-GLASS-005", "a.css", src) < 1500, what);
+  fast("20,000 keyframes in a row", "@keyframes k{ a{x:y} }\n".repeat(20000));
+  fast("5,000 keyframes nested", `${"@keyframes k{".repeat(5000)}${"}".repeat(5000)}`);
+  fast("20,000 keyframes nested", `${"@keyframes k{".repeat(20000)}${"}".repeat(20000)}`);
+  fast("20,000 keyframes nested, each holding a declaration", `${"@keyframes k{ backdrop-filter: blur(1px);".repeat(20000)}${"}".repeat(20000)}`);
+  fast("20,000 keyframes nested, closed, with a declaration", `${"@keyframes k{".repeat(20000)}backdrop-filter: blur(1px);${"}".repeat(20000)}`);
+  fast("20,000 keyframes that never close", "@keyframes k{ a{x:y}\n".repeat(20000));
+  fast("20,000 keyframes that never close, each with a declaration", "@keyframes k{ backdrop-filter: blur(1px);\n".repeat(20000));
+  fast("one keyframes block and 20,000 declarations", `@keyframes k{${"backdrop-filter: blur(1px);".repeat(20000)}}`);
+  const k = (src) => has(detectFile("a.css", src), "DS-GLASS-005").length;
+  assert.equal(k("@keyframes k{ from{ backdrop-filter: blur(0) } to{ backdrop-filter: blur(8px) } }"), 1, "one finding per keyframes block");
+  assert.equal(k("@keyframes k{ from{ opacity: 0 } to{ opacity: 1 } }"), 0);
+  assert.equal(k("@keyframes k{ from{ opacity: 0 } } .a{ backdrop-filter: blur(1px) }"), 0, "a declaration after the block does not count");
+  assert.equal(k(".a{ backdrop-filter: blur(1px) } @keyframes k{ from{ opacity: 0 } }"), 0, "nor one before it");
+  assert.equal(k("@keyframes a{ from{ opacity: 0 } } @keyframes b{ to{ -webkit-backdrop-filter: blur(2px) } }"), 1, "the second block only");
+  assert.equal(k("@-webkit-keyframes k{ 50%{ -webkit-backdrop-filter : blur(2px) } }"), 1, "prefixed, with a space before the colon");
+  assert.equal(k("@keyframes outer{ @keyframes inner{ x:y } to{ backdrop-filter: blur(2px) } }"), 1, "the outer block holds the declaration; the inner one does not");
+  assert.equal(k("@keyframes outer{ @keyframes inner{ to{ backdrop-filter: blur(2px) } } }"), 2, "a declaration in the inner block is in the outer block too");
+  assert.equal(k("@keyframes k{ from{ my-backdrop-filter: x } }"), 0, "not inside a longer name");
+  assert.equal(k("@keyframes k{ from{ backdrop-filter"), 0, "a name with no colon");
+});
+
+test("the glass Tailwind patterns read an unclosed bracket in linear time, and still read a closed one", () => {
+  const fast = (id, file, src, what) => assert.ok(ruleTime(id, file, src) < 1500, `${id}: ${what}`);
+  for (const [what, src] of [["unclosed transition-[", "transition-[".repeat(30000)], ["unclosed transition-[ in a string", `"${"transition-[".repeat(30000)}"`],
+    ["unclosed with a variant", "md:transition-[".repeat(30000)], ["unclosed with spaces", "transition-[ ".repeat(30000)]]) fast("DS-GLASS-005", "a.tsx", src, what);
+  for (const [what, src] of [["unclosed backdrop-blur-[ in a string", `"${"backdrop-blur-[".repeat(30000)}"`], ["unclosed backdrop-blur-[ in @apply", `@apply ${"backdrop-blur-[".repeat(30000)};`]]) fast("DS-GLASS-004", what.includes("@apply") ? "a.css" : "a.tsx", src, what);
+  const g5 = (src) => has(detectFile("a.tsx", src), "DS-GLASS-005").length;
+  assert.equal(g5('<i className="transition-[backdrop-filter]" />'), 1);
+  assert.equal(g5('<i className="transition-[opacity,backdrop-filter,transform]" />'), 1);
+  assert.equal(g5('<i className="transition-[opacity" />'), 0, "an unclosed one reads nothing");
+  assert.equal(g5(`<i className="transition-[${"a,".repeat(200)}backdrop-filter]" />`), 1, "a long list, 400 characters");
+  const g4 = (src) => has(detectFile("a.tsx", src), "DS-GLASS-004").length;
+  assert.equal(g4('<i className="backdrop-blur-[12px]" />'), 1);
+  assert.equal(g4('<i className="backdrop-blur-[var(--glass-blur-standard)]" />'), 0);
+  assert.equal(g4('<i className="backdrop-blur-[12px" />'), 0, "an unclosed one reads nothing");
+});
+
+test("the glass and elevation checks stay fast on thousands of repeats of text that opens a scan and never closes it", () => {
+  const tokens = ["transition-[", "backdrop-blur-[", "shadow-[", "inset-shadow-[", "backdrop-filter: ", "-webkit-backdrop-filter:", "backdropFilter: ", "box-shadow: ", "boxShadow: ",
+    "@keyframes k{", "@apply ", "{", "(", "a:", " ", "\n", "[", "animate={{", "style={{"];
+  const ids = ["DS-GLASS-003", "DS-GLASS-004", "DS-GLASS-005", "DS-ELEVATION-007"];
+  for (const token of tokens) {
+    for (const [file, src] of [["a.tsx", token.repeat(10000)], ["a.css", token.repeat(10000)], ["a.tsx", `"${token.repeat(10000)}"`]]) {
+      for (const id of ids) assert.ok(ruleTime(id, file, src) < 1500, `${id} on ${JSON.stringify(token)} x 10,000 (${file})`);
+    }
+  }
+});

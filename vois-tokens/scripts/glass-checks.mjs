@@ -14,12 +14,14 @@ import { STRING, stringsOfExpression } from "./elevation-checks.mjs";
  * "{" that opens the innermost block around `index`, or -1 outside any block, and `ownText(index)` is that block's own text
  * without its nested blocks, kept in braces so the first key of an object still follows a "{". Outside any block it is the whole
  * text. Both are looked up, so many declarations in one block cost one pass in all, where scanning back from each one costs the
- * square of the block. A stray "}" closes nothing; a block that never closes runs to the end.
+ * square of the block. `endOf(open)` is the "}" that closes the block opened at `open` (the end of the text if it never
+ * closes). A stray "}" closes nothing; a block that never closes runs to the end.
  */
 function blockMap(text) {
   const n = text.length;
   const owner = new Int32Array(n + 1);
   const own = new Map(); // "{" index -> own text
+  const ends = new Map(); // "{" index -> the index of its "}", or the end of the text
   const stack = []; // open frames: { open, from, parts }
   let top = -1;
   for (let i = 0; i < n; i++) {
@@ -34,27 +36,19 @@ function blockMap(text) {
       const frame = stack.pop();
       frame.parts.push(text.slice(frame.from, i));
       own.set(frame.open, `{${frame.parts.join("")}}`);
+      ends.set(frame.open, i);
       const parent = stack[stack.length - 1];
       if (parent) parent.from = i + 1;
       top = parent ? parent.open : -1;
     }
   }
   owner[n] = top;
-  for (const frame of stack) { frame.parts.push(text.slice(frame.from, n)); own.set(frame.open, `{${frame.parts.join("")}}`); }
+  for (const frame of stack) { frame.parts.push(text.slice(frame.from, n)); own.set(frame.open, `{${frame.parts.join("")}}`); ends.set(frame.open, n); }
   return {
     ownerOf: (index) => owner[Math.min(Math.max(index, 0), n)],
+    endOf: (open) => ends.get(open) ?? n,
     ownText: (index) => { const open = owner[Math.min(Math.max(index, 0), n)]; return open === -1 ? text : own.get(open); },
   };
-}
-
-/** The index of the "}" that closes the block opened at `open`, or the end of the text. */
-function blockEnd(text, open) {
-  let depth = 0;
-  for (let i = open; i < text.length; i++) {
-    if (text[i] === "{") depth++;
-    else if (text[i] === "}" && --depth === 0) return i;
-  }
-  return text.length;
 }
 
 /** A CSS declaration's value: up to ";" or "}" (a value may wrap onto the next line), or a quote when it sits in a string. */
@@ -130,7 +124,8 @@ export function missingWebkitTwin({ content, lines, filePath }) {
 // and backdrop-blur-none pass. Variants (supports-[...]:, md:) are read like the plain class.
 // No variant chain in front: `(?:[\w-]+:)*` before the class is quadratic on "a:a:a:...", and the class matches the same
 // text without it (the ":" before it already passes the lookbehind).
-const TW_BLUR = /(?<![\w-])backdrop-blur(?:-(xs|sm|md|lg|xl|2xl|3xl|none)|-\[([^\]\s]+)\]|-\(([^)\s]+)\))?(?![\w\[(-])/g;
+// The text in [ ] or ( ) stops at 600 characters, so an unclosed `backdrop-blur-[` looks ahead 600 characters and not to the end of the file.
+const TW_BLUR = /(?<![\w-])backdrop-blur(?:-(xs|sm|md|lg|xl|2xl|3xl|none)|-\[([^\]\s]{1,600})\]|-\(([^)\s]{1,600})\))?(?![\w\[(-])/g;
 
 /** DS-GLASS-004: a literal blur radius instead of a --glass-blur-* token. */
 export function literalGlassBlur({ content, lines, filePath }) {
@@ -185,6 +180,7 @@ export function animatedGlassBlur({ content, lines, filePath }) {
   const findings = [];
   const msg = "backdrop-filter is animated. The browser re-blurs every frame; fade opacity instead.";
   let m;
+  let blocks = null; // read once, when a check below needs it
   // transition / transition-property, with or without -webkit- (CSS, or CSS in a string)
   const tr = /(?<![\w-])(?:-webkit-)?transition(?:-property)?\s*:\s*([^;{}"'`]*)/gi;
   while ((m = tr.exec(text)) !== null) if (ANIMATED.test(m[1])) findings.push(finding(content, lines, m.index, msg));
@@ -193,11 +189,11 @@ export function animatedGlassBlur({ content, lines, filePath }) {
     const key = /(?=["']?(?:transition|transitionProperty|WebkitTransition)["']?\s*:)(?<=[{,]\s*)["']?(?:transition|transitionProperty|WebkitTransition)["']?\s*:/g;
     while ((m = key.exec(text)) !== null) if (stringsOfExpression(text, m.index + m[0].length).some((v) => ANIMATED.test(v))) findings.push(finding(content, lines, m.index, msg));
     // Tailwind transition-[backdrop-filter] or a list that holds it
-    const tw = /(?<![\w-])transition-\[([^\]\s]*)\]/g;
+    // At most 600 characters between the brackets, so an unclosed `transition-[` does not look to the end of the file.
+    const tw = /(?<![\w-])transition-\[([^\]\s]{0,600})\]/g;
     while ((m = tw.exec(text)) !== null) if (/(?:^|,)(?:-webkit-)?backdrop-filter(?:,|$)/.test(m[1])) findings.push(finding(content, lines, m.index, msg));
     // A motion prop whose object sets the filter: animate={{ backdropFilter: ... }}
     const seen = new Set(); // one finding per object, even when it sets both keys
-    let blocks = null;
     for (const re of [JS_KEY, JS_TWIN]) {
       const k = new RegExp(re.source, "g");
       while ((m = k.exec(text)) !== null) {
@@ -213,11 +209,24 @@ export function animatedGlassBlur({ content, lines, filePath }) {
     }
   }
   // @keyframes with backdrop-filter inside (CSS, or CSS in a string)
+  // A block holds a declaration when one starts after its "{" and ends before its "}", nested blocks included. The declarations
+  // are found once and searched by position, so a block costs a lookup and not a scan of its body.
   const kf = /@(?:-webkit-)?keyframes\s+[\w-]+\s*\{/g;
+  let decls = null; // [start, end] of each backdrop-filter declaration, in order
   while ((m = kf.exec(text)) !== null) {
+    if (decls === null) {
+      decls = [];
+      const d = /(?<![\w-])(?:-webkit-)?backdrop-filter\s*:/gi;
+      let x;
+      while ((x = d.exec(text)) !== null) decls.push([x.index, x.index + x[0].length]);
+    }
+    if (decls.length === 0) break; // no declaration anywhere, so no block holds one: the block map is not needed
+    blocks ??= blockMap(text);
     const open = m.index + m[0].length - 1;
-    const body = text.slice(open, blockEnd(text, open));
-    if (/(?<![\w-])(?:-webkit-)?backdrop-filter\s*:/i.test(body)) findings.push(finding(content, lines, m.index, msg));
+    let lo = 0;
+    let hi = decls.length;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (decls[mid][0] > open) hi = mid; else lo = mid + 1; }
+    if (lo < decls.length && decls[lo][1] <= blocks.endOf(open)) findings.push(finding(content, lines, m.index, msg));
   }
   return findings.sort((a, b) => a.line - b.line);
 }

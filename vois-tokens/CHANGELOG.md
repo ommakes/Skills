@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.7] - 2026-11-24
+
+### Fixed
+- **`DS-GLASS-005` scanned a `@keyframes` block's whole body, nested blocks included, for every `@keyframes`.** Blocks nested inside each other (not valid CSS) cost time in proportion to the square of the nesting: 5,000 took 0.9 s. The `backdrop-filter` declarations are now found once and each `@keyframes` block looks up whether one starts after its `{` and ends before its `}` (`endOf` in `blockMap`, `scripts/glass-checks.mjs`). The findings are the same, including that an outer block holds the declarations of the blocks inside it. A test compares the check with the 1.48.3 code on random files that include `@keyframes` blocks.
+- **`DS-GLASS-004` and `-005` were quadratic on an unclosed `backdrop-blur-[` or `transition-[`.** Each one looked for its `]` to the end of the file (30,000 of them took 6 to 8 s). The text between the brackets now stops at 600 characters, so a longer class (nothing real is) is no longer read. The `@keyframes` branch also skips building the block map when a file has no `backdrop-filter` declaration at all.
+- Checked against the code: no check in `registry.mjs` took over 1.5 s on 20,000 repeats of any of 31 tokens that open a scan and do not close it (`transition-[`, `{`, `"`, `/*`, `<img `, `blur(` and so on), as code, as CSS and inside a string. This was a one-off run over every check. CI runs the four glass and elevation checks over 19 of them.
+
 ## [1.48.6] - 2026-11-23
 
 ### Changed
