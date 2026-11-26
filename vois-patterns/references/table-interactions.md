@@ -33,8 +33,8 @@ Extends `table-list.md`. That file says which kind of table to build and how a r
 
 ### `[PATH-TABLE-BULK-DESTRUCTIVE]` Bulk destructive actions
 **When:** A bulk action deletes, archives, or otherwise cannot be undone cheaply.
-**Do:** Confirm first and state the count. Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.
-**Builds on:** JOB-CONFIRM-DESTRUCTIVE, JOB-TRANSIENT-FEEDBACK
+**Do:** Confirm first and state the count. Use an AlertDialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.
+**Builds on:** JOB-CONFIRM-DESTRUCTIVE, JOB-TRANSIENT-FEEDBACK, PATH-TABLE-BULK-BAR
 **Basis:** judgment.
 
 

@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks } from "./baseline.mjs";
+import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks, gate, REPORT_ID_HINT } from "./baseline.mjs";
 import { main as queryMain, loadAll as loadQuery } from "../../vois-components/scripts/query.mjs";
 
 const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
@@ -345,4 +345,122 @@ test("the retrieval hint names only flags query.mjs accepts, and the ids it show
     assert.ok(!/unknown flag/.test(r.out), `${f} is a flag query.mjs knows`);
   }
   for (const args of [["--patterns"], ["--fields"], ["--group", "table-interactions"], ["--id", "PATH-B-ROW-OPEN"], ["--id", "FIELD-SENSITIVE-STORAGE"]]) assert.equal(queryMain(args, all).code, 0, args.join(" "));
+});
+
+test("the retrieval prompt asks for whole rule ids, with example ids that name no answer", () => {
+  const p = buildPrompt("x", { skills: true, retrieval: true });
+  assert.ok(p.includes("in full"));
+  assert.ok(!buildPrompt("x", { skills: true }).includes("in full"), "the skills arm does not get the id hint");
+  assert.ok(!REPORT_ID_HINT.match(/(DS|PATH|JOB|FIELD)-(?!NAME)[A-Z]/), "example ids are invented");
+});
+
+// gate(): the Phase 2 pass rule as a pure function. Fixtures only; no model is called.
+const gateRow = (scenario, sample, o = {}) => ({
+  scenario, sample, cost_usd: 0.1, turns: 4, tokens: { total_in: 1000, output_tokens: 50 },
+  lookups: { read_calls: 0, search_calls: 0, files_read: 0, file_paths: [], skill_tokens_est: 0, query_calls: 2, packet_lines: [22, 30], other_bash_attempts: 0, ...o.lookups },
+  rule_recall: "recall" in o ? o.recall : 1, rules_missing: o.missing ?? [], report: o.report ?? "", ...(o.error ? { error: o.error } : {}),
+});
+const gateFile = (arm, rows) => ({ arm, rows, summary: summarize(rows) });
+const heldRows = (over = {}) => Array.from({ length: 10 }, (_, i) => gateRow(`HELD-${String(i + 1).padStart(2, "0")}`, 1, over[i] ?? {}));
+const failed = (g) => g.checks.filter((c) => !c.pass).map((c) => c.name);
+
+test("gate: a clean retrieval run over HELD-01..10 passes", () => {
+  const g = gate(gateFile("retrieval", heldRows()));
+  assert.equal(g.pass, true, JSON.stringify(failed(g)));
+});
+
+test("gate: recall mean under 0.95 fails, 0.95 passes, and no numeric recall at all fails", () => {
+  const rows = (n) => Array.from({ length: 20 }, (_, i) => gateRow(`ADV-0${(i % 8) + 1}`, i, { recall: i < n ? 0 : 1, missing: [] }));
+  assert.ok(failed(gate(gateFile("retrieval", rows(2)))).includes("rule_recall.mean >= 0.95"), "0.9 fails");
+  assert.ok(!failed(gate(gateFile("retrieval", rows(1)))).includes("rule_recall.mean >= 0.95"), "exactly 0.95 passes");
+  const none = [gateRow("ADV-09", 1, { recall: undefined })];
+  assert.ok(failed(gate(gateFile("retrieval", none))).includes("rule_recall.mean >= 0.95"));
+});
+
+test("gate: one HELD id missing on one row fails even when the mean stays above 0.95", () => {
+  const rows = [...heldRows(), ...Array.from({ length: 40 }, (_, i) => gateRow("HELD-02", i + 2))];
+  rows[0] = gateRow("HELD-01", 1, { recall: 0.5, missing: ["DS-A11Y-020"] });
+  const f = gateFile("retrieval", rows);
+  assert.ok(f.summary.rule_recall.mean >= 0.95, "the mean alone would pass");
+  const g = gate(f);
+  assert.equal(g.pass, false);
+  assert.deepEqual(g.per_id["HELD-01"].missing, ["DS-A11Y-020"]);
+  assert.ok(failed(g).includes("no HELD id misses a required rule on any row"));
+});
+
+test("gate: packets over 40 lines, a median over 40, and a median of zero query calls each fail a retrieval run", () => {
+  assert.ok(failed(gate(gateFile("retrieval", heldRows({ 0: { lookups: { packet_lines: [41] } } })))).includes("packet_lines.over_40 == 0"));
+  const big = heldRows(Object.fromEntries(Array.from({ length: 10 }, (_, i) => [i, { lookups: { packet_lines: [41] } }])));
+  assert.ok(failed(gate(gateFile("retrieval", big))).includes("packet_lines.median <= 40"));
+  const ignored = heldRows(Object.fromEntries(Array.from({ length: 10 }, (_, i) => [i, { lookups: { query_calls: 0, packet_lines: [] } }])));
+  const names = failed(gate(gateFile("retrieval", ignored)));
+  assert.ok(names.includes("query_calls.median >= 1"));
+  assert.ok(names.includes("packet_lines.median <= 40"), "no packet read is not a pass");
+});
+
+test("gate: an errored row fails the gate; dropping it would have hidden the miss", () => {
+  const rows = heldRows({ 3: { error: "timeout", recall: undefined } });
+  const f = gateFile("retrieval", rows);
+  assert.equal(f.summary.errored, 1);
+  assert.ok(failed(gate(f)).includes("errored == 0"));
+});
+
+test("gate: retrieval recall lower than the skills arm fails, equal passes", () => {
+  const skills = gateFile("skills", heldRows());
+  const lower = heldRows({ 0: { recall: 0.5, missing: ["DS-A11Y-020"] } });
+  const many = [...lower, ...Array.from({ length: 90 }, (_, i) => gateRow("HELD-02", i + 2))];
+  assert.ok(failed(gate(gateFile("retrieval", many), { skills })).includes("retrieval recall >= skills recall"));
+  assert.ok(!failed(gate(gateFile("retrieval", heldRows()), { skills })).includes("retrieval recall >= skills recall"));
+});
+
+test("gate: reading a SKILL.md or a behaviors card fails while the cards question is open, and is only recorded once it is decided", () => {
+  const rows = heldRows({ 4: { lookups: { files_read: 2, file_paths: ["skills/vois-components/SKILL.md", "skills/vois-components/behaviors/dialog.md"] } }, 5: { lookups: { files_read: 1, file_paths: ["skills/vois-tokens/references/x.md"] } } });
+  const g = gate(gateFile("retrieval", rows));
+  assert.ok(failed(g).includes("no retrieval row read a SKILL.md or behaviors/*.md (cards question open)"));
+  assert.deepEqual(g.reads_of_skill_or_card.map((r) => r.path), ["skills/vois-components/SKILL.md", "skills/vois-components/behaviors/dialog.md"]);
+  const decided = gate(gateFile("retrieval", rows), { cardsDecided: true });
+  assert.equal(decided.pass, true);
+  assert.equal(decided.reads_of_skill_or_card.length, 2, "still recorded");
+  const old = gate(gateFile("retrieval", heldRows({ 0: { lookups: { files_read: 1, file_paths: undefined } } })));
+  assert.equal(old.reads_of_skill_or_card[0].path, "(paths not recorded)", "a file read with no path cannot be waved through");
+});
+
+test("gate: ADV-07 must name FIELD-SENSITIVE-STORAGE and ADV-10 one of the two PATH-TABLE ids; ADV-09 needs a person's read and stays out of the mean", () => {
+  const adv = (o = {}) => [
+    gateRow("ADV-07", 1, { report: o.a07 ?? "Use FIELD-SENSITIVE-STORAGE." }),
+    gateRow("ADV-10", 1, { report: o.a10 ?? "Per PATH-TABLE-NARROW-SELECT, then JOB-CONFIRM-DESTRUCTIVE." }),
+    gateRow("ADV-09", 1, { recall: undefined, report: "No rule covers this." }),
+  ];
+  const f = (o, opts) => gate(gateFile("retrieval", adv(o)), { cardsDecided: true, ...opts });
+  assert.equal(f({}, { reads: { "ADV-09": "pass" } }).pass, true);
+  assert.deepEqual(failed(f({})), ["ADV-09 read by a person"], "no read recorded");
+  assert.deepEqual(failed(f({}, { reads: { "ADV-09": "fail" } })), ["ADV-09 read by a person"]);
+  assert.ok(failed(f({ a07: "Use a date input." }, { reads: { "ADV-09": "pass" } })).includes("ADV-07 reports name FIELD-SENSITIVE-STORAGE"));
+  assert.ok(failed(f({ a10: "JOB-CONFIRM-DESTRUCTIVE only." }, { reads: { "ADV-09": "pass" } })).includes("ADV-10 reports name PATH-TABLE-NARROW-SELECT or PATH-TABLE-BULK-DESTRUCTIVE"));
+  assert.equal(gateFile("retrieval", adv()).summary.rule_recall.samples, 2, "ADV-09 is not in the mean");
+});
+
+test("lookups records the relative path of each file read", () => {
+  const dir = mkdtempSync(join(tmpdir(), "gate-paths-"));
+  try {
+    mkdirSync(join(dir, "skills", "vois-components"), { recursive: true });
+    writeFileSync(join(dir, "skills", "vois-components", "SKILL.md"), "x");
+    const l = lookups([{ name: "Read", input: { file_path: join(dir, "skills", "vois-components", "SKILL.md") } }], dir);
+    assert.deepEqual(l.file_paths, ["skills/vois-components/SKILL.md"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--gate scores a finished file from the command line and exits 1 on a fail", () => {
+  const dir = mkdtempSync(join(tmpdir(), "gate-cli-"));
+  try {
+    const good = join(dir, "good.json"), bad = join(dir, "bad.json");
+    writeFileSync(good, JSON.stringify(gateFile("retrieval", heldRows())));
+    writeFileSync(bad, JSON.stringify(gateFile("retrieval", heldRows({ 0: { recall: 0, missing: ["JOB-X"] } }))));
+    const run = (f, ...x) => spawnSync(process.execPath, [fileURLToPath(new URL("./baseline.mjs", import.meta.url)), "--gate", f, ...x], { encoding: "utf8" });
+    const a = run(good), b = run(bad);
+    assert.equal(a.status, 0, a.stdout + a.stderr);
+    assert.match(a.stdout, /GATE: pass/);
+    assert.equal(b.status, 1);
+    assert.match(b.stdout, /missing  HELD-01: JOB-X/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

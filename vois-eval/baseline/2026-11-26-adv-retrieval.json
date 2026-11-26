@@ -1,0 +1,1907 @@
+{
+  "model": "claude-sonnet-5-5-medium",
+  "harness": "cursor-subagent",
+  "harness_note": "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.",
+  "samples_per_scenario": 3,
+  "skills": [
+    "vois-patterns",
+    "vois-components",
+    "vois-tokens",
+    "vois-dataviz",
+    "righter"
+  ],
+  "arm": "retrieval",
+  "outside_opens": [],
+  "rows": [
+    {
+      "scenario": "ADV-01",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          25,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-SECONDARY-CONTENT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A right-anchored Sheet (side drawer) opened from the list row, with the row id in the URL and the active row highlighted; if the record has tabs, a timeline, related records or a long form, the Sheet carries an Open action to a full page.\n2. query.mjs --jobs, --job JOB-SECONDARY-CONTENT, --job JOB-OVERLAY-INTERACTION, --id PATH-B-ROW-OPEN.\n3. \"Everything about a record\" is ambiguous: 8 or fewer fields with no related records gives a Sheet only, while a richer record gives a Sheet plus a full page; I did not look up the Sheet component rules or DS-PANEL-003."
+    },
+    {
+      "scenario": "ADV-01",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          25,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-SECONDARY-CONTENT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "DS-PANEL-003"
+      ],
+      "auto_match": null,
+      "report": "1. A right-anchored Sheet opened from the table row (view first, Edit action, row id in URL, active row highlighted) if the record has 8 or fewer fields and no related records; if it has tabs, a timeline or related records, the Sheet gets an Open action that goes to a full page.\n2. Looked up --jobs, JOB-SECONDARY-CONTENT, JOB-OVERLAY-INTERACTION, and PATH-B-ROW-OPEN.\n3. \"Everything about a record\" doesn't say how many fields or whether there are related records, so the Sheet versus full page choice depends on the record's size."
+    },
+    {
+      "scenario": "ADV-01",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          25,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-SECONDARY-CONTENT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "DS-PANEL-003"
+      ],
+      "auto_match": null,
+      "report": "1. A right-anchored Sheet opened from the row (view first, with an Edit action), with the table staying visible and the row id in the URL; if the record has tabs, a timeline, related records or a long form, use a full page reached from an Open action in the Sheet.\n2. query.mjs --jobs, --job JOB-SECONDARY-CONTENT, --job JOB-OVERLAY-INTERACTION, --id PATH-B-ROW-OPEN (also referenced: PATH-D-4, DS-PANEL-002/003, not opened).\n3. \"Everything about a record\" does not say how many fields or whether there are related records, so Sheet versus full page depends on that; also Sheet has no registry item or card."
+    },
+    {
+      "scenario": "ADV-02",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "PATH-TABLE-BULK-BAR"
+      ],
+      "auto_match": null,
+      "report": "1. Use an AlertDialog to confirm the bulk delete that states the count (\"Delete 30 items?\"), or if the delete can be undone, skip the dialog and show a Toast with an undo action.\n2. query.mjs --jobs, --job JOB-CONFIRM-DESTRUCTIVE, --id PATH-TABLE-BULK-DESTRUCTIVE.\n3. PATH-TABLE-BULK-DESTRUCTIVE says \"Use a Dialog\" while the job says AlertDialog, and it was unclear whether the deletion is reversible."
+    },
+    {
+      "scenario": "ADV-02",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 6,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          28,
+          4,
+          4,
+          21
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --patterns",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-SELECT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "PATH-TABLE-BULK-BAR"
+      ],
+      "auto_match": null,
+      "report": "1. Bulk-select the entries in the table/list, show a bulk bar with the destructive action last, and confirm with an AlertDialog that states the count (\"Delete 30 entries?\") with a description of what will happen; if the removal can be undone, skip the dialog and use a Toast with undo instead.\n2. Ran query.mjs --jobs, --job JOB-CONFIRM-DESTRUCTIVE, --patterns, --id PATH-TABLE-BULK-DESTRUCTIVE, --id PATH-TABLE-NARROW-SELECT, and the AlertDialog component (DS-A11Y-019/020/022, DS-MODAL-004, LOOKALIKE-009).\n3. Nothing unclear in the rules, except whether these deletions are reversible (it decides between AlertDialog and Toast with undo), and PATH-TABLE-BULK-DESTRUCTIVE says \"Dialog\" while the job says AlertDialog."
+    },
+    {
+      "scenario": "ADV-02",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          28,
+          4,
+          21
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --patterns",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "PATH-TABLE-BULK-BAR"
+      ],
+      "auto_match": null,
+      "report": "1. Use an AlertDialog that states the count (\"Delete 30 entries?\") before the bulk delete, or if it can be undone, skip the dialog and use a Toast with an undo action.\n2. Looked up --jobs, JOB-CONFIRM-DESTRUCTIVE, --patterns, PATH-TABLE-BULK-DESTRUCTIVE, and the AlertDialog component (DS-A11Y-019/020/022, DS-MODAL-004, LOOKALIKE-009).\n3. PATH-TABLE-BULK-DESTRUCTIVE says \"Dialog\" while the job says AlertDialog; nothing in the rules covers showing which items are selected to prevent wrong picks (did not check PATH-TABLE-NARROW-SELECT)."
+    },
+    {
+      "scenario": "ADV-03",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          4,
+          11
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tooltip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. Tooltip (the project's, else the registry's vois-tooltip) on the truncated table cell, showing the full string as short passive text; not a native title attribute. If the string is over 25 words or needs rich content, use HoverCard instead.\n2. query.mjs --jobs, --job JOB-CONTEXTUAL-INFO, --id PATH-TABLE-STATE-TRUNCATED (not relevant, it is about plan limits), Tooltip (DS-COMPONENT-001, LOOKALIKE-011).\n3. Nothing really; no table-cell-specific truncation rule exists, and the Tooltip has no behavior card, and touch/keyboard behavior is not specified beyond \"hover/focus\"."
+    },
+    {
+      "scenario": "ADV-03",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          11,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tooltip",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. Tooltip (the project's, or the registry's vois-tooltip), wrapping the truncated cell text; not a title attribute.\n2. query.mjs --jobs, --job JOB-CONTEXTUAL-INFO, Tooltip (DS-COMPONENT-001, LOOKALIKE-011), --id PATH-TABLE-STATE-TRUNCATED (irrelevant: plan limits).\n3. No table-cell-truncation rule exists; the tooltip is chosen by inference from the short-label rule (25 words or under). A longer string would need HoverCard or Popover, and touch users get no hover."
+    },
+    {
+      "scenario": "ADV-03",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          4,
+          11
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tooltip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. Tooltip (vois-tooltip if the project has none) on the truncated table cell, showing the full string as short passive text on hover/focus; not a title attribute.\n2. query.mjs --jobs, --job JOB-CONTEXTUAL-INFO, --id PATH-TABLE-STATE-TRUNCATED, Tooltip (DS-COMPONENT-001, LOOKALIKE-011).\n3. No rule covers truncated table cells; PATH-TABLE-STATE-TRUNCATED is about plan limits, not text. The Tooltip limit is 25 words, so a longer string would need a Popover or HoverCard."
+    },
+    {
+      "scenario": "ADV-04",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          21,
+          7
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs ToggleChip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. ToggleChip: a wrapping row of pills, multi-select, with a check plus fill on selected chips, any min or max stated before the chips, and Select all and Clear only if there are more than 6 chips.\n2. query.mjs --jobs, --job JOB-CHOOSE-FROM-LIST, and the ToggleChip component lookup.\n3. ToggleChip has no registry item and no behavior card yet (status: build), so it must be built locally, and the packet gave no detailed rules for it."
+    },
+    {
+      "scenario": "ADV-04",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          21,
+          7
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs ToggleChip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. ToggleChip: a wrapping row of pill chips, each toggling on/off with a check plus fill when selected; state any min or max before the chips; add Select all and Clear only if over 6 chips.\n2. query.mjs --jobs, --job JOB-CHOOSE-FROM-LIST (onboarding topics/interests/tags bullet), and ToggleChip component lookup.\n3. ToggleChip is not in the registry yet (status: build, no behavior card), so it has to be built from the job rule; the number of tags and any min or max were not specified."
+    },
+    {
+      "scenario": "ADV-04",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          21,
+          7
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs ToggleChip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. ToggleChip: a wrapping row of pill chips that toggle on/off with a check plus fill when selected, with any min/max stated before the chips, and Select all and Clear if there are more than 6 chips.\n2. query.mjs --jobs, --job JOB-CHOOSE-FROM-LIST, and the ToggleChip component lookup.\n3. ToggleChip has no registry item and no behavior card (status: build), so I would have to build it myself and the exact styling and a11y details are unspecified."
+    },
+    {
+      "scenario": "ADV-05",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          25,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "DS-PANEL-003"
+      ],
+      "auto_match": null,
+      "report": "1. Not a modal: use a right-anchored Sheet (side drawer) opened from the row, with the order id in the URL and the row highlighted; if an order has tabs, a timeline or related records, use a full page reached from an Open action in the Sheet.\n2. query.mjs --jobs, --job JOB-OVERLAY-INTERACTION, --id PATH-B-ROW-OPEN.\n3. Whether an order has 8 or fewer fields and no related records is not stated, so the Sheet vs full page choice depends on that; the request for a \"modal\" conflicts with the rule."
+    },
+    {
+      "scenario": "ADV-05",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          25,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "DS-PANEL-003"
+      ],
+      "auto_match": null,
+      "report": "1. Not a modal: use a right-anchored Sheet (side drawer) for the order details (8 or fewer fields, no related records), with the open row id in the URL and the active row highlighted; if orders have tabs, a timeline or related records, use a full page reached from an Open action in the Sheet.\n2. query.mjs --jobs, --job JOB-OVERLAY-INTERACTION, --id PATH-B-ROW-OPEN.\n3. The field count and related records of an order are unknown, so the Sheet vs full page choice depends on that; the request for a modal conflicts with the rule that row-open uses a Sheet."
+    },
+    {
+      "scenario": "ADV-05",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          25,
+          17,
+          5,
+          23
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-OVERLAY-INTERACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-DISPLAY-DATA",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Sheet",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 0.5,
+      "rules_missing": [
+        "DS-PANEL-003"
+      ],
+      "auto_match": null,
+      "report": "1. I would not use a modal. I would use a right-anchored Sheet (side drawer) that opens from the row click, with the table kept visible beside it. If an order has tabs, a timeline, related records or a long form, I would link from the Sheet to a full page instead.\n2. I ran `query.mjs --jobs`, `--job JOB-OVERLAY-INTERACTION`, `--job JOB-DISPLAY-DATA`, `--id PATH-B-ROW-OPEN` and `Sheet`. I used the rules PATH-B-ROW-OPEN, DS-PANEL-001 to DS-PANEL-006, and DS-MODAL-003 and DS-MODAL-004.\n3. The task says \"modal\", but the rules say a row-open record with 8 or fewer fields goes in a Sheet, so I assumed the user wants that. I don't know the field count or whether an order has related records. The Sheet has no registry item or behavior card."
+    },
+    {
+      "scenario": "ADV-06",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          4,
+          10
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Popover",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. Popover (click/tap-triggered, Radix-based) on the truncated address cell showing the full text; not Tooltip or HoverCard, since hover never fires on touch.\n2. query.mjs --jobs, --job JOB-CONTEXTUAL-INFO, --id PATH-TABLE-STATE-TRUNCATED, Popover (DS-A11Y-036).\n3. No rule covers truncated text in a table cell on mobile; PATH-TABLE-STATE-TRUNCATED is about plan-limited rows, and I chose Popover by inference from the JOB-CONTEXTUAL-INFO tree."
+    },
+    {
+      "scenario": "ADV-06",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 6,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          17,
+          4,
+          11,
+          10
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-DISPLAY-DATA",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tooltip",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Popover",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A Popover (vois-popover, Radix-based, opened by tap) on the truncated address in the cell, since Tooltip and HoverCard need hover and touch never sees them.\n2. --jobs, --job JOB-CONTEXTUAL-INFO, --job JOB-DISPLAY-DATA, --id PATH-TABLE-STATE-TRUNCATED (not relevant, it is about plan-limited rows), Tooltip, Popover (DS-A11Y-036, LOOKALIKE-011).\n3. The Popover rules don't say how to make a truncated table cell a tap target; I inferred Popover from the job tree, and no rule covers truncated text on touch."
+    },
+    {
+      "scenario": "ADV-06",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 7,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          14,
+          17,
+          4,
+          4,
+          11,
+          10
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONTEXTUAL-INFO",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-DISPLAY-DATA",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-TRUNCATED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-ROW",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tooltip",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Popover",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. Popover (vois-popover), opened by tap on the address text in the cell, showing the full address; Tooltip and HoverCard are hover/focus only and touch never sees them. (Alternative if the table stacks rows on narrow screens: PATH-TABLE-NARROW-ROW says nothing is dropped, so show the address in full in the stacked row.)\n2. --jobs, --job JOB-CONTEXTUAL-INFO, --job JOB-DISPLAY-DATA, --id PATH-TABLE-STATE-TRUNCATED (plan-limit, not relevant), --id PATH-TABLE-NARROW-ROW, Tooltip, Popover (DS-A11Y-036).\n3. No rule specifically covers truncated text in a table cell on touch; the Popover choice is inferred from JOB-CONTEXTUAL-INFO, and I did not read the popover behavior card."
+    },
+    {
+      "scenario": "ADV-07",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          25,
+          26,
+          21,
+          3
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --fields",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-ACCEPT-TEXT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id FIELD-SENSITIVE-STORAGE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A DateInput composed from Input (typed only, no calendar popup, since a date of birth is far in the past), wrapped in the vois-field label/description/error item, with the date-of-birth value kept out of URLs and analytics events.\n2. query.mjs --fields, --jobs, --job JOB-ACCEPT-TEXT, --id FIELD-SENSITIVE-STORAGE.\n3. Nothing, except that I did not look up the `date` field type value rules in vois-fields (format, shown vs stored value)."
+    },
+    {
+      "scenario": "ADV-07",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          25,
+          26,
+          21,
+          3
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --fields",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-ACCEPT-TEXT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id FIELD-SENSITIVE-STORAGE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A typed-only DateInput (text Input inside a Field, no calendar popup), since a date of birth is far in the past; keep the value out of URLs and analytics.\n2. query.mjs --fields, --jobs, --job JOB-ACCEPT-TEXT, --id FIELD-SENSITIVE-STORAGE.\n3. Nothing (I did not open the `date` field type value rules in vois-fields, so the format and validation details are not looked up)."
+    },
+    {
+      "scenario": "ADV-07",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          25,
+          26,
+          21
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --fields",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-ACCEPT-TEXT",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A typed-only DateInput (a text Input with no calendar popup, since a date of birth is far in the past), wrapped in the vois-field label/description/error, and kept out of URLs and analytics.\n2. query.mjs --fields, --jobs, --job JOB-ACCEPT-TEXT (DateInput guidance, DS-COMPONENT-007 reference, FIELD-SENSITIVE-STORAGE).\n3. nothing"
+    },
+    {
+      "scenario": "ADV-08",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          22,
+          18
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRIGGER-ACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Button",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 192,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A text Button (secondary or ghost variant, no icon) labeled \"Clear filters\", placed with the filters; not a Badge chip and not an IconButton.\n2. query.mjs --jobs, --job JOB-TRIGGER-ACTION, Button (DS-COMPONENT-001, LOOKALIKE-001), plus grep hits in skills/righter/data/components.json (empty-state \"Clear filters\") and vois-dataviz principles (\"Clear all\").\n3. The Button packet has no rule on label wording or variant; \"Clear filters\" vs \"Clear all\" came from righter and dataviz examples, and the variant choice is my judgment."
+    },
+    {
+      "scenario": "ADV-08",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 7,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          22,
+          18,
+          28,
+          36,
+          4,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRIGGER-ACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Button",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --patterns",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --group table-interactions",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-FILTER-SIMPLE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-STATE-EMPTY-FILTERED",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A text Button (ghost or outline variant, no icon since \"clear\" is not on the approved icon list) labelled \"Clear filters\", not a chip/Badge.\n2. query.mjs --jobs, --job JOB-TRIGGER-ACTION, Button, --patterns, --group table-interactions, --id PATH-TABLE-FILTER-SIMPLE, --id PATH-TABLE-STATE-EMPTY-FILTERED.\n3. Nothing blocking; the rules give the label \"Clear filters\" only in the empty-filtered case, and none states where the button sits or its variant in the normal toolbar, so I inferred those."
+    },
+    {
+      "scenario": "ADV-08",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          22,
+          18
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRIGGER-ACTION",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Button",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 192,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A text Button (ghost or outline variant, no icon, since a clear symbol is not on the approved icon list), labeled \"Clear filters\" (shown when filters are active; \"Clear all\" is the label used beside removable filter chips).\n2. query.mjs --jobs, --job JOB-TRIGGER-ACTION, Button component packet, plus a text search of skills for \"clear all/clear filters\" (righter components.json \"No results\" example, vois-dataviz dashboard-patterns).\n3. No Vois rule specifies the exact label or variant for a clear-filters button; the label comes from usage examples in righter and vois-dataviz, and the variant choice is my judgment."
+    },
+    {
+      "scenario": "ADV-09",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 2,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12
+        ],
+        "query_exit_codes": [
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-REPRESENT-USER",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "auto_match": null,
+      "report": "1. The skills have no rule for the cursor overlay itself; I would build a custom absolutely positioned overlay and use only Avatar (initials fallback) for each teammate's name label or chip, with AvatarGroup for a roster if one is wanted.\n2. Ran query.mjs --jobs and --job JOB-REPRESENT-USER (Avatar, AvatarGroup, presence indicator); no job fits live cursor positioning, so I did not use the nearest job as a rule for it.\n3. Nothing in the skills covers live cursors or collaborative overlays; the presence indicator is \"workspace-specific, check manifest\" and I did not check it."
+    },
+    {
+      "scenario": "ADV-09",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 2,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12
+        ],
+        "query_exit_codes": [
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-REPRESENT-USER",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "auto_match": null,
+      "report": "1. The skills have no rule for the cursor overlay itself, so I would build that custom (absolutely positioned layer with a colored caret and name flag per teammate); for the teammate identity inside the flag I would only borrow Avatar (initials fallback) plus the presence indicator.\n2. query.mjs --jobs (all jobs listed) and --job JOB-REPRESENT-USER (real-time presence -> Avatar + Presence indicator); no job fits the overlay itself.\n3. No job or component covers live cursors/collaborative overlays; the presence indicator is \"workspace-specific, check manifest\" and I did not check it."
+    },
+    {
+      "scenario": "ADV-09",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 2,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12
+        ],
+        "query_exit_codes": [
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-REPRESENT-USER",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "auto_match": null,
+      "report": "1. The skills have no rule for the cursor overlay itself (a positioned live-cursor layer is custom UI); I would build that layer custom and use Avatar (initials fallback) plus a presence indicator only for the teammate name/identity label on each cursor.\n2. query.mjs --jobs (full job list) and --job JOB-REPRESENT-USER (Avatar, AvatarGroup, real-time presence branch); no other rules looked up.\n3. No job covers a live cursor/collaboration overlay, and the presence indicator is \"workspace-specific, check manifest\", so how to style it was unclear."
+    },
+    {
+      "scenario": "ADV-10",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          21,
+          4,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-SELECT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A Select mode on the list: an explicit Select button shows checkboxes, the header reads \"N selected\" with Select all and Cancel, a bottom bulk bar holds 2-4 actions with the destructive Delete last in the destructive color, and tapping it opens an AlertDialog that states the count (e.g. \"Delete 5 items?\"), then a Toast confirms afterwards.\n2. Looked up --jobs, JOB-CONFIRM-DESTRUCTIVE, JOB-CHOOSE-FROM-LIST, PATH-TABLE-NARROW-SELECT, PATH-TABLE-BULK-DESTRUCTIVE.\n3. PATH-TABLE-BULK-DESTRUCTIVE says \"Dialog\" while the job says AlertDialog for irreversible actions; I chose AlertDialog, and I assumed the removal cannot be undone (if it can be undone, skip the dialog and use a Toast with undo)."
+    },
+    {
+      "scenario": "ADV-10",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          21,
+          4,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-SELECT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A selection mode on the list: an explicit Select action reveals checkboxes, header shows \"N selected\" with Select all and Cancel, a bottom bulk bar with the destructive Delete last in destructive color, and an AlertDialog that states the count before deleting (a toast with undo is used instead only if deletion is undoable).\n2. JOB-CONFIRM-DESTRUCTIVE (--job), PATH-TABLE-NARROW-SELECT and PATH-TABLE-BULK-DESTRUCTIVE (--id); also --jobs list and JOB-CHOOSE-FROM-LIST.\n3. PATH-TABLE-BULK-DESTRUCTIVE says \"Dialog\" while the job says AlertDialog for irreversible actions; I did not look up the referenced PATH-TABLE-SELECT-CHECKBOX or PATH-TABLE-BULK-BAR rules."
+    },
+    {
+      "scenario": "ADV-10",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          21,
+          4,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-SELECT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A selection mode on the list (explicit Select action reveals checkboxes, header \"N selected\" with Select all and Cancel), a bottom bulk bar with the destructive Remove action last in destructive color, and an AlertDialog that states the count before removing (Toast with undo only if the removal is reversible).\n2. query.mjs --jobs, --job JOB-CONFIRM-DESTRUCTIVE, --job JOB-CHOOSE-FROM-LIST, --id PATH-TABLE-NARROW-SELECT, --id PATH-TABLE-BULK-DESTRUCTIVE.\n3. PATH-TABLE-BULK-DESTRUCTIVE says \"Dialog\" while the job says AlertDialog; I chose AlertDialog, and whether removal is undoable is not stated."
+    }
+  ],
+  "summary": {
+    "samples": 30,
+    "errored": 0,
+    "cost_usd": {
+      "total": 0,
+      "median": 0
+    },
+    "total_in_tokens": {
+      "median": null,
+      "max": 0
+    },
+    "output_tokens": {
+      "median": null
+    },
+    "turns": {
+      "median": 0
+    },
+    "read_calls": {
+      "median": 0,
+      "max": 0
+    },
+    "search_calls": {
+      "median": null
+    },
+    "query_calls": {
+      "median": 4
+    },
+    "other_bash_attempts": {
+      "total": 0
+    },
+    "packet_lines": {
+      "count": 120,
+      "median": 18,
+      "max": 36,
+      "over_40": 0
+    },
+    "rule_recall": {
+      "samples": 27,
+      "mean": 0.852,
+      "full": 19
+    },
+    "files_read": {
+      "median": 0
+    },
+    "skill_tokens_est": {
+      "median": null,
+      "max": 0
+    },
+    "auto_match_rate": null
+  }
+}
