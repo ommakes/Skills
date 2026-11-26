@@ -129,7 +129,12 @@ export function jobPacket(all, ids, { full = false } = {}) {
     kind: "jobs",
     // Any unknown id is a miss the caller must see, so the exit code says not found even when other jobs resolved.
     state: unknown.length ? "no_match" : "match",
-    jobs: found.map((j) => ({ id: j.id, title: j.title, framing: j.framing, tree: j.decision_tree, rationale: full ? j.rationale : undefined })),
+    jobs: found.map((j) => {
+      // The PATH nodes (from vois-patterns) that list this job in builds_on, so a job leads to the page rules that use it.
+      // An index with no copy of the nodes gives none. Up to 12 are listed; the rest are counted.
+      const ids = pathNodes(all.index).filter((n) => Array.isArray(n.builds_on) && n.builds_on.includes(j.id)).map((n) => n.id).sort(byText);
+      return { id: j.id, title: j.title, framing: j.framing, tree: j.decision_tree, patterns: ids.slice(0, 12), patternsMore: Math.max(0, ids.length - 12), rationale: full ? j.rationale : undefined };
+    }),
     components,
     unknown,
   };
@@ -244,6 +249,7 @@ function textJobs(p) {
   const L = [`VOIS PACKET  jobs: ${p.jobs.map((j) => j.id).join(", ") || "none"}  (${p.state})`];
   for (const j of p.jobs) {
     L.push(`${j.id}: ${j.title}`, `  ${j.framing}`, ...treeLines(j.tree));
+    if (j.patterns && j.patterns.length) L.push(`  page rules that build on it: ${j.patterns.join(", ")}${j.patternsMore ? ` (+${j.patternsMore} more)` : ""} (--id for the text)`);
     if (j.rationale) for (const r of j.rationale) L.push(`  Q: ${r.question}`, `     ${r.answer}`);
   }
   L.push("components named");

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.0] - 2026-11-26
+
+### Added
+- **A job packet lists the page rules that build on it.** In Phase 2 re-run 4, none of the three ADV-10 samples (remove several saved items on a phone) opened `PATH-TABLE-NARROW-SELECT` or `PATH-TABLE-BULK-DESTRUCTIVE`. They stopped at `JOB-CONFIRM-DESTRUCTIVE`, `AlertDialog` and `PATH-D-1`, and no packet pointed to the table rules. The job packet now has a line, "page rules that build on it", with every `PATH-*` node that lists the job in `builds_on` (12 at most, then a count). `JOB-CONFIRM-DESTRUCTIVE` lists 12, including both table rules. `--json` has `patterns` and `patternsMore` on each job. An index with no copy of the nodes prints no line. The longest job packet is 25 lines.
+- **The date branch names the sensitive data rule.** In the same run, none of the three ADV-07 samples (ask for a date of birth at sign-up) opened `FIELD-SENSITIVE-STORAGE`; they saw it in the `--fields` list and opened `FIELD-VALUE-SPLIT` or nothing. The `JOB-ACCEPT-TEXT` date branch and the `DateInput` note now say that a date of birth stays out of URLs and analytics events, and name the rule. The rule already lists date of birth.
+
+---
+
 ## [1.43.0] - 2026-11-25
 
 ### Added
