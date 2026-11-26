@@ -14,6 +14,9 @@ node scripts/check-editions.mjs
 python3 scripts/check-verification.py
 python3 scripts/check-verification.test.py
 python3 scripts/check-routing.py
+node scripts/check-skill-paths.test.mjs
+node scripts/check-skill-paths.mjs
+node scripts/port-from-private.test.mjs
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs
 node vois-tokens/scripts/check.test.mjs

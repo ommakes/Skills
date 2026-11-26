@@ -17,7 +17,7 @@ Every rule in `data/conversion-rules.json` is a real, published result — but e
 
 Use this skill whenever a ticket touches: paywalls, trial structure or length, checkout flow, cart abandonment, upsell/upgrade prompts, streaks or habit loops, referral flows, or pricing-page/CTA display. If the ticket is about onboarding sequencing instead, that's `onboarding-flow`'s job, not this one — check there first if you're not sure which one owns the ticket.
 
-For pricing pages specifically, `vois-patterns` (PATH-F, `references/pricing-pages.md`) owns layout and structure. This skill owns the test-backed levers: whether to show a billing timeline, how to frame the CTA, whether to gate immediately. Use both: structure from vois-patterns, levers from here.
+For pricing pages specifically, `vois-patterns` (PATH-F, `vois-patterns/references/pricing-pages.md`) owns layout and structure. This skill owns the test-backed levers: whether to show a billing timeline, how to frame the CTA, whether to gate immediately. Use both: structure from vois-patterns, levers from here.
 
 ## Mode 1: Diagnose a Ticket (new feature or screen being planned)
 
