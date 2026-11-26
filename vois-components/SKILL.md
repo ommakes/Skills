@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.44.3
+version: 1.44.4
 ---
 
 # Vois Component Selection Skill
@@ -147,70 +147,19 @@ Radix and native elements give roles and keyboard behavior. These parts are the 
 
 ## Lookalikes: Don't Hand-Build These
 
-Agents often write markup that looks like a component but isn't one. A screen can follow every rule in this skill and still contain one. Before you write markup for any of these, use the component. If the project doesn't have one yet, check the registry (`registry/registry.json`) for a Vois version before reaching for stock shadcn: it ships the Button and IconButton, inputs, selectors, tabs, avatar, badge, tooltip, stepper and more (see its README). The full rows (why, rule IDs, evidence, a signal a script can match) are in `data/components-rules.json` under `lookalikes`.
-
-**Seen in blind builds** (`vois-eval/lookalike-pass`, 40 builds):
-
-| If you are about to write | Use instead |
-|---|---|
-| A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger | Button: `variant="link"` for text, `asChild` as a trigger. For an icon, IconButton with its required `label` (the registry's `vois-icon-button`); inside a field, InputGroupButton (vois-tokens `DS-ICON-006`). No project Button yet? Install the registry's `vois-button` item |
-| `Loader2` with `animate-spin` | Spinner. No project Spinner yet? Install the registry's `vois-spinner`. Inside a Button, use the Button's `loading` prop |
-| Buttons with `role="radio"` | RadioGroup (no project RadioGroup yet? Install the registry's `vois-radio-group`), or ToggleGroup (single) for a segmented control (the registry's `vois-segmented-control`) |
-| Numbered circles joined by lines | The shared Stepper (`references/stepper.md`; the registry's `vois-stepper` is built to it) |
-
-**Not seen, but already forbidden by a rule:**
-
-| If you are about to write | Use instead |
-|---|---|
-| `div` or `span` with `onClick` | Button, or a link for navigation |
-| `fixed inset-0` backdrop and a centered box | Dialog, AlertDialog or Sheet |
-| `setTimeout` that hides a message | Sonner toast |
-| "x" or "×" text as a close | The Dialog or Sheet close, or a ghost icon Button with `aria-label` |
-| `window.confirm`, `alert` or `prompt` | AlertDialog, or Sonner |
-| A colored `border-l-4` box with an icon and text | Alert with a status role |
-| A round `div` or `span` holding an `<img>` or two capital letters as a person's picture | Avatar (no project Avatar yet? Install the registry's `vois-avatar`) |
-| `title="..."` as a tooltip | Tooltip (no project Tooltip yet? Install the registry's `vois-tooltip`) |
+Agents often write markup that looks like a component but isn't one: a raw `<button>` with its own focus ring, `Loader2` with `animate-spin`, buttons with `role="radio"`, numbered circles joined by lines, a round `div` holding an `<img>` as a person's picture, `title="..."` as a tooltip. Before you write markup for something that looks like a component, use the component. If the project doesn't have one yet, check the registry (`registry/registry.json`) for a Vois version before reaching for stock shadcn. The full rows (what to write instead, why, rule IDs, a signal a script can match) are in `data/components-rules.json` under `lookalikes`. `node vois-components/scripts/query.mjs <ComponentName>` prints the ones that name that component.
 
 When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
 
 ## Job Index
 
-`data/components-rules.json` has the full decision tree (condition → recommended component, including nested thresholds and edge cases) plus every "why not X" rationale, for all 24 jobs — query it by `id` or `number`. This is now the only source for this content; the prose reference files it was extracted from have been removed as fully redundant.
+`data/components-rules.json` holds the decision tree (condition, recommended component, nested thresholds and edge cases) and every "why not X" rationale for all 24 jobs. Do not read it whole. Query it: `node vois-components/scripts/query.mjs --jobs` lists the jobs with a one-line summary, `--job` with a job id prints one job's tree, and a component name prints where each job puts it. It is the only source for this content. Each job's `source_file` points here.
 
-**Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. Today that is `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks) and `references/motion-morphs.md` (the core eight: label and text morph, shared element transfer, number ticker and typed input, icon morph, directional transition, grow-from-trigger, reorder and regroup, status button), `references/motion-tray.md` (a tray and its lifecycle) and `references/motion-context.md` (shared element context, chart range change, collapse to indicator, small state changes). `references/motion-logic.md` holds the code for the parts of those specs that are easy to get wrong (reading motion tokens, reduced motion); copy it when you build a morph. Pick the morph with `vois-patterns/references/motion.md` first.
+**Component specs:** when a pick has no shadcn component and agents hand-build it, the spec lives in `references/`. `references/stepper.md` (the Stepper that `JOB-MULTISTEP-GUIDE` picks); `references/motion-morphs.md` (the core eight morphs), `references/motion-tray.md` (a tray and its lifecycle), `references/motion-context.md` (shared element context, chart range change, collapse to indicator, small state changes); `references/motion-logic.md` (the code for the parts that are easy to get wrong: reading motion tokens, reduced motion; copy it when you build a morph). Pick the morph with `vois-patterns/references/motion.md` first.
 
-**Component names:** `data/component-names.json` maps every component in the UI SDK behavior inventory to its canonical name, its shadcn/ui source and its Vois registry item, with a status (`have`, `covered`, `build`, `compose`, `defer`, `skip`). Use it to find the registry item for a name, or to see which components have no item yet.
+**Component names:** `data/component-names.json` maps every component in the UI SDK behavior inventory to its canonical name, its shadcn/ui source and its Vois registry item, with a status (`have`, `covered`, `build`, `compose`, `defer`, `skip`).
 
 **Behavior cards (pilot):** After you pick a component, read its card if one exists: `behaviors/<id>.md` for Tabs, Dialog, Combobox, Popover, Accordion, Toggle group, Alert dialog, Menubar, Pagination, Toast, Navigation menu, Calendar, Progress, Separator and InputOTP so far. A card lists how the component must behave (keyboard, focus, state, accessibility), each line with an ID like `BHV-TABS-004` and a support tag. `native` means the library does it, so do not undo it. `differs` means the library does something else, so read the note. `supply` means you build it. `decide` means a product or design choice is open, so ask. `unchecked` means nobody has checked the library yet, so test it before you rely on it. If there is no card, the component has no written behavior rules yet, so say so and do not invent them. `behaviors/<id>.json` is the source and the `.md` is generated. `node vois-components/scripts/behaviors.mjs` checks them, and `--write` rebuilds the `.md`.
-
-**Source of truth:** `data/components-rules.json` is canonical and, since the prose reference files were removed, the only source for decision-tree content. The Job Index table above is the one place each `JOB-*` ID is tagged in prose, and each JSON entry's `source_file` points here.
-
-| Job ID | Job |
-|---|---|
-| `JOB-CONFIRM-DESTRUCTIVE` | Job 1 Confirm destructive action |
-| `JOB-TRANSIENT-FEEDBACK` | Job 2 Transient feedback |
-| `JOB-OVERLAY-INTERACTION` | Job 3 Focused overlay interaction |
-| `JOB-CONTAIN-CONTENT` | Job 4 Contain a unit of content |
-| `JOB-SWITCH-VIEWS` | Job 5 Switch views / filter |
-| `JOB-CHOOSE-FROM-LIST` | Job 6 Choose from a list |
-| `JOB-CONTEXTUAL-INFO` | Job 7 Contextual info (tooltip/popover) |
-| `JOB-TRIGGER-ACTION` | Job 8 Trigger an action |
-| `JOB-ACCEPT-TEXT` | Job 9 Accept text input |
-| `JOB-BINARY-PREFERENCE` | Job 10 Binary preference |
-| `JOB-LABEL-CONTENT` | Job 11 Label/categorize content |
-| `JOB-REPRESENT-USER` | Job 12 Represent a user/group |
-| `JOB-LOADING-STATE` | Job 13 Loading state |
-| `JOB-EMPTY-CONTENT` | Job 14 Empty content |
-| `JOB-EXPOSE-ACTIONS` | Job 15 Expose a set of actions |
-| `JOB-MULTISTEP-GUIDE` | Job 16 Multi-step process |
-| `JOB-NAVIGATION-POSITION` | Job 17 Position in a hierarchy |
-| `JOB-DISPLAY-DATA` | Job 18 Display structured data |
-| `JOB-DATA-ENTRY` | Job 19 Data entry surface |
-| `JOB-SECONDARY-CONTENT` | Job 20 Secondary content / persistent nav |
-| `JOB-VISUALIZE-DATA` | Job 21 Visualize data (hands the form choice to vois-dataviz) |
-| `JOB-ANSWER-CHOICE-QUESTION` | Job 22 Answer a choice question (survey, one question per screen) |
-| `JOB-ANSWER-SCALE-OR-RANK` | Job 23 Answer a scale or ranking question |
-| `JOB-SHOW-POLL-RESULTS` | Job 24 Show how others answered a choice question |
 
 ---
 

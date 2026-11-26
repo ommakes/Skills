@@ -1,0 +1,462 @@
+{
+  "schema": "vois-eval-quality/1",
+  "harness": "cursor-subagent",
+  "harness_note": "Not comparable with quality.mjs files: no cost, turns or tokens; the query-only hook is not enforced; other Bash use is unmeasured; host project rules visible to the subagent. Pass/fail is the same deterministic scoreSample. Query calls and file opens are measured.",
+  "date": "2026-11-26",
+  "model": "claude-sonnet-5-5-medium",
+  "samples_per_task": 3,
+  "arms": [
+    "retrieval"
+  ],
+  "outside_opens": [],
+  "summary": {
+    "retrieval": {
+      "samples": 12,
+      "errors": 0,
+      "truncated": 0,
+      "model_mismatch": 0,
+      "pass_rate": 0.667,
+      "decision_rate": 1,
+      "mean_cost_usd": 0,
+      "mean_turns": 0,
+      "mean_queries": 6.333,
+      "total_cost_usd": 0
+    }
+  },
+  "results": [
+    {
+      "task": "LP-05c",
+      "arm": "retrieval",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 3,
+      "query_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "arm": "retrieval",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 5,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "LP-05c",
+      "arm": "retrieval",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 3,
+      "query_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "arm": "retrieval",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 2,
+      "query_exit_codes": [
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 6,
+      "file_paths": [
+        "skills/vois-components/SKILL.md",
+        "skills/vois-components/data/components-rules.json",
+        "skills/vois-components/data/retrieval-index.json",
+        "skills/vois-components/scripts/query.mjs",
+        "skills/vois-components/scripts/retrieval.mjs"
+      ],
+      "search_sweep_files": 0,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "arm": "retrieval",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 6,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-06",
+      "arm": "retrieval",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 2,
+      "query_exit_codes": [
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 2,
+      "file_paths": [
+        "skills/vois-components/SKILL.md"
+      ],
+      "search_sweep_files": 0,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-avatar"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "arm": "retrieval",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 21,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-GRID-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "arm": "retrieval",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 11,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 1,
+      "file_paths": [],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-GRID-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "HP-10",
+      "arm": "retrieval",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 3,
+      "query_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 2,
+      "file_paths": [
+        "skills/vois-components/SKILL.md"
+      ],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-GRID-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "arm": "retrieval",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 10,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 4,
+      "file_paths": [
+        "skills/vois-components/SKILL.md",
+        "skills/vois-tokens/SKILL.md",
+        "skills/vois-tokens/data/vois-rules.json"
+      ],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-GRID-007"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "arm": "retrieval",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 0,
+      "query_exit_codes": [],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 7,
+      "file_paths": [
+        "skills/righter/references/marketing-copy.md",
+        "skills/vois-patterns/SKILL.md",
+        "skills/vois-patterns/references/marketing-pages.md",
+        "skills/vois-tokens/SKILL.md",
+        "skills/vois-tokens/references/anti-slop.md",
+        "skills/vois-tokens/references/marketing-type-and-spacing.md"
+      ],
+      "search_sweep_files": 0,
+      "pass": true,
+      "decision": true,
+      "lookalike_hits": [],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-GRID-007",
+        "DS-MOTION-001"
+      ],
+      "dataviz_findings": []
+    },
+    {
+      "task": "DT-05",
+      "arm": "retrieval",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "queries": 10,
+      "query_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "truncated": false,
+      "model_mismatch": false,
+      "outside_cwd_access": [],
+      "files_read": 4,
+      "file_paths": [
+        "skills/vois-components/SKILL.md",
+        "skills/vois-tokens/SKILL.md",
+        "skills/vois-tokens/data/vois-rules.json"
+      ],
+      "search_sweep_files": 0,
+      "pass": false,
+      "decision": true,
+      "lookalike_hits": [
+        "fake-badge"
+      ],
+      "forbidden_imports": [],
+      "pattern_failures": [],
+      "detector_findings": [
+        "DS-ELEVATION-007",
+        "DS-GRID-007"
+      ],
+      "dataviz_findings": []
+    }
+  ]
+}

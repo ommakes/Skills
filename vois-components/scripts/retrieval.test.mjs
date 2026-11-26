@@ -130,6 +130,9 @@ test("malformed sources are reported, never a crash", () => {
     ["a row's rules as a string", (s) => { s.cards.find((c) => c.file === "dialog.json").card.behaviors[0].rules = "DS-MODAL-001"; }, /rules must be a list/],
     ["a lookalike row that is null", (s) => { s.rules.lookalikes.rows.push(null); }, /lookalike row \d+ is not an object/],
     ["a lookalike's rule_ids as a string", (s) => { s.rules.lookalikes.rows[0].rule_ids = "DS-A11Y-001"; }, /rule_ids must be a list/],
+    ["a lookalike's components as a string", (s) => { s.rules.lookalikes.rows[0].components = "Popover"; }, /LOOKALIKE-001 components must be a non-empty list/],
+    ["a lookalike's components naming a component that does not exist", (s) => { s.rules.lookalikes.rows[0].components = ["Popovr"]; }, /LOOKALIKE-001 components names Popovr/],
+    ["a lookalike's short as a number", (s) => { s.rules.lookalikes.rows[0].short = 5; }, /LOOKALIKE-001 short must be a non-empty string/],
     ["a job that is null", (s) => { s.rules.jobs.push(null); }, /job \d+ is not an object/],
     ["a rule that is null", (s) => { s.tokens.rules.push(null); }, /rule \d+ has no id/],
     ["an inventory name that is a number", (s) => { entry(s, "Tabs").inventory = 5; }, /Tabs inventory must be a string/],
@@ -334,6 +337,29 @@ test("query: the job list points at --patterns and --fields", () => {
   assert.match(main(["--jobs"], loadAll()).out, /run --patterns[\s\S]*run --fields/);
 });
 
+test("a lookalike row reaches the components it lists, not only the one it names as the fix", () => {
+  const { index } = build(fresh());
+  const has001 = (id) => index.components.find((c) => c.id === id).lookalikes.includes("LOOKALIKE-001");
+  for (const id of ["Button", "Tooltip", "Popover", "HoverCard"]) assert.ok(has001(id), id);
+  assert.ok(!has001("Tabs"), "a component the row does not list or name stays clear");
+  const s = fresh();
+  s.rules.lookalikes.rows[0].components = ["Button"];
+  assert.ok(!build(s).index.components.find((c) => c.id === "Popover").lookalikes.includes("LOOKALIKE-001"), "without the list, Popover is not reached");
+  const all = loadAll();
+  for (const name of ["Tooltip", "Popover"]) assert.match(main([name], all).out, /LOOKALIKE-001/, `${name} packet`);
+  for (const name of ["Table", "Checkbox", "List"]) assert.match(main([name], all).out, /LOOKALIKE-012/, `${name} packet carries the avatar lookalike`);
+});
+
+test("query: --jobs ends with every lookalike row in one line each, and stays under 41 lines", () => {
+  const all = loadAll();
+  const out = main(["--jobs"], all).out;
+  const lines = out.split("\n");
+  assert.ok(lines.length <= 40, `--jobs: ${lines.length} lines`);
+  for (const id of Object.keys(all.index.lookalikes)) assert.ok(lines.some((l) => l.startsWith(`  ${id.replace("LOOKALIKE-", "")}  `)), id);
+  assert.match(out, /Landing, marketing, pricing[^\n]*run --patterns/);
+  assert.equal(JSON.parse(main(["--jobs", "--json"], all).out).lookalikes.length, Object.keys(all.index.lookalikes).length);
+});
+
 test("query: the new packets stay small, and a long group says what it cut", () => {
   const all = loadAll(join(ROOT, "vois-components"));
   for (const args of [["--patterns"], ["--fields"], ["--id", "PATH-B"], ["--id", "PATH-PAGE"]]) {
@@ -461,4 +487,18 @@ test("the date of birth pointer names a field rule that exists", () => {
   assert.match(main(["DateInput"], all).out, /FIELD-SENSITIVE-STORAGE/);
   assert.match(main(["DatePicker"], all).out, /JOB-ACCEPT-TEXT/);
   assert.match(main(["--job", "JOB-ACCEPT-TEXT"], all).out, /FIELD-SENSITIVE-STORAGE/);
+});
+
+test("a component named by two or more jobs says where each job puts it", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const out = main(["Slider"], all).out;
+  assert.match(out, /JOB-ANSWER-SCALE-OR-RANK {2}when .*Slider/);
+  assert.match(out, /JOB-CHOOSE-FROM-LIST {2}when .*numeric range/);
+  for (const c of all.index.components.filter((x) => x.jobs.length >= 2)) {
+    const p = JSON.parse(main([c.id, "--json"], all).out);
+    assert.ok(p.placements.every((pl) => c.jobs.includes(pl.job)), c.id);
+    assert.ok(p.placements.length <= 4, c.id);
+  }
+  const single = JSON.parse(main(["Accordion", "--json"], all).out);
+  assert.deepEqual(single.placements, []);
 });

@@ -1,6 +1,6 @@
 # Phase 2 gate: JIT retrieval
 
-Run 26 Nov 2026, three rounds. Round 1 used the original hint; round 2 used the hint after Om's decision to ask for whole rule ids; round 3 reran the adversarial set and ran the quality check after the private fix (vois-skills PR 147) was ported.
+Run 26 Nov 2026, five rounds. Round 1 used the original hint; round 2 used the hint after Om's decision to ask for whole rule ids; round 3 reran the adversarial set and ran the quality check after the private fix (vois-skills PR 147) was ported.
 
 **Verdict, Cursor-subagent harness, round 3: every part of the gate passes.**
 
@@ -8,6 +8,25 @@ Run 26 Nov 2026, three rounds. Round 1 used the original hint; round 2 used the 
 - Adversarial retrieval (round 3, after the port): recall 0.981 over 27 scored samples (needs 0.95). The only miss is `PATH-TABLE-BULK-BAR` on ADV-02 sample 1 (the other two ADV-02 samples name it). `GATE: pass`.
 - Quality (`quality.mjs` port, 45 tasks x 2 arms x 3 samples, 270 calls): retrieval pass rate 0.896 vs skills 0.852, so `retrieval >= skills` holds. 0 errors in either arm.
 - Limits of the claim: this is one model on one harness, with tokens `n/a` and no enforced query-only rule (see below). The quality margin is 6 samples out of 135 and is not a measured improvement; read it as "no loss". Workstream D (thinning `SKILL.md`) is the next step, and it is not started.
+
+**Workstream D (thin `vois-components/SKILL.md`, 1.44.4): held rerun at 1 sample passes.** `SKILL.md` goes from 18.0 KB to 14.4 KB: the two lookalike tables and the 24-row Job Index table are replaced by a paragraph each that points at `query.mjs`. All `references/*.md` files are still named. `2026-11-26-held-retrieval-d-thin-skill.json` (10 samples, 1 per scenario): recall 1.000, 0 of 39 packets over 40 lines, `query_calls.median` 4, 0 errored, nothing opened outside the run directories, no `SKILL.md` or card read. `GATE: pass`. Limit: the retrieval arm never reads `SKILL.md`, so this run shows only that the thinning broke nothing in the engine. Whether the thinner file changes the skills arm is not measured. Om declined repeating the 45-task quality run on 26 Nov 2026; the earlier rescored result (retrieval 0.896 vs skills 0.852) stands. The validators pass (`validate-skills.sh`, `check-routing.py`, `check-reference-files`, `check-skill-paths`, `check-rule-sync`, `retrieval.mjs --check`). This edit is on the public mirror only; the private `vois-skills` copy is canonical and has not got it yet.
+
+**Round 5 (after the component packet lists where each job places a component): every part of the gate passes. HELD-10 is no longer a held-out row.**
+
+- Why a change: in round 4, HELD-10 samples 2 and 3 saw the Slider packet, which listed `JOB-ANSWER-SCALE-OR-RANK, JOB-CHOOSE-FROM-LIST` with nothing to tell them apart, and both opened the rating job and answered Slider. Sample 3 only passed the scorer because the Slider packet printed the other job id. That is a defect in the packet, not noise: any component named by two or more jobs gave no hint which job applied. I had called it noise in round 4 and was wrong.
+- The change (`query.mjs`, `componentPacket`): for a component named by two or more jobs, the packet adds one line per job (up to 4) with the path to the first tree leaf that names the component and the start of its recommendation. Slider now shows `JOB-CHOOSE-FROM-LIST  when A minimum and a maximum from a numeric range ... -> RangeSlider: one track with two thumbs`. The index is unchanged (no rebuild). `retrieval.test.mjs`: 38 pass. Every component packet is still at most 40 lines (Slider 10, RadioGroup 22, Dialog 22).
+- Held-out contamination: the change was made after reading the HELD-10 failure. It is general (it applies to every multi-job component, for example RadioGroup and Select), but HELD-10 can no longer count as an unseen row. The other nine rows were not looked at to choose it.
+- Held (`2026-11-26-held-retrieval-v4.json`): recall 1.000 over 30 samples (30 of 30 full), packets 0 of 123 over 40 (median 16), `query_calls.median` 4, `errored` 0, no file opened outside the run directories, no `SKILL.md` or card read. HELD-10: 3 of 3 name `JOB-CHOOSE-FROM-LIST` and answer RangeSlider. `GATE: pass` against `2026-11-26-held-skills.json` (0.833).
+- Adversarial (`2026-11-26-adv-retrieval-v5.json`): recall 0.981 over 27 scored samples. The only miss is still `PATH-TABLE-BULK-BAR` on ADV-02 sample 1. Packets 0 of 162 over 40 (median 17), `query_calls.median` 6, ADV-07 and ADV-10 checks 3 of 3, ADV-09 read pass. `GATE: pass`. ADV-08 samples 1 and 2 again ran a text search of `skills/` (counted as sweeps, not reads).
+- Quality spot check (`2026-11-26-quality-rerun-4tasks-v5-retrieval.json`, retrieval arm, HP-06, LP-05c, DT-05, HP-10, 3 samples each): 9 of 12 pass. HP-06 3/3, HP-10 3/3, LP-05c 2/3, DT-05 1/3. The three failures never touched a multi-job component: LP-05c sample 3 queried only `Skeleton` and `JOB-LOADING-STATE` and drew a fake avatar; DT-05 samples 1 and 2 fail the marketing-page card-grid and grid detectors (DS-GRID-007, DS-ELEVATION-007). Same tasks gave 2/3 and 1/3 before this change (round 3 and round 4 reruns), so no change from the packet shows. This is not the 45-task quality run; the full run was not repeated, because the change only adds lines to packets of components that two or more jobs name.
+- F check (patterns and groups): in 60 retrieval samples only ADV-08 sample 3 used `--patterns` or `--group`, and it read no file after. No `--group` dump, so no line cap added to `query.mjs`.
+
+**Round 4 (after the lookalike changes: `LOOKALIKE-001` and `LOOKALIKE-012` linked to component packets, `LOOKALIKE-013` added, strip and footer on `--jobs`, scanner span fix). Held fails on one row; adversarial and the targeted quality rerun pass.**
+
+- Held (`2026-11-26-held-retrieval-v3.json`): recall 0.967 (29 of 30 full), packets 0 of 123 over 40, `query_calls.median` 4, retrieval above skills (0.833). `GATE: fail` on one check: HELD-10 sample 2 does not name `JOB-CHOOSE-FROM-LIST`. That sample ran `--jobs`, opened only `JOB-ANSWER-SCALE-OR-RANK`, and answered with a two-thumb Slider. The right answer (RangeSlider) is in the `JOB-CHOOSE-FROM-LIST` bullet. HELD-10 sample 3 also answered Slider but named the job from the Slider packet, so the scorer counted it. Only HELD-10 sample 1 answered RangeSlider. Round 2 passed this row 3 of 3 on an earlier index, so it is a model-run difference, not a regression in the files. I did not change the index for it: the row is held-out, and a fix aimed at it would make the held set a training set.
+- Adversarial (`2026-11-26-adv-retrieval-v4.json`): recall 1.000 over 27 scored samples, packets 0 of 148 over 40 (max 40, median 15), `query_calls.median` 5, ADV-07 and ADV-10 checks pass 3 of 3, ADV-09 read pass. `GATE: pass`.
+- Quality rerun of the two tasks that bypassed `--jobs` (`2026-11-26-quality-rerun-hp06-lp05c-table-link.json`, 3 samples each, after `LOOKALIKE-012` was linked to Table, Checkbox and List): 6 of 6 pass. Before the link, HP-06 passed 1 of 3 and LP-05c 2 of 3.
+- The full 270-call quality run was not repeated; the earlier rescored result (retrieval 0.896 vs skills 0.852) stands, and the changed index is only checked on these tasks.
 
 Round 1 (original hint) failed: held 0.900, adversarial 0.852. Those files stay in this folder as the before.
 
@@ -37,6 +56,11 @@ Model for all rows: `claude-sonnet-5-5-medium` (Cursor subagent). Round 2 and ro
 | 2026-11-26-adv-retrieval.json (round 1, old hint) | claude-sonnet-5-5-medium | retrieval | 30 (27 scored; ADV-09 has no ids) | 0.852 | 4 | 18 (max 36) | 0 of 120 | n/a | n/a (decide-only) | no |
 | **2026-11-26-adv-retrieval-v2.json (round 2)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.944** | 5 | 14 (max 36) | 0 of 154 | n/a | n/a (decide-only) | **no** (ADV-02 only) |
 | **2026-11-26-adv-retrieval-v3.json (round 3, after PR 147 port)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.981** | 5 | 14 (max 36) | 0 of 146 | n/a | n/a (decide-only) | **yes** |
+| 2026-11-26-held-retrieval-v3.json (round 4) | claude-sonnet-5-5-medium | retrieval | 30 | 0.967 | 4 | n/a (max 40) | 0 of 123 | n/a | n/a (decide-only) | no (HELD-10 sample 2) |
+| **2026-11-26-held-retrieval-v4.json (round 5, packet placements)** | claude-sonnet-5-5-medium | retrieval | 30 | **1.000** | 4 | 16 | 0 of 123 | n/a | n/a (decide-only) | **yes** (HELD-10 no longer held-out) |
+| 2026-11-26-adv-retrieval-v4.json (round 4) | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | 1.000 | 5 | 15 (max 40) | 0 of 148 | n/a | n/a (decide-only) | yes |
+| **2026-11-26-adv-retrieval-v5.json (round 5, packet placements)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.981** | 6 | 17 | 0 of 162 | n/a | n/a (decide-only) | **yes** |
+| 2026-11-26-quality-rerun-4tasks-v5-retrieval.json (HP-06, LP-05c, DT-05, HP-10) | claude-sonnet-5-5-medium | retrieval | 12 | n/a | 6.6 queries (mean) | n/a | n/a | n/a | 0.750 (9 of 12) | spot check only |
 | 2026-11-26-smoke-retrieval.json | claude-sonnet-5-5-medium | retrieval | 2 | not claimed | 5 | 17 (max 26) | 0 of 10 | n/a | n/a (decide-only) | yes (no row has `error`) |
 | 2026-11-26-quality-smoke-subagent.json (1 sample) | claude-sonnet-5-5-medium | skills | 45 | n/a | n/a | n/a | n/a | n/a | 0.844 (38 of 45) | n/a (comparison arm) |
 | 2026-11-26-quality-smoke-subagent.json (1 sample) | claude-sonnet-5-5-medium | retrieval | 45 | n/a | 2 to 13 queries (mean 4.78) | n/a | n/a | n/a | 0.844 (38 of 45) | smoke only |
@@ -163,8 +187,8 @@ Static size only. The gate's `packet_lines` counts each packet the model actuall
 
 ## Next steps
 
-1. Push the branch and open the PR (this VM's token cannot push; a separate worker has the patch and bundle).
-2. With the gate passed: thin `vois-components/SKILL.md`, rerun held-out at 1 sample, then add the `query.mjs` paragraph to vois-loop and vois-router. Not started. Read the HP-06 and HP-10 quality rows first, and decide whether ADV-02 sample 1 (BULK-BAR not named) needs the packet to list the bar directly.
+1. Push `cursor/jit-retrieval-gate-358d` and open the PR. Tried again 26 Nov 2026: `git push` returns `remote: Permission to ommakes/Skills.git denied to cursor[bot]` (HTTP 403). The branch is local only.
+2. Thinning is done (`vois-components` 1.44.4) and the 1-sample held rerun passes. The `query.mjs` paragraph for vois-loop and vois-router is drafted for the private repo; this VM cannot clone `ommakes/vois-skills` (`Repository not found` on the VM git credential). Om declined repeating the 45-task quality run.
 3. Token counts and query-only enforcement need a harness that can supply them. The `claude -p` runner has both, as one example (needs the `claude` CLI):
 
 ```bash

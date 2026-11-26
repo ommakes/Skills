@@ -814,7 +814,8 @@
         }
       ],
       "lookalikes": [
-        "LOOKALIKE-010"
+        "LOOKALIKE-010",
+        "LOOKALIKE-013"
       ]
     },
     {
@@ -982,11 +983,20 @@
         {
           "rule": "DS-COLOR-008",
           "via": [
+            "lookalike",
             "mentions"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-009",
+          "via": [
+            "lookalike"
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-013"
+      ]
     },
     {
       "id": "Breadcrumb",
@@ -1198,9 +1208,17 @@
           "via": [
             "mentions"
           ]
+        },
+        {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Collapsible",
@@ -1741,13 +1759,33 @@
       ],
       "rules": [
         {
+          "rule": "DS-A11Y-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-A11Y-007",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-ELEVATION-002",
           "via": [
             "mentions"
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-001"
+      ]
     },
     {
       "id": "ImageCropper",
@@ -1841,13 +1879,21 @@
       ],
       "rules": [
         {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-TAILWIND-005",
           "via": [
             "mentions"
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Listbox",
@@ -2043,14 +2089,34 @@
       ],
       "rules": [
         {
+          "rule": "DS-A11Y-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-A11Y-007",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-A11Y-036",
           "via": [
             "card",
             "mentions"
           ]
+        },
+        {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-001"
+      ]
     },
     {
       "id": "Preferences",
@@ -2552,6 +2618,12 @@
       ],
       "rules": [
         {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-TABLE-001",
           "via": [
             "category"
@@ -2667,7 +2739,9 @@
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Tabs",
@@ -2867,6 +2941,18 @@
       ],
       "rules": [
         {
+          "rule": "DS-A11Y-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-A11Y-007",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-COMPONENT-001",
           "via": [
             "lookalike"
@@ -2886,6 +2972,7 @@
         }
       ],
       "lookalikes": [
+        "LOOKALIKE-001",
         "LOOKALIKE-011"
       ]
     },
@@ -3388,64 +3475,82 @@
   },
   "lookalikes": {
     "LOOKALIKE-001": {
+      "short": "raw <button> with its own focus ring (link, icon, Tooltip or Popover trigger) -> Button, asChild as a trigger",
       "built": "A raw `<button>` with a hand-written focus ring (`focus-visible:ring-2 ...`) used as a text link, an icon inside an input (clear x), or a Tooltip or Popover trigger",
       "instead": "Button. `variant=\"link\"` for text, and `asChild` on the Button as a trigger. For an icon, IconButton with its required `label` (the registry's `vois-icon-button`); inside a field, InputGroupButton (vois-tokens `DS-ICON-006`). If the project has no Button, install the registry's `vois-button` item",
       "verification": "detector"
     },
     "LOOKALIKE-002": {
+      "short": "Loader2 + animate-spin -> Spinner",
       "built": "A `Loader2` icon with `animate-spin`",
       "instead": "Spinner (the registry's `vois-spinner` if the project has none). In a Button, the Button's `loading` prop",
       "verification": "detector"
     },
     "LOOKALIKE-003": {
+      "short": "Buttons with role=\"radio\" -> RadioGroup, or ToggleGroup",
       "built": "Buttons with `role=\"radio\"` and a hand-set `aria-checked`",
       "instead": "RadioGroup for a choice among options (the registry's vois-radio-group if the project has none), or ToggleGroup (single) for a segmented control (the registry's vois-segmented-control if the project has none)",
       "verification": "detector"
     },
     "LOOKALIKE-004": {
+      "short": "numbered circles joined by lines -> Stepper",
       "built": "Numbered circles joined by lines, written fresh on the screen",
       "instead": "The shared Stepper (the registry's vois-stepper, or one built once per workspace to `references/stepper.md`)",
       "verification": "judgment"
     },
     "LOOKALIKE-005": {
+      "short": "div or span with onClick -> Button, or a link",
       "built": "A `div` or `span` with `onClick`",
       "instead": "Button for an action, a link for navigation",
       "verification": "detector"
     },
     "LOOKALIKE-006": {
+      "short": "fixed inset-0 backdrop + centered box -> Dialog, AlertDialog, Sheet",
       "built": "A `fixed inset-0` backdrop with a centered box",
       "instead": "Dialog, AlertDialog or Sheet (`JOB-OVERLAY-INTERACTION`, `JOB-CONFIRM-DESTRUCTIVE`)",
       "verification": "judgment"
     },
     "LOOKALIKE-007": {
+      "short": "setTimeout that hides a message -> Sonner toast",
       "built": "A `setTimeout` that hides a message held in state",
       "instead": "Sonner toast (`JOB-TRANSIENT-FEEDBACK`)",
       "verification": "detector"
     },
     "LOOKALIKE-008": {
+      "short": "x or × as text for a close -> the Dialog or Sheet close, or a ghost icon Button with aria-label",
       "built": "\"x\", \"×\" or `&times;` as text for a close control",
       "instead": "The close control that comes with Dialog or Sheet, or a ghost icon Button with an `aria-label`",
       "verification": "detector"
     },
     "LOOKALIKE-009": {
+      "short": "window.confirm, alert, prompt -> AlertDialog, or Sonner",
       "built": "`window.confirm`, `alert` or `prompt`",
       "instead": "AlertDialog for a confirmation, Sonner for a message",
       "verification": "detector"
     },
     "LOOKALIKE-010": {
+      "short": "colored border-l-4 box for a message -> Alert with a status role",
       "built": "A colored box with `border-l-4`, an icon and text for a message",
       "instead": "Alert with a status role (`info`, `positive`, `negative`, `notice`)",
       "verification": "detector"
     },
     "LOOKALIKE-011": {
+      "short": "title attribute as a tooltip -> Tooltip",
       "built": "A `title=\"...\"` attribute as a tooltip",
       "instead": "Tooltip (`JOB-CONTEXTUAL-INFO`; the registry's vois-tooltip if the project has none)",
       "verification": "detector"
     },
     "LOOKALIKE-012": {
+      "short": "round div or span with initials or an img -> Avatar",
       "built": "A round `div` or `span` holding an `img`, or one or two capital letters, as a person's picture",
       "instead": "Avatar with AvatarImage and AvatarFallback (the registry's vois-avatar if the project has none; `JOB-REPRESENT-USER`)",
       "verification": "detector"
+    },
+    "LOOKALIKE-013": {
+      "short": "Tailwind palette class (bg-green-500, text-red-600) for a status dot, badge or message -> the status role tokens, through Badge or Alert (DS-COLOR-008)",
+      "built": "A Tailwind palette class (`bg-green-500`, `text-red-600`) for a status dot, badge or message",
+      "instead": "The status role tokens (`--base-positive`, `--bg-negative`, `--text-notice`, `--border-info`, `--icon-positive`), through Badge or Alert (`DS-COLOR-008`)",
+      "verification": "judgment"
     }
   },
   "patterns": {

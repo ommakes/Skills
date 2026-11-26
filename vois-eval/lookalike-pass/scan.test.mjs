@@ -46,6 +46,10 @@ const CASES = [
   ["a real tab", "<button onClick={() => setActiveTab('a')}>A</button>", ["fake-tabs"]],
   ["prose that says confirm", "<p>Please confirm (this cannot be undone)</p>", []],
   ["an amber alert box", '<div role="alert" className="border border-amber-300 bg-amber-50">x</div>', ["fake-alert", "raw-palette-color"]],
+  ["an initials circle built as a span", '<span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-muted">{initials(u.name)}</span>', ["fake-avatar"]],
+  ["an initials circle built as a div", '<div className="size-8 rounded-full bg-muted">{initials(u.name)}</div>', ["fake-avatar"]],
+  ["a round dot with no initials", '<span aria-hidden="true" className="size-2 rounded-full bg-muted" />', []],
+  ["an initials circle inside an Avatar import", 'import { Avatar } from "@/components/ui/avatar"; <span className="size-8 rounded-full">{initials(u.name)}</span>', []],
   ["a delay written 3_000", "setTimeout(() => setShowSaved(false), 3_000)", ["fake-toast"]],
   ["a flag whose name contains load", "setTimeout(() => setUploadMessage(null), 3000)", ["fake-toast"]],
 ];
