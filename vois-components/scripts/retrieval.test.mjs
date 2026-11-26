@@ -130,6 +130,9 @@ test("malformed sources are reported, never a crash", () => {
     ["a row's rules as a string", (s) => { s.cards.find((c) => c.file === "dialog.json").card.behaviors[0].rules = "DS-MODAL-001"; }, /rules must be a list/],
     ["a lookalike row that is null", (s) => { s.rules.lookalikes.rows.push(null); }, /lookalike row \d+ is not an object/],
     ["a lookalike's rule_ids as a string", (s) => { s.rules.lookalikes.rows[0].rule_ids = "DS-A11Y-001"; }, /rule_ids must be a list/],
+    ["a lookalike's components as a string", (s) => { s.rules.lookalikes.rows[0].components = "Popover"; }, /LOOKALIKE-001 components must be a non-empty list/],
+    ["a lookalike's components naming a component that does not exist", (s) => { s.rules.lookalikes.rows[0].components = ["Popovr"]; }, /LOOKALIKE-001 components names Popovr/],
+    ["a lookalike's short as a number", (s) => { s.rules.lookalikes.rows[0].short = 5; }, /LOOKALIKE-001 short must be a non-empty string/],
     ["a job that is null", (s) => { s.rules.jobs.push(null); }, /job \d+ is not an object/],
     ["a rule that is null", (s) => { s.tokens.rules.push(null); }, /rule \d+ has no id/],
     ["an inventory name that is a number", (s) => { entry(s, "Tabs").inventory = 5; }, /Tabs inventory must be a string/],
@@ -332,6 +335,28 @@ test("query: the new modes are modes, and each needs its value", () => {
 
 test("query: the job list points at --patterns and --fields", () => {
   assert.match(main(["--jobs"], loadAll()).out, /run --patterns[\s\S]*run --fields/);
+});
+
+test("a lookalike row reaches the components it lists, not only the one it names as the fix", () => {
+  const { index } = build(fresh());
+  const has001 = (id) => index.components.find((c) => c.id === id).lookalikes.includes("LOOKALIKE-001");
+  for (const id of ["Button", "Tooltip", "Popover", "HoverCard"]) assert.ok(has001(id), id);
+  assert.ok(!has001("Tabs"), "a component the row does not list or name stays clear");
+  const s = fresh();
+  s.rules.lookalikes.rows[0].components = ["Button"];
+  assert.ok(!build(s).index.components.find((c) => c.id === "Popover").lookalikes.includes("LOOKALIKE-001"), "without the list, Popover is not reached");
+  const all = loadAll();
+  for (const name of ["Tooltip", "Popover"]) assert.match(main([name], all).out, /LOOKALIKE-001/, `${name} packet`);
+});
+
+test("query: --jobs ends with every lookalike row in one line each, and stays under 41 lines", () => {
+  const all = loadAll();
+  const out = main(["--jobs"], all).out;
+  const lines = out.split("\n");
+  assert.ok(lines.length <= 40, `--jobs: ${lines.length} lines`);
+  for (const id of Object.keys(all.index.lookalikes)) assert.ok(lines.some((l) => l.startsWith(`  ${id.replace("LOOKALIKE-", "")}  `)), id);
+  assert.match(out, /Landing, marketing, pricing[^\n]*run --patterns/);
+  assert.equal(JSON.parse(main(["--jobs", "--json"], all).out).lookalikes.length, Object.keys(all.index.lookalikes).length);
 });
 
 test("query: the new packets stay small, and a long group says what it cut", () => {

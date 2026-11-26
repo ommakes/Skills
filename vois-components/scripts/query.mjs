@@ -318,7 +318,7 @@ export function main(argv, all = loadAll()) {
   if (modes > 1) return { code: 1, out: `pick one mode: a component name, --jobs, --job, --id, --patterns, --group, --fields or --audit\n${USAGE}` };
   const full = has("--full");
   let result;
-  if (has("--jobs")) result = { kind: "joblist", state: "match", jobs: all.jobs.map((j) => ({ id: j.id, title: j.title, framing: j.framing })) };
+  if (has("--jobs")) result = { kind: "joblist", state: "match", jobs: all.jobs.map((j) => ({ id: j.id, title: j.title, framing: j.framing })), lookalikes: Object.entries(all.index.lookalikes).map(([id, l]) => ({ id, short: l.short ?? cut(l.built, 80) })) };
   else if (has("--patterns")) result = patternsList(all);
   else if (has("--fields")) result = fieldsList(all);
   else if (values("--group").length) result = groupPacket(all, values("--group")[0], { full });
@@ -335,7 +335,7 @@ export function main(argv, all = loadAll()) {
   const code = result.state === "match" ? 0 : result.state === "ambiguous" ? 2 : 3;
   if (has("--json")) return { code, out: JSON.stringify(result, null, 2) };
   let out;
-  if (result.kind === "joblist") out = ["Pick the job IDs that fit, then run --job <ID> for each. If no job fits, say the skills have no rule for this task. Do not use the nearest job.", ...result.jobs.map((j) => `${j.id}  ${j.title}. ${j.framing}`), "For page layout, tables, forms and dialogs run --patterns. For form field types and sensitive data run --fields."].join("\n");
+  if (result.kind === "joblist") out = ["Pick the job IDs that fit, then run --job <ID> for each. If no job fits, say the skills have no rule for this task. Do not use the nearest job.", ...result.jobs.map((j) => `${j.id}  ${j.title}. ${j.framing}`), "Landing, marketing, pricing or any page layout, and tables, forms and dialogs: run --patterns, and read the page's group before you build. For form field types and sensitive data run --fields.", "Before you write markup for any of these, use the component instead (--id LOOKALIKE-<n> for the row):", ...result.lookalikes.map((l) => `  ${l.id.replace("LOOKALIKE-", "")}  ${l.short}`)].join("\n");
   else if (result.kind === "component" && result.state === "match") out = textComponent(result);
   else if (result.kind === "component" && result.state === "ambiguous") out = `"${result.query}" names more than one component: ${result.candidates.join(", ")}. Run query.mjs with one of them.`;
   else if (result.kind === "component") out = `"${result.query}" is not a component in the index.${result.near.length ? ` Nearest: ${result.near.join(", ")}.` : ""} To choose by need instead, run --jobs. If nothing fits, say the skills have no rule for it.`;
