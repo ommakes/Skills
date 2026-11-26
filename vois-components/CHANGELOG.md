@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.2] - 2026-11-26
+
+### Changed
+- **The retrieval index carries the new `DS-A11Y-020` wording** (close button first in a destructive dialog that has one, otherwise Cancel). It is rebuilt from `vois-tokens/data/vois-rules.json`. See the vois-tokens 1.48.9 entry.
+
+---
+
 ## [1.44.1] - 2026-11-26
 
 ### Fixed

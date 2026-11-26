@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.48.8** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.48.9** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -84,6 +84,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.48.9**: `DS-A11Y-020` (first focus in a dialog) now starts on the close button when a destructive dialog has one, otherwise on Cancel. It never starts on the destructive button.
 - **1.48.8**: Two reference notes now match the detector. `references/hooks.md` says `DS-MOTION-001` also exempts `_motion-tokens.scss`, and `references/anti-slop.md` has the "Known detector gap" note (the arbitrary-hex gradient still gets past `DS-SLOP-002`). No rule or detector change.
 - **1.48.7**: `DS-GLASS-005` reads `@keyframes` blocks in linear time (nested blocks cost a scan of their body at every level before), and `DS-GLASS-004` and `-005` no longer look to the end of the file for the `]` of an unclosed `backdrop-blur-[` or `transition-[`. The findings are the same.
 - **1.48.6**: `DS-SURFACE-004` now says the label inset is 4px at the small Button and 8px at default and large, with 8px container padding at every size, so text-only buttons keep their width and the icon-to-text gap is the inset. Matches registry 0.22.3.
