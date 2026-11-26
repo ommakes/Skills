@@ -420,3 +420,45 @@ test("a component packet from an index with no PATH copy has no patterns line", 
   assert.equal(r.code, 0);
   assert.doesNotMatch(r.out, /^patterns /m);
 });
+
+test("job packets list the PATH nodes that build on the job", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const out = main(["--job", "JOB-CONFIRM-DESTRUCTIVE"], all).out;
+  assert.match(out, /^  page rules that build on it: .*PATH-TABLE-BULK-DESTRUCTIVE.*PATH-TABLE-NARROW-SELECT/m, "a bulk delete on a phone leads to the table rules");
+  const j = JSON.parse(main(["--job", "JOB-CONFIRM-DESTRUCTIVE", "--json"], all).out).jobs[0];
+  assert.ok(j.patterns.includes("PATH-TABLE-BULK-DESTRUCTIVE"));
+  // Every job packet stays within the packet size.
+  for (const job of all.jobs) assert.ok(main(["--job", job.id], all).out.split("\n").length <= 40, job.id);
+});
+
+test("the job patterns line is cut at 12, and ignores a node whose builds_on is not a list", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const fake = { ...all, index: structuredClone(all.index) };
+  fake.index.patterns = {};
+  for (let i = 1; i <= 14; i++) fake.index.patterns[`PATH-X-${String(i).padStart(2, "0")}`] = { kind: "decision", name: "x", group: "x", condition: "c", outcome: "o", builds_on: ["JOB-CONFIRM-DESTRUCTIVE"] };
+  fake.index.patterns["PATH-Y-1"] = { kind: "decision", name: "x", group: "x", condition: "c", outcome: "o", builds_on: "JOB-CONFIRM-DESTRUCTIVE" };
+  fake.index.patterns["PATH-Y-2"] = { kind: "decision", name: "x", group: "x", condition: "c", outcome: "o" };
+  fake.index.patterns["PATH-Y-3"] = { kind: "decision", name: "x", group: "x", condition: "c", outcome: "o", builds_on: ["JOB-CONFIRM-DESTRUCTIVE-2"] };
+  const j = JSON.parse(main(["--job", "JOB-CONFIRM-DESTRUCTIVE", "--json"], fake).out).jobs[0];
+  assert.equal(j.patterns.length, 12, "the cut is at 12");
+  assert.equal(j.patternsMore, 2, "the rest is counted");
+  assert.ok(!j.patterns.some((id) => id.startsWith("PATH-Y")), "a string, a missing list and a longer job id do not match");
+  assert.match(main(["--job", "JOB-CONFIRM-DESTRUCTIVE"], fake).out, /\(\+2 more\)/);
+});
+
+test("a job packet from an index with no PATH copy has no patterns line", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const old = { ...all, index: { ...all.index } };
+  delete old.index.patterns;
+  const r = main(["--job", "JOB-CONFIRM-DESTRUCTIVE"], old);
+  assert.equal(r.code, 0);
+  assert.doesNotMatch(r.out, /page rules that build on it/);
+});
+
+test("the date of birth pointer names a field rule that exists", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  assert.ok(all.index.fields["FIELD-SENSITIVE-STORAGE"], "the rule the date branch names is in the index");
+  assert.match(main(["DateInput"], all).out, /FIELD-SENSITIVE-STORAGE/);
+  assert.match(main(["DatePicker"], all).out, /JOB-ACCEPT-TEXT/);
+  assert.match(main(["--job", "JOB-ACCEPT-TEXT"], all).out, /FIELD-SENSITIVE-STORAGE/);
+});

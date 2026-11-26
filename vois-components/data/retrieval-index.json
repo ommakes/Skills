@@ -1319,7 +1319,7 @@
         "Calendar",
         "Input"
       ],
-      "note": "The same recipe as DatePicker: a text Input that accepts a typed date, plus a calendar button that opens a Popover with the Calendar. Typing and picking write one value. The value rules are the `date` field type in vois-fields. A date range uses the same recipe, as a range variant. Rules: JOB-ACCEPT-TEXT."
+      "note": "The same recipe as DatePicker: a text Input that accepts a typed date, plus a calendar button that opens a Popover with the Calendar. Typing and picking write one value. The value rules are the `date` field type in vois-fields. A date of birth is typed only, and stays out of URLs and analytics events (FIELD-SENSITIVE-STORAGE). A date range uses the same recipe, as a range variant. Rules: JOB-ACCEPT-TEXT."
     },
     {
       "id": "DatePicker",
