@@ -4,6 +4,15 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.8] - 2026-11-26
+
+### Fixed
+- **`references/hooks.md` said `DS-MOTION-001` exempts only a file named exactly `motion-tokens.{css,scss,ts,js}`.** The detector also exempts `_motion-tokens.scss` (`detect.test.mjs` checks it). The row now names it.
+- **`references/anti-slop.md` had lost its "Known detector gap" note.** An arbitrary-hex gradient (`from-[#7c3aed] to-[#3b82f6]`) still gets past `DS-SLOP-002`; `detect.test.mjs` asserts that. The note is back, so a reader grades that case by reading the code. Found by the public/private drift report. No rule, detector or data change.
+- **`eslint-plugin/index.mjs` still said 1.48.7.** Its version must equal the skill version (`index.test.mjs` checks it), and the 1.48.8 bump missed it. Now 1.48.8.
+
+---
+
 ## [1.48.7] - 2026-11-24
 
 ### Fixed
