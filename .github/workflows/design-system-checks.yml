@@ -44,6 +44,8 @@ jobs:
         run: node --test vois-eval/run/run.test.mjs
       - name: Phase 0 baseline runner tests
         run: node --test vois-eval/run/baseline.test.mjs
+      - name: Phase 2 answer-quality runner tests
+        run: node --test vois-eval/run/quality.test.mjs
 
       - name: Committed eval results are well formed and have not regressed (vois-eval)
         run: node vois-eval/check-results.mjs
