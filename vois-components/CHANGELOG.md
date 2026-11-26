@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.6] - 2026-11-26
+
+### Changed
+- **A default `--group` packet stays within 40 lines, header and cutoff included.** It was a header, 40 nodes and a cutoff line, so `pricing-pages` (64 nodes) printed 42. It now lists 38 nodes and says how many remain (`+26 more; add --full`). `--full` still lists every node. No index change.
+
+---
+
 ## [1.44.5] - 2026-11-26
 
 ### Added

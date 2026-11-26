@@ -392,13 +392,25 @@ test("query: the new packets stay small, and a long group says what it cut", () 
   const groups = JSON.parse(main(["--patterns", "--json"], all).out).groups;
   for (const g of groups) {
     const out = main(["--group", g.group], all).out.split("\n");
-    assert.ok(out.length <= 42, `${g.group}: ${out.length} lines`);
+    assert.ok(out.length <= 40, `${g.group}: ${out.length} lines`);
   }
   const big = main(["--group", "pricing-pages"], all).out;
   assert.match(big, /\+\d+ more; add --full/);
   const full = main(["--group", "pricing-pages", "--full"], all).out;
   assert.ok(full.split("\n").length > 60, "--full lists every node");
-  assert.equal(groupPacket(all, "pricing-pages").rows.length, 40);
+  assert.equal(groupPacket(all, "pricing-pages").rows.length, 38);
+});
+
+test("query: default --group pricing-pages is 40 lines, header and cutoff included", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const lines = main(["--group", "pricing-pages"], all).out.split("\n");
+  assert.equal(lines.length, 40);
+  assert.match(lines[0], /^VOIS PATTERNS  group: pricing-pages  \(64 nodes/);
+  assert.equal(lines.filter((l) => l.startsWith("PATH-")).length, 38);
+  assert.equal(lines.at(-1), "+26 more; add --full to list them all");
+  const full = main(["--group", "pricing-pages", "--full"], all).out.split("\n");
+  assert.equal(full.filter((l) => l.startsWith("PATH-")).length, 64);
+  assert.ok(!full.some((l) => l.startsWith("+")));
 });
 
 test("the old index shape still answers the old modes", () => {
