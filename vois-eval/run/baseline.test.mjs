@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks } from "./baseline.mjs";
+import { main as queryMain, loadAll as loadQuery } from "../../vois-components/scripts/query.mjs";
 
 const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
 const SCRIPT = fileURLToPath(new URL("./baseline.mjs", import.meta.url));
@@ -332,4 +333,16 @@ test("rows carry rule_recall for tasks that list required_rules, and the summary
     assert.deepEqual(f.summary.rule_recall, { samples: 1, mean: 0.5, full: 0 });
     assert.equal(f.summary.packet_lines.count, 2);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("the retrieval hint names only flags query.mjs accepts, and the ids it shows resolve", () => {
+  const hint = buildPrompt("x", { skills: true, retrieval: true });
+  const all = loadQuery();
+  const flags = [...new Set(hint.match(/--[a-z]+/g) || [])];
+  for (const f of ["--jobs", "--patterns", "--group", "--fields", "--id", "--job"]) assert.ok(flags.includes(f), `the hint names ${f}`);
+  for (const f of flags) {
+    const r = queryMain([f], all);
+    assert.ok(!/unknown flag/.test(r.out), `${f} is a flag query.mjs knows`);
+  }
+  for (const args of [["--patterns"], ["--fields"], ["--group", "table-interactions"], ["--id", "PATH-B-ROW-OPEN"], ["--id", "FIELD-SENSITIVE-STORAGE"]]) assert.equal(queryMain(args, all).code, 0, args.join(" "));
 });

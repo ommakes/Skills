@@ -10,6 +10,9 @@
 //   vois-components/behaviors/*.json            behavior cards, and the rules their rows cite
 //   vois-tokens/data/vois-rules.json            rule text, copied for every rule a component links to, so an
 //                                               installed vois-components works without vois-tokens next to it
+//   vois-patterns/data/patterns-rules.json      every PATH node (pattern, sub-decision, cross-cutting rule), copied whole
+//   vois-fields/data/fields-rules.json          every FIELD rule, copied whole. Both are copied so query.mjs can answer
+//                                               --patterns, --group, --fields and --id PATH-* / FIELD-* without those skills
 //   registry/registry.json                      optional: checks that each `registry` value names a real item
 //
 // A component reaches a rule four ways, each kept as provenance: its category is in `ruleScopes` (category), its
@@ -31,6 +34,9 @@ export const wordRe = (name, flags = "") => new RegExp(`(?<![A-Za-z0-9-])${escap
 /** Plain character order, the same in every locale. */
 export const byText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
+/** The file a PATH node comes from, as one word: "vois-patterns/references/table-interactions.md" is "table-interactions". Any path style. */
+export const groupOf = (file) => String(file).split(/[\\/]/).pop().replace(/\.md$/i, "");
+
 /** The text of a decision tree, depth first: every recommendation, at any depth. */
 function recommendations(tree, out = []) {
   for (const node of Array.isArray(tree) ? tree : []) {
@@ -50,6 +56,8 @@ export function load(root) {
   const names = need("vois-components/data/component-names.json");
   const rules = need("vois-components/data/components-rules.json");
   const tokens = need("vois-tokens/data/vois-rules.json");
+  const patterns = need("vois-patterns/data/patterns-rules.json");
+  const fields = need("vois-fields/data/fields-rules.json");
   const cardsDir = at("vois-components/behaviors");
   const cards = [];
   if (existsSync(cardsDir)) {
@@ -62,11 +70,11 @@ export function load(root) {
   if (existsSync(registryPath)) {
     try { registry = readJson(registryPath); } catch (e) { problems.push(`registry/registry.json: cannot read (${e.message})`); }
   }
-  return { sources: { names, rules, tokens, cards, registry }, problems };
+  return { sources: { names, rules, tokens, patterns, fields, cards, registry }, problems };
 }
 
 /** Builds the index from the sources and lists every broken link. A problem never widens what a packet holds. */
-export function build({ names, rules, tokens, cards, registry }) {
+export function build({ names, rules, tokens, patterns, fields, cards, registry }) {
   const problems = [];
   const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
   if (!isObj(names) || !Array.isArray(names.names)) return { index: null, problems: ["component-names.json: `names` must be a list"] };
@@ -87,6 +95,42 @@ export function build({ names, rules, tokens, cards, registry }) {
   const jobs = keep(isObj(rules) && Array.isArray(rules.jobs) ? rules.jobs : [], "job");
   const lookalikes = keep(isObj(rules) && isObj(rules.lookalikes) && Array.isArray(rules.lookalikes.rows) ? rules.lookalikes.rows : [], "lookalike row");
   if (!jobs.length) problems.push("components-rules.json: no jobs");
+
+  // PATH nodes and FIELD rules. Copied whole, so the packet text is exactly the rule text. An id may belong to one
+  // thing only, across every source, so --id never has to guess which one the caller meant.
+  const ownerOf = new Map();
+  // --id upper-cases what it is given, so ids are compared in upper case: "path-x" and "PATH-X" are one id.
+  const claim = (id, what) => {
+    const k = id.toUpperCase();
+    if (ownerOf.has(k)) { problems.push(`${what} ${id} is also ${ownerOf.get(k)}; an id must belong to one thing`); return false; }
+    ownerOf.set(k, what);
+    return true;
+  };
+  for (const r of dsRules) claim(r.id, "vois-rules.json rule");
+  for (const j of jobs) claim(j.id, "components-rules.json job");
+  for (const l of lookalikes) claim(l.id, "components-rules.json lookalike");
+  const nodeList = isObj(patterns) && Array.isArray(patterns.nodes) ? patterns.nodes : null;
+  if (!nodeList) problems.push("patterns-rules.json: `nodes` must be a list");
+  const pathNodes = new Map();
+  for (const [i, n] of (nodeList || []).entries()) {
+    if (!isObj(n) || typeof n.id !== "string" || !n.id || typeof n.condition !== "string" || typeof n.outcome !== "string") { problems.push(`patterns-rules.json: node ${i} needs a string id, condition and outcome`); continue; }
+    if (typeof n.source_file !== "string" || !n.source_file) { problems.push(`patterns-rules.json: ${n.id} has no source_file`); continue; }
+    if (claim(n.id, "patterns-rules.json node")) pathNodes.set(n.id, n);
+  }
+  const groupFiles = new Map(); // group name -> the one source file it stands for
+  for (const n of pathNodes.values()) {
+    const g = groupOf(n.source_file), seenFile = groupFiles.get(g);
+    if (seenFile === undefined) groupFiles.set(g, n.source_file.replace(/\\/g, "/"));
+    else if (seenFile !== n.source_file.replace(/\\/g, "/")) problems.push(`patterns-rules.json: ${n.id} comes from ${n.source_file} and ${seenFile} has the same file name; --group could not tell them apart`);
+  }
+  for (const n of pathNodes.values()) if (n.parent != null && !pathNodes.has(n.parent)) problems.push(`patterns-rules.json: ${n.id} names parent ${n.parent}, which is not a node`);
+  const fieldList = isObj(fields) && Array.isArray(fields.rules) ? fields.rules : null;
+  if (!fieldList) problems.push("fields-rules.json: `rules` must be a list");
+  const fieldRules = new Map();
+  for (const [i, r] of (fieldList || []).entries()) {
+    if (!isObj(r) || typeof r.id !== "string" || !r.id || typeof r.rule !== "string" || typeof r.title !== "string") { problems.push(`fields-rules.json: rule ${i} needs a string id, title and rule text`); continue; }
+    if (claim(r.id, "fields-rules.json rule")) fieldRules.set(r.id, r);
+  }
 
   // Components and their names. Strong names (id, inventory) must be unique across every name. Weak names (shadcn file,
   // registry item, registry item without "vois-") may be shared; a shared weak name is an ambiguous lookup, not an error.
@@ -246,11 +290,17 @@ export function build({ names, rules, tokens, cards, registry }) {
   const lookalikeText = Object.fromEntries(lookalikes.filter((r) => components.some((c) => c.lookalikes.includes(r.id))).map((r) => [r.id, { built: r.built, instead: r.instead, verification: r.verification ?? null }]).sort(([a], [b]) => byText(a, b)));
   const index = {
     note: "Generated by vois-components/scripts/retrieval.mjs from component-names.json, components-rules.json, behaviors/*.json and vois-tokens/data/vois-rules.json. Do not edit; run the script with --write. query.mjs reads it.",
-    counts: { components: components.length, jobs: jobs.length, cards: cardById.size, rules: dsRules.length, linkedRules: linkedRuleIds.size, globalRules: dsRules.length - linkedRuleIds.size },
+    counts: { components: components.length, jobs: jobs.length, cards: cardById.size, rules: dsRules.length, linkedRules: linkedRuleIds.size, globalRules: dsRules.length - linkedRuleIds.size, pathNodes: pathNodes.size, fieldRules: fieldRules.size },
     aliases,
     components,
     rules: ruleText,
     lookalikes: lookalikeText,
+    patterns: Object.fromEntries([...pathNodes.entries()].sort(([a], [b]) => byText(a, b)).map(([id, n]) => {
+      const out = { kind: typeof n.node_type === "string" ? n.node_type : null, name: n.pattern_name ?? n.rule_name ?? null, group: groupOf(n.source_file), parent: n.parent ?? null, condition: n.condition, outcome: n.outcome };
+      if (Array.isArray(n.builds_on) && n.builds_on.length) out.builds_on = n.builds_on.filter((x) => typeof x === "string");
+      return [id, out];
+    })),
+    fields: Object.fromEntries([...fieldRules.entries()].sort(([a], [b]) => byText(a, b)).map(([id, r]) => [id, { category: r.category ?? null, title: r.title, severity: r.severity ?? null, rule: r.rule, never: Array.isArray(r.never) ? r.never.filter((x) => typeof x === "string") : [] }])),
   };
   return { index, problems };
 }

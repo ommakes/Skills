@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.42.0] - 2026-11-25
+
+### Added
+- **`query.mjs` answers pattern and field-rule questions.** In the Phase 2 re-run, the retrieval arm scored 56% rule recall on the adversarial tasks and 82% on the held-out tasks, and most misses were ids the index did not hold: the `PATH-*` rules from `vois-patterns` (for example `PATH-TABLE-BULK-BAR`) and the `FIELD-*` rules from `vois-fields` (`FIELD-SENSITIVE-STORAGE`). The model also tried to look these ids up, and 2 of the 54 blocked commands asked `--id PATH-B-ROW-OPEN` (the other 52 chained two calls with `;` or a pipe). The index now holds a whole copy of all 230 PATH nodes and all 23 FIELD rules. New modes: `--patterns` (the 9 top-level patterns and every pattern file with its node count), `--group <file>` (every node from one pattern file, one line each, cut at 40 lines unless `--full`), `--fields` (one line per field rule), and `--id` now takes any `PATH-*` or `FIELD-*` id. `--id PATH-B` lists the sub-decisions. The `--jobs` output ends with a line that points at `--patterns` and `--fields`. `--patterns`, `--fields` and `--id PATH-B` print under 40 lines; `--group` is cut at 40 nodes plus a header and a footer line.
+- `retrieval.mjs` checks the new sources: a node or rule must have an id, text and source file; an id must belong to one thing across rules, jobs, lookalikes, nodes and field rules (compared in upper case, as `--id` reads it); two pattern files may not share a file name; a node's parent must exist. A missing `patterns-rules.json` or `fields-rules.json` fails the run.
+
+### Not changed
+- No rule text, job or component entry changed. `DS-PANEL-003` (missed in all HELD-03 samples) is reached only through Drawer and Sheet, not through a job. That is a separate gap.
+
 ## [1.41.0] - 2026-11-25
 
 ### Added

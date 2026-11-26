@@ -6,8 +6,8 @@ import { mkdtempSync, cpSync, mkdirSync, writeFileSync, readFileSync, rmSync } f
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { load, build, run, wordRe, serialize, INDEX_REL } from "./retrieval.mjs";
-import { resolve, main, loadAll } from "./query.mjs";
+import { load, build, run, wordRe, serialize, groupOf, INDEX_REL } from "./retrieval.mjs";
+import { resolve, main, loadAll, groupPacket } from "./query.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, "..", "..");
@@ -23,6 +23,10 @@ function copyRepo() {
   cpSync(join(ROOT, "vois-components"), join(dir, "vois-components"), { recursive: true });
   mkdirSync(join(dir, "vois-tokens"), { recursive: true });
   cpSync(join(ROOT, "vois-tokens", "data"), join(dir, "vois-tokens", "data"), { recursive: true });
+  for (const skill of ["vois-patterns", "vois-fields"]) {
+    mkdirSync(join(dir, skill), { recursive: true });
+    cpSync(join(ROOT, skill, "data"), join(dir, skill, "data"), { recursive: true });
+  }
   mkdirSync(join(dir, "registry"), { recursive: true });
   cpSync(join(ROOT, "registry", "registry.json"), join(dir, "registry", "registry.json"));
   return dir;
@@ -227,4 +231,148 @@ test("every component packet stays small", () => {
     const lines = main([c.id], all).out.split("\n").length;
     assert.ok(lines <= 40, `${c.id}: ${lines} lines`);
   }
+});
+
+// ---------------- PATH nodes and FIELD rules
+
+const nodeOf = (s, id) => s.patterns.nodes.find((n) => n.id === id);
+const fieldOf = (s, id) => s.fields.rules.find((r) => r.id === id);
+
+test("PATH nodes: a copy keeps the rule text whole, and the id set matches the source", () => {
+  const s = fresh();
+  const { index } = build(s);
+  assert.equal(Object.keys(index.patterns).length, s.patterns.nodes.length);
+  assert.equal(Object.keys(index.fields).length, s.fields.rules.length);
+  const row = index.patterns["PATH-B-ROW-OPEN"];
+  assert.equal(row.outcome, nodeOf(s, "PATH-B-ROW-OPEN").outcome, "the outcome is copied word for word");
+  assert.equal(row.group, "table-list");
+  assert.equal(row.parent, "PATH-B");
+});
+
+test("PATH nodes and FIELD rules: an id may belong to one thing, across every source", () => {
+  let s = fresh(); nodeOf(s, "PATH-B-ROW-OPEN").id = "PATH-B-ROW-ACTIONS";
+  assert.ok(has(problemsOf(s), /PATH-B-ROW-ACTIONS is also patterns-rules\.json node/), "two nodes with one id");
+  s = fresh(); nodeOf(s, "PATH-B-ROW-OPEN").id = "DS-MODAL-004";
+  assert.ok(has(problemsOf(s), /DS-MODAL-004 is also vois-rules\.json rule/), "a node that takes a DS id");
+  s = fresh(); fieldOf(s, "FIELD-PASTE").id = "JOB-CONFIRM-DESTRUCTIVE";
+  assert.ok(has(problemsOf(s), /JOB-CONFIRM-DESTRUCTIVE is also components-rules\.json job/), "a field rule that takes a job id");
+  s = fresh(); fieldOf(s, "FIELD-PASTE").id = "PATH-B";
+  assert.ok(has(problemsOf(s), /PATH-B is also patterns-rules\.json node/), "a field rule that takes a PATH id");
+});
+
+test("PATH nodes and FIELD rules: malformed entries are reported, never a crash", () => {
+  let s = fresh(); s.patterns.nodes.push(null, { id: "PATH-X" }, { id: 7, condition: "c", outcome: "o" });
+  assert.ok(has(problemsOf(s), /patterns-rules\.json: node \d+ needs a string id, condition and outcome/));
+  s = fresh(); s.patterns.nodes = "no";
+  assert.ok(has(problemsOf(s), /patterns-rules\.json: `nodes` must be a list/));
+  s = fresh(); s.fields.rules = {};
+  assert.ok(has(problemsOf(s), /fields-rules\.json: `rules` must be a list/));
+  s = fresh(); s.fields.rules.push({ id: "FIELD-NEW", title: "t" });
+  assert.ok(has(problemsOf(s), /fields-rules\.json: rule \d+ needs a string id, title and rule text/));
+  s = fresh(); nodeOf(s, "PATH-B-ROW-OPEN").source_file = "";
+  assert.ok(has(problemsOf(s), /PATH-B-ROW-OPEN has no source_file/));
+  s = fresh(); nodeOf(s, "PATH-B-ROW-OPEN").parent = "PATH-NOPE";
+  assert.ok(has(problemsOf(s), /PATH-B-ROW-OPEN names parent PATH-NOPE, which is not a node/));
+  s = fresh(); s.patterns = null; s.fields = null;
+  assert.ok(has(problemsOf(s), /`nodes` must be a list/) && has(problemsOf(s), /`rules` must be a list/), "a missing source file is a problem, not an empty index");
+});
+
+test("a missing patterns or fields file fails the run", () => {
+  const dir = copyRepo();
+  rmSync(join(dir, "vois-patterns", "data", "patterns-rules.json"));
+  assert.ok(has(run(dir), /patterns-rules\.json: cannot read/));
+  const dir2 = copyRepo();
+  rmSync(join(dir2, "vois-fields", "data", "fields-rules.json"));
+  assert.ok(has(run(dir2), /fields-rules\.json: cannot read/));
+});
+
+test("groupOf takes the file name from any path style", () => {
+  for (const f of ["vois-patterns/references/table-interactions.md", "./vois-patterns/references/table-interactions.md", "/abs/x/table-interactions.md", "vois-patterns\\references\\table-interactions.md", "table-interactions.md", "table-interactions.MD"]) assert.equal(groupOf(f), "table-interactions", f);
+});
+
+test("query: --patterns, --group, --fields and --id read PATH and FIELD ids", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const pat = main(["--patterns"], all);
+  assert.equal(pat.code, 0);
+  assert.match(pat.out, /PATH-B {2}Table\/List with Details/);
+  assert.match(pat.out, /table-interactions {2}35 nodes/);
+  assert.match(pat.out, /table-list {2}8 nodes/, "a file with no cross-cutting rules is listed too");
+  assert.match(main(["--group", "pricing-pages"], all).out, /\(64 nodes/, "the count in --patterns is the count --group shows");
+  assert.match(pat.out, /If no pattern fits, say the skills have no rule for this task\./);
+  const fld = main(["--fields"], all);
+  assert.equal(fld.code, 0);
+  assert.match(fld.out, /FIELD-SENSITIVE-STORAGE/);
+  assert.match(fld.out, /If no field rule fits/);
+  const grp = main(["--group", "Table Interactions"], all);
+  assert.equal(grp.code, 0, "a group name matches in any spelling");
+  assert.match(grp.out, /PATH-TABLE-BULK-BAR/);
+  assert.equal(main(["--group", "nope"], all).code, 3);
+  assert.match(main(["--group", "nope"], all).out, /Groups: .*table-interactions/);
+  assert.equal(main(["--group", "constructor"], all).code, 3, "a built-in name is not a group");
+  const row = main(["--id", "path-b-row-open"], all);
+  assert.equal(row.code, 0, "PATH ids are case-insensitive");
+  assert.match(row.out, /PATH-B-ROW-OPEN \[table-list/);
+  const top = main(["--id", "PATH-B"], all).out;
+  assert.match(top, /sub-decisions\n {2}PATH-B-COMPLEX/);
+  assert.match(main(["--id", "FIELD-SENSITIVE-STORAGE"], all).out, /never: /);
+  const j = JSON.parse(main(["--id", "PATH-B-ROW-OPEN", "--json"], all).out);
+  assert.equal(j.kind, "path", "the node's own kind does not replace the packet kind");
+  assert.equal(j.nodeKind, "sub_decision");
+});
+
+test("query: the new modes are modes, and each needs its value", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  assert.equal(main(["--group"], all).code, 1);
+  assert.equal(main(["--group", "--json"], all).code, 1);
+  assert.equal(main(["--patterns", "--fields"], all).code, 1);
+  assert.equal(main(["--patterns", "Dialog"], all).code, 1);
+  assert.equal(main(["--group", "table-list", "--id", "PATH-B"], all).code, 1);
+  assert.equal(main(["--patterns", "--audit"], all).code, 1);
+});
+
+test("query: the job list points at --patterns and --fields", () => {
+  assert.match(main(["--jobs"], loadAll()).out, /run --patterns[\s\S]*run --fields/);
+});
+
+test("query: the new packets stay small, and a long group says what it cut", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  for (const args of [["--patterns"], ["--fields"], ["--id", "PATH-B"], ["--id", "PATH-PAGE"]]) {
+    const n = main(args, all).out.split("\n").length;
+    assert.ok(n <= 40, `${args.join(" ")}: ${n} lines`);
+  }
+  const groups = JSON.parse(main(["--patterns", "--json"], all).out).groups;
+  for (const g of groups) {
+    const out = main(["--group", g.group], all).out.split("\n");
+    assert.ok(out.length <= 42, `${g.group}: ${out.length} lines`);
+  }
+  const big = main(["--group", "pricing-pages"], all).out;
+  assert.match(big, /\+\d+ more; add --full/);
+  const full = main(["--group", "pricing-pages", "--full"], all).out;
+  assert.ok(full.split("\n").length > 60, "--full lists every node");
+  assert.equal(groupPacket(all, "pricing-pages").rows.length, 40);
+});
+
+test("the old index shape still answers the old modes", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const old = { ...all, index: { ...all.index } };
+  delete old.index.patterns; delete old.index.fields;
+  assert.equal(main(["Dialog"], old).code, 0);
+  assert.equal(main(["--id", "PATH-B"], old).code, 3, "no copy of the nodes: a miss, not a crash");
+  for (const m of ["--fields", "--patterns"]) {
+    const r = main([m], old);
+    assert.equal(r.code, 3, `${m}: an index with no copy is a miss, not an empty list`);
+    assert.doesNotMatch(r.out, /say the skills have no rule/);
+    assert.match(r.out, /not the same as there being no rule/);
+  }
+});
+
+test("ids are one id in any case, and one file name is one group", () => {
+  let s = fresh(); s.patterns.nodes.push({ id: "path-b-row-open", condition: "c", outcome: "o", source_file: "vois-patterns/references/x.md", node_type: "cross_cutting_rule", parent: null });
+  assert.ok(has(problemsOf(s), /path-b-row-open is also patterns-rules\.json node/), "a lower-case copy of an id");
+  s = fresh(); s.fields.rules.push({ ...fieldOf(s, "FIELD-PASTE"), id: "field-paste" });
+  assert.ok(has(problemsOf(s), /field-paste is also fields-rules\.json rule/), "a lower-case copy of a field rule id");
+  s = fresh(); nodeOf(s, "PATH-B-ROW-OPEN").source_file = "other-skill/references/table-interactions.md";
+  assert.ok(has(problemsOf(s), /has the same file name; --group could not tell them apart/));
+  s = fresh(); for (const n of s.patterns.nodes) if (/table-list/.test(n.source_file)) n.source_file = n.source_file.replace(/\//g, "\\");
+  assert.deepEqual(problemsOf(s), [], "the same file written with backslashes is still one group");
 });

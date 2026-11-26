@@ -90,13 +90,16 @@ If the tool isn't available, this skill still works standalone — just make the
 node vois-components/scripts/query.mjs Dialog          # rules, behavior card, lookalikes and registry item for one component
 node vois-components/scripts/query.mjs --jobs          # the 24 jobs, one line each, to pick from
 node vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE --job JOB-TRANSIENT-FEEDBACK
-node vois-components/scripts/query.mjs --id DS-MODAL-004
+node vois-components/scripts/query.mjs --id DS-MODAL-004   # also any PATH-* node or FIELD-* rule
+node vois-components/scripts/query.mjs --patterns      # the 9 page and form patterns, and every pattern file with its node count
+node vois-components/scripts/query.mjs --group table-interactions   # every PATH node from one pattern file, one line each
+node vois-components/scripts/query.mjs --fields        # the form field rules (FIELD-*), one line each
 node vois-components/scripts/query.mjs --audit         # jobs and components with gaps
 ```
 
 A name resolves in any spelling (`AlertDialog`, `alert-dialog`, `Alert Dialog`, `vois-alert-dialog`). Exit codes: 0 found, 2 ambiguous (the candidates are listed), 3 not found (the nearest names are listed). `--full` adds the card rows and job rationale, `--json` prints data.
 
-The packet reads `data/retrieval-index.json`, which `scripts/retrieval.mjs --write` builds from `component-names.json`, `components-rules.json`, the behavior cards and `vois-tokens/data/vois-rules.json`. A component reaches a rule when its category is in `ruleScopes` in `component-names.json`, its behavior card cites it, a lookalike row that names it as the fix cites it, or the rule text names it (listed by id only). The other rules are cross-cutting and stay in vois-tokens. `scripts/retrieval.mjs` with no flag fails when the index is stale, a `card` or `ruleScopes` entry is broken, a card has no component, or an id or inventory name belongs to two components. A shadcn or registry name two components share resolves to the one whose registry item it is, and is reported as ambiguous otherwise.
+The packet reads `data/retrieval-index.json`, which `scripts/retrieval.mjs --write` builds from `component-names.json`, `components-rules.json`, the behavior cards, `vois-tokens/data/vois-rules.json`, and, as whole copies, `vois-patterns/data/patterns-rules.json` and `vois-fields/data/fields-rules.json`. A component reaches a rule when its category is in `ruleScopes` in `component-names.json`, its behavior card cites it, a lookalike row that names it as the fix cites it, or the rule text names it (listed by id only). The other rules are cross-cutting and stay in vois-tokens. `scripts/retrieval.mjs` with no flag fails when the index is stale, a `card` or `ruleScopes` entry is broken, a card has no component, or an id or inventory name belongs to two components. A shadcn or registry name two components share resolves to the one whose registry item it is, and is reported as ambiguous otherwise.
 
 ## Related Skills
 
@@ -106,7 +109,7 @@ The packet reads `data/retrieval-index.json`, which `scripts/retrieval.mjs --wri
 
 ## Version
 
-**v1.41.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.42.0** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 
