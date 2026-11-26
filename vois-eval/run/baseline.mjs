@@ -9,6 +9,7 @@
 //   ... --resume          continue the same output file; finished samples are skipped
 //   ... --tasks <file>    run the tasks in a file ({"tasks":[{"id","user_prompt",...}]}) instead of scenarios.json (held-out tasks, vois-eval/heldout/)
 //   ... --no-skills       the control: an empty run directory and a prompt that does not mention skills
+//   --gate <file> [--skills-file <file>] [--read ADV-09=pass] [--cards-decided]   score a finished result file with gate(); no model call
 //   ... --retrieval       Phase 2 arm: the skills plus one line telling the model to use vois-components/scripts/query.mjs (Bash is allowed for that one command only)
 //
 // It measures cost, not quality. `auto_match` is a crude check (does the first line name the expected component, and not
@@ -91,7 +92,7 @@ export function lookups(toolUses, dir, toolResults = {}) {
   }
   let bytes = 0;
   for (const f of files) { try { bytes += statSync(f).size; } catch { /* gone */ } }
-  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, packet_lines: packets, bash_commands: bash, files_read: files.size, skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
+  return { read_calls: calls, search_calls: searches, query_calls: queries, other_bash_attempts: otherBash, packet_lines: packets, bash_commands: bash, files_read: files.size, file_paths: [...files].map((f) => f.slice(root.length)).sort(), skill_bytes_read: bytes, skill_tokens_est: Math.ceil(bytes / 4) };
 }
 
 export function tokensOf(usage) {
@@ -140,6 +141,68 @@ export function summarize(rows) {
   };
 }
 
+const HELD_ID = /^HELD-\d+$/;
+const SKILL_OR_CARD = /(^|\/)SKILL\.md$|(^|\/)behaviors\/[^/]+\.md$/;
+export const ADV_REQUIRED = { "ADV-07": ["FIELD-SENSITIVE-STORAGE"], "ADV-10": ["PATH-TABLE-NARROW-SELECT", "PATH-TABLE-BULK-DESTRUCTIVE"] }; // changelog 1.44.0: the samples that stopped at JOB-CONFIRM-DESTRUCTIVE / missed the field rule
+export const HUMAN_READ = ["ADV-09"]; // no required ids; a person reads the reports
+
+/**
+ * The Phase 2 gate for one result file (the object baseline.mjs writes: { arm, rows, summary }). Pure: no model, no disk.
+ *   opts.skills          the skills-arm result file for the same task file; retrieval recall must not be lower than its mean
+ *   opts.reads           { "ADV-09": "pass" | "fail" } the person's read of reports that have no required ids
+ *   opts.cardsDecided    false (default) = the cards question is open, so a retrieval row that read a SKILL.md or behaviors/*.md fails the gate
+ * Returns { pass, checks: [{ name, pass, detail }], per_id: { id: { missing: [...], samples } }, reads_of_skill_or_card: [{ scenario, sample, path }] }.
+ * Per-id misses come from rows[].rules_missing, never from the mean. ADV-09 stays out of the mean because it has no numeric recall.
+ */
+export function gate(file, opts = {}) {
+  const rows = file?.rows ?? [], summary = file?.summary ?? summarize(rows), retrieval = file?.arm === "retrieval";
+  const checks = [], add = (name, pass, detail) => checks.push({ name, pass: Boolean(pass), detail });
+  const rr = summary.rule_recall;
+  add("rule_recall.mean >= 0.95", Boolean(rr) && rr.samples > 0 && rr.mean >= 0.95, rr ? `mean ${rr.mean} over ${rr.samples} samples` : "no row has a numeric rule_recall");
+  const pl = summary.packet_lines ?? {};
+  if (retrieval) {
+    add("packet_lines.over_40 == 0", pl.over_40 === 0, `${pl.over_40 ?? "?"} of ${pl.count ?? 0} packets over 40 lines`);
+    add("packet_lines.median <= 40", pl.median != null && pl.median <= 40, `median ${pl.median ?? "none (no packet read)"}`);
+    const qc = summary.query_calls?.median;
+    add("query_calls.median >= 1", qc != null && qc >= 1, `median ${qc ?? "none"}${qc === 0 ? ": the hint was ignored" : ""}`);
+  }
+  add("errored == 0", summary.errored === 0, `${summary.errored} errored of ${summary.samples}`);
+  if (opts.skills) {
+    const base = opts.skills.summary?.rule_recall?.mean;
+    add("retrieval recall >= skills recall", retrieval && typeof base === "number" && rr != null && rr.mean >= base, `retrieval ${rr?.mean ?? "none"}, skills ${base ?? "none"}`);
+  }
+
+  const per_id = {};
+  for (const r of rows) {
+    if (r.error) continue;
+    const e = (per_id[r.scenario] ??= { missing: [], samples: 0 });
+    e.samples++;
+    for (const m of r.rules_missing ?? []) if (!e.missing.includes(m)) e.missing.push(m);
+  }
+  const heldMiss = Object.entries(per_id).filter(([id, e]) => HELD_ID.test(id) && e.missing.length);
+  if (Object.keys(per_id).some((id) => HELD_ID.test(id))) add("no HELD id misses a required rule on any row", heldMiss.length === 0, heldMiss.length ? heldMiss.map(([id, e]) => `${id}: ${e.missing.join(", ")}`).join("; ") : "none missed");
+  for (const [id, need] of Object.entries(ADV_REQUIRED)) {
+    const mine = rows.filter((r) => r.scenario === id && !r.error);
+    if (!mine.length) continue;
+    const bad = mine.filter((r) => need.every((n) => !ruleRecall(r.report, [n])?.recall));
+    add(`${id} reports name ${need.join(" or ")}`, retrieval && bad.length === 0, bad.length ? `samples ${bad.map((r) => r.sample).join(", ")} name none of them` : `${mine.length} of ${mine.length} samples name one`);
+  }
+  for (const id of HUMAN_READ) {
+    if (!rows.some((r) => r.scenario === id)) continue;
+    const read = opts.reads?.[id];
+    add(`${id} read by a person`, read === "pass", read ? `read: ${read}` : "no read recorded");
+  }
+
+  const reads = [];
+  for (const r of rows) {
+    if (r.error) continue;
+    if (retrieval && r.lookups?.files_read > 0 && !Array.isArray(r.lookups.file_paths)) reads.push({ scenario: r.scenario, sample: r.sample, path: "(paths not recorded)" });
+    for (const p of r.lookups?.file_paths ?? []) if (SKILL_OR_CARD.test(p)) reads.push({ scenario: r.scenario, sample: r.sample, path: p });
+  }
+  if (retrieval && !opts.cardsDecided) add("no retrieval row read a SKILL.md or behaviors/*.md (cards question open)", reads.length === 0, reads.length ? `${reads.length} reads in ${new Set(reads.map((x) => `${x.scenario}#${x.sample}`)).size} samples` : "none read");
+  return { pass: checks.every((c) => c.pass), checks, per_id, reads_of_skill_or_card: reads };
+}
+
 /** Tasks from scenarios.json or from a held-out file. Every task needs a string id and user_prompt, and ids must be unique, or two tasks would share one result row. */
 export function loadTasks(path) {
   const j = JSON.parse(readFileSync(path, "utf8"));
@@ -154,7 +217,23 @@ export function loadTasks(path) {
   return list;
 }
 
+/** `--gate <result.json> [--skills-file <skills-arm.json>] [--read ADV-09=pass] [--cards-decided]`: score a finished file. No model call; exits 1 when the gate fails. */
+function gateCli(argv) {
+  const val = (n) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : undefined; };
+  const file = JSON.parse(readFileSync(resolve(val("--gate")), "utf8"));
+  const sk = val("--skills-file");
+  const reads = {};
+  argv.forEach((a, i) => { if (a === "--read") { const [id, v] = String(argv[i + 1]).split("="); reads[id] = v; } });
+  const g = gate(file, { skills: sk ? JSON.parse(readFileSync(resolve(sk), "utf8")) : undefined, reads, cardsDecided: argv.includes("--cards-decided") });
+  for (const c of g.checks) console.log(`${c.pass ? "pass" : "FAIL"}  ${c.name}  (${c.detail})`);
+  for (const [id, e] of Object.entries(g.per_id)) if (e.missing.length) console.log(`missing  ${id}: ${e.missing.join(", ")}`);
+  for (const r of g.reads_of_skill_or_card) console.log(`read     ${r.scenario}#${r.sample} ${r.path}`);
+  console.log(g.pass ? "GATE: pass" : "GATE: fail");
+  process.exit(g.pass ? 0 : 1);
+}
+
 async function main() {
+  if (process.argv.includes("--gate")) return gateCli(process.argv.slice(2));
   const o = parseArgs(process.argv.slice(2));
   const all = loadTasks(o.tasks ? resolve(o.tasks) : join(HERE, "..", "scenarios.json"));
   const want = o.scenarios ? new Set(o.scenarios.split(",")) : null;
