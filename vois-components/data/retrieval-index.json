@@ -6,7 +6,9 @@
     "cards": 18,
     "rules": 247,
     "linkedRules": 75,
-    "globalRules": 172
+    "globalRules": 172,
+    "pathNodes": 230,
+    "fieldRules": 23
   },
   "aliases": {
     "accordion": [
@@ -3442,6 +3444,2587 @@
       "built": "A round `div` or `span` holding an `img`, or one or two capital letters, as a person's picture",
       "instead": "Avatar with AvatarImage and AvatarFallback (the registry's vois-avatar if the project has none; `JOB-REPRESENT-USER`)",
       "verification": "detector"
+    }
+  },
+  "patterns": {
+    "PATH-A": {
+      "kind": "top_level_pattern",
+      "name": "Settings Page",
+      "group": "settings-pages",
+      "parent": null,
+      "condition": "User is managing profile, workspace, team, billing, notifications, or members. Multiple related sections that don't need to be edited simultaneously. Changes persist immediately or on explicit save.",
+      "outcome": "Use the Settings Page pattern. Depth (shallow vs. deep) is decided by PATH-A-DEPTH-SHALLOW / PATH-A-DEPTH-DEEP. Mobile: sidebar becomes a hamburger menu that slides out and overlaps content."
+    },
+    "PATH-A-DEPTH-DEEP": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "settings-pages",
+      "parent": "PATH-A",
+      "condition": "4+ sections.",
+      "outcome": "Sidebar navigation + sub-pages. Structure: sidebar (pinned on desktop, hamburger on mobile) + main content area."
+    },
+    "PATH-A-DEPTH-SHALLOW": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "settings-pages",
+      "parent": "PATH-A",
+      "condition": "2-3 sections only.",
+      "outcome": "Horizontal tabs pinned to top (single page). Structure: page title + tabs + tab content area."
+    },
+    "PATH-B": {
+      "kind": "top_level_pattern",
+      "name": "Table/List with Details",
+      "group": "table-list",
+      "parent": null,
+      "condition": "User needs to browse, search, filter, and act on multiple items. User occasionally dives into single item details. Bulk actions might be needed.",
+      "outcome": "Use the Table/List with Details pattern. Decide simple or complex (PATH-B-SIMPLE, PATH-B-COMPLEX), then how a row opens (PATH-B-ROW-OPEN) and where editing happens (PATH-B-EDIT). Row detail: a drawer by default, with an Open action that escalates to a full page when the record has tabs, a timeline, related records, or a long form. Behavior inside the table is covered by the PATH-TABLE-* rules."
+    },
+    "PATH-B-COMPLEX": {
+      "kind": "sub_decision",
+      "name": "Complex table",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "More than 6 columns, user-chosen columns or saved views, bulk actions, inline edit, many filter dimensions, or thousands of rows.",
+      "outcome": "Toolbar with search, filter builder, columns, density, and saved views. Checkbox column and bulk bar. The table wrapper owns scroll on both axes with a bounded height, header and first column pinned, scroll locked to one axis per gesture. Dense, Regular, and Comfortable densities.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-TABLE-002",
+        "DS-TABLE-014",
+        "PATH-TABLE-DENSITY"
+      ]
+    },
+    "PATH-B-EDIT": {
+      "kind": "sub_decision",
+      "name": "Where editing happens",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "A user edits data from a table.",
+      "outcome": "One atomic, low-risk value: inline cell edit. Several fields or cross-field validation: the drawer form. The same change on many rows: a bulk bar action or bulk edit page. Irreversible or high-impact: the drawer form plus a confirmation dialog.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-TABLE-COMMIT-INSTANT",
+        "PATH-TABLE-COMMIT-BATCH"
+      ]
+    },
+    "PATH-B-NARROW": {
+      "kind": "sub_decision",
+      "name": "Table narrow layout",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "A table's container is narrower than the sm breakpoint value (37.5em).",
+      "outcome": "If the table has 4 or fewer columns, not counting the actions column, rows stack as list items. If it has more, the table scrolls horizontally with the first column and header row pinned.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-RESPONSIVE-003"
+      ]
+    },
+    "PATH-B-ROW-ACTIONS": {
+      "kind": "sub_decision",
+      "name": "Row quick actions",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "A table or list row has quick actions.",
+      "outcome": "Two visible actions is preferred and three is the maximum. Everything beyond that, including secondary and destructive actions, goes in a DropdownMenu.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-EXPOSE-ACTIONS"
+      ]
+    },
+    "PATH-B-ROW-ACTIONS-REVEAL": {
+      "kind": "sub_decision",
+      "name": "Row actions on touch devices",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "A row's quick actions are revealed on hover.",
+      "outcome": "Reveal on hover only where the device supports hover. On touch devices the actions are always visible.",
+      "builds_on": [
+        "PATH-B-ROW-ACTIONS",
+        "DS-ANIMATION-007"
+      ]
+    },
+    "PATH-B-ROW-OPEN": {
+      "kind": "sub_decision",
+      "name": "Row open container",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "A user opens a row to see its record.",
+      "outcome": "Record has 8 or fewer fields and no related records: right-side drawer (the Sheet component in vois-components), view first with an Edit action or edit directly. From --breakpoint-md the drawer pushes the table aside when DS-PANEL-003 passes (the table stays usable beside it), and otherwise overlays it. Below --breakpoint-md it is full screen (DS-PANEL-002). Record has tabs, a timeline, related records, or a long form: full page, reached from an Open action in the drawer. Only a confirmation: Dialog. The open row id is in the URL and the active row stays highlighted.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-CONTAIN-CONTENT",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-TABLE-URL-STATE"
+      ]
+    },
+    "PATH-B-SIMPLE": {
+      "kind": "sub_decision",
+      "name": "Simple table",
+      "group": "table-list",
+      "parent": "PATH-B",
+      "condition": "6 or fewer columns, mostly read, no bulk actions, no inline edit, one or two filter dimensions.",
+      "outcome": "Fixed columns. Search, one filter, and sort. 25 per page. Vertical scroll only: the page scrolls and the header sticks to the page, with no sideways scroll. One density.",
+      "builds_on": [
+        "PATH-B",
+        "JOB-DISPLAY-DATA",
+        "DS-TABLE-003"
+      ]
+    },
+    "PATH-C": {
+      "kind": "top_level_pattern",
+      "name": "Form (Create/Edit)",
+      "group": "forms",
+      "parent": null,
+      "condition": "User is creating a new item, editing an existing item, or completing a workflow/multi-step process.",
+      "outcome": "Use the Form pattern. Complexity (simple/medium/complex) is decided by field count via PATH-C-SIMPLE / PATH-C-MEDIUM / PATH-C-COMPLEX."
+    },
+    "PATH-C-COMPLEX": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "forms",
+      "parent": "PATH-C",
+      "condition": "15+ fields OR complex relationships.",
+      "outcome": "Tabs OR 2 columns with sections. Group related fields under section headers (e.g. event creation: left = basic info, right = advanced settings)."
+    },
+    "PATH-C-MEDIUM": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "forms",
+      "parent": "PATH-C",
+      "condition": "7-15 fields (medium form).",
+      "outcome": "Single column OR 2 columns. Group related inputs with section headers (e.g. an address group: street, city, state, zip). Space within a section: the 24px scale step (`gap-6`) between fields, the 40px step (`gap-10`) between sections."
+    },
+    "PATH-C-SIMPLE": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "forms",
+      "parent": "PATH-C",
+      "condition": "1-6 fields (simple form).",
+      "outcome": "Single column, stack vertically. No grouping needed. Space between fields: the 24px scale step (`gap-6` in Tailwind)."
+    },
+    "PATH-COMPOSITION-CHECK-FIRST": {
+      "kind": "cross_cutting_rule",
+      "name": "Check for a Direct Fit First",
+      "group": "composition",
+      "parent": null,
+      "condition": "A feature brief names its own product-specific job (e.g. \"approval queue\", \"impersonate a user\") rather than one of the five container types.",
+      "outcome": "Translate the brief into a plain job-to-be-done and re-check it against the SKILL.md decision tree before assuming it needs new structure. Most briefs that sound novel because of their product-specific name are a direct fit for an existing path once translated."
+    },
+    "PATH-COMPOSITION-COMBINE": {
+      "kind": "cross_cutting_rule",
+      "name": "Combine Existing Patterns Before Inventing a Third",
+      "group": "composition",
+      "parent": null,
+      "condition": "A brief needs more than one container type's job done at once (e.g. browse-and-approve, multi-step form with a review step, bulk edit from a list).",
+      "outcome": "Compose the existing container types that each cover part of the job (e.g. PATH-B + PATH-D for an approval queue; PATH-C + PATH-E for a form with a review step) instead of designing one bespoke hybrid container. If you can't name which existing pattern is doing each part of the job, that's the signal to check PATH-COMPOSITION-INVENT-LAST instead."
+    },
+    "PATH-COMPOSITION-INVENT-LAST": {
+      "kind": "cross_cutting_rule",
+      "name": "Invent New Structure Only As a Last Resort, and Say So",
+      "group": "composition",
+      "parent": null,
+      "condition": "The job doesn't fit any existing container type directly (PATH-COMPOSITION-CHECK-FIRST) or as a composition of existing ones (PATH-COMPOSITION-COMBINE).",
+      "outcome": "Build new structure, but name which existing patterns were considered and why they didn't fit — the same reasoning vois_report_pattern_gap asks for, called if available, stated in your own output if not. A new pattern invented this way is a one-off for the brief in front of you, not automatically a new entry in this skill; promoting it to a sixth container type requires the same deliberate review (SKILL.md + patterns-rules.json) every existing path already had."
+    },
+    "PATH-COND-ACCORDION-EXCLUSIVE": {
+      "kind": "cross_cutting_rule",
+      "name": "Cascading Accordion/Expansion",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A layout contains multiple expandable/accordion forms.",
+      "outcome": "Only one form can remain expanded at a time. Auto-collapse the previously expanded one when the user opens a new one."
+    },
+    "PATH-COND-CALC-TABLE-ROWS": {
+      "kind": "cross_cutting_rule",
+      "name": "Simple Calculation Tables",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A calculation dynamically updates a final value from inline input fields and dropdowns (e.g. quantity × unit price).",
+      "outcome": "Use a simple table layout: header row acts as the field label, inline inputs and dropdowns, and never stack more than 4 rows."
+    },
+    "PATH-COND-PARENT-CHILD": {
+      "kind": "cross_cutting_rule",
+      "name": "Parent/Child Input Dependencies",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A group of related inputs has a conditional relationship — a child input's valid options or availability depend on a parent input's value.",
+      "outcome": "Disable the affected child inputs until the parent input is updated/selected with a valid value. Show them disabled but visible, not hidden, so the relationship stays legible. Route the explanation to righter skill."
+    },
+    "PATH-COND-PRIMARY-BUTTON": {
+      "kind": "cross_cutting_rule",
+      "name": "Primary Button State",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A form has a primary submit action gated on required fields.",
+      "outcome": "The primary button is disabled until all required fields have been filled with valid responses. Route the disabled-state tooltip (e.g. \"Fill in all required fields to continue\") to righter skill."
+    },
+    "PATH-D": {
+      "kind": "top_level_pattern",
+      "name": "Dialog / Bottom Sheet",
+      "group": "dialogs-and-action-sheets",
+      "parent": null,
+      "condition": "Single quick input needed (amount, selection, confirmation). Simple confirmation (yes/no, approve/reject). Dropdown selection, especially on mobile.",
+      "outcome": "Desktop: modal dialog, centered, backdrop dims content behind. Mobile: bottom sheet, slides up from bottom, at most 90dvh (DS-RESPONSIVE-008). Never use a bottom sheet if text input/keyboard is required — that is a full-screen form (DS-RESPONSIVE-009). Which container to use: PATH-D-1 to PATH-D-5. Footer button placement: primary right, secondary the 20px scale step (`gap-5`) left of primary, optional tertiary on the left."
+    },
+    "PATH-D-1": {
+      "kind": "sub_decision",
+      "name": "Container 1: confirm",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "One yes or no, a destructive or consequential confirmation, or one pick, and the user needs nothing else from the page to decide.",
+      "outcome": "AlertDialog when the action is destructive or has consequences, otherwise a small Dialog (--width-dialog-sm). The body is one or two sentences. On phone it is a bottom sheet. First focus follows DS-A11Y-020. If none of this fits, go to PATH-D-2.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ]
+    },
+    "PATH-D-2": {
+      "kind": "sub_decision",
+      "name": "Container 2: form dialog",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "One task with one to four stacked fields, and the user does not need the page behind it.",
+      "outcome": "A small Dialog (--width-dialog-sm), single column, two footer buttons at most (DS-MODAL-005). On phone, any text field makes it a full-screen form (DS-RESPONSIVE-009). If it needs more room or more fields, go to PATH-D-3.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ]
+    },
+    "PATH-D-3": {
+      "kind": "sub_decision",
+      "name": "Container 3: large dialog",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "One task whose content needs more width: a textarea or a short list, still a single column.",
+      "outcome": "A large Dialog (--width-dialog-lg). Two-column layouts do not go in a dialog (PATH-FIELD-COLUMNS). On phone it is a full-screen form (DS-RESPONSIVE-009). If it has more than four fields, go to PATH-D-4.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-FIELD-COLUMNS"
+      ]
+    },
+    "PATH-D-4": {
+      "kind": "sub_decision",
+      "name": "Container 4: side peek",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "The task touches five to eight fields, or the user needs the page behind it while they work (to compare, copy a value or pick rows).",
+      "outcome": "A right-anchored Sheet (vois-components JOB-OVERLAY-INTERACTION). When the user must keep working in the page, use it as a peek: no scrim and no inert background, so the page stays usable. Otherwise it is a modal Sheet with a scrim. On phone it is full screen (DS-PANEL-002).",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-D-5": {
+      "kind": "sub_decision",
+      "name": "Container 5: page",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "More than eight fields, tabs, a timeline, related records, a long form, or more than one step.",
+      "outcome": "A full page, reached from an Open action in the overlay. Never a bigger dialog, and never a stack of dialogs: a flow with steps is a page (DS-MODAL-006).",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-D-SIZE": {
+      "kind": "sub_decision",
+      "name": "Dialog width",
+      "group": "dialogs-and-action-sheets",
+      "parent": "PATH-D",
+      "condition": "Choosing the width of a desktop Dialog or AlertDialog.",
+      "outcome": "Two tiers, both maximums, and every dialog is a single column. Small (--width-dialog-sm): confirmations, AlertDialogs, typed confirmation, and dialogs with one or a few stacked fields. Large (--width-dialog-lg): dialogs whose content needs the extra width, such as a textarea or a short list. Two-column layouts go on pages, not in dialogs. On mobile, text-input dialogs are full modals and the tiers do not apply.",
+      "builds_on": [
+        "PATH-D",
+        "JOB-OVERLAY-INTERACTION",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "PATH-FIELD-COLUMNS"
+      ]
+    },
+    "PATH-DENSITY-DENSE": {
+      "kind": "cross_cutting_rule",
+      "name": "Dense Layout",
+      "group": "content-density",
+      "parent": null,
+      "condition": "Power user or admin doing this repeatedly; scanning or comparing many rows at once; screen real estate at a premium relative to how much needs to be visible (admin data grids, financial/analytics tables, dashboards, log/audit views).",
+      "outcome": "Lean toward the tighter end of the spacing scale (--space-4/-8/-12 between related items), more columns/metrics visible without scrolling, smaller non-body type sizes where DS-TYPOGRAPHY still allows it."
+    },
+    "PATH-DENSITY-PRODUCT": {
+      "kind": "cross_cutting_rule",
+      "name": "Product setting for density",
+      "group": "content-density",
+      "parent": null,
+      "condition": "A product sets `workbench` or `relaxed`, and a page already has its tier from PATH-PAGE-DENSITY-MAP.",
+      "outcome": "The setting moves a page's tier by one step. Workbench: Standard becomes Dense. Relaxed: Dense becomes Standard. Spacious never moves. A product that sets nothing keeps the tier the template gives. Then PATH-PAGE-DENSITY-TOUCH applies: when the primary input is not a fine pointer, Dense becomes Standard. So the setting only changes a page when a fine pointer is present. Grid, margins, gutters, columns and panel widths ignore the setting.",
+      "builds_on": [
+        "PATH-PAGE-DENSITY-MAP",
+        "PATH-PAGE-DENSITY-TOUCH",
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD"
+      ]
+    },
+    "PATH-DENSITY-SPACIOUS": {
+      "kind": "cross_cutting_rule",
+      "name": "Spacious Layout",
+      "group": "content-density",
+      "parent": null,
+      "condition": "Low-frequency, high-stakes, or attention-focusing moment — onboarding/first-run, empty states, a destructive-confirmation dialog, marketing/landing surfaces, a single critical rarely-seen decision point.",
+      "outcome": "Lean toward the looser end of the spacing scale (--space-32/-48 and up), fewer things visible at once, more whitespace around the one thing that matters. Optimize for making one decision unmistakable, not for efficiency."
+    },
+    "PATH-DENSITY-STANDARD": {
+      "kind": "cross_cutting_rule",
+      "name": "Standard Layout",
+      "group": "content-density",
+      "parent": null,
+      "condition": "Default for most product surfaces — forms, settings pages, typical list/detail views — when neither PATH-DENSITY-DENSE nor PATH-DENSITY-SPACIOUS's conditions apply.",
+      "outcome": "Lean toward the mid spacing scale (--space-16/-24), the values forms.md and settings-pages.md already specify. This is the correct default absent a specific reason to use dense or spacious."
+    },
+    "PATH-E": {
+      "kind": "top_level_pattern",
+      "name": "Detail Page (Read-Only / View State)",
+      "group": "detail-pages",
+      "parent": null,
+      "condition": "User is viewing a single record in read-only mode. No editing at this level (editing happens on a dedicated form page). User might click through to edit on a separate page.",
+      "outcome": "Header: breadcrumb above H1 title, close/back button top right if in a modal. Body: groups of related data stacked vertically, each group as label + value, status indicators/badges where relevant. Actions: no primary action in view-only state; an \"Edit\" link/button navigates to the form page if editing is available. Mobile: stacked single column, no horizontal grouping."
+    },
+    "PATH-F": {
+      "kind": "top_level_pattern",
+      "name": "Pricing Page",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "User is showing what a product costs and helping a buyer choose a plan. Billing unit is flat, seat-based, usage-based, hybrid, or consumer subscription, with 1 to 4 real tiers.",
+      "outcome": "Use the Pricing Page pattern. Billing model picks the sub-decision (PATH-F-FLAT-1 through PATH-F-CONSUMER-PAYWALL). Universal rules (PATH-PRICE-U*) apply to every pricing page. Tier-count rules (PATH-PRICE-T*) apply to layout. Model-specific rules (S, X, H, C) apply per sub-decision."
+    },
+    "PATH-F-CONSUMER-PAYWALL": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Consumer subscription on iOS or in-app paywall.",
+      "outcome": "Plan cards, trial timeline, CTA that agrees with post-trial price, Restore Purchases, Terms, Privacy. Timing and placement route to conversion-patterns. See PATH-PRICE-C2 to C5, C8, C11."
+    },
+    "PATH-F-CONSUMER-WEB": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Consumer subscription on a web page (individual, family, student).",
+      "outcome": "Selectable plan cards with a clear selected state and one Continue button. Name family plans by accounts or devices. Show monthly equivalent and real charge. See PATH-PRICE-C1, C2, C6."
+    },
+    "PATH-F-FLAT-1": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Flat price, one plan (no seats, no meter).",
+      "outcome": "Single centered card: price with unit and period, 4 to 8 numeric features, one CTA. See PATH-PRICE-T1. Add a small secondary path for large buyers."
+    },
+    "PATH-F-HYBRID": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Seat fee plus included usage plus overage.",
+      "outcome": "Cards show base price and allowance. A calculator (plan, seats, usage, add-ons, total) shows the real bill with monthly and annual totals. See PATH-PRICE-H1 to H4."
+    },
+    "PATH-F-SEAT-1": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Seat-based, one plan.",
+      "outcome": "Single card with per-seat price, included seats, and a seat quantity control (minus and plus around a number) or an input if count changes the price. See PATH-PRICE-T1, PATH-PRICE-S1 to S5."
+    },
+    "PATH-F-SEAT-3": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Seat-based, 2 to 3 plans.",
+      "outcome": "Cards side by side, highlight the middle (or the paid tier when there are 2). Per-seat price with period, included seats, caps disclosed. See PATH-PRICE-T2, T3, S1 to S7."
+    },
+    "PATH-F-SEAT-4": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Seat-based, 4 plans (Free, Pro, Team, Enterprise).",
+      "outcome": "Four cards with short bullets plus a comparison table below. Enterprise shows Custom. Define seat types that bill differently. See PATH-PRICE-T4, S4, S6, U11."
+    },
+    "PATH-F-USAGE-1": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Usage-based, one plan and one rate.",
+      "outcome": "Single card plus an estimator: slider with number input, rate table, itemized total labeled estimated. See PATH-PRICE-X1 to X6."
+    },
+    "PATH-F-USAGE-PAYG": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Pure pay-as-you-go with no plans.",
+      "outcome": "Calculator-first page: slider plus input, live rate table with the active tier highlighted, itemized breakdown, big estimated total, and a note on custom pricing for large volume. See PATH-PRICE-X1 to X5, X10, X11."
+    },
+    "PATH-F-USAGE-TIERED": {
+      "kind": "sub_decision",
+      "name": null,
+      "group": "pricing-pages",
+      "parent": "PATH-F",
+      "condition": "Usage-based, 2 to 4 plans, each with an included allowance and overage.",
+      "outcome": "Plan cards show base price and allowance in the buyer's unit. A calculator below recommends a plan from the input and shows overage separately. See PATH-PRICE-X2, X7, X8."
+    },
+    "PATH-FIELD-ADDRESS-ORDER": {
+      "kind": "cross_cutting_rule",
+      "name": "Address order",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Building an address form.",
+      "outcome": "Country, address line 1, address line 2, city, then state or province and postal code as a pair. Country goes first because it decides which fields appear and how they are labelled. Changing country re-labels and re-validates without clearing typed values. In settings, line 2 is a visible optional field. In short flows it may collapse behind an \"Add apartment, suite\" link.",
+      "builds_on": [
+        "PATH-C"
+      ]
+    },
+    "PATH-FIELD-ADDRESS-PAIRS": {
+      "kind": "cross_cutting_rule",
+      "name": "Address pairs and autofill",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Placing the lower address fields.",
+      "outcome": "State or province at default width pairs with postal code at `--width-field-narrow`. City sits alone. Never put three fields in one row. Set `autocomplete` on every field (address-line1, address-line2, address-level2, address-level1, postal-code, country).",
+      "builds_on": [
+        "PATH-FIELD-COLUMNS",
+        "PATH-FIELD-WIDTH"
+      ]
+    },
+    "PATH-FIELD-CHAT-INPUT": {
+      "kind": "cross_cutting_rule",
+      "name": "AI chat input",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "The user types a message into an AI or chat thread.",
+      "outcome": "One textarea using the same auto-growing pattern. It starts at `--chat-input-min-lines`, grows to `--chat-input-max-lines`, then scrolls inside. The composer is anchored to the bottom of the thread, so growth pushes upward and the send control stays aligned to the composer's bottom edge. It fills its container and is not capped by `--width-field-max` or `--width-form-max`, because the thread column sets its width. The chat container uses `dvh` so it tracks the mobile keyboard. Keep an accessible name even when there is no visible label.",
+      "builds_on": [
+        "PATH-FIELD-TEXTAREA-AUTOSIZE",
+        "DS-LAYOUT-001",
+        "DS-LAYOUT-FIELD-003",
+        "DS-A11Y-006"
+      ]
+    },
+    "PATH-FIELD-COLUMN-GAP": {
+      "kind": "cross_cutting_rule",
+      "name": "Column gap",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Two columns sit side by side.",
+      "outcome": "`gap-6` by default and `gap-10` when the DENSITY dial is 3 or lower. Vertical gaps between fields and sections are already set in `forms.md` (`gap-6` and `gap-10`).",
+      "builds_on": [
+        "DS-SPACING-001",
+        "DS-SPACING-002",
+        "PATH-C-MEDIUM"
+      ]
+    },
+    "PATH-FIELD-COLUMNS": {
+      "kind": "cross_cutting_rule",
+      "name": "Two columns at most",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Placing fields side by side.",
+      "outcome": "Use at most two columns. Pair only related fields of similar length, such as first and last name, or state and postal code. Address line 1, email, phone, and textareas always sit alone. Dialogs are always one column (`[PATH-D-SIZE]`). Visual order equals tab order.",
+      "builds_on": [
+        "PATH-C-MEDIUM",
+        "PATH-D-SIZE"
+      ]
+    },
+    "PATH-FIELD-CONTAINER": {
+      "kind": "cross_cutting_rule",
+      "name": "Form container",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Building any form.",
+      "outcome": "Cap the form container at `--width-form-max`. The layout holds down to `--width-viewport-min` with no horizontal scroll.",
+      "builds_on": [
+        "DS-LAYOUT-WIDTH-001",
+        "DS-LAYOUT-WIDTH-003"
+      ]
+    },
+    "PATH-FIELD-EMAIL": {
+      "kind": "cross_cutting_rule",
+      "name": "Email",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "An email field appears in a regular form.",
+      "outcome": "Default width, email keypad and `autocomplete=\"email\"` on mobile. In account settings it follows `[PATH-SET-IDENTITY-FIELD]` instead.",
+      "builds_on": [
+        "PATH-FIELD-WIDTH",
+        "PATH-SET-IDENTITY-FIELD"
+      ]
+    },
+    "PATH-FIELD-LABEL": {
+      "kind": "cross_cutting_rule",
+      "name": "Optional marking",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Marking which fields are required.",
+      "outcome": "If most fields are required, mark the optional ones \"(optional)\" instead of marking every required one. Label placement and style are already covered.",
+      "builds_on": [
+        "DS-A11Y-006",
+        "DS-TYPOGRAPHY-001"
+      ]
+    },
+    "PATH-FIELD-NAME": {
+      "kind": "cross_cutting_rule",
+      "name": "Name",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Collecting a person's name.",
+      "outcome": "First name and last name as a pair. Use one full-name field only when the product treats the name as a single string.",
+      "builds_on": [
+        "PATH-FIELD-COLUMNS"
+      ]
+    },
+    "PATH-FIELD-OTP-INPUT": {
+      "kind": "cross_cutting_rule",
+      "name": "One-time code",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "The user enters a fixed-length code, such as an email or SMS verification code.",
+      "outcome": "Use InputOTP with one cell per character, behaving as one field: one tab stop, paste fills every cell, backspace moves back, `autocomplete=\"one-time-code\"`, and a numeric keypad when the code is digits only. Keep a visible label. Cells share the row equally with `gap-2`, cap at `size-12`, and shrink to fit down to `--width-viewport-min`. The group caps at `--width-field-max`. The group is one hit area of at least `--hit-area-min` tall, and a tap on any cell focuses the first empty one, so cells can shrink visually without losing the target. The error state puts an icon and text under the group and puts every cell in the error style.",
+      "builds_on": [
+        "JOB-ACCEPT-TEXT",
+        "DS-A11Y-006",
+        "DS-A11Y-017",
+        "DS-A11Y-001",
+        "helper-text"
+      ]
+    },
+    "PATH-FIELD-PHONE-CONTROL": {
+      "kind": "cross_cutting_rule",
+      "name": "Phone as one control",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Collecting a phone number.",
+      "outcome": "One joined control with a country selector and a number input on a single row sharing one label. The selector is a Combobox with a fixed width of `w-24` and the number input takes the rest. The row stays on one line at `--width-viewport-min`. The whole control caps at `--width-field-max`. Closed, the selector shows the flag and dial code, and the open list shows country name and dial code with frequently used countries pinned first. The default follows the user's locale.",
+      "builds_on": [
+        "JOB-CHOOSE-FROM-LIST",
+        "PATH-FIELD-WIDTH",
+        "PATH-FIELD-WRAP"
+      ]
+    },
+    "PATH-FIELD-PHONE-INPUT": {
+      "kind": "cross_cutting_rule",
+      "name": "Number entry",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "The user types a phone number.",
+      "outcome": "Format as they type using the selected country's pattern, show a telephone keypad on mobile, and store in international format.",
+      "builds_on": [
+        "PATH-FIELD-PHONE-CONTROL"
+      ]
+    },
+    "PATH-FIELD-TEXTAREA-AUTOSIZE": {
+      "kind": "cross_cutting_rule",
+      "name": "Auto-growing text areas",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "A multi-line text field, such as notes, a description, or feedback.",
+      "outcome": "It grows with its content using CSS `field-sizing: content`, never JavaScript. It starts at `--textarea-min-lines`, stops growing at `--textarea-max-lines`, and scrolls inside after that. The CSS pattern, the required width setting, and the fallback are in `[DS-LAYOUT-FIELD-001]` to `[DS-LAYOUT-FIELD-004]`.",
+      "builds_on": [
+        "DS-LAYOUT-FIELD-001",
+        "DS-LAYOUT-FIELD-002",
+        "DS-LAYOUT-FIELD-003",
+        "DS-LAYOUT-FIELD-004",
+        "JOB-ACCEPT-TEXT"
+      ]
+    },
+    "PATH-FIELD-WIDTH": {
+      "kind": "cross_cutting_rule",
+      "name": "Field width tiers",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "Sizing a field.",
+      "outcome": "Single-line inputs and selects fill their column up to `--width-field-max`. Short fixed-format values (postal code, state or province code, expiry, security code) cap at `--width-field-narrow` and never stretch. Multi-line textareas may fill up to `--width-form-max` and grow in height per `[PATH-FIELD-TEXTAREA-AUTOSIZE]`. Single-line fields never exceed `--width-field-max`.",
+      "builds_on": [
+        "DS-LAYOUT-WIDTH-002",
+        "JOB-ACCEPT-TEXT",
+        "PATH-FIELD-TEXTAREA-AUTOSIZE"
+      ]
+    },
+    "PATH-FIELD-WRAP": {
+      "kind": "cross_cutting_rule",
+      "name": "Wrapping",
+      "group": "form-field-groups",
+      "parent": null,
+      "condition": "The form's container gets narrow.",
+      "outcome": "Two columns become one when the form's container is narrower than the `sm` breakpoint value (`37.5em`). Use a container query so forms inside drawers and side panels wrap correctly. Source order is preserved. The phone control and the one-time-code group never split.",
+      "builds_on": [
+        "DS-RESPONSIVE-003"
+      ]
+    },
+    "PATH-G": {
+      "kind": "top_level_pattern",
+      "name": "Marketing Page",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "User is showing what a product or business offers to people who are not yet using it: a landing page, homepage, or product marketing page. Not a pricing page (PATH-F) and not product UI.",
+      "outcome": "Use the Marketing Page pattern. Every feature block is the same stack: image, short title, one or two sentences, one link. Sections are far apart and text inside them is tight. PATH-G-* rules apply. Words go to righter (slot limits), type and spacing to vois-tokens (DS-MKT). These are taste rules for marketing surfaces, not general laws."
+    },
+    "PATH-G-ALIGN": {
+      "kind": "cross_cutting_rule",
+      "name": "Left-align by default",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Text and block alignment on a marketing page.",
+      "outcome": "Left-align. Center only the closing call to action."
+    },
+    "PATH-G-BLOCKS": {
+      "kind": "cross_cutting_rule",
+      "name": "Three blocks max",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Any row or stack of blocks on a marketing page.",
+      "outcome": "No more than three blocks. If there are more, group them (five programs become three audience tiles) and link to the detail. Three is a ceiling, not a target. Blocks should still differ in size or emphasis."
+    },
+    "PATH-G-CTA": {
+      "kind": "cross_cutting_rule",
+      "name": "One primary button per view",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Buttons and calls to action on a marketing page.",
+      "outcome": "One primary button per view. A secondary button is allowed in the hero only. Repeat the primary call to action at most twice on a page (hero and close). Everything else is a plain link."
+    },
+    "PATH-G-DETAIL": {
+      "kind": "cross_cutting_rule",
+      "name": "Detail goes behind a link",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Full schedules, bios, long FAQs, or any long list on a marketing page.",
+      "outcome": "Put the full version on its own page. Show a taste on the page: about 5 schedule rows, one coach sentence, 3 questions, each with a link to the rest."
+    },
+    "PATH-G-DIVIDERS": {
+      "kind": "cross_cutting_rule",
+      "name": "No dividers",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Sections on a marketing page that blur together.",
+      "outcome": "Do not use hairlines, boxes, or borders to separate sections. Increase the section gap instead (DS-MKT-006)."
+    },
+    "PATH-G-FOOTER": {
+      "kind": "cross_cutting_rule",
+      "name": "Footer at heading scale",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "The footer of a marketing page.",
+      "outcome": "Repeat the nav as large links at h2 size plus the wordmark. Small print stays small."
+    },
+    "PATH-G-SECTION": {
+      "kind": "cross_cutting_rule",
+      "name": "One idea per section",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "Any section on a marketing page.",
+      "outcome": "One heading, one block of content, one link. If a section needs two headings, it is two sections."
+    },
+    "PATH-G-TILE": {
+      "kind": "cross_cutting_rule",
+      "name": "Image tile first",
+      "group": "marketing-pages",
+      "parent": null,
+      "condition": "A feature block on a marketing page.",
+      "outcome": "Large rounded image tile, then a title, then one or two sentences, then one link. Tiles are at least 300px tall on mobile."
+    },
+    "PATH-H": {
+      "kind": "top_level_pattern",
+      "name": "Questionnaire",
+      "group": "questionnaires",
+      "parent": null,
+      "condition": "The user answers a series of questions that someone else wrote (survey, intake, assessment, feedback form). They are not editing their own records.",
+      "outcome": "Read references/questionnaires.md. Show one question per screen. Apply PATH-H-1 to PATH-H-5. Dense desktop forms stay in PATH-C."
+    },
+    "PATH-H-1": {
+      "kind": "sub_decision",
+      "name": "Layout",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "Choosing how many questions to show at once.",
+      "outcome": "One question per screen. Group 2 to 3 simple questions on one page only when the survey has 10 questions or fewer. Put a full-width Next in a sticky bar in the thumb zone. Centre the content at 640px max from 768px up. A grid of questions is never the default."
+    },
+    "PATH-H-2": {
+      "kind": "sub_decision",
+      "name": "Component by question properties",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "A question needs a component. Check these properties in order. The first match wins.",
+      "outcome": "1. Long answer over 120 characters: LongTextbox. 2. Short answer: OpenText. For a typed value (email, phone, number) use vois-fields. 3. Several statements share one scale: accordion, one statement at a time, 5 per group at most. 4. 11 points (0 to 10): slider with word labels. 5. 5 points: Likert, horizontal. 7 points: Likert, vertical. 6. Order matters: rank (press and hold drag sort, with up and down buttons). 6 items or fewer rank all. 7 to 12 rank the top 3. Over 12, do not rank. 7. Multiple answers: CheckboxCard. 8. Single answer: RadioCard up to 7 options, RadioListRow for 8 to 12, searchable list over 12."
+    },
+    "PATH-H-3": {
+      "kind": "sub_decision",
+      "name": "Flow and progress",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "Moving through the questions.",
+      "outcome": "Next is explicit. Never auto-advance. Show a 4px bar plus text such as Question 3 of 12. Progress counts required questions on the respondent's path. If branching would change the total, use section progress. Back restores answers. Save each answer on change and show a quiet Saved state. End with a Review screen that lists every answer with an Edit link."
+    },
+    "PATH-H-4": {
+      "kind": "sub_decision",
+      "name": "Required and errors",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "A question is required, optional, or fails a check.",
+      "outcome": "Mark every question Required or Optional in words. After a failed Next show a top banner with links, a specific inline error under each bad question, a 2px error border, and move focus to the first error. Fix clears the error at once. Put the error above the input so the keyboard cannot cover it."
+    },
+    "PATH-H-5": {
+      "kind": "sub_decision",
+      "name": "Prefill and drafts",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "A question has a value from a profile, an earlier answer, a link, or an AI guess.",
+      "outcome": "Follow FIELD-PREFILL in vois-fields. Show prefill with its source and let the respondent edit it. A low confidence or AI guess is a suggestion chip under a blank field, never a filled value. Never submit a prefilled value the respondent did not see. A link that would overwrite a saved draft asks first."
+    },
+    "PATH-H-6": {
+      "kind": "sub_decision",
+      "name": "Poll and quiz results",
+      "group": "questionnaires",
+      "parent": "PATH-H",
+      "condition": "The respondent should see how others answered a choice question, or whether their answer was correct.",
+      "outcome": "Set reveal on a single_select or multi_select question. Show results only after the answer. Keep option order. Mark the correct option with an icon and words. Round single-choice percents to 100. Hide numbers under 10 votes. See PATH-H-6 in references/questionnaires.md."
+    },
+    "PATH-NATIVE-BACK": {
+      "kind": "cross_cutting_rule",
+      "name": "Back and close on phone",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "A phone screen opens another screen.",
+      "outcome": "Drill-down pushes a new level and shows a back control at the top left (PATH-PAGE-LEVELS). Do not replace the system back gesture with a custom swipe. A full-screen modal shows a close control at the top left, and that is a close, not a back. The bottom tab bar may stay on a detail screen.",
+      "builds_on": [
+        "PATH-PAGE-LEVELS",
+        "PATH-PAGE-NAV"
+      ]
+    },
+    "PATH-NATIVE-DISMISS": {
+      "kind": "cross_cutting_rule",
+      "name": "Sheets always have a visible way out",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "A sheet can be dismissed by swiping down.",
+      "outcome": "Every sheet shows a visible close control or Cancel. Swiping down is extra, never the only way out. A sheet with unsaved edits ignores a swipe down and asks to discard (PATH-PAGE-VIEW-EDIT). A nonmodal sheet with detents keeps its close control at every detent.",
+      "builds_on": [
+        "PATH-PAGE-VIEW-EDIT"
+      ]
+    },
+    "PATH-NATIVE-FORM-SHEET": {
+      "kind": "cross_cutting_rule",
+      "name": "Form in a modal sheet",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "A form opens as a modal sheet on a phone.",
+      "outcome": "The tall modal sheet is how the full screen overlay in PATH-PAGE-OVERLAY looks on iOS: the parent shows above it and the title is centered in a top bar. Close or Cancel sits on the left. A named commit sits on the right (Add, Create, Save). The commit stays disabled until the form can be saved. It is never an action sheet (PATH-D). Labels come from righter.",
+      "builds_on": [
+        "PATH-PAGE-OVERLAY",
+        "PATH-PAGE-BUTTON-ORDER",
+        "PATH-D"
+      ]
+    },
+    "PATH-NATIVE-REFRESH": {
+      "kind": "cross_cutting_rule",
+      "name": "Pull to refresh",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "A list can be refreshed by pulling down.",
+      "outcome": "Use pull to refresh only at the top of a list sorted by recent content. Never on a map, a canvas or other content that pans. Every pull to refresh also has a visible refresh control for fine pointers. Show the result briefly (a toast or a pill).",
+      "builds_on": [
+        "DS-A11Y-001"
+      ]
+    },
+    "PATH-NATIVE-SHEET-KIND": {
+      "kind": "cross_cutting_rule",
+      "name": "Modal or nonmodal sheet",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "Something opens over the page on a phone.",
+      "outcome": "If the user still needs the page behind it (a map, a list they keep using), open a nonmodal sheet with detents and no scrim, and keep the page usable. If they do not (a form, a confirmation, a pick), open a modal sheet or an alert with a scrim. A long task, or one with its own URL, is a full screen. From tablet up, a nonmodal sheet becomes a side panel and a modal sheet becomes a dialog or popover, as PATH-PAGE-OVERLAY says. Nothing opens over a popover except an alert.",
+      "builds_on": [
+        "PATH-PAGE-OVERLAY",
+        "PATH-D",
+        "DS-PANEL-001"
+      ]
+    },
+    "PATH-NATIVE-SWIPE-ROW": {
+      "kind": "cross_cutting_rule",
+      "name": "One swipe action per row",
+      "group": "native-behavior",
+      "parent": null,
+      "condition": "A list row has a swipe action.",
+      "outcome": "Reveal at most one action on the trailing swipe. If it deletes or removes, it is red and has a text label. Never stack two or more. A swipe is never the only path: the same action is also on a visible menu or on the detail screen. Keep horizontal swipe handlers away from the screen edges, where back gestures start. A row inside a horizontally scrolling area has no swipe action.",
+      "builds_on": [
+        "DS-A11Y-001"
+      ]
+    },
+    "PATH-PAGE": {
+      "kind": "top_level_pattern",
+      "name": "Page template",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "The task is a whole page or screen layout (what regions it has, how it changes at each width, how people get in and out of it), not one container. Examples: a landing page, a dashboard, a list page, a record page, a settings page.",
+      "outcome": "Pick the page by level and product type from data/page-templates.json, then follow the PATH rules it routes to. The template gives the skeleton. The routed rules give the content and win on any difference. Cross-cutting PATH-PAGE-* rules cover breakpoints, navigation, density at each width, overlays, button order and view to edit."
+    },
+    "PATH-PAGE-ARTICLE": {
+      "kind": "sub_decision",
+      "name": "Blog post",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), marketing. One long read. Built for comfortable reading, then a next step.",
+      "outcome": "Use the Blog post skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Header and hero image full width. Contents fold into one row at the top. Share icons move under the article. Desktop: Share icons on the left, article in the middle at about 680px, contents and tags on the right.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-BLOG-INDEX": {
+      "kind": "sub_decision",
+      "name": "Blog index",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 2 (Index), marketing. Lists articles and helps readers find the ones they care about. Also grows the newsletter.",
+      "outcome": "Use the Blog index skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Featured post on top, then the New list, then one post per row. Chips scroll sideways. Newsletter signup stacks. Desktop: Featured post takes two thirds with the New list beside it. Posts three across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-BREAKPOINTS": {
+      "kind": "cross_cutting_rule",
+      "name": "Page widths",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "Any template is drawn or checked at a width.",
+      "outcome": "Phone is below md (768px). Tablet is md up to lg (768px to 1023px). Desktop is lg and up (1024px). Check every template at all three. For grids, phone splits in two at 600px (the `sm` grid class), so check phone at 360px and at 600px as well. Grid and panel rules live in `vois-tokens` (`DS-GRID-*` and `DS-PANEL-*`). A native Android layout is also checked at `expanded` (840px). It is a breakpoint token, not a grid class.",
+      "builds_on": [
+        "DS-RESPONSIVE-002"
+      ]
+    },
+    "PATH-PAGE-BROWSE": {
+      "kind": "sub_decision",
+      "name": "Browse grid",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 2 (Index), consumer. A browsable grid of items. People narrow it down, then pick one.",
+      "outcome": "Use the Browse grid skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Two cards per row. Filter and Sort stay pinned top right above the grid. Filter opens a full height sheet. The apply button shows the result count. Desktop: Filter sidebar on the left with four groups. Four cards per row.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ]
+    },
+    "PATH-PAGE-BUTTON-ORDER": {
+      "kind": "cross_cutting_rule",
+      "name": "Button order",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "Two or more buttons sit side by side.",
+      "outcome": "Primary is rightmost. Secondary sits to its left, then tertiary or ghost to the left of that. When buttons stack on phone, primary is on top. One primary per group. In a step flow, Back sits alone at the far left of the footer, and the buttons on the right follow the same order (Skip, then primary). Buttons in a footer or sticky bar are right-aligned with the 20px gap step between them (16 to 24px is the allowed range), never spread to the two edges or stretched to fill the bar.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-G-CTA"
+      ]
+    },
+    "PATH-PAGE-CASE-STUDY": {
+      "kind": "sub_decision",
+      "name": "Case study",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), marketing. One customer story told as a problem, a fix, and a result. Numbers go first.",
+      "outcome": "Use the Case study skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Breadcrumb hides. Stats stack one per row. Company facts fold into a two by two block above the story. Desktop: Header text beside a photo. Three stats in a row. Company facts in a left column and the story capped near 680px.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-COLLECTION": {
+      "kind": "sub_decision",
+      "name": "Collection table",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 2 (Index), saas. A list of records people scan, filter, and act on in bulk.",
+      "outcome": "Use the Collection table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Rows turn into stacked cards with the name, status, and one line of detail. Filter and Sort stay pinned top right. Filter opens a full screen Drawer because filters include text fields. New record becomes a floating button and opens full screen, since it has text inputs. Desktop: Full table with checkboxes. Applied filters show as chips under the toolbar. Preview panel on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-PAGE-CONTACT": {
+      "kind": "sub_decision",
+      "name": "Contact sales",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 4 (Utility), marketing. A short form for people ready to talk to a person. It should feel safe and quick.",
+      "outcome": "Use the Contact sales skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Heading, then the form, then the reasons to trust you. Fields are one column. Desktop: Heading, benefits, and trust badges on the left. Form card on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-G",
+        "PATH-C-SIMPLE"
+      ]
+    },
+    "PATH-PAGE-CUSTOMERS": {
+      "kind": "sub_decision",
+      "name": "Customer stories",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 2 (Index), marketing. The proof page. It collects testimonials and case studies so visitors can find one that looks like them.",
+      "outcome": "Use the Customer stories skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Hero stats sit under the heading. Chips scroll sideways. Story cards and quotes run one per row. Desktop: Hero text beside a stat list. Featured story split into image and text. Story grid three across. Quote wall two across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-DASHBOARD": {
+      "kind": "sub_decision",
+      "name": "Dashboard",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 1 (Hub), saas. The landing page inside a SaaS product. It answers what changed and what needs attention.",
+      "outcome": "Use the Dashboard skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: Sidebar becomes a bottom bar with four tabs and More. Metrics go two across. Chart and activity stack. The table turns into stacked rows: name as the title, with status and the other values under it. Nothing is dropped. Desktop: Full sidebar. Four metrics in a row. Chart takes two thirds with activity beside it. Full table.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE"
+      ]
+    },
+    "PATH-PAGE-DATAGRID": {
+      "kind": "sub_decision",
+      "name": "Data grid",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 2 (Index), saas. A dense, spreadsheet-like table for people who live in it all day. Sorting, column control, and bulk edits matter more than looks.",
+      "outcome": "Use the Data grid skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: The grid keeps every column and scrolls sideways inside its card, with the selection box and name pinned on the left. Never hide columns on a table (PATH-B-NARROW). Filter and Sort stay pinned top right as two buttons. Selecting rows shows a bar above the list with one Actions button. Desktop: All columns, a Columns menu, row height control, export, and a bulk action bar above the header when rows are checked. Scrolls sideways when columns outrun the width, with the name column pinned.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-COMPLEX",
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ]
+    },
+    "PATH-PAGE-DENSITY-MAP": {
+      "kind": "cross_cutting_rule",
+      "name": "Density tier by page",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "Choosing a density tier for a whole page.",
+      "outcome": "Marketing and landing pages, for consumer apps and SaaS products alike: Spacious, and always looser than the product itself. Pricing, contact, consumer app screens, forms, settings and everyday lists: Standard. Dashboards, analytics tables, data grids, inboxes: Dense with a fine pointer.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD",
+        "PATH-DENSITY-SPACIOUS"
+      ]
+    },
+    "PATH-PAGE-DENSITY-TOUCH": {
+      "kind": "cross_cutting_rule",
+      "name": "Dense is for pointers only",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A Dense page is shown while the primary input is not a fine pointer (CSS `(pointer: fine)` does not match), at any width.",
+      "outcome": "Rows go back to --table-row-h-regular. Targets reach --hit-area-min. Gaps between blocks go up one step. Fewer rows fit on screen, and that is accepted. Unknown input counts as touch. A phone-width window with a mouse can stay Dense, and its layout still follows width (PATH-B-NARROW). An iPad with a trackpad still reports a touch primary input, so it stays at regular rows.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "DS-TABLE-019",
+        "DS-A11Y-001",
+        "DS-RESPONSIVE-004",
+        "PATH-DENSITY-PRODUCT"
+      ]
+    },
+    "PATH-PAGE-FEATURE": {
+      "kind": "sub_decision",
+      "name": "Feature page",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 1 (Hub), marketing. Explains one part of the product in depth. It sits between the home page and the signup.",
+      "outcome": "Use the Feature page skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Everything stacks. Each feature row shows its screenshot first, then the text. Integrations show four across. Desktop: Feature rows alternate screenshot and text side by side. Integrations eight across.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-FEED": {
+      "kind": "sub_decision",
+      "name": "Feed home",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 1 (Hub), consumer. The home screen of a consumer app. It scrolls without end and mixes posts, media, and suggestions.",
+      "outcome": "Use the Feed home skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Top bar plus a bottom tab bar with five items. The feed fills the width. The right rail goes away, so move trending and suggestions into a Search tab. Desktop: Three columns: labeled nav, feed, and a right rail with search, trending, and people to follow.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ]
+    },
+    "PATH-PAGE-INVOICES": {
+      "kind": "sub_decision",
+      "name": "Invoices and billing",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 4 (Utility), saas. A read-mostly table. People come here to find one invoice, download it, or check what they owe.",
+      "outcome": "Use the Invoices and billing skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Summary cards go two across. Each invoice is a stacked row: number as the title, with date, amount, and a status badge under it. Download moves into the row menu. Desktop: Four summary cards, then the full table with a PDF button per row and a Download all button.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW"
+      ]
+    },
+    "PATH-PAGE-LEVELS": {
+      "kind": "cross_cutting_rule",
+      "name": "Page levels and drill down",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A product has a dashboard or home, then sections, then single items.",
+      "outcome": "Number the pages by level: 0 Entry, 1 Hub, 2 Index, 3 Detail, 4 Utility. Each page knows its parent. Back goes up exactly one level. Desktop shows the trail (Dashboard, Section, Item). Phone shows a back control to the parent and the page title.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN",
+        "PATH-E"
+      ]
+    },
+    "PATH-PAGE-MARKETING-HOME": {
+      "kind": "sub_decision",
+      "name": "Marketing home",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 0 (Entry), both. The front door. One job: explain the product and get a signup.",
+      "outcome": "Use the Marketing home skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Single column. Buttons stack to full width. Logos wrap to three per row. Plans stack, so put the recommended plan first. Footer links sit in two columns. Desktop: Two column hero. Features three across. Split sections put image and text side by side. Five column footer.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-G"
+      ]
+    },
+    "PATH-PAGE-NAV": {
+      "kind": "cross_cutting_rule",
+      "name": "App shell navigation by width",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A signed-in SaaS or consumer app has more than one section.",
+      "outcome": "Desktop: labeled sidebar. Tablet: icon rail. Phone: bottom tab bar with at most five slots, the last being More. The settings section menu is separate and follows PATH-A. A marketing top bar shows its links at lg and up and folds them into one menu control below that. The signup button stays visible at every width.",
+      "builds_on": [
+        "PATH-A",
+        "DS-RESPONSIVE-003"
+      ]
+    },
+    "PATH-PAGE-ONBOARDING": {
+      "kind": "sub_decision",
+      "name": "Onboarding steps",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 4 (Utility), both. A short, focused setup of 2 to 5 steps with a 1-2-3 stepper, shown before or just after the first visit. One question group per step, then into the product.",
+      "outcome": "Use the Onboarding steps skeleton in data/page-templates.json. Density: PATH-DENSITY-SPACIOUS. Phone: Stepper keeps its three markers but drops the labels and adds one line, Step 2 of 3: Goals. Content is one column. Back and Next sit in a sticky bottom bar with Next filling the width, and Skip is a text link above it. Desktop: Same as tablet with more air around the column. Choice cards go two across. The footer stays under the content, not pinned to the window.",
+      "builds_on": [
+        "PATH-DENSITY-SPACIOUS",
+        "PATH-C-SIMPLE",
+        "PATH-COND-PRIMARY-BUTTON"
+      ]
+    },
+    "PATH-PAGE-OVERLAY": {
+      "kind": "cross_cutting_rule",
+      "name": "Which overlay opens",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A page action opens something on top of the page.",
+      "outcome": "A yes or no, or a pick: modal on desktop, bottom sheet on phone. Any text field: modal on desktop, full screen on phone, never a bottom sheet. Editing or previewing a row: right panel (a Sheet) on tablet and desktop, full screen on phone. Filters: right panel on tablet and desktop, and on phone a full screen Drawer (vois-components JOB-OVERLAY-INTERACTION). Notifications: right panel. Always keep a visible way back, and Escape or the scrim closes it on desktop.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "PATH-B-ROW-OPEN",
+        "PATH-TABLE-NARROW-OPEN"
+      ]
+    },
+    "PATH-PAGE-PRICING": {
+      "kind": "sub_decision",
+      "name": "Pricing",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 1 (Hub), marketing. Helps a visitor pick a plan and commit. It also answers the objections that stop a signup.",
+      "outcome": "Use the Pricing skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Plans stack one per card. Put the recommended plan first. The comparison table shows one plan at a time, chosen with a row of plan buttons above it. Desktop: Four plan cards in a row with the recommended one outlined heavier. Full comparison table with grouped rows.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-F"
+      ]
+    },
+    "PATH-PAGE-PRODUCT": {
+      "kind": "sub_decision",
+      "name": "Product detail",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), consumer. One item, with everything needed to decide and buy.",
+      "outcome": "Use the Product detail skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Gallery swipes with dots. Details sit in accordions. Price and Add to bag live in a sticky bar at the bottom. Desktop: Thumbnails run down the left of the main image. The buy box is about 380px wide on the right.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD"
+      ]
+    },
+    "PATH-PAGE-RECORD": {
+      "kind": "sub_decision",
+      "name": "Record detail",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), saas. One record in a SaaS product, such as a customer, a job, or a service. It shows status and lets people act.",
+      "outcome": "Use the Record detail skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: A back link replaces the breadcrumb. The primary action sits under the title and the rest go in an overflow menu. Tabs scroll sideways. Properties fold into one row. Desktop: Three actions in the header. Properties panel on the right at 300px. Facts go three across.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-E",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ]
+    },
+    "PATH-PAGE-REPORT": {
+      "kind": "sub_decision",
+      "name": "Report table",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), saas. A table that summarizes numbers: a date range, a chart, and rows with a totals line. Mostly read, then exported.",
+      "outcome": "Use the Report table skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: Controls collapse into a date chip and an Options button. The chart shrinks. The table keeps every column, scrolls sideways inside its card, and pins the first column. The page itself never scrolls sideways. Desktop: All columns, a bold totals row at the bottom, and Export in the header.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-NARROW",
+        "PATH-TABLE-DENSITY"
+      ]
+    },
+    "PATH-PAGE-SETTINGS": {
+      "kind": "sub_decision",
+      "name": "Settings",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 4 (Utility), both. Where people change how the product works for them or their team.",
+      "outcome": "Use the Settings skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: The section list moves behind a hamburger at the top of the page, and the page shows one section at a time (PATH-A). Fields are one column. Cancel and Save sit in a sticky bar, right-aligned with 20px between them and Save rightmost. Desktop: Sub navigation list on the left at 200px. Content is capped near 640px so lines stay readable. Save buttons sit at the end of the form.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-A",
+        "PATH-A-DEPTH-DEEP",
+        "PATH-SET-VIEW-EDIT-BLOCK"
+      ]
+    },
+    "PATH-PAGE-SORT-FILTER": {
+      "kind": "cross_cutting_rule",
+      "name": "Sort and filter position",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A table, list or card grid can be sorted or filtered.",
+      "outcome": "Pin Filter and Sort to the top right of the table, list or card grid, on the same row as the search field, which sits on the left. Filter is left of Sort, so Sort is the rightmost control. The position is the same at phone, tablet and desktop. On phone they stay on that top row as two compact buttons, not in a bottom bar. Other toolbar controls (Columns, row height, view toggles, Export) sit to the left of Filter. Filter opens a right panel on tablet and desktop and a full screen Drawer on phone (PATH-PAGE-OVERLAY). Where a layout has a persistent filter sidebar, the Filter button still sits top right and shows or hides the sidebar. Applied filters show as dismissible chips under the toolbar. A sortable column header may also sort (PATH-TABLE-SORT), but the Sort button must always exist, because stacked rows and card grids have no column headers. A table that cannot be sorted or filtered, such as a short summary table that links to the full list, has neither control.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-B-SIMPLE",
+        "PATH-TABLE-SORT",
+        "PATH-TABLE-FILTER-SIMPLE",
+        "PATH-TABLE-FILTER-BUILDER",
+        "PATH-PAGE-OVERLAY"
+      ]
+    },
+    "PATH-PAGE-SPLIT": {
+      "kind": "sub_decision",
+      "name": "List with detail pane",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 3 (Detail), saas. For triage work like an inbox, tickets, or tasks. People move down a list and need the detail without losing their place.",
+      "outcome": "Use the List with detail pane skeleton in data/page-templates.json. Density: PATH-DENSITY-DENSE. Phone: List only. Tapping a row pushes the detail as its own screen. Compose or Add becomes a floating button. Desktop: List on the left, a wider detail pane on the right, with tabs for overview, activity, and notes.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-PAGE-TABLE-WIDTH": {
+      "kind": "cross_cutting_rule",
+      "name": "Tables at narrow widths",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A page template contains a table at phone or tablet width.",
+      "outcome": "Do not hide columns. Follow PATH-B-NARROW: four columns or fewer stack as list rows, more scroll sideways inside the table with the first column and header pinned. The page itself never scrolls sideways.",
+      "builds_on": [
+        "PATH-B-NARROW",
+        "PATH-TABLE-NARROW-ROW",
+        "PATH-TABLE-NARROW-SELECT"
+      ]
+    },
+    "PATH-PAGE-TEAM": {
+      "kind": "sub_decision",
+      "name": "Members table",
+      "group": "page-templates",
+      "parent": "PATH-PAGE",
+      "condition": "Level 4 (Utility), saas. A short table inside settings. People are here to invite someone, change a role, or remove someone.",
+      "outcome": "Use the Members table skeleton in data/page-templates.json. Density: PATH-DENSITY-STANDARD. Phone: Each person is a stacked row: avatar and name as the title, with email, role, and status under it. Tapping the row opens the edit panel. Invite stays at the top. Desktop: Sub-nav column on the left. Table with Role dropdown, Joined date, and Status. Active and Invited are grouped under small headers.",
+      "builds_on": [
+        "PATH-DENSITY-STANDARD",
+        "PATH-B-SIMPLE",
+        "PATH-B-NARROW",
+        "PATH-D"
+      ]
+    },
+    "PATH-PAGE-VIEW-EDIT": {
+      "kind": "cross_cutting_rule",
+      "name": "View to edit on the same page",
+      "group": "page-templates",
+      "parent": null,
+      "condition": "A record page or settings block can be changed.",
+      "outcome": "Open in view state. Edit is an explicit action that swaps the same fields to inputs in place. Save and Cancel replace Edit. Leaving with unsaved changes opens a Discard confirmation (bottom sheet on phone). On phone Save sits in a sticky bar.",
+      "builds_on": [
+        "PATH-SET-VIEW-EDIT-BLOCK",
+        "PATH-E",
+        "PATH-D"
+      ]
+    },
+    "PATH-PERM-DISABLE-BY-CONDITION": {
+      "kind": "cross_cutting_rule",
+      "name": "Disable Controls by Permission or Condition",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "Content the user cannot update due to an org admin setting or a cascading choice condition (e.g. a workspace admin disabled this setting, the record is archived).",
+      "outcome": "Keep the element visible but disabled, in a view-only/disabled state, so the user can visually map the cause/effect relationship. Route the disabled-state explanation (tooltip or helper text) to righter skill."
+    },
+    "PATH-PERM-HIDE-BY-ROLE": {
+      "kind": "cross_cutting_rule",
+      "name": "Hide Page Elements by Role",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "User role doesn't have permission to see an element (e.g. non-admin viewing a Members section, non-owner viewing Billing, unpermitted user viewing a Delete account button).",
+      "outcome": "Hide the element entirely — it never renders in the DOM. This is deletion, not disabling. Check role at render time; don't render the element at all."
+    },
+    "PATH-PERM-PII-KEEP-OUT": {
+      "kind": "cross_cutting_rule",
+      "name": "Keep personal data out of URLs, titles, file names, and analytics",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "Building a URL, query string, page title, breadcrumb, browser history entry, export file name, or analytics event for a screen that involves a person.",
+      "outcome": "Use opaque IDs, not personal data: `/customers/c_8f2a`, not `/customers/jane.doe@acme.com`. A title or breadcrumb may show a name only on a screen whose job is that person, and never an email, phone number, address, or ID. Name exports by content and date, such as `customers-2026-10-06.csv`. Analytics properties carry IDs, never values (see `metrics-tagging`). For error, toast, and notification copy, see righter `no-pii-in-copy`.",
+      "builds_on": [
+        "PATH-PERM-PII-MASK"
+      ]
+    },
+    "PATH-PERM-PII-MASK": {
+      "kind": "cross_cutting_rule",
+      "name": "Mask personal data by default",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A list, table, card, or header shows personal data (email, phone, street address, date of birth, government ID, payment number) to a user whose task doesn't need the full value.",
+      "outcome": "Show a masked value by default: `j***@acme.com`, `•••• 4821`, last four digits only. A person's name stays visible on a screen whose job is that person (a people list, a profile). Show the full value only to roles that need it, and only through the reveal control (`PATH-PERM-PII-REVEAL`) or on a detail view. A role that never needs it never receives it. Mask on the server, so the full value never reaches the page for roles that can't see it. CSS blur or hiding is not masking. Masked values keep the column width so the layout doesn't jump.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE"
+      ]
+    },
+    "PATH-PERM-PII-REVEAL": {
+      "kind": "cross_cutting_rule",
+      "name": "Reveal a masked value on request",
+      "group": "permissions-and-conditional-logic",
+      "parent": null,
+      "condition": "A role that is allowed to see a masked value needs the full one.",
+      "outcome": "Put a reveal control on that one field, not on the whole page, and wherever the masked value appears (a list row, a card, a header, or a detail view): an icon Button with a label such as \"Show email\". The value re-masks when the user leaves the view or after a timeout. Log reveals of high-risk fields (government ID, payment, health data) on the server. Copy to clipboard copies the full value only for roles that may reveal it.",
+      "builds_on": [
+        "PATH-PERM-PII-MASK"
+      ]
+    },
+    "PATH-PRICE-C1": {
+      "kind": "cross_cutting_rule",
+      "name": "Plan choice is radio cards with one Continue button",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "MasterClass and Quizlet show cards with a clear selected state and one button below. Do not hide prices behind a tap."
+    },
+    "PATH-PRICE-C10": {
+      "kind": "cross_cutting_rule",
+      "name": "One line on why it costs money",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Halide has a \"Why is Halide not free?\" block. For indie or small-team apps it earns trust."
+    },
+    "PATH-PRICE-C11": {
+      "kind": "cross_cutting_rule",
+      "name": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Placement, timing, and trial-vs-no-trial go to `conversion-patterns`."
+    },
+    "PATH-PRICE-C2": {
+      "kind": "cross_cutting_rule",
+      "name": "Show both the monthly equivalent and the real charge",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Blue Apron: \"$8.33/mo\" plus \"$99.99/yr.\" Lifesum shows per-month next to the billing period. Yubo's \"$0.60/day\" is fine only if the actual charge is also visible."
+    },
+    "PATH-PRICE-C3": {
+      "kind": "cross_cutting_rule",
+      "name": "Explain the trial as a timeline",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Quizlet: today (access), reminder date, trial ends, billing starts. Jomo says \"We'll notify you 24h before your trial ends.\" This is the single clearest trust builder in the set."
+    },
+    "PATH-PRICE-C4": {
+      "kind": "cross_cutting_rule",
+      "name": "The CTA and the small print agree",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "\"Start free trial\" with \"7-day free, then $29.98/year\" right under it (Halide). Blue Apron adds a terms checkbox before enabling the button."
+    },
+    "PATH-PRICE-C5": {
+      "kind": "cross_cutting_rule",
+      "name": "iOS: always show Restore Purchases, Terms, Privacy",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Jomo, Lifesum, Notion all do."
+    },
+    "PATH-PRICE-C6": {
+      "kind": "cross_cutting_rule",
+      "name": "Name family plans by who's in them",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Deezer: \"1 account / 2 accounts / 6 accounts.\" MasterClass: \"1 account, 6 devices.\""
+    },
+    "PATH-PRICE-C7": {
+      "kind": "cross_cutting_rule",
+      "name": "Free vs Pro list when free is real",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Tide Guide shows a checklist with two columns. It makes the upgrade feel concrete."
+    },
+    "PATH-PRICE-C8": {
+      "kind": "cross_cutting_rule",
+      "name": "Sticky CTAs must not cover a plan",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Tide Guide's button sits over the annual plan card in the screen I saw. Test with the smallest supported device."
+    },
+    "PATH-PRICE-C9": {
+      "kind": "cross_cutting_rule",
+      "name": "Strikethrough anchors only for real prior prices",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Consumer subscription pricing (individual, family, student) on web or iOS.",
+      "outcome": "Lifesum and Deezer use them. If the higher price was never charged, don't show it. *Ethical rule, not observed.*"
+    },
+    "PATH-PRICE-H1": {
+      "kind": "cross_cutting_rule",
+      "name": "Show usage per seat",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Windsurf: \"500 prompt credits / user / month.\" Buyers multiply by team size. Put the multiplication in the calculator."
+    },
+    "PATH-PRICE-H2": {
+      "kind": "cross_cutting_rule",
+      "name": "Calculator order follows how buyers think",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Plan, then seats, then usage, then add-ons, then total. GitBook: plan, site count, users, total per month and per year. Teak adds an add-on toggle."
+    },
+    "PATH-PRICE-H3": {
+      "kind": "cross_cutting_rule",
+      "name": "Two totals",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Monthly and annual, always."
+    },
+    "PATH-PRICE-H4": {
+      "kind": "cross_cutting_rule",
+      "name": "Keep the cards simple, put the math in the calculator",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that combines a seat fee with included usage and overage.",
+      "outcome": "Cards show the base price and allowance. The calculator shows the real bill. Don't cram both into one card."
+    },
+    "PATH-PRICE-S1": {
+      "kind": "cross_cutting_rule",
+      "name": "Price per seat per month, with the period",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Plain: \"$39 / user / month.\" Say who counts as a seat."
+    },
+    "PATH-PRICE-S2": {
+      "kind": "cross_cutting_rule",
+      "name": "Show included seats",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Copy.ai: \"5 user seats included.\" Lyssna shows both \"included seats\" and \"maximum seats\" per tier."
+    },
+    "PATH-PRICE-S3": {
+      "kind": "cross_cutting_rule",
+      "name": "Add a quantity control on the card when seat count changes the price",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Mistral puts \"$50/mo, 2 users\" with +/- on the Team card. GitBook uses a number input and shows a running total. Show monthly and annual totals."
+    },
+    "PATH-PRICE-S4": {
+      "kind": "cross_cutting_rule",
+      "name": "Separate seat types and say so",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Lyssna has viewer seats. Retool has standard users and end users with different prices. If you have free viewers or cheaper light users, show that as a feature, not fine print."
+    },
+    "PATH-PRICE-S5": {
+      "kind": "cross_cutting_rule",
+      "name": "Disclose caps",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "\"Up to 50 members\" (Height), \"max 15 seats\" (Lyssna). Buyers hit these walls later and feel tricked if you hid them."
+    },
+    "PATH-PRICE-S6": {
+      "kind": "cross_cutting_rule",
+      "name": "Volume discounts live on the Enterprise card",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Windsurf: \"Volume based annual discounts (>200 seats).\""
+    },
+    "PATH-PRICE-S7": {
+      "kind": "cross_cutting_rule",
+      "name": "If the free tier has unlimited seats, say it loudly",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with seats (per-user, per-member).",
+      "outcome": "Height and Current lead with \"unlimited members.\" It's a differentiator."
+    },
+    "PATH-PRICE-T1": {
+      "kind": "cross_cutting_rule",
+      "name": "One tier",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "One card, centered, price, 4 to 8 features, one CTA. Reflect (\"One plan one price\") and Skillshare do this. If price varies by a size variable, put the control inside the card (Kit's subscriber dropdown). Add a small secondary path for big buyers (\"Request a demo\")."
+    },
+    "PATH-PRICE-T2": {
+      "kind": "cross_cutting_rule",
+      "name": "Two tiers",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Works best when the split is \"me vs us\" (Personal / Team) or \"free vs paid.\" Highlight the paid one."
+    },
+    "PATH-PRICE-T3": {
+      "kind": "cross_cutting_rule",
+      "name": "Three tiers",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "The default. Name tiers by audience or stage, not Good/Better/Best. Seen: Hobbyist / Creator / Business (Descript), Launch / Grow / Scale (Plain), Starter / Pro / Enterprise (Current)."
+    },
+    "PATH-PRICE-T4": {
+      "kind": "cross_cutting_rule",
+      "name": "Four tiers",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Windsurf, Mistral, Retool, and Firecrawl show four. Only do it when the fourth is a real sales-led tier. Keep card bullets short and put depth in a comparison table. Airtable and Lyssna both use a sticky-header table with grouped sections."
+    },
+    "PATH-PRICE-T5": {
+      "kind": "cross_cutting_rule",
+      "name": "Five or more",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Deciding how many tiers to show and how to lay them out.",
+      "outcome": "Only for consumer products with distinct benefit stories. Revolut uses five cards with short descriptions and arrows. Klarna uses tabs plus cards. Never a five-column row of feature bullets."
+    },
+    "PATH-PRICE-U1": {
+      "kind": "cross_cutting_rule",
+      "name": "One lockup for price",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Show price, unit, and billing period together: \"$24 per person / month, billed annually.\" Seen on Descript, Height, Plain. Never split the unit into a footnote."
+    },
+    "PATH-PRICE-U10": {
+      "kind": "cross_cutting_rule",
+      "name": "Enterprise says \"Custom\" in the price slot",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "List what sales unlocks (SSO, audit logs, dedicated support). Don't invent a starting price you won't honor."
+    },
+    "PATH-PRICE-U11": {
+      "kind": "cross_cutting_rule",
+      "name": "Define any term that changes the bill",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Retool footnotes \"standard users\" vs \"end users.\" If two things look like seats but bill differently, define both below the cards."
+    },
+    "PATH-PRICE-U12": {
+      "kind": "cross_cutting_rule",
+      "name": "State tax and currency",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Mistral says \"excluding taxes\" and has a currency switch. Do this if you sell across regions."
+    },
+    "PATH-PRICE-U13": {
+      "kind": "cross_cutting_rule",
+      "name": "Below the cards, in this order:",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "comparison table (3+ tiers), FAQ, reassurance line (cancel anytime, money-back). *Design judgment, not one observed order.*"
+    },
+    "PATH-PRICE-U14": {
+      "kind": "cross_cutting_rule",
+      "name": "Mobile stacks cards with the recommended tier first",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "*Design judgment.* Users won't scroll past three tall cards to find the one you want them to see."
+    },
+    "PATH-PRICE-U2": {
+      "kind": "cross_cutting_rule",
+      "name": "Annual toggle states its savings",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "\"Save 25%,\" \"2 months free,\" \"-20%.\" Put it next to the toggle, not in a tooltip. Every price on the page must change when the toggle flips. Default to annual only if annual is what you want to sell."
+    },
+    "PATH-PRICE-U3": {
+      "kind": "cross_cutting_rule",
+      "name": "Show the annual total when annual is on",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Copy.ai and Kit both show \"$36/mo, billed $432/year.\" Buyers do the math anyway. Do it for them."
+    },
+    "PATH-PRICE-U4": {
+      "kind": "cross_cutting_rule",
+      "name": "One highlighted tier, never two",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Use a border or elevation plus a short badge (\"Most popular,\" \"Recommended\"). Do not rely on color alone."
+    },
+    "PATH-PRICE-U5": {
+      "kind": "cross_cutting_rule",
+      "name": "Only the highlighted tier gets the primary button",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Others get secondary style. Descript and Plain do this well. Teachable colors one and blacks the others, which is close but inconsistent when the highlight and the button color disagree."
+    },
+    "PATH-PRICE-U6": {
+      "kind": "cross_cutting_rule",
+      "name": "CTA matches the friction",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Free: \"Start free.\" Paid with trial: \"Start free trial.\" Top tier: \"Talk to sales.\" Do not put \"Get started\" on every card."
+    },
+    "PATH-PRICE-U7": {
+      "kind": "cross_cutting_rule",
+      "name": "Use \"Everything in X, plus:\"",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "on every tier above the first. Dub, Height, Windsurf, Circle all do it. It cuts repeated bullets and shows the ladder."
+    },
+    "PATH-PRICE-U8": {
+      "kind": "cross_cutting_rule",
+      "name": "Limits are numbers, not adjectives",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "\"30 transcription hours / month\" beats \"generous limits.\" Keep to about 6 to 8 bullets per card. If a card runs longer, the extra goes in the comparison table."
+    },
+    "PATH-PRICE-U9": {
+      "kind": "cross_cutting_rule",
+      "name": "\"No credit card required\" near the free or trial CTA, only when true",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Any pricing page, regardless of billing model or tier count.",
+      "outcome": "Seen on Dub, Clay, Lyssna."
+    },
+    "PATH-PRICE-X1": {
+      "kind": "cross_cutting_rule",
+      "name": "Never show only a per-unit rate",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "A rate like \"1.8 cents per charge\" is meaningless without a sample bill. Add an estimator (Stripe, Vercel, Cofounder)."
+    },
+    "PATH-PRICE-X10": {
+      "kind": "cross_cutting_rule",
+      "name": "Offer a reset on multi-input calculators",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Grok has one."
+    },
+    "PATH-PRICE-X11": {
+      "kind": "cross_cutting_rule",
+      "name": "Predictability is a feature",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "If you don't meter something, show it as $0. Agentcard lists \"$0 per issued card\" and \"$0 per order\" under a flat monthly fee. If you have a spending cap or pause, say so."
+    },
+    "PATH-PRICE-X12": {
+      "kind": "cross_cutting_rule",
+      "name": "Outcome pricing needs a definition",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Intercom prices Fin at \"$0.99 per outcome.\" Any outcome-based price must define what counts as one, on the same screen."
+    },
+    "PATH-PRICE-X2": {
+      "kind": "cross_cutting_rule",
+      "name": "Ask in the customer's unit",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Kit asks \"How many email subscribers do you have?\" Teak asks \"Avg. daily active players.\" Cartesia converts credits to minutes of audio. If your billing unit is abstract (tokens, credits, blocks), translate it. Mailchimp's \"blocks of 25,000 emails\" is the version to avoid."
+    },
+    "PATH-PRICE-X3": {
+      "kind": "cross_cutting_rule",
+      "name": "Slider plus number input",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Vercel and Grok pair them. The slider is for exploring, the input is for exactness. Label the tick marks."
+    },
+    "PATH-PRICE-X4": {
+      "kind": "cross_cutting_rule",
+      "name": "Show the rate table next to the calculator",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Stripe highlights the active tier under the slider track. Mailchimp shows the full block-rate table. Buyers want to verify your math."
+    },
+    "PATH-PRICE-X5": {
+      "kind": "cross_cutting_rule",
+      "name": "Big estimated total, plus an itemized breakdown",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cofounder lists token, compute, and database costs above a large total. Vercel does the same and adds a comparison. Always label it \"estimated.\""
+    },
+    "PATH-PRICE-X6": {
+      "kind": "cross_cutting_rule",
+      "name": "Default to a realistic value, not zero",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cartesia starts at 45 min. Mailchimp's empty state shows $0.00, which tells the buyer nothing. *My read, not tested.*"
+    },
+    "PATH-PRICE-X7": {
+      "kind": "cross_cutting_rule",
+      "name": "Show included allowance and overage separately",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cofounder: \"$20 included.\" Windsurf: \"Add-on credits at $10 / 250 credits.\" Say what happens when they run out."
+    },
+    "PATH-PRICE-X8": {
+      "kind": "cross_cutting_rule",
+      "name": "Recommend a plan from the input",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "Cartesia shows a \"Recommended plan\" card after you pick volume. Kit disables tiers that can't cover your count (\"Max subscribers reached\")."
+    },
+    "PATH-PRICE-X9": {
+      "kind": "cross_cutting_rule",
+      "name": "Say what one unit buys",
+      "group": "pricing-pages",
+      "parent": null,
+      "condition": "Pricing that scales with usage (volume, credits, tokens, events).",
+      "outcome": "If you sell credits, give an example (\"1 credit = about 2 pages scraped\"). ClassPass explains credits in its own page and notes rollover. Rollover is worth stating."
+    },
+    "PATH-SET-DANGER-ZONE": {
+      "kind": "cross_cutting_rule",
+      "name": "Danger zone",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A page has account-, workspace-, or team-level destructive actions.",
+      "outcome": "Group them at the bottom under a Danger zone heading. Each row has a label and helper text on the left and a destructive button on the right. Leave and delete are separate rows.",
+      "builds_on": [
+        "PATH-A",
+        "PATH-SET-REMOVE-TYPED"
+      ]
+    },
+    "PATH-SET-EMAIL-CHANGE": {
+      "kind": "cross_cutting_rule",
+      "name": "Flow container and steps",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The user chooses to change their email.",
+      "outcome": "A full page at its own route, not a dialog. Two steps shown with a Stepper. Step 1 is the new address, plus the current password when the session is not recent. Step 2 is the code. Follow `JOB-NAVIGATION-POSITION` for the Breadcrumb or Back link, and cap the form container at `--width-form-max`. Step 1 buttons are Cancel (returns to settings, address unchanged) and Next. Step 2 buttons are Back (returns to step 1 with the typed address kept) and Verify. Each step validates before the next. No retype-to-confirm field, since the code already proves the address works.",
+      "builds_on": [
+        "JOB-MULTISTEP-GUIDE",
+        "PATH-C",
+        "JOB-NAVIGATION-POSITION",
+        "error-other-rules"
+      ]
+    },
+    "PATH-SET-EMAIL-CHANGE-DONE": {
+      "kind": "cross_cutting_rule",
+      "name": "Success",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The code verifies.",
+      "outcome": "Return to the settings page, show the new address in the row with the Verified badge, and confirm with a toast. Until then the row keeps showing the old address.",
+      "builds_on": [
+        "PATH-SET-IDENTITY-FIELD",
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
+    },
+    "PATH-SET-IDENTITY-FIELD": {
+      "kind": "cross_cutting_rule",
+      "name": "Email in account settings",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Showing a sign-in identifier such as email.",
+      "outcome": "Show it read-only with an explicit Edit control and a Verified badge when verified. Edit starts `[PATH-SET-EMAIL-CHANGE]`. Never a plain input with a Save button.",
+      "builds_on": [
+        "PATH-A",
+        "JOB-LABEL-CONTENT"
+      ]
+    },
+    "PATH-SET-INTEG-ACTIONS": {
+      "kind": "cross_cutting_rule",
+      "name": "Connect, configure, disconnect",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Choosing row actions for an integration.",
+      "outcome": "Not connected: Connect. Connected: Configure when there are settings, plus a quiet Disconnect. Disconnect is never the primary button and is red only if it deletes data. A Connect that leaves the app shows an external-link icon.",
+      "builds_on": [
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ]
+    },
+    "PATH-SET-INTEG-GROUPS": {
+      "kind": "cross_cutting_rule",
+      "name": "Connected before available",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Listing integrations.",
+      "outcome": "Show Connected above Available, each with a count. Rows are a list by default. Use a card grid only when browsing a large catalog, and add search and a category filter there.",
+      "builds_on": [
+        "JOB-DISPLAY-DATA"
+      ]
+    },
+    "PATH-SET-INTEG-LOCKED": {
+      "kind": "cross_cutting_rule",
+      "name": "Plan-gated integrations",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "An integration needs a higher plan.",
+      "outcome": "Show it disabled with the plan requirement stated. Do not hide it. This differs from role-denied items, which are hidden.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE",
+        "PATH-PERM-DISABLE-BY-CONDITION"
+      ]
+    },
+    "PATH-SET-MEMBERS-INVITE": {
+      "kind": "cross_cutting_rule",
+      "name": "Adding a member",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The user adds a member.",
+      "outcome": "The Invite button opens a Dialog with email and role. Use an inline email field with an Invite button only when inviting is the main job of the page. The toast names the invited address.",
+      "builds_on": [
+        "JOB-OVERLAY-INTERACTION",
+        "PATH-D-SIZE",
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
+    },
+    "PATH-SET-MEMBERS-LIST": {
+      "kind": "cross_cutting_rule",
+      "name": "Member list",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Listing members of a workspace or team.",
+      "outcome": "Columns are member (name and email), role, and status. Row actions follow `[PATH-B-ROW-ACTIONS]`, so Remove and other secondary actions sit in the DropdownMenu. The Invite primary button sits at the top right of the table. Narrow layout follows `[PATH-B-NARROW]`.",
+      "builds_on": [
+        "PATH-B",
+        "PATH-B-ROW-ACTIONS",
+        "PATH-B-NARROW",
+        "JOB-DISPLAY-DATA",
+        "JOB-EXPOSE-ACTIONS"
+      ]
+    },
+    "PATH-SET-MEMBERS-SELF": {
+      "kind": "cross_cutting_rule",
+      "name": "Current user and owner rows",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A member row is the current user or the owner.",
+      "outcome": "Label the current user's row \"You\". The owner row has no Remove. The current user's action is Leave, not Remove. Removing someone else uses an AlertDialog and notifies the removed member afterward.",
+      "builds_on": [
+        "PATH-PERM-DISABLE-BY-CONDITION",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ]
+    },
+    "PATH-SET-MEMBERS-STATES": {
+      "kind": "cross_cutting_rule",
+      "name": "Pending and active rows",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A member row is pending or active.",
+      "outcome": "Pending rows get a Pending badge and the menu actions Resend invite and Remove. Active rows get Edit role and Remove. When the role list is short, role can be an inline Select that saves instantly.",
+      "builds_on": [
+        "JOB-LABEL-CONTENT",
+        "PATH-SET-SAVE-INSTANT"
+      ]
+    },
+    "PATH-SET-NOTIF-CHANNEL-OFF": {
+      "kind": "cross_cutting_rule",
+      "name": "Channel not connected",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A channel column exists but the channel is not connected, for example Slack.",
+      "outcome": "Keep the column visible and disabled, with a link to connect it.",
+      "builds_on": [
+        "PATH-PERM-DISABLE-BY-CONDITION"
+      ]
+    },
+    "PATH-SET-NOTIF-DIGEST": {
+      "kind": "cross_cutting_rule",
+      "name": "Digest",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The product sends a digest email.",
+      "outcome": "Put its Switch above the matrix as its own row, separate from the per-event preferences.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE"
+      ]
+    },
+    "PATH-SET-NOTIF-MATRIX": {
+      "kind": "cross_cutting_rule",
+      "name": "Events by channel",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "There are two or more channels and three or more event types.",
+      "outcome": "Events are rows and channels are columns, grouped under category headers. Each cell is a Switch when changes save instantly, or a Checkbox only when the page has an explicit Save. With one channel, use a plain list of Switches. Below the `sm` container width, each event stacks with its channels listed beneath it.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "PATH-SET-SAVE-INSTANT",
+        "PATH-SET-SAVE-EXPLICIT"
+      ]
+    },
+    "PATH-SET-OTP-DELIVERY": {
+      "kind": "cross_cutting_rule",
+      "name": "Where the code goes",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Step 2 of the email change.",
+      "outcome": "Send the code to the new address. The current address stays active until the code verifies. The body names the exact address and offers a way back to correct it. State the code length, and state the expiry when the code expires. After a successful change, notify the previous address.",
+      "builds_on": [
+        "PATH-SET-EMAIL-CHANGE"
+      ]
+    },
+    "PATH-SET-OTP-ERROR": {
+      "kind": "cross_cutting_rule",
+      "name": "Wrong or expired code",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The code is wrong or has expired.",
+      "outcome": "Show the error inline directly under the field with righter's Helper Text, using an icon plus text, and put every cell in the error state. Keep the digits, selected so typing replaces them. Never a toast for this. An expired code also brings the Resend link into focus. Copy and component choice come from righter.",
+      "builds_on": [
+        "error-decision-tree",
+        "helper-text",
+        "error-other-rules",
+        "DS-A11Y-017",
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
+    },
+    "PATH-SET-OTP-RESEND": {
+      "kind": "cross_cutting_rule",
+      "name": "Resend",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The user did not receive the code.",
+      "outcome": "A text link under the field. After each send, disable it and show the remaining wait in or beside it. Do not hide it. The wait length is a product setting, not a Vois value. A resend clears the cells, because the old code stops working, and confirms with a toast.",
+      "builds_on": [
+        "JOB-TRANSIENT-FEEDBACK",
+        "toast"
+      ]
+    },
+    "PATH-SET-OTP-SUBMIT": {
+      "kind": "cross_cutting_rule",
+      "name": "Verify button",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The user enters the code.",
+      "outcome": "A primary Verify button in the step footer, replacing Next, disabled until every cell is filled. Back is the secondary. While verifying, show an inline Spinner in the button. Do not submit automatically on the last digit.",
+      "builds_on": [
+        "PATH-COND-PRIMARY-BUTTON",
+        "JOB-LOADING-STATE",
+        "PATH-C"
+      ]
+    },
+    "PATH-SET-REMOVE-TYPED": {
+      "kind": "cross_cutting_rule",
+      "name": "Typed confirmation",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The deletion is irreversible or high-impact, such as a workspace, team, or account.",
+      "outcome": "The user types the object's name before the destructive button enables. The body lists what will be lost with counts and states any recovery window. It always uses a full modal, never a bottom sheet. Dialog width follows `[PATH-D-SIZE]`, which is the small tier.",
+      "builds_on": [
+        "PATH-D",
+        "PATH-D-SIZE",
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "alert-dialog"
+      ]
+    },
+    "PATH-SET-ROW-LAYOUT": {
+      "kind": "cross_cutting_rule",
+      "name": "Preference rows",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "Laying out preference rows, each with a label and one control.",
+      "outcome": "Label and optional helper text (Description style) on the left, control on the right, centered vertically. Group header above the rows. Rows separated by dividers. No container card or shadow around a group. Cap the content column at `--width-form-max` and space groups with `gap-10`. When the container is narrower than the `sm` value (`37.5em`), stack the control under its label.",
+      "builds_on": [
+        "DS-SLOP-010",
+        "DS-SURFACE-008",
+        "DS-RESPONSIVE-003"
+      ]
+    },
+    "PATH-SET-SAVE-EXPLICIT": {
+      "kind": "cross_cutting_rule",
+      "name": "Explicit save for text and multi-field blocks",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A settings block has text inputs or more than one related field.",
+      "outcome": "Save stays disabled until a value has changed and every required value is valid. Cancel restores the last saved values. Both sit in the block, not in a footer.",
+      "builds_on": [
+        "PATH-COND-PRIMARY-BUTTON"
+      ]
+    },
+    "PATH-SET-SAVE-INSTANT": {
+      "kind": "cross_cutting_rule",
+      "name": "Instant save for single values",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "The user changes a Switch, Select, or Radio that stands alone on a settings page.",
+      "outcome": "Persist on change and confirm with a toast. If the save fails, revert the control and surface the failure with whichever component righter's decision tree picks. No Save button.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "JOB-TRANSIENT-FEEDBACK",
+        "error-decision-tree"
+      ]
+    },
+    "PATH-SET-VIEW-EDIT-BLOCK": {
+      "kind": "cross_cutting_rule",
+      "name": "Where the view state still applies",
+      "group": "settings-interactions",
+      "parent": null,
+      "condition": "A settings block holds details that are mostly read and rarely changed, such as legal name, business address, or billing details.",
+      "outcome": "Use the view state by default and enter the edit state on an explicit Edit action, as `settings-pages.md` describes. Preference blocks are always editable and skip the view state.",
+      "builds_on": [
+        "PATH-A"
+      ]
+    },
+    "PATH-TABLE-BULK-BAR": {
+      "kind": "cross_cutting_rule",
+      "name": "Bulk action bar",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "One or more rows are selected.",
+      "outcome": "Show a bar anchored to the table with the selected count, 2 to 3 visible actions with the rest in a DropdownMenu, and a clear-selection control. The destructive action is last and visually distinct. A persistent bar with disabled actions at zero selected is fine when the table is mainly used for bulk work.",
+      "builds_on": [
+        "JOB-EXPOSE-ACTIONS",
+        "PATH-B-ROW-ACTIONS"
+      ]
+    },
+    "PATH-TABLE-BULK-DESTRUCTIVE": {
+      "kind": "cross_cutting_rule",
+      "name": "Bulk destructive actions",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A bulk action deletes, archives, or otherwise cannot be undone cheaply.",
+      "outcome": "Confirm first and state the count. Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.",
+      "builds_on": [
+        "JOB-CONFIRM-DESTRUCTIVE",
+        "JOB-TRANSIENT-FEEDBACK"
+      ]
+    },
+    "PATH-TABLE-COLUMNS": {
+      "kind": "cross_cutting_rule",
+      "name": "Column management",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A complex table has more columns than most users need at once.",
+      "outcome": "Offer show or hide, reorder, and pin, plus a Reset to default. A column header menu holds per-column actions (sort, move, hide). The first column cannot be hidden.",
+      "builds_on": [
+        "PATH-B-COMPLEX"
+      ]
+    },
+    "PATH-TABLE-COMMIT-BATCH": {
+      "kind": "cross_cutting_rule",
+      "name": "Batch save",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A user edits several cells or rows, or one value's validity depends on another.",
+      "outcome": "Hold edits locally and show an unsaved-changes bar with Save and Discard. Edited cells are visibly marked. Save is blocked while any edit is invalid, with a summary of what to fix. Never drop valid edits because one is invalid. Leaving the page with unsaved edits asks first.",
+      "builds_on": [
+        "PATH-SET-SAVE-EXPLICIT",
+        "PATH-TABLE-ERROR-CELL"
+      ]
+    },
+    "PATH-TABLE-COMMIT-INSTANT": {
+      "kind": "cross_cutting_rule",
+      "name": "Instant save",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A user edits one low-risk value in a cell.",
+      "outcome": "Save on commit (Enter or blur) and confirm with a toast that offers Undo. If the save fails, revert the cell, mark the row, and keep the typed value available to retry. Surface the failure as `PATH-TABLE-ERROR-ROW-ACTION` says.",
+      "builds_on": [
+        "PATH-SET-SAVE-INSTANT",
+        "JOB-TRANSIENT-FEEDBACK",
+        "PATH-TABLE-ERROR-ROW-ACTION"
+      ]
+    },
+    "PATH-TABLE-DENSITY": {
+      "kind": "cross_cutting_rule",
+      "name": "Density toggle",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A complex table has a density control.",
+      "outcome": "Offer Dense, Regular, and Comfortable. Row height and cell padding come from tokens. Simple tables have one density and no toggle. Remember the choice per user.",
+      "builds_on": [
+        "PATH-DENSITY-DENSE",
+        "PATH-DENSITY-STANDARD",
+        "PATH-DENSITY-SPACIOUS",
+        "DS-TABLE-019"
+      ]
+    },
+    "PATH-TABLE-DRAWER-STEP": {
+      "kind": "cross_cutting_rule",
+      "name": "Step through rows from the drawer",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A user reviews many rows one after another.",
+      "outcome": "Put previous and next controls in the drawer, bound to the Up and Down keys. The table row highlight follows. Stepping past the last row on a page loads the next page.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-TABLE-ERROR-BULK-PARTIAL": {
+      "kind": "cross_cutting_rule",
+      "name": "A bulk or import operation partly failed",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "Some rows in a bulk action or import succeed and some fail.",
+      "outcome": "Show an Inline Alert above the table with the counts. It is contextual to the table, so it is not an Alert Banner. Mark failed rows with an icon or count in the row gutter. Offer a \"show only rows with errors\" toggle and the choice to continue with the rows that are ready. When users cannot fix rows in place, offer an export of the failed rows. Name the real cause on each failure.",
+      "builds_on": [
+        "JOB-CONTEXTUAL-INFO",
+        "error-decision-tree"
+      ]
+    },
+    "PATH-TABLE-ERROR-CELL": {
+      "kind": "cross_cutting_rule",
+      "name": "A cell or field is invalid",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "An edited cell fails validation.",
+      "outcome": "Show the message next to the field. In a drawer form it sits under the field. For a cell it opens in a tooltip or popover. Validate on commit or blur, not on every keystroke. Tint the cell and add an icon. Keep what the user typed.",
+      "builds_on": [
+        "DS-A11Y-009",
+        "DS-A11Y-017",
+        "error-decision-tree"
+      ]
+    },
+    "PATH-TABLE-ERROR-FOCUS": {
+      "kind": "cross_cutting_rule",
+      "name": "Focus and announcement",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A commit, save, or load fails.",
+      "outcome": "Move focus to the first error. Announce errors through an aria-live=\"polite\" region. Never clear the user's data to show an error.",
+      "builds_on": [
+        "DS-A11Y-009"
+      ]
+    },
+    "PATH-TABLE-ERROR-ROW-ACTION": {
+      "kind": "cross_cutting_rule",
+      "name": "A row action failed",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A delete, archive, status change, or similar action on one row fails.",
+      "outcome": "If the UI updated optimistically, roll it back. Mark that row with an error state and offer Retry. Surface the failure with whichever component righter's error decision tree picks, anchored to the row where it can be. The row is the anchor for the error, not the page.",
+      "builds_on": [
+        "JOB-TRANSIENT-FEEDBACK",
+        "error-decision-tree"
+      ]
+    },
+    "PATH-TABLE-EXPAND-ROWS": {
+      "kind": "cross_cutting_rule",
+      "name": "Expandable rows",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A row has sub-rows or a short secondary detail.",
+      "outcome": "Use a leading chevron button that toggles aria-expanded. Expanded content stays inside the table. If the detail is a full record, use the drawer instead.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ]
+    },
+    "PATH-TABLE-FILTER-BUILDER": {
+      "kind": "cross_cutting_rule",
+      "name": "Filter builder on a complex table",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A complex table has many filterable fields.",
+      "outcome": "Use rows of field, operator, value, with Add filter, Apply, and Clear filters. Keep applied filters visible as chips after the builder closes.",
+      "builds_on": [
+        "PATH-TABLE-FILTER-SIMPLE"
+      ]
+    },
+    "PATH-TABLE-FILTER-SIMPLE": {
+      "kind": "cross_cutting_rule",
+      "name": "Filters on a simple table",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A simple table has one or two filter dimensions.",
+      "outcome": "Use a single Filter control that opens a Popover. Applied filters show as dismissible chips under the toolbar. Search sits on the left of the toolbar and Filter is pinned top right (PATH-PAGE-SORT-FILTER).",
+      "builds_on": [
+        "PATH-B",
+        "JOB-OVERLAY-INTERACTION"
+      ]
+    },
+    "PATH-TABLE-INLINE-EDIT": {
+      "kind": "cross_cutting_rule",
+      "name": "Inline cell edit",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A cell is editable in place.",
+      "outcome": "A single click or Enter on a focused cell enters edit mode. Esc cancels and restores the value. Enter commits. Show the cell's edit state with a visible border, not just a cursor. If the table is a grid with arrow-key cell navigation, use role=\"grid\". Otherwise keep a plain table.",
+      "builds_on": [
+        "DS-A11Y-002",
+        "JOB-DATA-ENTRY"
+      ]
+    },
+    "PATH-TABLE-KEYBOARD": {
+      "kind": "cross_cutting_rule",
+      "name": "Keyboard",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A table has rows users act on repeatedly.",
+      "outcome": "Up and Down move row focus. Enter opens the row. Space toggles selection. Esc closes the drawer. Cmd or Ctrl plus Enter saves an edit. Show the shortcut hints where a drawer has them.",
+      "builds_on": [
+        "DS-A11Y-002",
+        "DS-A11Y-005"
+      ]
+    },
+    "PATH-TABLE-NARROW-OPEN": {
+      "kind": "cross_cutting_rule",
+      "name": "Row open on a narrow screen",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A row opens its record below the sm container width.",
+      "outcome": "The drawer takes the full width and shows a back control instead of a close control. Back and the URL behave as they do on a wide screen. A record with tabs, a timeline, or related records still escalates to a full page.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN",
+        "PATH-TABLE-URL-STATE",
+        "JOB-OVERLAY-INTERACTION"
+      ]
+    },
+    "PATH-TABLE-NARROW-ROW": {
+      "kind": "cross_cutting_rule",
+      "name": "Stacked row anatomy",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A table is below the sm container width and stacks its rows (4 or fewer columns, see PATH-B-NARROW).",
+      "outcome": "The first column is the row title. Show up to three more values under or beside it: one or two secondary values below the title, one trailing value aligned to the end, and status as a Badge. Nothing is dropped. With 4 or fewer columns every value fits. The whole row is the tap target and opens the record.",
+      "builds_on": [
+        "PATH-B-NARROW",
+        "PATH-B-ROW-OPEN",
+        "JOB-DISPLAY-DATA"
+      ]
+    },
+    "PATH-TABLE-NARROW-SELECT": {
+      "kind": "cross_cutting_rule",
+      "name": "Selection on a narrow screen",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A narrow list has bulk actions.",
+      "outcome": "Selection is a mode. An explicit Select action enters it, and the checkbox column appears only then. The header shows \"N selected\" with Select all and Cancel. The bulk bar sits at the bottom of the screen with 2 to 4 actions, the destructive one last and in the destructive color. A destructive action confirms with the count before it runs. Leaving the mode clears the selection.",
+      "builds_on": [
+        "PATH-TABLE-SELECT-CHECKBOX",
+        "PATH-TABLE-BULK-BAR",
+        "PATH-TABLE-BULK-DESTRUCTIVE",
+        "JOB-CONFIRM-DESTRUCTIVE"
+      ]
+    },
+    "PATH-TABLE-ROW-CLICK": {
+      "kind": "cross_cutting_rule",
+      "name": "Row click target",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A row opens a detail view when clicked.",
+      "outcome": "The first-column value is the real link or button, so keyboard, screen readers, and middle-click work. The row click is an enhancement on top. Clicks on checkboxes, action menus, and links inside the row do not open the drawer.",
+      "builds_on": [
+        "DS-A11Y-005",
+        "PATH-B"
+      ]
+    },
+    "PATH-TABLE-ROW-STATES": {
+      "kind": "cross_cutting_rule",
+      "name": "Row states",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "Rows can change state.",
+      "outcome": "Support these: default, hover, focus-visible, selected, active (its drawer is open), editing, saving, error, just-added, and disabled or archived. Each has a distinct visual that does not rely on color alone.",
+      "builds_on": [
+        "DS-A11Y-017",
+        "DS-A11Y-002",
+        "PATH-B"
+      ]
+    },
+    "PATH-TABLE-SAVED-VIEWS": {
+      "kind": "cross_cutting_rule",
+      "name": "Saved views",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "Users repeat the same combination of filters, sort, and columns.",
+      "outcome": "Offer named views as tabs or a view switcher above the toolbar. A view stores filters, sort, columns, and density. Show an unsaved-changes state when the current setup differs from the saved view.",
+      "builds_on": [
+        "JOB-SWITCH-VIEWS"
+      ]
+    },
+    "PATH-TABLE-SELECT-ALL-PAGES": {
+      "kind": "cross_cutting_rule",
+      "name": "Select across pages",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A paginated table has a full page selected and more results exist.",
+      "outcome": "Offer a \"select all N\" control next to the selection count. Say how many rows an action will touch before the user confirms it.",
+      "builds_on": [
+        "PATH-TABLE-SELECT-CHECKBOX"
+      ]
+    },
+    "PATH-TABLE-SELECT-CHECKBOX": {
+      "kind": "cross_cutting_rule",
+      "name": "Checkbox column",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A table has bulk actions.",
+      "outcome": "Add a leading checkbox column. The header checkbox is tri-state (none, some, all on this page). Shift-click selects a range. Selected rows get a tint and a checked box, never tint alone. Simple tables have no checkbox column.",
+      "builds_on": [
+        "JOB-BINARY-PREFERENCE",
+        "DS-A11Y-017"
+      ]
+    },
+    "PATH-TABLE-SEMANTICS": {
+      "kind": "cross_cutting_rule",
+      "name": "Table semantics",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "Rendering any table.",
+      "outcome": "Use a real table element with th and scope. Do not rebuild it from div elements. The sortable header is a button inside the th.",
+      "builds_on": [
+        "DS-A11Y-005",
+        "DS-TABLE-015"
+      ]
+    },
+    "PATH-TABLE-SORT": {
+      "kind": "cross_cutting_rule",
+      "name": "Sorting",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A column can be sorted.",
+      "outcome": "Clicking its header cycles ascending, descending, none. The sorted header shows direction and carries aria-sort. One active sort unless the product genuinely needs more. Sort resets paging to page 1.",
+      "builds_on": [
+        "PATH-B"
+      ]
+    },
+    "PATH-TABLE-STATE-EMPTY-FILTERED": {
+      "kind": "cross_cutting_rule",
+      "name": "Empty, filtered",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "Search or filters removed every row.",
+      "outcome": "Say that filters caused it and offer Clear filters. Use an inline message, not a full EmptyState.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ]
+    },
+    "PATH-TABLE-STATE-EMPTY-FIRST": {
+      "kind": "cross_cutting_rule",
+      "name": "Empty, first use",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "The user has never created anything here and can create from this screen.",
+      "outcome": "Show an EmptyState with the primary create action. Headers stay visible.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ]
+    },
+    "PATH-TABLE-STATE-EMPTY-NATURE": {
+      "kind": "cross_cutting_rule",
+      "name": "Empty by nature",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "No rows is a normal, good state, such as no live calls or no open issues.",
+      "outcome": "Say so plainly. No call to action.",
+      "builds_on": [
+        "JOB-EMPTY-CONTENT"
+      ]
+    },
+    "PATH-TABLE-STATE-EMPTY-PERMISSION": {
+      "kind": "cross_cutting_rule",
+      "name": "Empty by permission",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "The user cannot see any rows because of their role.",
+      "outcome": "Say that access is the reason and who can grant it. Do not show the first-use create action.",
+      "builds_on": [
+        "PATH-PERM-HIDE-BY-ROLE",
+        "JOB-EMPTY-CONTENT"
+      ]
+    },
+    "PATH-TABLE-STATE-LOAD-ERROR": {
+      "kind": "cross_cutting_rule",
+      "name": "Table failed to load",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "The table's data request fails.",
+      "outcome": "Replace the rows with an inline panel in the table area: the cause when known and a Retry. Toolbar and headers stay, so filters survive. Not a full-screen modal.",
+      "builds_on": [
+        "PATH-TABLE-ERROR-FOCUS",
+        "DS-A11Y-009"
+      ]
+    },
+    "PATH-TABLE-STATE-LOADING": {
+      "kind": "cross_cutting_rule",
+      "name": "Initial load",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A table is loading for the first time.",
+      "outcome": "Show the real column headers and skeleton rows that match the loaded column widths. Never a full-area spinner.",
+      "builds_on": [
+        "JOB-LOADING-STATE"
+      ]
+    },
+    "PATH-TABLE-STATE-REFETCH": {
+      "kind": "cross_cutting_rule",
+      "name": "Refetch",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A filter, sort, or page change reloads data.",
+      "outcome": "Keep the stale rows on screen with a small busy indicator. Do not blank the table.",
+      "builds_on": [
+        "JOB-LOADING-STATE"
+      ]
+    },
+    "PATH-TABLE-STATE-TRUNCATED": {
+      "kind": "cross_cutting_rule",
+      "name": "Results limited by plan",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A plan limit hides some rows.",
+      "outcome": "Put a notice above the table that says so, with the upgrade action. Do not leave it to the footer.",
+      "builds_on": [
+        "JOB-CONTEXTUAL-INFO"
+      ]
+    },
+    "PATH-TABLE-URL-STATE": {
+      "kind": "cross_cutting_rule",
+      "name": "State lives in the URL",
+      "group": "table-interactions",
+      "parent": null,
+      "condition": "A table has search, filters, sort, page, or an open row.",
+      "outcome": "Keep each of them in the URL. Reload, back, and a shared link restore the same view, including the open drawer.",
+      "builds_on": [
+        "PATH-B-ROW-OPEN"
+      ]
+    }
+  },
+  "fields": {
+    "FIELD-CHECK-BLUR": {
+      "category": "core",
+      "title": "Check on blur",
+      "severity": "required",
+      "rule": "The default time to check a value is when the user leaves the field, then again on submit. Once a field shows an error, re-check on every keystroke so the error clears the moment it is fixed.",
+      "never": []
+    },
+    "FIELD-FORMAT-BLUR": {
+      "category": "core",
+      "title": "Format on blur and keep the cursor",
+      "severity": "required",
+      "rule": "Apply grouping and separators when the user leaves the field. If you format while typing, keep the caret where the user left it, including after a paste in the middle of the value. A format that jumps the caret to the end is a bug.",
+      "never": []
+    },
+    "FIELD-FORMAT-NOT-PROOF": {
+      "category": "core",
+      "title": "A format check is not proof",
+      "severity": "required",
+      "rule": "A value that has the right shape may still be wrong: a well formed email may bounce, a valid VIN may belong to another vehicle. Word the check as what it did ('This does not look like a VIN') and use an explicit action (send a code, decode the VIN, confirm the address) when you need proof.",
+      "never": []
+    },
+    "FIELD-INCOMPLETE": {
+      "category": "core",
+      "title": "Incomplete is not invalid",
+      "severity": "required",
+      "rule": "A value that is not finished yet has no error. A VIN with 14 of 17 characters is incomplete, not wrong. Show a counter or a hint, never an error, until the user leaves the field or submits.",
+      "never": [
+        "red error text while the user is still typing"
+      ]
+    },
+    "FIELD-PASTE": {
+      "category": "core",
+      "title": "Never block paste or autofill",
+      "severity": "required",
+      "rule": "Let the user paste into every field and let the browser and password manager fill it. Do not cancel the paste event, do not split a value across boxes that reject a pasted whole, and do not set autocomplete off on a field the browser can fill (email, phone, postal code, name, one-time code). Clean the pasted value afterwards: trim it, strip separators.",
+      "never": [
+        "preventDefault on a paste event",
+        "onpaste returning false",
+        "one box per digit that rejects a pasted code"
+      ]
+    },
+    "FIELD-PREFILL-CONFLICT": {
+      "category": "prefill",
+      "title": "Show both when sources disagree",
+      "severity": "required",
+      "rule": "When two sources give different values, show both with their sources and ask the user to choose. Never pick one silently.",
+      "never": []
+    },
+    "FIELD-PREFILL-FIX": {
+      "category": "prefill",
+      "title": "Let the user fix a prefilled value",
+      "severity": "required",
+      "rule": "A prefilled value is an ordinary editable value. Never lock it. Editing it changes its source to 'entered by you'.",
+      "never": []
+    },
+    "FIELD-PREFILL-NOTME": {
+      "category": "prefill",
+      "title": "'Not me' clears it",
+      "severity": "required",
+      "rule": "When the prefilled value may belong to someone else (a shared device, a lookup that matched the wrong record), offer a clear action ('Not me' or 'Clear') that removes the value and the source label together.",
+      "never": []
+    },
+    "FIELD-PREFILL-SOURCE": {
+      "category": "prefill",
+      "title": "Show the source of a prefilled value",
+      "severity": "required",
+      "rule": "When a value was filled in for the user, show it in the field and show where it came from (their profile, the last policy, a lookup, an imported document). Use a small source label next to the field, not a tooltip only. A prefilled value looks different from one the user typed.",
+      "never": []
+    },
+    "FIELD-PREFILL-SUGGEST": {
+      "category": "prefill",
+      "title": "Low-confidence guesses are suggestions",
+      "severity": "required",
+      "rule": "Fill the field only when you are confident. A weaker guess appears as a suggestion the user accepts with one action, not as a value already in the box.",
+      "never": []
+    },
+    "FIELD-PREFILL-UNDO": {
+      "category": "prefill",
+      "title": "Undo an accepted prefill",
+      "severity": "required",
+      "rule": "After the user accepts a suggestion or a bulk prefill, keep an Undo available until they leave the page or submit.",
+      "never": []
+    },
+    "FIELD-SENSITIVE-LOOKUP": {
+      "category": "sensitive",
+      "title": "No lookup per keystroke",
+      "severity": "required",
+      "rule": "Never send a sensitive value to a server as the user types. Send it once, on an explicit action or on submit.",
+      "never": [
+        "type-ahead on an SSN or license number"
+      ]
+    },
+    "FIELD-SENSITIVE-MASK": {
+      "category": "sensitive",
+      "title": "Mask after entry, with a reveal",
+      "severity": "required",
+      "rule": "Show a sensitive value masked once the user leaves the field, keeping the last four characters, with a control to reveal it. Keep paste and password managers working. Do not mask a value the user is still typing.",
+      "never": []
+    },
+    "FIELD-SENSITIVE-STORAGE": {
+      "category": "sensitive",
+      "title": "Sensitive data stays out of URLs, logs, analytics and error reports",
+      "severity": "required",
+      "rule": "SSN, driver's license number, one-time codes and other sensitive fields never go in a URL or query string, a log line, an analytics event, or an error report. Strip them before any of those are written. Personal fields (name, email, phone, address, date of birth) stay out of URLs and analytics events.",
+      "never": [
+        "a sensitive value in a query string",
+        "a sensitive value in console.log or an error tracker payload",
+        "a sensitive value as an analytics event property"
+      ]
+    },
+    "FIELD-SENSITIVE-SUGGEST": {
+      "category": "sensitive",
+      "title": "No suggestions on sensitive fields",
+      "severity": "required",
+      "rule": "Turn off autocomplete history and suggestion lists on sensitive fields (autocomplete off), and never show earlier values in a dropdown.",
+      "never": []
+    },
+    "FIELD-TEXT-CODES": {
+      "category": "core",
+      "title": "IDs and codes are text",
+      "severity": "required",
+      "rule": "A value you do not do arithmetic on is a string: postal code, VIN, license number, SSN, phone, one-time code, policy and claim numbers. Use type text with the right inputmode, never type number, which drops leading zeros, adds spinner arrows, and changes the value on scroll.",
+      "never": [
+        "type=number for a code, ID or phone"
+      ]
+    },
+    "FIELD-TIMING-ACTION": {
+      "category": "timing",
+      "title": "When to check: on an explicit action",
+      "severity": "required",
+      "rule": "For anything that costs money, sends a message or needs proof: Verify a code, Look up a VIN, Check availability. Do not run these on blur.",
+      "never": []
+    },
+    "FIELD-TIMING-BLUR": {
+      "category": "timing",
+      "title": "When to check: on blur",
+      "severity": "required",
+      "rule": "The default for format checks. Run it when focus leaves the field.",
+      "never": []
+    },
+    "FIELD-TIMING-PAUSE": {
+      "category": "timing",
+      "title": "When to check: after a pause",
+      "severity": "required",
+      "rule": "For a lookup the user is waiting on (availability, type-ahead). Wait 300 to 500 ms after the last keystroke. Drop any answer that arrives for an older value.",
+      "never": []
+    },
+    "FIELD-TIMING-SUBMIT": {
+      "category": "timing",
+      "title": "When to check: on submit",
+      "severity": "required",
+      "rule": "For checks that need more than one field, and for required fields left empty. Never show a required error on a field the user has not reached yet.",
+      "never": []
+    },
+    "FIELD-TIMING-TYPING": {
+      "category": "timing",
+      "title": "When to check: while typing",
+      "severity": "required",
+      "rule": "Only for help, never for errors: a character counter, a strength hint, a count of what is left. Never block a keystroke, never show an error.",
+      "never": []
+    },
+    "FIELD-TYPEAHEAD-DEFAULTS": {
+      "category": "type-ahead",
+      "title": "Type-ahead defaults",
+      "severity": "required",
+      "rule": "Start searching after 300 to 500 ms of pause and 2 to 3 characters. Show 3 to 6 results. Drop any response that arrives for an older query. Never pick the first result for the user automatically: the user chooses. Keep the record's ID apart from its label, and store the ID.",
+      "never": [
+        "auto-selecting the first result on Enter or blur",
+        "storing the label as the value"
+      ]
+    },
+    "FIELD-VALUE-SPLIT": {
+      "category": "core",
+      "title": "Keep the shown value and the stored value apart",
+      "severity": "required",
+      "rule": "The text in the box is for people, the stored value is for the system. Format what is shown (grouping, hyphens, a currency separator). Store one canonical form (E.164 for a phone, digits for an SSN, cents for money). Never read the shown text back as the stored value.",
+      "never": []
     }
   }
 }

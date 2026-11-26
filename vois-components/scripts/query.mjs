@@ -3,13 +3,17 @@
 //   node vois-components/scripts/query.mjs Dialog                      build path: rules, card, registry item for one component
 //   node vois-components/scripts/query.mjs --jobs                      the jobs to choose from, one line each
 //   node vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE [--job ...]   pick path: decision trees, merged
-//   node vois-components/scripts/query.mjs --id DS-MODAL-004           one rule, behavior row, lookalike or job
+//   node vois-components/scripts/query.mjs --id DS-MODAL-004           one rule, behavior row, lookalike or job; also a PATH-* node or a FIELD-* rule
+//   node vois-components/scripts/query.mjs --patterns                  the top-level page and form patterns, and every pattern file with its node count
+//   node vois-components/scripts/query.mjs --group table-interactions  every PATH node from one pattern file, one line each
+//   node vois-components/scripts/query.mjs --fields                    the form field rules (FIELD-*), one line each
 //   node vois-components/scripts/query.mjs --audit                     coverage and gaps
 // Flags: --full adds the card's rows and the job rationale. --json prints the same data as JSON.
 // Exit codes: 0 found, 2 ambiguous (candidates listed), 3 not found (nearest names listed), 1 bad usage or a broken index.
 // It never falls back to reading the whole skill. What it cannot provide, it says.
 //
 // It reads the index, the job file and the behavior cards, all inside vois-components, so an installed skill works alone.
+// The index carries a copy of the vois-patterns and vois-fields rule text for the same reason.
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -127,12 +131,56 @@ export function jobPacket(all, ids, { full = false } = {}) {
   };
 }
 
-/** One id: a rule the index carries, a behavior row, a lookalike or a job. */
+/** A line-length cut at a word edge, so a one-line list stays one line. */
+const cut = (text, n = 110) => {
+  const t = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (t.length <= n) return t;
+  const head = t.slice(0, n - 3);
+  const at = head.lastIndexOf(" ");
+  return `${(at > n / 2 ? head.slice(0, at) : head).replace(/[ ,;:]+$/, "")}...`;
+};
+
+const pathNodes = (index) => Object.entries(own(index, "patterns") || {}).map(([id, n]) => ({ id, ...n }));
+
+/** The top-level patterns, and each source file that holds cross-cutting rules with how many. */
+export function patternsList(all) {
+  const nodes = pathNodes(all.index);
+  const groups = new Map();
+  for (const n of nodes) groups.set(n.group, (groups.get(n.group) || 0) + 1);
+  // An index with no copy of the nodes is a miss, not an empty list: an empty list would read as "no rule exists".
+  return {
+    kind: "patterns", state: nodes.length ? "match" : "no_match",
+    top: nodes.filter((n) => n.kind === "top_level_pattern").map((n) => ({ id: n.id, name: n.name, condition: n.condition })),
+    groups: [...groups.entries()].sort(([a], [b]) => byText(a, b)).map(([group, count]) => ({ group, count })),
+  };
+}
+
+/** Every PATH node from one pattern file. A group of more than 40 lines is cut to 40 unless full is set, and says so. */
+export function groupPacket(all, name, { full = false } = {}) {
+  const nodes = pathNodes(all.index);
+  const known = [...new Set(nodes.map((n) => n.group))].sort(byText);
+  const hit = known.find((g) => norm(g) === norm(name || ""));
+  if (!hit) return { kind: "group", state: "no_match", query: name, known };
+  const inGroup = nodes.filter((n) => n.group === hit);
+  const rows = full ? inGroup : inGroup.slice(0, 40);
+  return { kind: "group", state: "match", group: hit, total: inGroup.length, rows: rows.map((n) => ({ id: n.id, kind: n.kind, name: n.name, condition: n.condition })) };
+}
+
+export function fieldsList(all) {
+  const rules = Object.entries(own(all.index, "fields") || {});
+  return { kind: "fields", state: rules.length ? "match" : "no_match", rules: rules.map(([id, r]) => ({ id, title: r.title, category: r.category })) };
+}
+
+/** One id: a rule the index carries, a behavior row, a lookalike, a job, a PATH node or a FIELD rule. */
 export function idLookup(all, raw) {
   const { index } = all;
   const id = String(raw).trim().toUpperCase();
   if (own(index.rules, id)) return { kind: "rule", state: "match", id, ...index.rules[id], components: index.components.filter((c) => c.rules.some((r) => r.rule === id)).map((c) => c.id) };
   if (own(index.lookalikes, id)) return { kind: "lookalike", state: "match", id, ...index.lookalikes[id] };
+  const node = own(own(index, "patterns"), id);
+  if (node) return { ...node, nodeKind: node.kind, kind: "path", state: "match", id, children: pathNodes(index).filter((n) => n.parent === id).map((n) => ({ id: n.id, name: n.name, condition: n.condition })) };
+  const field = own(own(index, "fields"), id);
+  if (field) return { kind: "field", state: "match", id, ...field };
   const job = all.jobs.find((j) => j.id === id);
   if (job) return jobPacket(all, [id], { full: true });
   const m = /^BHV-(.+)-\d{3}$/.exec(id);
@@ -212,7 +260,32 @@ function textOther(p) {
       `components no job names (${p.componentsNoJobNames.length}): ${p.componentsNoJobNames.join(", ")}`,
     ].join("\n");
   }
+  if ((p.kind === "patterns" || p.kind === "fields") && p.state !== "match") return `This index has no copy of the ${p.kind === "patterns" ? "PATH nodes" : "FIELD rules"}, so it cannot answer. Run node vois-components/scripts/retrieval.mjs --write, or read the skill file. This is not the same as there being no rule.`;
+  if (p.kind === "patterns") {
+    return [
+      "VOIS PATTERNS  top-level patterns (run --id <ID> for one, with its sub-decisions)",
+      ...p.top.map((n) => `${n.id}  ${n.name}. ${cut(n.condition)}`),
+      "every PATH node, by pattern file (run --group <name> to list the ids)",
+      ...p.groups.map((g) => `  ${g.group}  ${g.count} nodes`),
+      "If no pattern fits, say the skills have no rule for this task.",
+    ].join("\n");
+  }
+  if (p.kind === "group") {
+    if (p.state !== "match") return `"${p.query}" is not a pattern file in the index. Groups: ${p.known.join(", ")}. If nothing fits, say the skills have no rule for it.`;
+    const L = [`VOIS PATTERNS  group: ${p.group}  (${p.total} nodes; --id <ID> for the full text)`, ...p.rows.map((n) => `${n.id}  ${n.name ? `${n.name}. ` : ""}${cut(n.condition, 100)}`)];
+    if (p.rows.length < p.total) L.push(`+${p.total - p.rows.length} more; add --full to list them all`);
+    return L.join("\n");
+  }
+  if (p.kind === "fields") return ["VOIS FIELD RULES  (run --id <ID> for the full text; vois-fields)", ...p.rules.map((r) => `${r.id}  ${r.title}`), "If no field rule fits, say the skills have no rule for this task."].join("\n");
   if (p.state !== "match") return `${p.id}: not found. ${p.note}`;
+  if (p.kind === "path") {
+    const L = [`${p.id} [${p.group}${p.name ? `, ${p.name}` : ""}]`, `when: ${p.condition}`, `then: ${p.outcome}`];
+    if (p.builds_on) L.push(`builds on ${p.builds_on.join(", ")}`);
+    if (p.parent) L.push(`part of ${p.parent}`);
+    if (p.children.length) { L.push("sub-decisions"); for (const c of p.children) L.push(`  ${c.id}  ${c.name ? `${c.name}. ` : ""}${cut(c.condition, 100)}`); }
+    return L.join("\n");
+  }
+  if (p.kind === "field") return [`${p.id} [${p.category}, ${p.severity}] ${p.title}`, p.rule, ...(p.never.length ? [`never: ${p.never.join("; ")}`] : [])].join("\n");
   if (p.kind === "rule") return `${p.id} [${p.category}, ${p.severity}, ${p.verification}] ${p.rule}\ncomponents ${p.components.join(", ")}`;
   if (p.kind === "lookalike") return `${p.id} [${p.verification}] built: ${p.built}\ninstead: ${p.instead}`;
   if (p.kind === "behavior") return `${p.id} [${p.component}, ${p.group}, ${p.support}] ${p.text}${p.note ? `\nNote: ${p.note}` : ""}${p.evidence ? `\nEvidence: ${p.evidence}` : ""}`;
@@ -221,20 +294,23 @@ function textOther(p) {
 
 export function main(argv, all = loadAll()) {
   const has = (f) => argv.includes(f);
-  const USAGE = "usage: query.mjs <component> | --jobs | --job <JOB-ID> [--job ...] | --id <id> | --audit  [--full] [--json]";
-  const KNOWN = new Set(["--job", "--id", "--jobs", "--audit", "--full", "--json"]);
-  const flagArgs = new Set(["--job", "--id"]);
+  const USAGE = "usage: query.mjs <component> | --jobs | --job <JOB-ID> [--job ...] | --id <id> | --patterns | --group <name> | --fields | --audit  [--full] [--json]";
+  const KNOWN = new Set(["--job", "--id", "--group", "--jobs", "--patterns", "--fields", "--audit", "--full", "--json"]);
+  const flagArgs = new Set(["--job", "--id", "--group"]);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i].startsWith("--") && !KNOWN.has(argv[i])) return { code: 1, out: `unknown flag ${argv[i]}\n${USAGE}` };
     if (flagArgs.has(argv[i]) && (argv[i + 1] === undefined || argv[i + 1].startsWith("--"))) return { code: 1, out: `${argv[i]} needs a value\n${USAGE}` };
   }
   const values = (f) => argv.flatMap((a, i) => (a === f ? [argv[i + 1]] : []));
   const positional = argv.filter((a, i) => !a.startsWith("--") && !flagArgs.has(argv[i - 1]));
-  const modes = [has("--jobs"), has("--audit"), values("--id").length > 0, values("--job").length > 0, positional.length > 0].filter(Boolean).length;
-  if (modes > 1) return { code: 1, out: `pick one mode: a component name, --jobs, --job, --id or --audit\n${USAGE}` };
+  const modes = [has("--jobs"), has("--patterns"), has("--fields"), has("--audit"), values("--group").length > 0, values("--id").length > 0, values("--job").length > 0, positional.length > 0].filter(Boolean).length;
+  if (modes > 1) return { code: 1, out: `pick one mode: a component name, --jobs, --job, --id, --patterns, --group, --fields or --audit\n${USAGE}` };
   const full = has("--full");
   let result;
   if (has("--jobs")) result = { kind: "joblist", state: "match", jobs: all.jobs.map((j) => ({ id: j.id, title: j.title, framing: j.framing })) };
+  else if (has("--patterns")) result = patternsList(all);
+  else if (has("--fields")) result = fieldsList(all);
+  else if (values("--group").length) result = groupPacket(all, values("--group")[0], { full });
   else if (has("--audit")) result = audit(all);
   else if (values("--id").length) result = idLookup(all, values("--id")[0]);
   else if (values("--job").length) result = jobPacket(all, values("--job"), { full });
@@ -248,7 +324,7 @@ export function main(argv, all = loadAll()) {
   const code = result.state === "match" ? 0 : result.state === "ambiguous" ? 2 : 3;
   if (has("--json")) return { code, out: JSON.stringify(result, null, 2) };
   let out;
-  if (result.kind === "joblist") out = ["Pick the job IDs that fit, then run --job <ID> for each. If no job fits, say the skills have no rule for this task. Do not use the nearest job.", ...result.jobs.map((j) => `${j.id}  ${j.title}. ${j.framing}`)].join("\n");
+  if (result.kind === "joblist") out = ["Pick the job IDs that fit, then run --job <ID> for each. If no job fits, say the skills have no rule for this task. Do not use the nearest job.", ...result.jobs.map((j) => `${j.id}  ${j.title}. ${j.framing}`), "For page layout, tables, forms and dialogs run --patterns. For form field types and sensitive data run --fields."].join("\n");
   else if (result.kind === "component" && result.state === "match") out = textComponent(result);
   else if (result.kind === "component" && result.state === "ambiguous") out = `"${result.query}" names more than one component: ${result.candidates.join(", ")}. Run query.mjs with one of them.`;
   else if (result.kind === "component") out = `"${result.query}" is not a component in the index.${result.near.length ? ` Nearest: ${result.near.join(", ")}.` : ""} To choose by need instead, run --jobs. If nothing fits, say the skills have no rule for it.`;
