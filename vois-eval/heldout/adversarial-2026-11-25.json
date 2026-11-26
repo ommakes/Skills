@@ -106,5 +106,5 @@
       ]
     }
   ],
-  "required_rules_status": "Om reviewed ADV-02, 06, 07 and 08 on 2026-11-25 and chose how each is scored. ADV-01, 03, 04, 05, 09 and 10 are still as Claude proposed them, not yet reviewed by Om. ADV-09 has no rule id and is scored by reading the reports."
+  "required_rules_status": "Om reviewed ADV-02, 06, 07 and 08 on 2026-11-25 and chose how each is scored. Om reviewed ADV-01, 03, 04, 05 and 10 on 2026-11-26 and kept the required ids as Claude proposed them. For ADV-04 the required id stays JOB-CHOOSE-FROM-LIST, and the reader also notes by reading whether the report says ToggleChip is not built; that note does not change the recall number. ADV-09 has no rule id and is scored by reading the reports."
 }
