@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`query.mjs --jobs` carries the 14th strip row inside the 40-line cap.** The job list was exactly 40 lines, so a 14th row would have broken the cap. The "Before you write markup" header now continues the `--patterns` and `--fields` line above it instead of taking a line of its own, and says "any of the shortcuts below" where it said "any of these". Nothing else in the output moved.
 - The lookalikes `description` says `observed` rows come from the lookalike pass or the quality runs, as `LOOKALIKE-013` already did.
 - `data/retrieval-index.json` rebuilt.
+- Two wording lines brought level with private (`ommakes/vois-skills` PR 146): the note in `data/component-names.json` says "decision trees" where it said "Quick Reference", and `registry/README.md` points the Popover section at `JOB-OVERLAY-INTERACTION`. No rule changed.
 
 ---
 
