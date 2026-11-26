@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.43.0] - 2026-11-25
+
+### Added
+- **A component packet lists the page rules that name it.** In Phase 2 re-run 3, three samples (ADV-01 and HELD-03) ran `JOB-SECONDARY-CONTENT` and `Sheet`, then stopped. `PATH-B-ROW-OPEN`, the rule that holds the row-open choice and `DS-PANEL-003`, was never reached: no packet pointed to it. The component packet now has a `patterns` line with the `PATH-*` nodes whose text names the component as a whole word, same case (`Sheet` leads to `PATH-B-ROW-OPEN`, `PATH-D-4` and `PATH-PAGE-OVERLAY`). A common name is cut at 6 ids and says how many more. `--json` has the same list as `patterns` and `patternsMore`. An index with no copy of the nodes prints no line. 26 components are named by at least one node; the longest packet stays under 40 lines.
+
+---
+
 ## [1.42.2] - 2026-11-25
 
 ### Fixed

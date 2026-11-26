@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load, build, run, wordRe, serialize, groupOf, INDEX_REL } from "./retrieval.mjs";
-import { resolve, main, loadAll, groupPacket } from "./query.mjs";
+import { resolve, main, loadAll, groupPacket, componentPacket } from "./query.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(here, "..", "..");
@@ -375,4 +375,48 @@ test("ids are one id in any case, and one file name is one group", () => {
   assert.ok(has(problemsOf(s), /has the same file name; --group could not tell them apart/));
   s = fresh(); for (const n of s.patterns.nodes) if (/table-list/.test(n.source_file)) n.source_file = n.source_file.replace(/\//g, "\\");
   assert.deepEqual(problemsOf(s), [], "the same file written with backslashes is still one group");
+});
+
+test("component packets point to the PATH nodes that name the component", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const sheet = main(["Sheet"], all).out;
+  assert.match(sheet, /^patterns   .*PATH-B-ROW-OPEN/m, "Sheet leads to the row-open rule that holds DS-PANEL-003");
+  assert.equal(JSON.parse(main(["Sheet", "--json"], all).out).patterns.includes("PATH-B-ROW-OPEN"), true);
+  // A common name is capped on one line and says how many it left out.
+  const dialog = main(["Dialog"], all).out.split("\n").filter((l) => l.startsWith("patterns"));
+  assert.equal(dialog.length, 1);
+  assert.match(dialog[0], /\(\+\d+ more\)/);
+  const dp = JSON.parse(main(["Dialog", "--json"], all).out);
+  const total = Object.values(all.index.patterns).filter((n) => /(?<![A-Za-z0-9])Dialog(?![A-Za-z0-9])/.test(`${n.condition} ${n.outcome}`)).length;
+  assert.equal(dp.patterns.length, 6, "the cut is at 6 ids");
+  assert.equal(dp.patternsMore, total - 6, "the count of the rest is the total minus the 6 shown");
+  assert.match(dialog[0], new RegExp(`\\(\\+${total - 6} more\\)`));
+});
+
+test("the patterns line matches whole component names only, in the same case", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const fake = { ...all, index: structuredClone(all.index) };
+  fake.index.patterns = {
+    "PATH-X-1": { kind: "decision", name: "x", group: "x", condition: "Sheets and sheet are not the component", outcome: "Use the Sheetlike thing", builds_on: [] },
+    "PATH-X-2": { kind: "decision", name: "x", group: "x", condition: "Open a Sheet", outcome: "(Sheet)", builds_on: [] },
+    "PATH-X-3": { kind: "decision", name: "x", group: "x", condition: "A BottomSheet or NativeSheet", outcome: "2Sheet and Sheet2", builds_on: [] },
+  };
+  const p = JSON.parse(main(["Sheet", "--json"], fake).out);
+  assert.deepEqual(p.patterns, ["PATH-X-2"], "'Sheets', 'sheet', 'Sheetlike', 'BottomSheet' and '2Sheet' do not count");
+  // An id with a regex character in it must not break the match or crash.
+  const odd = { ...fake, index: structuredClone(fake.index) };
+  odd.index.components.push({ ...odd.index.components.find((c) => c.id === "Sheet"), id: "A+B(" });
+  assert.deepEqual(componentPacket(odd, "A+B(").patterns, [], "an id with regex characters does not throw or match everything");
+  odd.index.patterns["PATH-X-4"] = { kind: "decision", name: "x", group: "x", condition: "Use A+B( here", outcome: "ok", builds_on: [] };
+  odd.index.patterns["PATH-X-5"] = { kind: "decision", name: "x", group: "x", condition: "Use AAB( here", outcome: "ok", builds_on: [] };
+  assert.deepEqual(componentPacket(odd, "A+B(").patterns, ["PATH-X-4"], "the id is matched as written, not as a pattern");
+});
+
+test("a component packet from an index with no PATH copy has no patterns line", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const old = { ...all, index: { ...all.index } };
+  delete old.index.patterns;
+  const r = main(["Sheet"], old);
+  assert.equal(r.code, 0);
+  assert.doesNotMatch(r.out, /^patterns /m);
 });
