@@ -9,6 +9,13 @@ Run 26 Nov 2026, three rounds. Round 1 used the original hint; round 2 used the 
 - Quality (`quality.mjs` port, 45 tasks x 2 arms x 3 samples, 270 calls): retrieval pass rate 0.896 vs skills 0.852, so `retrieval >= skills` holds. 0 errors in either arm.
 - Limits of the claim: this is one model on one harness, with tokens `n/a` and no enforced query-only rule (see below). The quality margin is 6 samples out of 135 and is not a measured improvement; read it as "no loss". Workstream D (thinning `SKILL.md`) is the next step, and it is not started.
 
+**Round 4 (after the lookalike changes: `LOOKALIKE-001` and `LOOKALIKE-012` linked to component packets, `LOOKALIKE-013` added, strip and footer on `--jobs`, scanner span fix). Held fails on one row; adversarial and the targeted quality rerun pass.**
+
+- Held (`2026-11-26-held-retrieval-v3.json`): recall 0.967 (29 of 30 full), packets 0 of 123 over 40, `query_calls.median` 4, retrieval above skills (0.833). `GATE: fail` on one check: HELD-10 sample 2 does not name `JOB-CHOOSE-FROM-LIST`. That sample ran `--jobs`, opened only `JOB-ANSWER-SCALE-OR-RANK`, and answered with a two-thumb Slider. The right answer (RangeSlider) is in the `JOB-CHOOSE-FROM-LIST` bullet. HELD-10 sample 3 also answered Slider but named the job from the Slider packet, so the scorer counted it. Only HELD-10 sample 1 answered RangeSlider. Round 2 passed this row 3 of 3 on an earlier index, so it is a model-run difference, not a regression in the files. I did not change the index for it: the row is held-out, and a fix aimed at it would make the held set a training set.
+- Adversarial (`2026-11-26-adv-retrieval-v4.json`): recall 1.000 over 27 scored samples, packets 0 of 148 over 40 (max 40, median 15), `query_calls.median` 5, ADV-07 and ADV-10 checks pass 3 of 3, ADV-09 read pass. `GATE: pass`.
+- Quality rerun of the two tasks that bypassed `--jobs` (`2026-11-26-quality-rerun-hp06-lp05c-table-link.json`, 3 samples each, after `LOOKALIKE-012` was linked to Table, Checkbox and List): 6 of 6 pass. Before the link, HP-06 passed 1 of 3 and LP-05c 2 of 3.
+- The full 270-call quality run was not repeated; the earlier rescored result (retrieval 0.896 vs skills 0.852) stands, and the changed index is only checked on these tasks.
+
 Round 1 (original hint) failed: held 0.900, adversarial 0.852. Those files stay in this folder as the before.
 
 ## Read this first: which harness produced these
