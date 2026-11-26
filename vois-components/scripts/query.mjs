@@ -180,14 +180,14 @@ export function patternsList(all) {
   };
 }
 
-/** Every PATH node from one pattern file. A group of more than 40 lines is cut to 40 unless full is set, and says so. */
+/** Every PATH node from one pattern file. The text packet stays within 40 lines (a header, at most 38 nodes, and a cutoff line) unless full is set. */
 export function groupPacket(all, name, { full = false } = {}) {
   const nodes = pathNodes(all.index);
   const known = [...new Set(nodes.map((n) => n.group))].sort(byText);
   const hit = known.find((g) => norm(g) === norm(name || ""));
   if (!hit) return { kind: "group", state: "no_match", query: name, known };
   const inGroup = nodes.filter((n) => n.group === hit);
-  const rows = full ? inGroup : inGroup.slice(0, 40);
+  const rows = full ? inGroup : inGroup.slice(0, 38);
   return { kind: "group", state: "match", group: hit, total: inGroup.length, rows: rows.map((n) => ({ id: n.id, kind: n.kind, name: n.name, condition: n.condition })) };
 }
 
