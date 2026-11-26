@@ -53,14 +53,22 @@ Held skills arm (round 1, not rerun): mean 0.833. Missed: HELD-01 `DS-A11Y-020` 
 
 Search sweeps: ADV-08 s2 (192 files) and HELD-09 s3 (29 files) ran a text search or listing over `skills/`. The harness now excludes bursts of 20 or more opens inside one second from `file_paths` and records them as `search_sweep_files`, so the card check no longer fires on them. Round 1 files were recollected from the same raw data with this rule (two ADV-08 sweeps of 192 files). Opens of directories outside the run directories (the watcher's own start-up scan) are not counted as outside opens.
 
+## After the private fix (vois-skills PR 147), ADV-02 rerun
+
+The private change (`PATH-TABLE-BULK-DESTRUCTIVE` builds on `PATH-TABLE-BULK-BAR`, names AlertDialog; vois-patterns 1.23.7, vois-components 1.44.3) was ported by applying the PR's diff, bumping versions by hand where `skills.json`, the README and `SKILL.md` differed from the private base, and rebuilding `vois-components/data/retrieval-index.json` with `retrieval.mjs --write`. The rebuilt index equals the PR's index hunk. Offline checks pass: `retrieval.mjs`, `retrieval.test.mjs`, `check-rule-sync`, `check-verification`, `validate-skills`, `check-routing`, `check-skill-paths`, `check-reference-files`, `check-scenarios`, the eval tests (226 pass), `port-from-private.test`.
+
+`JOB-CONFIRM-DESTRUCTIVE`'s packet is unchanged at 12 lines and does not list `PATH-TABLE-BULK-BAR`. The bar is reached in two hops, through `--id PATH-TABLE-BULK-DESTRUCTIVE`.
+
+ADV-02, 3 samples, retrieval arm, Cursor subagent harness, hint v2 (`2026-11-26-adv02-after-fix.json`): recall 1.000, all three samples name `PATH-TABLE-BULK-BAR`, query calls 5 to 7, no card or SKILL.md opened, 0 of 18 packets over 40 lines. Before the fix it missed in 3 of 3. This is ADV-02 only: the other adversarial scenarios were not rerun, because the index change touches one rule. A full adversarial rerun with the quality run will give the single adversarial number for the gate.
+
 ## Decisions from Om (26 Nov) and what was done
 
 | decision | Om's choice | status |
 |---|---|---|
 | ADV-09 | pass | recorded; the v2 gate run uses `--read ADV-09=pass` |
 | Shorthand ids | edit the hint, keep the scorer strict | done: `REPORT_ID_HINT` in `baseline.mjs`, added to the retrieval arm of the decide-only prompt (not to `quality.mjs`). Its example ids are invented and are not real rule ids, so it names no answer. Rerun: held 0.900 to 1.000, adversarial 0.852 to 0.944 |
-| ADV-02 `PATH-TABLE-BULK-BAR` | add it to `builds_on` of `PATH-TABLE-BULK-DESTRUCTIVE`, keep the required id | **not done: the source is the private `ommakes/vois-skills` repo, which I can only read.** Someone with write access makes the change, then `port-from-private.mjs` and `retrieval.mjs --write`; then rerun ADV-02 (3 samples is enough to see it) |
-| "Dialog" vs AlertDialog in `PATH-TABLE-BULK-DESTRUCTIVE` | fix the text | **not done, same reason.** Change "Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE)" to name AlertDialog for irreversible bulk actions. All six ADV-02 and ADV-10 round 2 reports chose AlertDialog, so the wording did not change an answer, but it is still a conflict in the packet |
+| ADV-02 `PATH-TABLE-BULK-BAR` | add it to `builds_on` of `PATH-TABLE-BULK-DESTRUCTIVE`, keep the required id | done in the private repo (PR 147, another worker) and ported here; ADV-02 rerun passes 3 of 3 (see above) |
+| "Dialog" vs AlertDialog in `PATH-TABLE-BULK-DESTRUCTIVE` | fix the text | done in the same PR and ported. All six ADV-02 and ADV-10 round 2 reports chose AlertDialog, so the wording did not change an answer, but it is still a conflict in the packet |
 | Card check on ADV-08 | treat as artifact, tighten the harness | done (sweep rule above, with a test) |
 | Which harness is the claim | Cursor subagent, after adding token capture and query-only enforcement | **partly blocked.** Neither can be added from inside a Cursor subagent: the Task tool returns text only, with no token counts, and there is no hook on its shell tool. What exists: every `query.mjs` call and file open is measured. Not available: tokens, cost, other Bash and search counts, an enforced query-only rule. If Cursor exposes token usage or a command hook for subagents, `collect` can read it; until then the table says `n/a` |
 | Push | grant cursor[bot] write access | waiting on the grant. Push still returns 403 |

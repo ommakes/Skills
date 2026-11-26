@@ -1,0 +1,286 @@
+{
+  "model": "claude-sonnet-5-5-medium",
+  "harness": "cursor-subagent",
+  "harness_note": "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.",
+  "samples_per_scenario": 3,
+  "skills": [
+    "vois-patterns",
+    "vois-components",
+    "vois-tokens",
+    "vois-dataviz",
+    "righter"
+  ],
+  "arm": "retrieval",
+  "outside_opens": [],
+  "rows": [
+    {
+      "scenario": "ADV-02",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 6,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          17,
+          4,
+          4,
+          21
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-DISPLAY-DATA",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-BAR",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A Table with row selection and a bulk action bar (selected count, clear-selection, destructive action last), where Delete opens an AlertDialog that states the count (e.g. \"Delete 30 entries?\"); if the removal can be undone, skip the dialog and use a Toast with undo instead.\n2. Looked up: --jobs, JOB-CONFIRM-DESTRUCTIVE, JOB-DISPLAY-DATA, PATH-TABLE-BULK-DESTRUCTIVE, PATH-TABLE-BULK-BAR, AlertDialog component; rule ids relied on: PATH-TABLE-BULK-DESTRUCTIVE, PATH-TABLE-BULK-BAR, DS-A11Y-019, DS-A11Y-020.\n3. Nothing, except it is not stated whether the removal is undoable (decides AlertDialog vs Toast with undo) or how large the list is (Table vs DataTable)."
+    },
+    {
+      "scenario": "ADV-02",
+      "sample": 2,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 7,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          4,
+          4,
+          4,
+          4,
+          21
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-NARROW-SELECT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-BAR",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-SELECT-CHECKBOX",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A table with a leading checkbox column and a bulk action bar (selected count, destructive \"Delete\" last), where Delete opens an AlertDialog that states the count (e.g. \"Delete 30 entries?\") with Cancel focused first; if the removal can be undone, skip the dialog and use a Toast with undo instead.\n2. JOB-CONFIRM-DESTRUCTIVE, PATH-TABLE-BULK-DESTRUCTIVE, PATH-TABLE-NARROW-SELECT, PATH-TABLE-BULK-BAR, PATH-TABLE-SELECT-CHECKBOX, AlertDialog component (DS-A11Y-019, DS-A11Y-020, DS-A11Y-021, DS-A11Y-022, DS-COMPONENT-001, DS-MODAL-003, DS-MODAL-004, DS-MODAL-007), DS-A11Y-017, JOB-DISPLAY-DATA, JOB-TRANSIENT-FEEDBACK, JOB-EXPOSE-ACTIONS, JOB-BINARY-PREFERENCE, JOB-OVERLAY-INTERACTION, LOOKALIKE-006, LOOKALIKE-009, PATH-B-ROW-ACTIONS\n3. Nothing, except it is not stated whether the removal is undoable, so I covered both the AlertDialog and the Toast-with-undo branch."
+    },
+    {
+      "scenario": "ADV-02",
+      "sample": 3,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          26,
+          12,
+          4,
+          21,
+          4
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-TABLE-BULK-BAR",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A bulk action bar on the table (selected count, clear-selection, destructive action last) that opens an AlertDialog stating the count (e.g. \"Delete 30 entries?\") before deleting; if the removal is undoable, skip the dialog and use a Toast with undo instead.\n2. query.mjs --jobs, --job JOB-CONFIRM-DESTRUCTIVE, --id PATH-TABLE-BULK-DESTRUCTIVE, AlertDialog component; ids relied on: JOB-CONFIRM-DESTRUCTIVE, PATH-TABLE-BULK-DESTRUCTIVE, PATH-TABLE-BULK-BAR, DS-A11Y-019, DS-A11Y-020.\n3. Nothing, except it is not stated whether the cleanup is reversible, which decides AlertDialog versus undo toast."
+    }
+  ],
+  "summary": {
+    "samples": 3,
+    "errored": 0,
+    "cost_usd": {
+      "total": 0,
+      "median": 0
+    },
+    "total_in_tokens": {
+      "median": null,
+      "max": 0
+    },
+    "output_tokens": {
+      "median": null
+    },
+    "turns": {
+      "median": 0
+    },
+    "read_calls": {
+      "median": 0,
+      "max": 0
+    },
+    "search_calls": {
+      "median": null
+    },
+    "query_calls": {
+      "median": 6
+    },
+    "other_bash_attempts": {
+      "total": 0
+    },
+    "packet_lines": {
+      "count": 18,
+      "median": 12,
+      "max": 26,
+      "over_40": 0
+    },
+    "rule_recall": {
+      "samples": 3,
+      "mean": 1,
+      "full": 3
+    },
+    "files_read": {
+      "median": 0
+    },
+    "skill_tokens_est": {
+      "median": null,
+      "max": 0
+    },
+    "auto_match_rate": null
+  }
+}
