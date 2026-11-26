@@ -250,7 +250,7 @@ export function drift({ publicRoot, privateRoot, config = {}, skills }) {
     if (!pub || !priv) { result.errors.push(`${tree}/: cannot list tracked files (is each side a git checkout?)`); continue; }
     for (const f of new Set([...pub.keys(), ...priv.keys()])) {
       const a = join(publicRoot, f), b = join(privateRoot, f);
-      if (!pub.has(f) || !priv.has(f) || pub.get(f) !== priv.get(f) || !existsSync(a) || !existsSync(b) || !same(a, b)) result.shared.push(f);
+      if (pub.get(f) !== priv.get(f) || !existsSync(a) || !existsSync(b) || !same(a, b)) result.shared.push(f);
     }
   }
   const names = skills ?? cfg.STANDALONE_SKILLS;
