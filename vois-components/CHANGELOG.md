@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.42.1] - 2026-11-25
+
+### Fixed
+- **`DatePicker` now leads to `DateInput`.** In Phase 2 re-run 3, two of three samples for HELD-09 (a date of birth field) looked up `DatePicker`, got a packet with no job and no note, and answered with a calendar picker. `DatePicker` now has a note that says it is not a separate component and points to `DateInput`, and it lists `JOB-ACCEPT-TEXT`. The `JOB-ACCEPT-TEXT` date branch names "DatePicker or date picker" so the job also shows for that search word.
+
+---
+
 ## [1.42.0] - 2026-11-25
 
 ### Added

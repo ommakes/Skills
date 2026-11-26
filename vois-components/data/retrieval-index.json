@@ -1327,14 +1327,17 @@
       "status": "compose",
       "registry": null,
       "card": null,
-      "jobs": [],
+      "jobs": [
+        "JOB-ACCEPT-TEXT"
+      ],
       "rules": [],
       "lookalikes": [],
       "composedFrom": [
         "Popover",
         "Calendar",
         "Input"
-      ]
+      ],
+      "note": "DatePicker is not a separate component. Use DateInput: a text Input that accepts a typed date, plus a calendar button that opens a Popover with the Calendar. A date range uses the range variant. Rules: JOB-ACCEPT-TEXT. Value rules: the `date` field type in vois-fields."
     },
     {
       "id": "Dialog",
