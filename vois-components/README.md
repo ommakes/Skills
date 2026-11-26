@@ -109,7 +109,7 @@ The packet reads `data/retrieval-index.json`, which `scripts/retrieval.mjs --wri
 
 ## Version
 
-**v1.42.1** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
+**v1.42.2** — Works standalone; MCP telemetry calls (`vois_record_component_choice`, `vois_report_pattern_gap`) are optional.
 
 ## Questions?
 

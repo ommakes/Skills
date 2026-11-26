@@ -152,7 +152,7 @@
       "number": 2,
       "title": "Show transient feedback after a user action",
       "source_file": "vois-components/SKILL.md",
-      "framing": "The user did something and the UI needs to acknowledge it.",
+      "framing": "The user did something and the UI needs to acknowledge it. Also for a message that stays on screen: an error summary for a form or section, a warning, or an outage notice.",
       "decision_tree": [
         { "condition": "Pure acknowledgment, no action required (saved, copied, sent)", "recommendation": "Toast" },
         { "condition": "User needs to act on the message before continuing", "recommendation": "Alert (inline, persistent until dismissed)" },
