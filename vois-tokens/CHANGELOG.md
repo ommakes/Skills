@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.9] - 2026-11-26
+
+### Changed
+- **`DS-A11Y-020` first focus starts on the close button when a destructive dialog has one.** Before, focus always started on Cancel. Now it starts on the close button (the X) if the dialog has one, otherwise on Cancel, and never on the destructive button. The close button must be the first focusable element in the markup. A destructive AlertDialog has no close button, so nothing changes there: Radix still focuses `AlertDialogCancel`. Form dialogs and non-destructive confirmations are unchanged. The registry AlertDialog is left as it is.
+
+---
+
 ## [1.48.8] - 2026-11-26
 
 ### Fixed

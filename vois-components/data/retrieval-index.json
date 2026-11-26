@@ -846,8 +846,7 @@
         {
           "rule": "DS-A11Y-020",
           "via": [
-            "card",
-            "mentions"
+            "card"
           ]
         },
         {
@@ -2994,7 +2993,7 @@
       "category": "DS-A11Y",
       "severity": "required",
       "verification": "judgment",
-      "rule": "First focus in a dialog: Cancel in a destructive AlertDialog (never the destructive button), the first field in a form dialog, the primary action in a confirmation that is not destructive."
+      "rule": "First focus in a dialog: the close button in a destructive dialog that has one, otherwise Cancel (never the destructive button), the first field in a form dialog, the primary action in a confirmation that is not destructive."
     },
     "DS-A11Y-021": {
       "category": "DS-A11Y",
