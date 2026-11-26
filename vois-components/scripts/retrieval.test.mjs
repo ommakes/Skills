@@ -347,6 +347,7 @@ test("a lookalike row reaches the components it lists, not only the one it names
   assert.ok(!build(s).index.components.find((c) => c.id === "Popover").lookalikes.includes("LOOKALIKE-001"), "without the list, Popover is not reached");
   const all = loadAll();
   for (const name of ["Tooltip", "Popover"]) assert.match(main([name], all).out, /LOOKALIKE-001/, `${name} packet`);
+  for (const name of ["Table", "Checkbox", "List"]) assert.match(main([name], all).out, /LOOKALIKE-012/, `${name} packet carries the avatar lookalike`);
 });
 
 test("query: --jobs ends with every lookalike row in one line each, and stays under 41 lines", () => {

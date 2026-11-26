@@ -1208,9 +1208,17 @@
           "via": [
             "mentions"
           ]
+        },
+        {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Collapsible",
@@ -1871,13 +1879,21 @@
       ],
       "rules": [
         {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-TAILWIND-005",
           "via": [
             "mentions"
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Listbox",
@@ -2602,6 +2618,12 @@
       ],
       "rules": [
         {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-TABLE-001",
           "via": [
             "category"
@@ -2717,7 +2739,9 @@
           ]
         }
       ],
-      "lookalikes": []
+      "lookalikes": [
+        "LOOKALIKE-012"
+      ]
     },
     {
       "id": "Tabs",
