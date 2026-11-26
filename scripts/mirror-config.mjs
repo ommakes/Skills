@@ -9,6 +9,10 @@ export const SHARED_CODE = [
   "vois-tokens/scripts/jsx-tags.mjs",
   "vois-tokens/scripts/css-blocks.mjs",
   "vois-tokens/scripts/grid-checks.mjs",
+  // The ESLint plugin carries its own copy of the skill version, so a version bump has to reach it in both repos.
+  "vois-tokens/eslint-plugin/index.mjs",
+  "vois-tokens/eslint-plugin/index.test.mjs",
+  "vois-tokens/eslint-plugin/package.json",
   // The retrieval pilot (prds/jit-retrieval.md): one build path, so both repos ship the same index and query tool.
   // The index is generated from the rule files checked below, so it matching here also means the links match.
   "vois-components/scripts/retrieval.mjs",
