@@ -129,6 +129,22 @@ test("a file with allowed wording differences is never copied over", () => {
   for (const d of [pub, priv]) rmSync(d, { recursive: true });
 });
 
+test("an allowed file listed as shared code is not copied either", () => {
+  const { pub, priv } = pair({ pub: { "s/scripts/a.mjs": "public wording" } });
+  const cfg = { ...CFG, ALLOWED: { "s/scripts/a.mjs": { $top: ["x"] } } };
+  const r = port({ publicRoot: pub, privateRoot: priv, config: cfg });
+  assert.equal(rd(pub, "s/scripts/a.mjs"), "public wording");
+  assert.match(r.warnings.join(), /s\/scripts\/a\.mjs: carries allowed wording/);
+  for (const d of [pub, priv]) rmSync(d, { recursive: true });
+});
+
+test("a changelog entry the public file already has is not added again, even above the public skill version", () => {
+  const pub = LOG("1.2.0", "1.0.0"), priv = LOG("1.2.0", "1.1.0", "1.0.0");
+  const r = mergeChangelog(pub, priv, "1.0.0");
+  assert.deepEqual(r.added, ["1.1.0"]);
+  assert.deepEqual(changelogEntries(r.text).map((e) => e.version).sort(), ["1.0.0", "1.1.0", "1.2.0"]);
+});
+
 test("rule files are equal by content, not by bytes or key order", () => {
   const a = JSON.stringify({ rules: [{ id: "R-1", a: 1, b: [1, 2] }] });
   const b = JSON.stringify({ rules: [{ b: [1, 2], a: 1, id: "R-1" }] }, null, 2);
