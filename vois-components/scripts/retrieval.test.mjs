@@ -361,6 +361,15 @@ test("query: --jobs ends with every lookalike row in one line each, and stays un
   assert.equal(JSON.parse(main(["--jobs", "--json"], all).out).lookalikes.length, Object.keys(all.index.lookalikes).length);
 });
 
+test("LOOKALIKE-013 (palette class for status) is in the Table, Checkbox and List packets as well as Badge and Alert, and each stays within 40 lines", () => {
+  const all = loadAll();
+  for (const name of ["Table", "Checkbox", "List", "Badge", "Alert"]) {
+    const out = main([name], all).out;
+    assert.match(out, /LOOKALIKE-013/, `${name} packet carries the status-color lookalike`);
+    assert.ok(out.trimEnd().split("\n").length <= 40, `${name} packet is within 40 lines`);
+  }
+});
+
 test("LOOKALIKE-014 (a hand-built pill chip) is in the --jobs strip and in the Badge packet, and names Badge as the fix", () => {
   const all = loadAll();
   const row = all.index.lookalikes["LOOKALIKE-014"];

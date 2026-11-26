@@ -1229,6 +1229,24 @@
           ]
         },
         {
+          "rule": "DS-COLOR-002",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-008",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-009",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-COMPONENT-001",
           "via": [
             "lookalike"
@@ -1236,7 +1254,8 @@
         }
       ],
       "lookalikes": [
-        "LOOKALIKE-012"
+        "LOOKALIKE-012",
+        "LOOKALIKE-013"
       ]
     },
     {
@@ -1898,6 +1917,24 @@
       ],
       "rules": [
         {
+          "rule": "DS-COLOR-002",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-008",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-009",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-COMPONENT-001",
           "via": [
             "lookalike"
@@ -1911,7 +1948,8 @@
         }
       ],
       "lookalikes": [
-        "LOOKALIKE-012"
+        "LOOKALIKE-012",
+        "LOOKALIKE-013"
       ]
     },
     {
@@ -2637,6 +2675,24 @@
       ],
       "rules": [
         {
+          "rule": "DS-COLOR-002",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-008",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
+          "rule": "DS-COLOR-009",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-COMPONENT-001",
           "via": [
             "lookalike"
@@ -2759,7 +2815,8 @@
         }
       ],
       "lookalikes": [
-        "LOOKALIKE-012"
+        "LOOKALIKE-012",
+        "LOOKALIKE-013"
       ]
     },
     {
