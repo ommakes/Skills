@@ -108,7 +108,10 @@ export const WORDING_SWAPS = {
 export function ruleFileEquivalent(rel, publicText, privateText, allowed = ALLOWED) {
   const allow = allowed[rel] ?? {};
   let priv = privateText;
-  for (const [from, to] of WORDING_SWAPS[rel] ?? []) priv = priv.replace(from, to);
+  for (const [from, to] of WORDING_SWAPS[rel] ?? []) {
+    if (priv.split(from).length - 1 !== 1) return false; // the swap must hit exactly once, as check-mirror requires
+    priv = priv.replace(from, to);
+  }
   let pub, prv;
   try { pub = JSON.parse(publicText); prv = JSON.parse(priv); } catch { return false; }
   if (allow.$top) return JSON.stringify(canonical(withoutFields(pub, allow.$top))) === JSON.stringify(canonical(withoutFields(prv, allow.$top)));
@@ -118,8 +121,17 @@ export function ruleFileEquivalent(rel, publicText, privateText, allowed = ALLOW
   for (const [id, x] of a) {
     const y = b.get(id);
     if (!y) return false;
-    const f = allow[id] ?? [];
+    const f = Object.hasOwn(allow, id) ? allow[id] : [];
     if (JSON.stringify(canonical(withoutFields(x, f))) !== JSON.stringify(canonical(withoutFields(y, f)))) return false;
   }
   return true;
+}
+
+/** True when the text is JSON whose ids are all unique: the shape a rule file must have before it is copied. */
+export function validRuleFile(text) {
+  try {
+    const dupes = [];
+    collectById(JSON.parse(text), new Map(), "", dupes);
+    return dupes.length === 0;
+  } catch { return false; }
 }

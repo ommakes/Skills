@@ -182,3 +182,59 @@ test("drift names differing prose files and one-sided files, and flags shared fi
 });
 function await_git() { return { execFileSync: (...a) => import_exec(...a) }; }
 import { execFileSync as import_exec } from "node:child_process";
+
+test("a private file that is not a regular file is an error and nothing is written", () => {
+  const { pub, priv } = pair({ priv: { "reg/link": "/etc/hostname" } });
+  const tracked = (root) => new Map(root === priv ? [["reg/link", "120000"]] : []);
+  const r = port({ publicRoot: pub, privateRoot: priv, config: { ...CFG, MIRRORED_TREES: ["reg"], trackedFiles: tracked } });
+  assert.match(r.errors.join(), /reg\/link: is not a regular file in private \(git mode 120000\)/);
+  assert.equal(existsSync(join(pub, "reg/link")), false);
+  assert.equal(rd(pub, "s/scripts/a.mjs"), "old", "an error stops every write, not only the bad one");
+  for (const d of [pub, priv]) rmSync(d, { recursive: true });
+});
+
+test("a malformed private rule file, or one with a duplicate id, is never copied", () => {
+  for (const bad of ["{bad", JSON.stringify({ rules: [{ id: "R-1" }, { id: "R-1" }] })]) {
+    const { pub, priv } = pair({ priv: { "s/data/rules.json": bad } });
+    const before = rd(pub, "s/data/rules.json");
+    const r = port({ publicRoot: pub, privateRoot: priv, config: CFG });
+    assert.match(r.errors.join(), /not valid JSON or has a duplicate id/);
+    assert.equal(rd(pub, "s/data/rules.json"), before);
+    for (const d of [pub, priv]) rmSync(d, { recursive: true });
+  }
+});
+
+test("a wording swap that does not hit exactly once is not equivalent, and an id like toString does not crash", () => {
+  const swapRel = "vois-dataviz/data/review-checklist.json";
+  const text = (n) => JSON.stringify({ description: "d", note: Array(n).fill("what to fix first. Call vois_record_rule_usage for the rule ids that drove changes.").join(" ") });
+  const pubText = JSON.stringify({ note: "what to fix first. If the vois_record_rule_usage tool is available, call it for the rule ids that drove changes." });
+  const allowed = { [swapRel]: { $top: ["description"] } };
+  assert.equal(ruleFileEquivalent(swapRel, pubText, text(1), allowed), true);
+  assert.equal(ruleFileEquivalent(swapRel, pubText, text(0), allowed), false, "no hit");
+  assert.equal(ruleFileEquivalent(swapRel, pubText, text(2), allowed), false, "two hits");
+  const r = JSON.stringify({ rules: [{ id: "toString", a: 1 }, { id: "constructor", a: 2 }] });
+  assert.equal(ruleFileEquivalent("x.json", r, r, {}), true);
+  assert.equal(ruleFileEquivalent("x.json", r, r.replace('"a":1', '"a":9'), {}), false);
+});
+
+test("changelog: a repeated version, an Unreleased or pre-release heading and CRLF", () => {
+  const pub = LOG("1.0.0");
+  const priv = LOG("1.2.0", "1.2.0", "1.1.0") + "\n## [Unreleased]\n\n- later\n\n---\n\n## [1.3.0-beta.1] - 2026-02-02\n\n- beta\n";
+  const r = mergeChangelog(pub, priv, "1.0.0");
+  assert.deepEqual(r.added, ["1.2.0", "1.1.0"], "each version once, no pre-release");
+  assert.doesNotMatch(r.text, /Unreleased|beta/, "the entries after it are not dragged in");
+  const crlf = mergeChangelog(pub.replace(/\n/g, "\r\n"), priv, "1.0.0");
+  assert.equal(crlf.text.replace(/\r\n/g, "").includes("\n"), false, "every line break stays CRLF");
+});
+
+test("the report flags mirrored-folder differences and a rule file missing in private", () => {
+  const { pub, priv } = pair({ pub: { "reg/a.json": "1" }, priv: { "reg/a.json": "2" } });
+  const tracked = (root) => new Map([["reg/a.json", "100644"]]);
+  const cfg = { ...CFG, MIRRORED_TREES: ["reg"], trackedFiles: tracked };
+  const { execFileSync } = await_git();
+  for (const d of [pub, priv]) { execFileSync("git", ["-C", d, "init", "-q"]); execFileSync("git", ["-C", d, "add", "-A"]); }
+  assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: cfg, skills: ["s"] }).shared.includes("reg/a.json"));
+  rmSync(join(priv, "s/data/rules.json"));
+  assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: cfg, skills: ["s"] }).shared.includes("s/data/rules.json"));
+  for (const d of [pub, priv]) rmSync(d, { recursive: true });
+});

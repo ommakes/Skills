@@ -63,7 +63,7 @@ for (const f of RULE_FILES) {
   for (const [id, pubObj] of pubMap) {
     const privObj = privMap.get(id);
     if (!privObj) continue;
-    const fields = allow[id] ?? [];
+    const fields = Object.hasOwn(allow, id) ? allow[id] : [];
     const a = JSON.stringify(canonical(withoutFields(pubObj, fields)));
     const b = JSON.stringify(canonical(withoutFields(privObj, fields)));
     if (a !== b) problems.push(`${f}: ${id} differs outside the allowed fields`);

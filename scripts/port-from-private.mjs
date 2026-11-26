@@ -19,7 +19,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  SHARED_CODE, RULE_FILES, ALLOWED, MIRRORED_TREES, STANDALONE_SKILLS, trackedFiles, ruleFileEquivalent,
+  SHARED_CODE, RULE_FILES, ALLOWED, MIRRORED_TREES, STANDALONE_SKILLS, trackedFiles, ruleFileEquivalent, validRuleFile,
 } from "./mirror-config.mjs";
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -45,7 +45,7 @@ export function skillVersion(text) {
 
 /** The changelog entries, newest first as written: [{ version, text }]. An entry runs from its `## [x.y.z]` line to the next one. */
 export function changelogEntries(text) {
-  const heads = [...text.matchAll(/^## \[(\d+\.\d+\.\d+)\][^\n]*$/gm)];
+  const heads = [...text.matchAll(/^## \[([^\]\n]*)\][^\n]*$/gm)];
   return heads.map((h, i) => ({ version: h[1], text: text.slice(h.index, i + 1 < heads.length ? heads[i + 1].index : text.length) }));
 }
 
@@ -55,11 +55,17 @@ export function changelogEntries(text) {
  */
 export function mergeChangelog(publicText, privateText, publicVersion) {
   const first = /^## \[\d+\.\d+\.\d+\]/m.exec(publicText);
+  const eol = publicText.includes("\r\n") ? "\r\n" : "\n";
   if (!first) return null;
   const have = new Set(changelogEntries(publicText).map((e) => e.version));
-  const fresh = changelogEntries(privateText).filter((e) => !have.has(e.version) && compareVersions(e.version, publicVersion) === 1);
+  const seen = new Set();
+  const fresh = changelogEntries(privateText).filter((e) => {
+    if (have.has(e.version) || seen.has(e.version) || compareVersions(e.version, publicVersion) !== 1) return false;
+    seen.add(e.version);
+    return true;
+  });
   if (!fresh.length) return { text: publicText, added: [] };
-  const block = fresh.map((e) => e.text.replace(/\s*$/, "\n\n")).join("");
+  const block = fresh.map((e) => e.text.replace(/\r\n/g, "\n").replace(/\s*$/, "\n\n").replace(/\n/g, eol)).join("");
   return { text: publicText.slice(0, first.index) + block + publicText.slice(first.index), added: fresh.map((e) => e.version) };
 }
 
@@ -105,14 +111,16 @@ function ensureDir(file) { mkdirSync(dirname(file), { recursive: true }); }
 export function port({ publicRoot, privateRoot, dryRun = false, config = {} }) {
   const cfg = { SHARED_CODE, RULE_FILES, ALLOWED, MIRRORED_TREES, STANDALONE_SKILLS, trackedFiles, ...config };
   const out = { actions: [], warnings: [], errors: [] };
-  const write = (rel, text) => { if (!dryRun) { ensureDir(join(publicRoot, rel)); writeFileSync(join(publicRoot, rel), text); } };
+  // Nothing is written until the whole plan is made and has no error, so a failure never leaves half a port.
+  const pending = new Map();
+  const write = (rel, data) => { pending.set(rel, data); };
 
   // 1. Shared files.
   const copy = (rel) => {
     const pub = join(publicRoot, rel), priv = join(privateRoot, rel);
     if (!existsSync(priv)) { out.errors.push(`${rel}: missing in private`); return; }
     if (existsSync(pub) && same(pub, priv)) return;
-    if (!dryRun) { ensureDir(pub); writeFileSync(pub, readFileSync(priv)); }
+    write(rel, readFileSync(priv));
     out.actions.push(`copy ${rel}`);
   };
   const equivalent = (rel) => {
@@ -124,6 +132,7 @@ export function port({ publicRoot, privateRoot, dryRun = false, config = {} }) {
     copy(rel);
   }
   for (const rel of cfg.RULE_FILES) {
+    if (existsSync(join(privateRoot, rel)) && !validRuleFile(read(join(privateRoot, rel)))) { out.errors.push(`${rel}: private copy is not valid JSON or has a duplicate id, not copied`); continue; }
     if (equivalent(rel)) continue;
     if (Object.hasOwn(cfg.ALLOWED, rel)) { handMerge(rel); continue; }
     copy(rel);
@@ -137,7 +146,10 @@ export function port({ publicRoot, privateRoot, dryRun = false, config = {} }) {
   for (const tree of cfg.MIRRORED_TREES) {
     const priv = cfg.trackedFiles(privateRoot, tree), pub = cfg.trackedFiles(publicRoot, tree);
     if (!priv) { out.errors.push(`${tree}/: cannot list tracked files in private (is it a git checkout?)`); continue; }
-    for (const rel of priv.keys()) copy(rel);
+    for (const [rel, mode] of priv) {
+      if (mode !== "100644" && mode !== "100755") { out.errors.push(`${rel}: is not a regular file in private (git mode ${mode}), not copied`); continue; }
+      copy(rel);
+    }
     if (pub) for (const rel of pub.keys()) if (!priv.has(rel)) out.warnings.push(`${rel}: is in public only. Delete it by hand if private removed it.`);
   }
 
@@ -192,6 +204,9 @@ export function port({ publicRoot, privateRoot, dryRun = false, config = {} }) {
   }
   if (pubJson !== null) write("skills.json", pubJson);
   if (editions !== null) write("figma-editions/README.md", editions);
+  if (!dryRun && !out.errors.length) {
+    for (const [rel, data] of pending) { ensureDir(join(publicRoot, rel)); writeFileSync(join(publicRoot, rel), data); }
+  }
   return out;
 }
 
@@ -222,6 +237,22 @@ export function drift({ publicRoot, privateRoot, config = {}, skills }) {
   const compared = new Set([...cfg.SHARED_CODE, ...cfg.RULE_FILES, ...Object.keys(cfg.ALLOWED)]);
   const inTree = (f) => cfg.MIRRORED_TREES.some((t) => f === t || f.startsWith(t + "/"));
   const result = { skills: [], shared: [], errors: [] };
+  // Files check-mirror compares, wherever they live: a missing or differing one is a shared difference.
+  for (const f of [...new Set([...cfg.SHARED_CODE, ...cfg.RULE_FILES, ...Object.keys(cfg.ALLOWED)])]) {
+    const a = join(publicRoot, f), b = join(privateRoot, f);
+    if (!existsSync(a) || !existsSync(b)) { result.shared.push(f); continue; }
+    const isRule = cfg.RULE_FILES.includes(f) || Object.hasOwn(cfg.ALLOWED, f);
+    if (!(isRule ? ruleFileEquivalent(f, read(a), read(b), cfg.ALLOWED) : same(a, b))) result.shared.push(f);
+  }
+  const trackedFn = cfg.trackedFiles ?? trackedFiles;
+  for (const tree of cfg.MIRRORED_TREES) {
+    const pub = trackedFn(publicRoot, tree), priv = trackedFn(privateRoot, tree);
+    if (!pub || !priv) { result.errors.push(`${tree}/: cannot list tracked files (is each side a git checkout?)`); continue; }
+    for (const f of new Set([...pub.keys(), ...priv.keys()])) {
+      const a = join(publicRoot, f), b = join(privateRoot, f);
+      if (!pub.has(f) || !priv.has(f) || pub.get(f) !== priv.get(f) || !existsSync(a) || !existsSync(b) || !same(a, b)) result.shared.push(f);
+    }
+  }
   const names = skills ?? cfg.STANDALONE_SKILLS;
   for (const skill of names) {
     const pub = listFiles(publicRoot, skill), priv = listFiles(privateRoot, skill);
@@ -230,15 +261,12 @@ export function drift({ publicRoot, privateRoot, config = {}, skills }) {
     for (const f of [...new Set([...pub, ...priv])].sort()) {
       if (inTree(f)) continue;
       if (f.endsWith("/CHANGELOG.md")) continue;
+      if (compared.has(f)) continue;
       if (pub.has(f) && !priv.has(f)) { row.publicOnly.push(f); continue; }
       if (!pub.has(f) && priv.has(f)) { row.privateOnly.push(f); continue; }
       const a = join(publicRoot, f), b = join(privateRoot, f);
       if (!existsSync(a) || !existsSync(b) || same(a, b)) continue;
-      if (compared.has(f)) {
-        const isRule = cfg.RULE_FILES.includes(f) || Object.hasOwn(cfg.ALLOWED, f);
-        if (!(isRule && ruleFileEquivalent(f, read(a), read(b), cfg.ALLOWED))) result.shared.push(f);
-        continue;
-      }
+      if (compared.has(f)) continue;
       row.differ.push({ file: f, ...(lineChanges(a, b) ?? { added: null, removed: null }) });
     }
     result.skills.push(row);
