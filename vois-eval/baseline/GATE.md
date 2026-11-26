@@ -1,12 +1,13 @@
 # Phase 2 gate: JIT retrieval
 
-Run 26 Nov 2026, two rounds. Round 1 used the original hint; round 2 used the hint after Om's decision to ask for whole rule ids.
+Run 26 Nov 2026, three rounds. Round 1 used the original hint; round 2 used the hint after Om's decision to ask for whole rule ids; round 3 reran the adversarial set and ran the quality check after the private fix (vois-skills PR 147) was ported.
 
-**Verdict, Cursor-subagent harness, round 2: held retrieval passes; adversarial retrieval fails on one id.**
+**Verdict, Cursor-subagent harness, round 3: every part of the gate passes.**
 
-- Held retrieval: recall 1.000, no HELD id missed on any row, packets and query calls inside the limits. Passes every check.
-- Adversarial retrieval: recall 0.944 (needs 0.95). The only miss is `PATH-TABLE-BULK-BAR` on ADV-02 (3 of 3). It needs a content change in the private repo that I cannot make, see "Decisions from Om".
-- Quality (`quality.mjs`) was not run, so the Phase 2 gate as a whole is not met. Workstream D must not start.
+- Held retrieval (round 2): recall 1.000, no HELD id missed on any row, packets and query calls inside the limits.
+- Adversarial retrieval (round 3, after the port): recall 0.981 over 27 scored samples (needs 0.95). The only miss is `PATH-TABLE-BULK-BAR` on ADV-02 sample 1 (the other two ADV-02 samples name it). `GATE: pass`.
+- Quality (`quality.mjs` port, 45 tasks x 2 arms x 3 samples, 270 calls): retrieval pass rate 0.896 vs skills 0.852, so `retrieval >= skills` holds. 0 errors in either arm.
+- Limits of the claim: this is one model on one harness, with tokens `n/a` and no enforced query-only rule (see below). The quality margin is 6 samples out of 135 and is not a measured improvement; read it as "no loss". Workstream D (thinning `SKILL.md`) is the next step, and it is not started.
 
 Round 1 (original hint) failed: held 0.900, adversarial 0.852. Those files stay in this folder as the before.
 
@@ -26,17 +27,21 @@ Compare files only within the same harness; do not mix these with `baseline.mjs`
 
 ## Gate table
 
-Model for all rows: `claude-sonnet-5-5-medium` (Cursor subagent). Quality pass rate was not run in any row. Round 2 rows use the new `REPORT_ID_HINT` (see below); round 1 rows do not. The skills arm has no retrieval hint and was not rerun.
+Model for all rows: `claude-sonnet-5-5-medium` (Cursor subagent). Round 2 and round 3 rows use the new `REPORT_ID_HINT` (see below); round 1 rows do not. The skills arm has no retrieval hint and was not rerun. Quality pass rates are in the last two rows.
 
 | file | model | arm | samples | rule_recall.mean | query_calls.median | packet_lines.median | packet_lines.over_40 | total_in_tokens.median | pass_rate (quality) | pass |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-26-held-skills.json | claude-sonnet-5-5-medium | skills | 30 | 0.833 | 0 (no query calls) | n/a | n/a | n/a | not run | n/a (comparison arm) |
-| 2026-11-26-held-retrieval.json (round 1, old hint) | claude-sonnet-5-5-medium | retrieval | 30 | 0.900 | 3 | 21 (max 28) | 0 of 98 | n/a | not run | no |
-| **2026-11-26-held-retrieval-v2.json (round 2)** | claude-sonnet-5-5-medium | retrieval | 30 | **1.000** | 4 | 17 (max 28) | 0 of 111 | n/a | not run | **yes** |
-| 2026-11-26-adv-retrieval.json (round 1, old hint) | claude-sonnet-5-5-medium | retrieval | 30 (27 scored; ADV-09 has no ids) | 0.852 | 4 | 18 (max 36) | 0 of 120 | n/a | not run | no |
-| **2026-11-26-adv-retrieval-v2.json (round 2)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.944** | 5 | 14 (max 36) | 0 of 154 | n/a | not run | **no** (ADV-02 only) |
-| 2026-11-26-smoke-retrieval.json | claude-sonnet-5-5-medium | retrieval | 2 | not claimed | 5 | 17 (max 26) | 0 of 10 | n/a | not run | yes (no row has `error`) |
-| quality (`quality.mjs`) | n/a | skills vs retrieval | 0 | n/a | n/a | n/a | n/a | n/a | not run | not run |
+| 2026-11-26-held-skills.json | claude-sonnet-5-5-medium | skills | 30 | 0.833 | 0 (no query calls) | n/a | n/a | n/a | n/a (decide-only) | n/a (comparison arm) |
+| 2026-11-26-held-retrieval.json (round 1, old hint) | claude-sonnet-5-5-medium | retrieval | 30 | 0.900 | 3 | 21 (max 28) | 0 of 98 | n/a | n/a (decide-only) | no |
+| **2026-11-26-held-retrieval-v2.json (round 2)** | claude-sonnet-5-5-medium | retrieval | 30 | **1.000** | 4 | 17 (max 28) | 0 of 111 | n/a | n/a (decide-only) | **yes** |
+| 2026-11-26-adv-retrieval.json (round 1, old hint) | claude-sonnet-5-5-medium | retrieval | 30 (27 scored; ADV-09 has no ids) | 0.852 | 4 | 18 (max 36) | 0 of 120 | n/a | n/a (decide-only) | no |
+| **2026-11-26-adv-retrieval-v2.json (round 2)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.944** | 5 | 14 (max 36) | 0 of 154 | n/a | n/a (decide-only) | **no** (ADV-02 only) |
+| **2026-11-26-adv-retrieval-v3.json (round 3, after PR 147 port)** | claude-sonnet-5-5-medium | retrieval | 30 (27 scored) | **0.981** | 5 | 14 (max 36) | 0 of 146 | n/a | n/a (decide-only) | **yes** |
+| 2026-11-26-smoke-retrieval.json | claude-sonnet-5-5-medium | retrieval | 2 | not claimed | 5 | 17 (max 26) | 0 of 10 | n/a | n/a (decide-only) | yes (no row has `error`) |
+| 2026-11-26-quality-smoke-subagent.json (1 sample) | claude-sonnet-5-5-medium | skills | 45 | n/a | n/a | n/a | n/a | n/a | 0.844 (38 of 45) | n/a (comparison arm) |
+| 2026-11-26-quality-smoke-subagent.json (1 sample) | claude-sonnet-5-5-medium | retrieval | 45 | n/a | 2 to 13 queries (mean 4.78) | n/a | n/a | n/a | 0.844 (38 of 45) | smoke only |
+| **2026-11-26-quality-3sample-subagent.json** | claude-sonnet-5-5-medium | skills | 135 | n/a | n/a | n/a | n/a | n/a | 0.852 | n/a (comparison arm) |
+| **2026-11-26-quality-3sample-subagent.json** | claude-sonnet-5-5-medium | retrieval | 135 | n/a | 5 (2 to 13) | n/a | n/a | n/a | **0.896** | **yes** (>= skills) |
 
 ### Checks, round 2
 
@@ -59,7 +64,59 @@ The private change (`PATH-TABLE-BULK-DESTRUCTIVE` builds on `PATH-TABLE-BULK-BAR
 
 `JOB-CONFIRM-DESTRUCTIVE`'s packet is unchanged at 12 lines and does not list `PATH-TABLE-BULK-BAR`. The bar is reached in two hops, through `--id PATH-TABLE-BULK-DESTRUCTIVE`.
 
-ADV-02, 3 samples, retrieval arm, Cursor subagent harness, hint v2 (`2026-11-26-adv02-after-fix.json`): recall 1.000, all three samples name `PATH-TABLE-BULK-BAR`, query calls 5 to 7, no card or SKILL.md opened, 0 of 18 packets over 40 lines. Before the fix it missed in 3 of 3. This is ADV-02 only: the other adversarial scenarios were not rerun, because the index change touches one rule. A full adversarial rerun with the quality run will give the single adversarial number for the gate.
+ADV-02, 3 samples, retrieval arm, Cursor subagent harness, hint v2 (`2026-11-26-adv02-after-fix.json`): recall 1.000, all three samples name `PATH-TABLE-BULK-BAR`, query calls 5 to 7, no card or SKILL.md opened, 0 of 18 packets over 40 lines. Before the fix it missed in 3 of 3. That was ADV-02 only; the full rerun is in the next section.
+
+## Round 3: full adversarial rerun and the quality check
+
+### Adversarial, all ten scenarios, 3 samples (`2026-11-26-adv-retrieval-v3.json`)
+
+`baseline.mjs --gate 2026-11-26-adv-retrieval-v3.json --read ADV-09=pass`: every check passes, `GATE: pass`. Recall 0.981 over 27 scored samples (26 of 27 full). Packets 0 of 146 over 40 lines (median 14, max 36), `query_calls.median` 5, `errored` 0, no `SKILL.md` or card opened, no search sweep, no open outside the run directories. ADV-07 names `FIELD-SENSITIVE-STORAGE` (3 of 3). ADV-10 names `PATH-TABLE-NARROW-SELECT` or `PATH-TABLE-BULK-DESTRUCTIVE` (3 of 3).
+
+The one miss: ADV-02 sample 1 looked up `PATH-TABLE-BULK-DESTRUCTIVE` (`--id`) and relied on it, but did not name `PATH-TABLE-BULK-BAR` in its report. Samples 2 and 3 name it. The earlier ADV-02-only rerun named it in 3 of 3, so across the six ADV-02 samples after the port it is named 5 of 6. The port did not make this deterministic, and I did not change the repo further.
+
+### Quality, `quality.mjs` ported to the subagent harness (`2026-11-26-quality-3sample-subagent.json`)
+
+How it ran: `subagent-harness.mjs prepare-quality` writes one run directory per task x arm x sample (270 in all: 45 design tasks, `skills` and `retrieval` arms, 3 samples). Each Cursor subagent (`claude-sonnet-5-5-medium`) reads its prompt file and writes `out.tsx`; `collect-quality` scores each file with the same offline `scoreSample` that `quality.mjs` uses. Sample 1 is the earlier 90-call smoke (`quality-smoke-subagent.json`), samples 2 and 3 are the 180 calls run after the port, merged by `collect-quality --root a,b`. `quality-gate` applies the rule `retrieval.pass_rate >= skills.pass_rate`.
+
+| arm | samples | pass_rate | decision_rate | errors | queries |
+|---|---|---|---|---|---|
+| skills | 135 | 0.852 | 0.985 | 0 | n/a |
+| retrieval | 135 | 0.896 | 0.993 | 0 | mean 5.11, median 5, min 2, max 13, none zero |
+
+`quality-gate`: pass (same samples in both arms; 0.896 >= 0.852).
+
+Per task (passes out of 3), only the tasks where the arms differ:
+
+| task | skills | retrieval |
+|---|---|---|
+| LP-06b | 0 | 3 |
+| HP-07 | 0 | 3 |
+| LP-10b | 1 | 3 |
+| HP-04 | 2 | 3 |
+| DT-01 | 0 | 1 |
+| DT-04 | 1 | 2 |
+| LP-05c | 3 | 2 |
+| HP-06 | 3 | 1 |
+| DT-05 | 3 | 2 |
+| HP-10 | 1 | 0 |
+
+Retrieval is better on six tasks and worse on four. The net gain is 6 samples of 135, so treat the result as "retrieval does not lose", not as a measured improvement. HP-06 (3 to 1) and HP-10 (1 to 0) are the tasks to read before thinning `SKILL.md`.
+
+Quality caveats:
+
+- 7 of 135 retrieval samples opened a skill file anyway (DT-06 in all three samples, opening `vois-dataviz/SKILL.md` and its `implementation.md`; LP-07a s2 `tabs.md`; LP-08a s3 `righter/SKILL.md`; HP-01 s3 `vois-components/SKILL.md`; DT-05 s3 `vois-tokens/SKILL.md`). The quality arm's prompt does not forbid it, and the cards rule in the gate applies to the decide-only runs, which opened none.
+- Tokens, cost and turns are `n/a` (the Task tool returns text only). No open outside the run directories other than `.git` reads by the git commands run between batches.
+- Same harness caveats as above: host-project rules visible to the subagent, prompt delivered as a file, query-only access not enforced.
+
+### Cost and size of the quality run
+
+| item | size |
+|---|---|
+| smoke | 90 subagent calls (45 tasks x 2 arms x 1 sample) |
+| gate run | 270 subagent calls in total (180 new plus the smoke as sample 1) |
+| adversarial rerun | 30 subagent calls |
+| tokens, dollars | not measurable on this harness (`n/a`) |
+| wall time | not recorded per run (`duration_ms` is 0) |
 
 ## Decisions from Om (26 Nov) and what was done
 
@@ -71,7 +128,8 @@ ADV-02, 3 samples, retrieval arm, Cursor subagent harness, hint v2 (`2026-11-26-
 | "Dialog" vs AlertDialog in `PATH-TABLE-BULK-DESTRUCTIVE` | fix the text | done in the same PR and ported. All six ADV-02 and ADV-10 round 2 reports chose AlertDialog, so the wording did not change an answer, but it is still a conflict in the packet |
 | Card check on ADV-08 | treat as artifact, tighten the harness | done (sweep rule above, with a test) |
 | Which harness is the claim | Cursor subagent, after adding token capture and query-only enforcement | **partly blocked.** Neither can be added from inside a Cursor subagent: the Task tool returns text only, with no token counts, and there is no hook on its shell tool. What exists: every `query.mjs` call and file open is measured. Not available: tokens, cost, other Bash and search counts, an enforced query-only rule. If Cursor exposes token usage or a command hook for subagents, `collect` can read it; until then the table says `n/a` |
-| Push | grant cursor[bot] write access | waiting on the grant. Push still returns 403 |
+| Quality run blocks the gate | port `quality.mjs` to the subagent harness and run it | done: smoke 90 calls, then 270 for three samples (round 3). Passes |
+| Push | grant cursor[bot] write access | the grant did not reach this VM's token (`push: false`, 403 on every attempt). A separate worker pushes the branch from the patch and bundle in the store folder |
 
 ## Offline results (workstream A, same day)
 
@@ -105,10 +163,9 @@ Static size only. The gate's `packet_lines` counts each packet the model actuall
 
 ## Next steps
 
-1. Someone with write access to `ommakes/vois-skills`: the `builds_on` change for `PATH-TABLE-BULK-BAR` and the AlertDialog text fix above. Then port to the public repo and rerun ADV-02 on this harness; expect adversarial recall to clear 0.95.
-2. Run the quality check (`quality.mjs`, 270 code-writing calls at three samples). It has not run on any harness, and the gate is not met without it.
-3. Grant cursor[bot] write access to `ommakes/Skills` (or name a fork) so the branch can be pushed and the PR opened.
-4. Token counts and query-only enforcement need a harness that can supply them. The `claude -p` runner has both, as one example (needs the `claude` CLI):
+1. Push the branch and open the PR (this VM's token cannot push; a separate worker has the patch and bundle).
+2. With the gate passed: thin `vois-components/SKILL.md`, rerun held-out at 1 sample, then add the `query.mjs` paragraph to vois-loop and vois-router. Not started. Read the HP-06 and HP-10 quality rows first, and decide whether ADV-02 sample 1 (BULK-BAR not named) needs the packet to list the bar directly.
+3. Token counts and query-only enforcement need a harness that can supply them. The `claude -p` runner has both, as one example (needs the `claude` CLI):
 
 ```bash
 MODEL=claude-sonnet-5-5
