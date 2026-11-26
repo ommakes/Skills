@@ -58,7 +58,7 @@ Search sweeps: ADV-08 s2 (192 files) and HELD-09 s3 (29 files) ran a text search
 | decision | Om's choice | status |
 |---|---|---|
 | ADV-09 | pass | recorded; the v2 gate run uses `--read ADV-09=pass` |
-| Shorthand ids | edit the hint, keep the scorer strict | done: `REPORT_ID_HINT` in `baseline.mjs`, added to the retrieval arm of the decide-only prompt (not to `quality.mjs`). Its example ids are invented (`DS-NAME-001`), so it names no answer. Rerun: held 0.900 to 1.000, adversarial 0.852 to 0.944 |
+| Shorthand ids | edit the hint, keep the scorer strict | done: `REPORT_ID_HINT` in `baseline.mjs`, added to the retrieval arm of the decide-only prompt (not to `quality.mjs`). Its example ids are invented and are not real rule ids, so it names no answer. Rerun: held 0.900 to 1.000, adversarial 0.852 to 0.944 |
 | ADV-02 `PATH-TABLE-BULK-BAR` | add it to `builds_on` of `PATH-TABLE-BULK-DESTRUCTIVE`, keep the required id | **not done: the source is the private `ommakes/vois-skills` repo, which I can only read.** Someone with write access makes the change, then `port-from-private.mjs` and `retrieval.mjs --write`; then rerun ADV-02 (3 samples is enough to see it) |
 | "Dialog" vs AlertDialog in `PATH-TABLE-BULK-DESTRUCTIVE` | fix the text | **not done, same reason.** Change "Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE)" to name AlertDialog for irreversible bulk actions. All six ADV-02 and ADV-10 round 2 reports chose AlertDialog, so the wording did not change an answer, but it is still a conflict in the packet |
 | Card check on ADV-08 | treat as artifact, tighten the harness | done (sweep rule above, with a test) |

@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.3] - 2026-11-26
+
+### Changed
+- **The retrieval index carries the `PATH-TABLE-BULK-DESTRUCTIVE` change** (builds on `PATH-TABLE-BULK-BAR`, names AlertDialog). It is rebuilt from `vois-patterns/data/patterns-rules.json`. See the vois-patterns 1.23.7 entry. The `--job JOB-CONFIRM-DESTRUCTIVE` packet is unchanged at 12 lines; `PATH-TABLE-BULK-BAR` is one step further, in the `--id PATH-TABLE-BULK-DESTRUCTIVE` answer.
+
+---
+
 ## [1.44.2] - 2026-11-26
 
 ### Changed

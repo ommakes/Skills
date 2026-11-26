@@ -1887,10 +1887,11 @@
       "source_file": "vois-patterns/references/table-interactions.md",
       "pattern_name": "Bulk destructive actions",
       "condition": "A bulk action deletes, archives, or otherwise cannot be undone cheaply.",
-      "outcome": "Confirm first and state the count. Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.",
+      "outcome": "Confirm first and state the count. Use an AlertDialog (see JOB-CONFIRM-DESTRUCTIVE). If the action can be undone, skip the dialog and offer undo in the confirmation toast instead.",
       "builds_on": [
         "JOB-CONFIRM-DESTRUCTIVE",
-        "JOB-TRANSIENT-FEEDBACK"
+        "JOB-TRANSIENT-FEEDBACK",
+        "PATH-TABLE-BULK-BAR"
       ],
       "basis": "judgment",
       "basis_note": "judgment.",

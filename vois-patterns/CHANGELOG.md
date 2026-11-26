@@ -6,6 +6,13 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.7] - 2026-11-26
+
+### Changed
+- **`PATH-TABLE-BULK-DESTRUCTIVE` builds on `PATH-TABLE-BULK-BAR`, and names AlertDialog.** In the Phase 2 adversarial retrieval run, ADV-02 (bulk delete from a table) missed `PATH-TABLE-BULK-BAR` in 3 of 3 samples, because the rule was not reachable from `JOB-CONFIRM-DESTRUCTIVE`. The rule now lists it in `Builds on`, so `query.mjs --id PATH-TABLE-BULK-DESTRUCTIVE` points at it. The rule also said "Use a Dialog (see JOB-CONFIRM-DESTRUCTIVE)", which conflicted with that job, which picks AlertDialog for an irreversible action. It now says AlertDialog.
+
+---
+
 ## [1.23.6] - 2026-11-25
 
 ### Changed
