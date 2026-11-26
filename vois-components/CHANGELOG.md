@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.5] - 2026-11-26
+
+### Added
+- **`LOOKALIKE-014`: a hand-built pill chip** (a `span` or `div` with `rounded-full` or `rounded-md`, horizontal padding and small text, used as a tag, a category or status label, or a chip holding a name) is now a lookalike row that points at Badge (read-only, with a dismiss button for a removable one, `asChild` for a link). Tier `observed`, verification `judgment`. Seen in 2 of 24 retrieval samples in the two 4-task quality reruns of 2026-11-26, both on DT-05, where no row matched; not seen in the 40 builds of the lookalike pass. The row names Badge, so it reaches the Badge packet (17 lines) and `DS-COMPONENT-001` joins that packet. `SKILL.md` names the case in its lookalikes paragraph.
+
+### Changed
+- **`query.mjs --jobs` carries the 14th strip row inside the 40-line cap.** The job list was exactly 40 lines, so a 14th row would have broken the cap. The "Before you write markup" header now continues the `--patterns` and `--fields` line above it instead of taking a line of its own, and says "any of the shortcuts below" where it said "any of these". Nothing else in the output moved.
+- The lookalikes `description` says `observed` rows come from the lookalike pass or the quality runs, as `LOOKALIKE-013` already did.
+- `data/retrieval-index.json` rebuilt.
+
+---
+
 ## [1.44.4] - 2026-11-26
 
 ### Changed

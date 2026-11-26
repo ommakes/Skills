@@ -992,10 +992,17 @@
           "via": [
             "lookalike"
           ]
+        },
+        {
+          "rule": "DS-COMPONENT-001",
+          "via": [
+            "lookalike"
+          ]
         }
       ],
       "lookalikes": [
-        "LOOKALIKE-013"
+        "LOOKALIKE-013",
+        "LOOKALIKE-014"
       ]
     },
     {
@@ -3550,6 +3557,12 @@
       "short": "Tailwind palette class (bg-green-500, text-red-600) for a status dot, badge or message -> the status role tokens, through Badge or Alert (DS-COLOR-008)",
       "built": "A Tailwind palette class (`bg-green-500`, `text-red-600`) for a status dot, badge or message",
       "instead": "The status role tokens (`--base-positive`, `--bg-negative`, `--text-notice`, `--border-info`, `--icon-positive`), through Badge or Alert (`DS-COLOR-008`)",
+      "verification": "judgment"
+    },
+    "LOOKALIKE-014": {
+      "short": "rounded span or div with px padding as a tag, label or pill chip -> Badge (with a dismiss button if it can be removed)",
+      "built": "A `span` or `div` with `rounded-full` (or `rounded-md`), horizontal padding and small text, used as a tag, a category or status label, or a chip holding a name",
+      "instead": "Badge (the registry's vois-badge if the project has none): read-only for a label, with a dismiss button for a removable one, `asChild` with a link or button if it navigates (`JOB-LABEL-CONTENT`)",
       "verification": "judgment"
     }
   },

@@ -357,7 +357,21 @@ test("query: --jobs ends with every lookalike row in one line each, and stays un
   assert.ok(lines.length <= 40, `--jobs: ${lines.length} lines`);
   for (const id of Object.keys(all.index.lookalikes)) assert.ok(lines.some((l) => l.startsWith(`  ${id.replace("LOOKALIKE-", "")}  `)), id);
   assert.match(out, /Landing, marketing, pricing[^\n]*run --patterns/);
+  assert.match(out, /Before you write markup for any of the shortcuts below[^\n]*\n {2}001 {2}/, "the strip header sits directly above the first row");
   assert.equal(JSON.parse(main(["--jobs", "--json"], all).out).lookalikes.length, Object.keys(all.index.lookalikes).length);
+});
+
+test("LOOKALIKE-014 (a hand-built pill chip) is in the --jobs strip and in the Badge packet, and names Badge as the fix", () => {
+  const all = loadAll();
+  const row = all.index.lookalikes["LOOKALIKE-014"];
+  assert.ok(row, "the row is in the index");
+  assert.match(row.instead, /^Badge\b/);
+  assert.equal(row.verification, "judgment");
+  const badge = main(["Badge"], all).out;
+  assert.match(badge, /LOOKALIKE-014/);
+  assert.ok(badge.split("\n").length <= 40, "Badge packet stays inside the cap");
+  assert.match(main(["--jobs"], all).out, /\n {2}014 {2}[^\n]*Badge/);
+  assert.match(main(["--id", "LOOKALIKE-014"], all).out, /built: .*instead: Badge/s);
 });
 
 test("query: the new packets stay small, and a long group says what it cut", () => {
