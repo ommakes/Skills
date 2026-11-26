@@ -28,7 +28,7 @@ const SKILLS_HINT = "The skills are in ./skills/, one folder each, each starting
 const QUERY_ONLY = /^node skills\/vois-components\/scripts\/query\.mjs(?: (?:--[a-z]+|[A-Za-z0-9_.:-]+))*$/; // same shape as query-only-hook.cjs
 export const QUERY_CMD = "node skills/vois-components/scripts/query.mjs";
 export const RETRIEVAL_ALLOWED = [`Bash(${QUERY_CMD}:*)`];
-const RETRIEVAL_HINT = `To look up a rule, run \`${QUERY_CMD}\` first: \`--jobs\` lists the jobs, \`--job <ID>\` gives a job's decision tree, \`<Component>\` gives the rules for one component, \`--id <ID>\` gives one rule (a \`DS-\`, \`PATH-\` or \`FIELD-\` id). \`--patterns\` lists page and form patterns, \`--group <name>\` lists the nodes of one pattern file, and \`--fields\` lists the form field rules. Run one command per call, with no \`;\`, \`&&\` or pipe.`;
+export const RETRIEVAL_HINT = `To look up a rule, run \`${QUERY_CMD}\` first: \`--jobs\` lists the jobs, \`--job <ID>\` gives a job's decision tree, \`<Component>\` gives the rules for one component, \`--id <ID>\` gives one rule (a \`DS-\`, \`PATH-\` or \`FIELD-\` id). \`--patterns\` lists page and form patterns, \`--group <name>\` lists the nodes of one pattern file, and \`--fields\` lists the form field rules. Run one command per call, with no \`;\`, \`&&\` or pipe.`;
 
 /** The run directory gets a project hook that blocks every Bash command except one plain query.mjs call (see query-only-hook.cjs for why the allow rule alone is not enough). */
 export function installQueryOnlyHook(dir) {
