@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.4] - 2026-11-26
+
+### Changed
+- **`SKILL.md` is thinner (18.0 KB to 14.4 KB).** The two lookalike tables and the 24-row Job Index table are gone. Both were copies of `data/components-rules.json`, which `query.mjs` serves one packet at a time. The lookalikes section is now one paragraph that names the usual cases and points at the data. The Job Index section points at `query.mjs --jobs`, `--job <JOB-ID>` and a component name. Every `references/*.md` file is still named. The behavior card paragraph and the version line are unchanged.
+- **A component packet shows where each job places it** when two or more jobs name it (`query.mjs`, `componentPacket`). Slider now says which of `JOB-ANSWER-SCALE-OR-RANK` and `JOB-CHOOSE-FROM-LIST` takes a numeric range. Found when held-out HELD-10 failed (round 4 of the gate); held now 30 of 30. No index change.
+
+---
+
 ## [1.44.3] - 2026-11-26
 
 ### Changed

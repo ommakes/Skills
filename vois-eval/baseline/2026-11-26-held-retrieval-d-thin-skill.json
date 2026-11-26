@@ -1,0 +1,671 @@
+{
+  "model": "claude-sonnet-5-5-medium",
+  "harness": "cursor-subagent",
+  "harness_note": "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.",
+  "samples_per_scenario": 1,
+  "skills": [
+    "vois-patterns",
+    "vois-components",
+    "vois-tokens",
+    "vois-dataviz",
+    "righter"
+  ],
+  "arm": "retrieval",
+  "outside_opens": [],
+  "rows": [
+    {
+      "scenario": "HELD-01",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          12,
+          4,
+          23,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CONFIRM-DESTRUCTIVE",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-SET-REMOVE-TYPED",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs AlertDialog",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-D-SIZE",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. An AlertDialog (small width) with a typed confirmation: the user types the workspace name before the destructive button enables. The body lists what will be lost with counts and says the step is irreversible (and any recovery window), with Cancel as the first focus.\n2. Looked up --jobs, --job JOB-CONFIRM-DESTRUCTIVE, AlertDialog, and rules PATH-SET-REMOVE-TYPED, PATH-D-SIZE, DS-A11Y-019, DS-A11Y-020, DS-A11Y-022.\n3. Nothing."
+    },
+    {
+      "scenario": "HELD-02",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          21,
+          15
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs RadioGroup",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "RadioGroup (vois-radio-group), or SegmentedControl for a compact inline choice; not Select, not Checkbox.\nLooked up: query.mjs --jobs, --job JOB-CHOOSE-FROM-LIST, RadioGroup; rules DS-COMPONENT-001, LOOKALIKE-003, JOB-BINARY-PREFERENCE, JOB-ANSWER-CHOICE-QUESTION.\nNothing, though the task does not say whether the two choices need descriptions (that would call for RadioCard/vois-choice-card)."
+    },
+    {
+      "scenario": "HELD-03",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          14,
+          17,
+          26,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-SECONDARY-CONTENT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-DISPLAY-DATA",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Sheet",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-B-ROW-OPEN",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "A right-side drawer built with the Sheet component (pushes the table aside when DS-PANEL-003 passes, otherwise overlays it; full screen below the md breakpoint), with the open row id in the URL and the row highlighted. If the record has tabs, a timeline, related records or a long form, use a full page reached from an Open action in the drawer.\nJOB-SECONDARY-CONTENT, JOB-DISPLAY-DATA, Sheet component rules, PATH-B-ROW-OPEN, DS-PANEL-002, DS-PANEL-003\nNothing"
+    },
+    {
+      "scenario": "HELD-04",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          21,
+          7
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs ToggleChip",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A wrapping row of ToggleChip (pill toggles with check plus fill), with Select all and Clear buttons when there are over 6 topics, and any min or max stated before the chips.\n2. JOB-CHOOSE-FROM-LIST (via --jobs and --job JOB-CHOOSE-FROM-LIST), and the ToggleChip component packet.\n3. ToggleChip is not in the registry yet (status: build) and has no behavior card, so it must be built; the rules do not say how Select all and Clear are laid out."
+    },
+    {
+      "scenario": "HELD-05",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          16,
+          16
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRANSIENT-FEEDBACK",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Alert",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "An inline Alert at the top of the section, below its header, summarizing the errors with a status role (negative for errors, notice for warnings), plus Helper Text under each field that has an error.\nJOB-TRANSIENT-FEEDBACK (several-errors-in-one-section branch), the Alert component packet, DS-A11Y-009, DS-COLOR-008, DS-COLOR-009, LOOKALIKE-010, LOOKALIKE-013.\nNothing is unclear about the placement, but the packet gives no rule for ranking several errors by severity inside one Alert, and Alert has no registry item or behavior card."
+    },
+    {
+      "scenario": "HELD-06",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 2,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          16
+        ],
+        "query_exit_codes": [
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRANSIENT-FEEDBACK",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. A PreheaderBanner (Sticky layout, with the dismiss control, Accent or Aux style): a slim bar pinned above the header with a bold highlight, one short sentence and one action. It is not in the registry yet, so I would build it as an Alert sticky to the top of the page with a Button.\n2. JOB-TRANSIENT-FEEDBACK (from --jobs and --job JOB-TRANSIENT-FEEDBACK), specifically its site-wide news or promotion branch; I did not run the component queries for PreheaderBanner, Alert or Button.\n3. PreheaderBanner is not built yet, so the Alert fallback's exact rules are unverified; the promotion's copy and action target are also unspecified."
+    },
+    {
+      "scenario": "HELD-07",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 3,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          16,
+          19
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-TRANSIENT-FEEDBACK",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Toast",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "I would use a Toast (vois-toast) for the success acknowledgment, and the page must also show the same result, because a toast cannot hold the only copy.\nLooked up --jobs, --job JOB-TRANSIENT-FEEDBACK, and the Toast component packet: JOB-TRANSIENT-FEEDBACK, DS-A11Y-034, DS-A11Y-009, DS-A11Y-021, DS-COMPONENT-001, DS-COLOR-008, LOOKALIKE-007, LOOKALIKE-009.\nThe skills say Sonner but the registry component is vois-toast on Radix Toast, so I used Toast as the id; nothing else was unclear."
+    },
+    {
+      "scenario": "HELD-08",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 4,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          17,
+          13,
+          5
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-SWITCH-VIEWS",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Tabs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --id PATH-PAGE-RECORD",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "Tabs (the registry's vois-tabs item, pill by default), switching sections in place with a full content swap and no page navigation.\nJOB-SWITCH-VIEWS, Tabs component packet, DS-A11Y-008, DS-A11Y-032, PATH-PAGE-RECORD\n\"Relation group\" is not a term in the skills; I read it as related-record sections on one page, so I chose Tabs over a SegmentedControl."
+    },
+    {
+      "scenario": "HELD-09",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 6,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          25,
+          21,
+          8,
+          21,
+          8
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --fields",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs DatePicker",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-ACCEPT-TEXT",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs DateInput",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "DateInput (also called DatePicker): a text Input that accepts a typed date plus a calendar button that opens a Popover with the Calendar, both writing one value; it is composed from Input, Popover and Calendar.\nI ran --jobs, --job JOB-CHOOSE-FROM-LIST, --job JOB-ACCEPT-TEXT, --fields, and the DatePicker and DateInput component lookups; the rules I relied on are JOB-ACCEPT-TEXT and FIELD-SENSITIVE-STORAGE (only if the date is a date of birth).\nNothing, except that the `date` field type in vois-fields is mentioned but did not appear in the --fields list, so I could not read its value rules."
+    },
+    {
+      "scenario": "HELD-10",
+      "sample": 1,
+      "cost_usd": 0,
+      "cost_unknown": true,
+      "turns": 0,
+      "duration_ms": 0,
+      "truncated": false,
+      "tokens": {
+        "input_tokens": null,
+        "cache_write_tokens": null,
+        "cache_read_tokens": null,
+        "output_tokens": null,
+        "total_in": null
+      },
+      "lookups": {
+        "read_calls": 0,
+        "search_calls": null,
+        "query_calls": 5,
+        "other_bash_attempts": null,
+        "packet_lines": [
+          40,
+          8,
+          17,
+          21,
+          7
+        ],
+        "query_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bash_commands": [
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --jobs",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs Slider",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-ANSWER-SCALE-OR-RANK",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs --job JOB-CHOOSE-FROM-LIST",
+            "blocked": false
+          },
+          {
+            "command": "node skills/vois-components/scripts/query.mjs RangeSlider",
+            "blocked": false
+          }
+        ],
+        "files_read": 0,
+        "file_paths": [],
+        "search_sweep_files": 0,
+        "skill_bytes_read": null,
+        "skill_tokens_est": null
+      },
+      "rule_recall": 1,
+      "rules_missing": [],
+      "auto_match": null,
+      "report": "1. RangeSlider: one track with two thumbs on discrete steps, with the chosen minimum and maximum shown next to the track (not the single-value Slider).\n2. Looked up: query.mjs --jobs, Slider, --job JOB-ANSWER-SCALE-OR-RANK, --job JOB-CHOOSE-FROM-LIST, RangeSlider; no DS-, PATH- or FIELD- ids relied on.\n3. RangeSlider is not in the registry yet (status: build, Figma source pending) and has no behavior card, so there is no ready component to install and I would have to build it."
+    }
+  ],
+  "summary": {
+    "samples": 10,
+    "errored": 0,
+    "cost_usd": {
+      "total": 0,
+      "median": 0
+    },
+    "total_in_tokens": {
+      "median": null,
+      "max": 0
+    },
+    "output_tokens": {
+      "median": null
+    },
+    "turns": {
+      "median": 0
+    },
+    "read_calls": {
+      "median": 0,
+      "max": 0
+    },
+    "search_calls": {
+      "median": null
+    },
+    "query_calls": {
+      "median": 4
+    },
+    "other_bash_attempts": {
+      "total": 0
+    },
+    "packet_lines": {
+      "count": 39,
+      "median": 17,
+      "max": 40,
+      "over_40": 0
+    },
+    "rule_recall": {
+      "samples": 10,
+      "mean": 1,
+      "full": 10
+    },
+    "files_read": {
+      "median": 0
+    },
+    "skill_tokens_est": {
+      "median": null,
+      "max": 0
+    },
+    "auto_match_rate": null
+  }
+}
