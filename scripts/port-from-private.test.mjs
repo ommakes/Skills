@@ -210,7 +210,7 @@ test("a wording swap that does not hit exactly once is not equivalent, and an id
   const pubText = JSON.stringify({ note: "what to fix first. If the vois_record_rule_usage tool is available, call it for the rule ids that drove changes." });
   const allowed = { [swapRel]: { $top: ["description"] } };
   assert.equal(ruleFileEquivalent(swapRel, pubText, text(1), allowed), true);
-  assert.equal(ruleFileEquivalent(swapRel, pubText, text(0), allowed), false, "no hit");
+  assert.equal(ruleFileEquivalent(swapRel, pubText, pubText, allowed), false, "private already has the public wording: the swap hits nothing, and check-mirror fails on that");
   assert.equal(ruleFileEquivalent(swapRel, pubText, text(2), allowed), false, "two hits");
   const r = JSON.stringify({ rules: [{ id: "toString", a: 1 }, { id: "constructor", a: 2 }] });
   assert.equal(ruleFileEquivalent("x.json", r, r, {}), true);
@@ -234,6 +234,11 @@ test("the report flags mirrored-folder differences and a rule file missing in pr
   const { execFileSync } = await_git();
   for (const d of [pub, priv]) { execFileSync("git", ["-C", d, "init", "-q"]); execFileSync("git", ["-C", d, "add", "-A"]); }
   assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: cfg, skills: ["s"] }).shared.includes("reg/a.json"));
+  const modes = (root) => new Map([["reg/a.json", root === pub ? "100644" : "100755"]]);
+  writeFileSync(join(priv, "reg/a.json"), "1");
+  assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: { ...cfg, trackedFiles: modes }, skills: ["s"] }).shared.includes("reg/a.json"), "same bytes, different mode");
+  const oneSide = (root) => new Map(root === pub ? [["reg/a.json", "100644"]] : []);
+  assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: { ...cfg, trackedFiles: oneSide }, skills: ["s"] }).shared.includes("reg/a.json"), "listed on one side only");
   rmSync(join(priv, "s/data/rules.json"));
   assert.ok(drift({ publicRoot: pub, privateRoot: priv, config: cfg, skills: ["s"] }).shared.includes("s/data/rules.json"));
   for (const d of [pub, priv]) rmSync(d, { recursive: true });
