@@ -16,6 +16,8 @@ python3 scripts/check-verification.test.py
 python3 scripts/check-routing.py
 node scripts/check-skill-paths.test.mjs
 node scripts/check-skill-paths.mjs
+node scripts/check-reference-files.test.mjs
+node scripts/check-reference-files.mjs
 node scripts/port-from-private.test.mjs
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs

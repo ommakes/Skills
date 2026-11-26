@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.1] - 2026-11-26
+
+### Fixed
+- **`references/motion-logic.md` is named in SKILL.md.** The file held the token-reading and reduced-motion code for the morph specs, but the Component specs paragraph never named it, so an agent that read SKILL.md could not find it. It is named now. A new check (`scripts/check-reference-files.mjs`) fails when any `references/*.md` file is not named in its skill's SKILL.md.
+
+---
+
 ## [1.44.0] - 2026-11-26
 
 ### Added
