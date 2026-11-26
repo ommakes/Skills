@@ -5,7 +5,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks, gate } from "./baseline.mjs";
+import { autoMatch, lookups, tokensOf, summarize, buildPrompt, loadTasks, gate, REPORT_ID_HINT } from "./baseline.mjs";
 import { main as queryMain, loadAll as loadQuery } from "../../vois-components/scripts/query.mjs";
 
 const FAKE = fileURLToPath(new URL("./fake-claude.cjs", import.meta.url));
@@ -345,6 +345,13 @@ test("the retrieval hint names only flags query.mjs accepts, and the ids it show
     assert.ok(!/unknown flag/.test(r.out), `${f} is a flag query.mjs knows`);
   }
   for (const args of [["--patterns"], ["--fields"], ["--group", "table-interactions"], ["--id", "PATH-B-ROW-OPEN"], ["--id", "FIELD-SENSITIVE-STORAGE"]]) assert.equal(queryMain(args, all).code, 0, args.join(" "));
+});
+
+test("the retrieval prompt asks for whole rule ids, with example ids that name no answer", () => {
+  const p = buildPrompt("x", { skills: true, retrieval: true });
+  assert.ok(p.includes("in full"));
+  assert.ok(!buildPrompt("x", { skills: true }).includes("in full"), "the skills arm does not get the id hint");
+  assert.ok(!REPORT_ID_HINT.match(/(DS|PATH|JOB|FIELD)-(?!NAME)[A-Z]/), "example ids are invented");
 });
 
 // gate(): the Phase 2 pass rule as a pure function. Fixtures only; no model is called.

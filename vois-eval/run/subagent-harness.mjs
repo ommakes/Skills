@@ -57,29 +57,36 @@ export function prepare({ tasksFile, arm, samples, root, scenarios }) {
 
 const readJsonl = (p) => (existsSync(p) ? readFileSync(p, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)) : []);
 
-/** Opens by anything, from watch-opens.py, for one run directory, minus opens inside a logged query.mjs call (it reads the index and card json itself). */
-export function filesOpened(opens, work, queryCalls) {
-  const root = work + sep, set = new Set();
-  for (const o of opens) {
-    if (o.isdir || !o.path.startsWith(root)) continue;
-    if (queryCalls.some((q) => o.t >= q.start - 50 && o.t <= q.end + 50)) continue;
-    const rel = o.path.slice(root.length);
-    if (rel === "report.txt" || rel.startsWith(".")) continue;
-    set.add(rel);
+/** Files opened in the run directory, from watch-opens.py. Not counted: opens inside a logged query.mjs call (it reads the index and card json itself), and
+ * search sweeps. A text search over skills/ opens every file in a few milliseconds; a model's own Read takes a tool call per file. A sweep is sweepMin or
+ * more distinct files inside windowMs. They are returned as `swept` so a person can see them, but they are not reads. */
+export function filesOpened(opens, work, queryCalls, { sweepMin = 20, windowMs = 1000 } = {}) {
+  const root = work + sep;
+  const mine = opens
+    .filter((o) => !o.isdir && o.path.startsWith(root) && !queryCalls.some((q) => o.t >= q.start - 50 && o.t <= q.end + 50))
+    .filter((o) => { const rel = o.path.slice(root.length); return rel !== "report.txt" && !rel.startsWith("."); })
+    .sort((a, b) => a.t - b.t);
+  const swept = new Set();
+  for (let i = 0, j = 0; i < mine.length; i++) {
+    while (mine[i].t - mine[j].t > windowMs) j++;
+    const win = new Set(mine.slice(j, i + 1).map((o) => o.path));
+    if (win.size >= sweepMin) for (const o of mine.slice(j, i + 1)) swept.add(o.path);
   }
-  return [...set].sort();
+  const rels = (set) => [...set].map((p) => p.slice(root.length)).sort();
+  const read = new Set(mine.map((o) => o.path).filter((p) => !swept.has(p)));
+  return { read: rels(read), swept: rels(swept) };
 }
 
 export function collect({ root, model, tasksFile }) {
   const m = JSON.parse(readFileSync(join(root, "manifest.json"), "utf8"));
   const tasks = new Map(loadTasks(resolve(tasksFile ?? m.tasks_file)).map((t) => [t.id, t]));
   const opens = readJsonl(join(root, "opens.jsonl"));
-  const outside = opens.filter((o) => o.outside).map((o) => o.path);
+  const outside = opens.filter((o) => o.outside && !o.isdir).map((o) => o.path);
   const rows = m.runs.map((r) => {
     const s = tasks.get(r.id);
     const calls = readJsonl(join(r.log, "query-log.jsonl"));
     const report = existsSync(r.report) ? readFileSync(r.report, "utf8").trim() : "";
-    const paths = filesOpened(opens, r.work, calls);
+    const { read: paths, swept } = filesOpened(opens, r.work, calls);
     const rc = ruleRecall(report, s.required_rules);
     return {
       scenario: r.id, job: s.source_job, sample: r.sample, error: report ? undefined : "no report.txt written by the subagent",
@@ -88,13 +95,13 @@ export function collect({ root, model, tasksFile }) {
       lookups: {
         read_calls: paths.length, search_calls: null, query_calls: calls.length, other_bash_attempts: null,
         packet_lines: calls.filter((c) => c.code === 0).map((c) => c.lines), query_exit_codes: calls.map((c) => c.code), bash_commands: calls.map((c) => ({ command: ["node skills/vois-components/scripts/query.mjs", ...c.argv].join(" ").slice(0, 200), blocked: false })),
-        files_read: paths.length, file_paths: paths, skill_bytes_read: null, skill_tokens_est: null,
+        files_read: paths.length, file_paths: paths, search_sweep_files: swept.length, skill_bytes_read: null, skill_tokens_est: null,
       },
       rule_recall: rc?.recall, rules_missing: rc?.missing, auto_match: s.expected_outcome ? autoMatch(report, s) : null, report: report.slice(0, 1500),
     };
   });
   const arm = m.arm;
-  return { model, harness: "cursor-subagent", harness_note: "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured, host project rules visible to the subagent. Query calls, packet lines and file opens are measured.", samples_per_scenario: m.samples, skills: SKILLS_UNDER_TEST, arm, outside_opens: outside, rows, summary: summarize(rows) };
+  return { model, harness: "cursor-subagent", harness_note: "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.", samples_per_scenario: m.samples, skills: SKILLS_UNDER_TEST, arm, outside_opens: outside, rows, summary: summarize(rows) };
 }
 
 function main() {

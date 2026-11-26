@@ -1,7 +1,7 @@
 {
   "model": "claude-sonnet-5-5-medium",
   "harness": "cursor-subagent",
-  "harness_note": "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured, host project rules visible to the subagent. Query calls, packet lines and file opens are measured.",
+  "harness_note": "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.",
   "samples_per_scenario": 1,
   "skills": [
     "vois-patterns",
@@ -72,6 +72,7 @@
         ],
         "files_read": 0,
         "file_paths": [],
+        "search_sweep_files": 0,
         "skill_bytes_read": null,
         "skill_tokens_est": null
       },
@@ -143,6 +144,7 @@
         ],
         "files_read": 0,
         "file_paths": [],
+        "search_sweep_files": 0,
         "skill_bytes_read": null,
         "skill_tokens_est": null
       },

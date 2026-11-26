@@ -31,6 +31,9 @@ export const QUERY_CMD = "node skills/vois-components/scripts/query.mjs";
 export const RETRIEVAL_ALLOWED = [`Bash(${QUERY_CMD}:*)`];
 export const RETRIEVAL_HINT = `To look up a rule, run \`${QUERY_CMD}\` first: \`--jobs\` lists the jobs, \`--job <ID>\` gives a job's decision tree, \`<Component>\` gives the rules for one component, \`--id <ID>\` gives one rule (a \`DS-\`, \`PATH-\` or \`FIELD-\` id). \`--patterns\` lists page and form patterns, \`--group <name>\` lists the nodes of one pattern file, and \`--fields\` lists the form field rules. Run one command per call, with no \`;\`, \`&&\` or pipe.`;
 
+/** For the decide-only reports. Models abbreviated lists of ids (DS-A11Y-019/020), which the whole-id scorer cannot count. The example ids are invented so the hint does not name any answer. */
+export const REPORT_ID_HINT = "In line 2 write every rule id you relied on in full, including ids named inside a rule's text: write DS-NAME-001, DS-NAME-002, never DS-NAME-001/002 or DS-NAME-001 to 003.";
+
 /** The run directory gets a project hook that blocks every Bash command except one plain query.mjs call (see query-only-hook.cjs for why the allow rule alone is not enough). */
 export function installQueryOnlyHook(dir) {
   mkdirSync(join(dir, ".claude"), { recursive: true });
@@ -40,7 +43,7 @@ export function installQueryOnlyHook(dir) {
 
 export function buildPrompt(userPrompt, { skills = true, retrieval = false } = {}) {
   const context = skills
-    ? `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}${retrieval ? ` ${RETRIEVAL_HINT}` : ""}`
+    ? `You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui. The Vois design system skills apply to this project. ${SKILLS_HINT}${retrieval ? ` ${RETRIEVAL_HINT} ${REPORT_ID_HINT}` : ""}`
     : "You are helping design one screen in a React + TypeScript + Tailwind v4 app with shadcn/ui.";
   const lookedUp = skills ? "Which rule files, ids or sections you looked up." : "Which rules or sources you relied on, or \"none\".";
   return `${context}\n\nTask: ${userPrompt}\n\nDecide only. Do not write code.${skills ? " Do not read the `vois-eval` folder." : ""} Reply in exactly three lines:\n1. What you would use.\n2. ${lookedUp}\n3. What was unclear, or "nothing".`;

@@ -66,3 +66,14 @@ test("prepare refuses an existing run directory and unknown ids", () => {
     assert.throws(() => prepare({ tasksFile: TASKS, arm: "none", samples: 1, root: join(dir, "r3") }), /--arm/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("a burst of opens is a text search sweep, not reads; single opens are still reads", () => {
+  const work = "/w/run/work";
+  const burst = Array.from({ length: 30 }, (_, i) => ({ t: 5000 + i * 3, path: `${work}/skills/vois-components/behaviors/c${i}.md`, isdir: false }));
+  const slow = [{ t: 9000, path: `${work}/skills/vois-components/SKILL.md`, isdir: false }, { t: 12000, path: `${work}/skills/vois-components/behaviors/dialog.md`, isdir: false }];
+  const r = filesOpened([...slow, ...burst], work, []);
+  assert.deepEqual(r.read, ["skills/vois-components/SKILL.md", "skills/vois-components/behaviors/dialog.md"]);
+  assert.equal(r.swept.length, 30);
+  const few = Array.from({ length: 5 }, (_, i) => ({ t: 100 + i, path: `${work}/skills/s${i}/SKILL.md`, isdir: false }));
+  assert.equal(filesOpened(few, work, []).read.length, 5, "five SKILL.md read in a row are reads");
+});
