@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.42.2] - 2026-11-25
+
+### Fixed
+- **`JOB-TRANSIENT-FEEDBACK` now reads as the job for messages that stay on screen.** In Phase 2 re-run 3, none of the three HELD-05 samples (an error summary for a form section) opened this job, even though the `Alert` packet listed it. The one-line job text said only "transient feedback after a user action", which does not fit an error summary, so the model took `JOB-LABEL-CONTENT` instead. The framing now adds: an error summary for a form or section, a warning, or an outage notice. No decision rule changed.
+
+---
+
 ## [1.42.1] - 2026-11-25
 
 ### Fixed
