@@ -115,3 +115,18 @@ test("collectQuality scores out.tsx with scoreSample, counts a missing file as a
     assert.equal(re.arm, "retrieval");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("quality runs can be split across roots by sample number and collected together; a repeated sample is refused", () => {
+  const dir = mkdtempSync(join(tmpdir(), "sah-"));
+  try {
+    const a = join(dir, "a"), b = join(dir, "b");
+    prepareQuality({ samples: 1, root: a, taskIds: ["LP-01a"] });
+    const rb = prepareQuality({ samples: 2, firstSample: 2, root: b, taskIds: ["LP-01a"] });
+    assert.deepEqual([...new Set(rb.map((r) => r.sample))], [2, 3]);
+    for (const r of [a, b]) writeFileSync(join(r, "opens.jsonl"), "");
+    const f = collectQuality({ roots: [a, b], model: "m" });
+    assert.equal(f.samples_per_task, 3);
+    assert.equal(f.results.length, 6);
+    assert.throws(() => collectQuality({ roots: [a, a], model: "m" }), /twice/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
