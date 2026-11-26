@@ -5,8 +5,8 @@
     "jobs": 24,
     "cards": 18,
     "rules": 247,
-    "linkedRules": 75,
-    "globalRules": 172,
+    "linkedRules": 76,
+    "globalRules": 171,
     "pathNodes": 230,
     "fieldRules": 23
   },
@@ -800,6 +800,12 @@
           ]
         },
         {
+          "rule": "DS-COLOR-002",
+          "via": [
+            "lookalike"
+          ]
+        },
+        {
           "rule": "DS-COLOR-008",
           "via": [
             "lookalike",
@@ -980,6 +986,12 @@
         "JOB-TRIGGER-ACTION"
       ],
       "rules": [
+        {
+          "rule": "DS-COLOR-002",
+          "via": [
+            "lookalike"
+          ]
+        },
         {
           "rule": "DS-COLOR-008",
           "via": [
@@ -3149,6 +3161,12 @@
       "verification": "detector",
       "rule": "Always respect `prefers-reduced-motion`. Users who set this have real reasons — vestibular disorders, epilepsy, motion sensitivity."
     },
+    "DS-COLOR-002": {
+      "category": "DS-COLOR",
+      "severity": "required",
+      "verification": "detector",
+      "rule": "Never use Tailwind's built-in color palette (`blue-500`, `red-400`, etc.) if a token exists for it. The token is always preferred."
+    },
     "DS-COLOR-003": {
       "category": "DS-COLOR",
       "severity": "required",
@@ -3554,9 +3572,9 @@
       "verification": "detector"
     },
     "LOOKALIKE-013": {
-      "short": "Tailwind palette class (bg-green-500, text-red-600) for a status dot, badge or message -> the status role tokens, through Badge or Alert (DS-COLOR-008)",
+      "short": "Tailwind palette class (bg-green-500, text-red-600) for a status dot, badge or message -> the status role tokens: direct for a dot, Badge for a label, Alert for a message (DS-COLOR-008)",
       "built": "A Tailwind palette class (`bg-green-500`, `text-red-600`) for a status dot, badge or message",
-      "instead": "The status role tokens (`--base-positive`, `--bg-negative`, `--text-notice`, `--border-info`, `--icon-positive`), through Badge or Alert (`DS-COLOR-008`)",
+      "instead": "The status role tokens (`--base-positive`, `--bg-negative`, `--text-notice`, `--border-info`, `--icon-positive`; `DS-COLOR-008`): a status dot reads the token directly (`bg-[var(--base-positive)]`), a status label is a Badge with a status color, a status message is an Alert with a status role",
       "verification": "judgment"
     },
     "LOOKALIKE-014": {
