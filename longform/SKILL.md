@@ -34,7 +34,7 @@ Three skills, three layers. Don't duplicate work another skill already owns.
 | Argument/narrative | **this skill** | How the argument builds, contrast, framework naming, paragraph flow |
 | Sentence mechanics | **Righter** | Active voice, reading level, weakeners, em dashes, contractions |
 
-**For a standalone essay or post**: apply this skill directly, start to finish. Righter's mechanical rules still apply at the sentence level (see `id: tone-rules` in `voice.md`) but you don't need the full Righter review pass unless the piece leans UI-adjacent. Do still run the draft through Righter's `scripts/ari.mjs` and `data/weakeners.json` check before calling it finished. Don't hand-check for em dashes or hedge words; that's what the script and data file exist for.
+**For a standalone essay or post**: apply this skill directly, start to finish. Righter's mechanical rules still apply at the sentence level (see `id: tone-rules` in `voice.md`) but you don't need the full Righter review pass unless the piece leans UI-adjacent. Do still run the draft through Righter's `righter/scripts/ari.mjs` and `righter/data/weakeners.json` check before calling it finished. Don't hand-check for em dashes or hedge words; that's what the script and data file exist for.
 
 **For a GTM asset (homepage, landing page)**: run gtm-positioning first to get page structure. When you hit the Problem Section and Benefit Section in that structure, write those specifically using this skill's persona (`persona.md`, audience-as-hero) and the contrast device (`id: contrast-sparkline` in `voice.md`). That's where a generic GTM draft turns into a piece that actually lands. Then hand the finished draft to Righter for sentence-level tightening.
 
@@ -47,7 +47,7 @@ Three skills, three layers. Don't duplicate work another skill already owns.
 2. Read `references/voice.md` and pull the structural devices you'll need (at minimum: `bluf` opening, one `contrast-sparkline` beat, one `framework-naming` if applicable, one `moo` addressed)
 3. Read `references/rhetoric-and-rhythm.md` and, for each beat from step 2, check its table for a device that fits — at most one per beat, most beats get none (`id: rhetoric-restraint`)
 4. Draft using the `self-check` at the bottom of `voice.md` (now 9 items, including the two rhetoric/rhythm questions) as a running guide, not just a final pass
-5. Run the finished draft through Righter's `scripts/ari.mjs` and weakener check
+5. Run the finished draft through Righter's `righter/scripts/ari.mjs` and weakener check
 6. If the piece is UI-adjacent or will live inside a product, run the full Righter review pass too
 
 ### Reviewing an existing draft
@@ -56,7 +56,7 @@ Three skills, three layers. Don't duplicate work another skill already owns.
 3. Flag specifically, citing the relevant id: opening that doesn't lead with the point (`bluf`), a "what is" too abstract to feel real (`contrast-sparkline`), an unnamed pattern that should be named (`framework-naming`), an unanswered objection (`moo`), or a paragraph that's well-written but doesn't move the reader (`paragraph-rhythm`)
 4. Check each structural beat against `rhetoric-and-rhythm.md`'s table (`id: structural-beat-devices`): missing a device where one would help, or stacking more than one on the same beat
 5. Read the short sentences out loud in isolation (`id: sentence-rhythm`) — flag any that get lost because the sentences around them are the same length
-6. Run Righter's `scripts/ari.mjs` and weakener check against the draft and fold those results in
+6. Run Righter's `righter/scripts/ari.mjs` and weakener check against the draft and fold those results in
 7. Rewrite the flagged sections rather than the whole piece. Preserve what's already working
 
 ### Output format

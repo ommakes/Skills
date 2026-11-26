@@ -1,0 +1,4 @@
+{
+  "_comment": "Paths a SKILL.md names on purpose that do not exist. Key: <skill>:<path>. Value: why. A stale entry fails the check.",
+  "allow": {}
+}

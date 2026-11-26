@@ -97,6 +97,14 @@ jobs:
       - name: Routing and link audit (paths, skills, work types, graph, rule IDs)
         run: python3 scripts/check-routing.py
 
+      - name: SKILL.md file paths exist (tests, then the real check)
+        run: |
+          node scripts/check-skill-paths.test.mjs
+          node scripts/check-skill-paths.mjs
+
+      - name: Port script and drift report (tests)
+        run: node scripts/port-from-private.test.mjs
+
   # The registry is the only part that installs packages. It runs on every PR, like the job above,
   # so a change to the detector or the token docs still rebuilds it. Its own job because it needs the
   # Node that registry/package.json declares (22.13+); the checks job stays on 20.

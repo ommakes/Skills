@@ -96,7 +96,7 @@ Resolve the three files once, at setup, in this order. Use the first match.
 
 | Order | Where to look |
 |---|---|
-| 1 | A long-form writing skill the user has, with references/persona.md, references/voice.md and references/rhetoric-and-rhythm.md (the `longform` skill in this repo has all three) |
+| 1 | A long-form writing skill the user has, with persona.md, voice.md and rhetoric-and-rhythm.md in its references folder (the `longform` skill in this repo has all three) |
 | 2 | Files with those names in the project, an upload, a pasted message, or a connected folder |
 | 3 | None found: ask once with AskUserQuestion, "Want this to sound like you?", options: "Skip, use plain defaults (Recommended for a first run)", "Quick setup, 5 questions", "I'll paste my own files" |
 
@@ -172,8 +172,8 @@ Full case study only, also run voice.md's remaining items: a named pattern (`fra
 
 Route the final draft or reviewed piece through the righter skill for mechanics only. Righter owns the sentence. This skill owns the structure.
 
-1. Check against the righter skill's data/weakeners.json and its rules on em dashes, jargon, active voice, double negatives and contractions. Words like "so" used as a conjunction are false positives for the intensifier list. Ignore those and say so.
-2. Get the reading score from the righter skill's scripts/ari.mjs when Node is available. If the command line prints nothing on longer text, import its computeReadability function and call it directly. It uses the same formula.
+1. Check against `righter/data/weakeners.json` and the righter rules on em dashes, jargon, active voice, double negatives and contractions. Words like "so" used as a conjunction are false positives for the intensifier list. Ignore those and say so.
+2. Get the reading score from `righter/scripts/ari.mjs` when Node is available. If the command line prints nothing on longer text, import its computeReadability function and call it directly. It uses the same formula.
 3. Righter's Grade 5 target is for UI copy. For a portfolio piece, report the score and flag hard sentences. Do not flatten the voice to reach Grade 5. State what you changed and what you left.
 4. Do not use Righter's UI review format, component rules or phonaesthetics data (that data picks sounds for single words such as labels). Do not call vois_get_microcopy (it is for in-product copy).
 
