@@ -105,8 +105,8 @@ export const WORDING_SWAPS = {
  * True when the public and private text of a rule file say the same thing, allowing the named differences:
  * the fields in ALLOWED per rule id, the top-level keys under "$top", and the wording swaps. Content, not bytes.
  */
-export function ruleFileEquivalent(rel, publicText, privateText) {
-  const allow = ALLOWED[rel] ?? {};
+export function ruleFileEquivalent(rel, publicText, privateText, allowed = ALLOWED) {
+  const allow = allowed[rel] ?? {};
   let priv = privateText;
   for (const [from, to] of WORDING_SWAPS[rel] ?? []) priv = priv.replace(from, to);
   let pub, prv;

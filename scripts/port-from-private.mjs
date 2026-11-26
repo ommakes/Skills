@@ -117,7 +117,7 @@ export function port({ publicRoot, privateRoot, dryRun = false, config = {} }) {
   };
   const equivalent = (rel) => {
     const pub = join(publicRoot, rel), priv = join(privateRoot, rel);
-    return existsSync(pub) && existsSync(priv) && ruleFileEquivalent(rel, read(pub), read(priv));
+    return existsSync(pub) && existsSync(priv) && ruleFileEquivalent(rel, read(pub), read(priv), cfg.ALLOWED);
   };
   for (const rel of cfg.SHARED_CODE) {
     if (Object.hasOwn(cfg.ALLOWED, rel)) { if (!equivalent(rel)) handMerge(rel); continue; }
@@ -236,7 +236,7 @@ export function drift({ publicRoot, privateRoot, config = {}, skills }) {
       if (!existsSync(a) || !existsSync(b) || same(a, b)) continue;
       if (compared.has(f)) {
         const isRule = cfg.RULE_FILES.includes(f) || Object.hasOwn(cfg.ALLOWED, f);
-        if (!(isRule && ruleFileEquivalent(f, read(a), read(b)))) result.shared.push(f);
+        if (!(isRule && ruleFileEquivalent(f, read(a), read(b), cfg.ALLOWED))) result.shared.push(f);
         continue;
       }
       row.differ.push({ file: f, ...(lineChanges(a, b) ?? { added: null, removed: null }) });
