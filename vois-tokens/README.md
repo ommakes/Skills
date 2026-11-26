@@ -1,6 +1,6 @@
 # Vois Tokens Skill
 
-**Version 1.48.6** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
+**Version 1.48.7** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Works standalone — no MCP server or orchestrator required.
 
 Where it fits: this skill covers the Identity layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
 
@@ -84,6 +84,7 @@ vois-tokens/
 
 See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
+- **1.48.7**: `DS-GLASS-005` reads `@keyframes` blocks in linear time (nested blocks cost a scan of their body at every level before), and `DS-GLASS-004` and `-005` no longer look to the end of the file for the `]` of an unclosed `backdrop-blur-[` or `transition-[`. The findings are the same.
 - **1.48.6**: `DS-SURFACE-004` now says the label inset is 4px at the small Button and 8px at default and large, with 8px container padding at every size, so text-only buttons keep their width and the icon-to-text gap is the inset. Matches registry 0.22.3.
 - **1.48.5**: `DS-SURFACE-004` now says `icon-side padding = text-side padding - 4px`, the label inset the Vois Button and the Figma Primary Button already use. It said 2px, which no Vois button had. The gap between icon and text is the same 4px.
 - **1.48.4**: `DS-GLASS-003` and `-005` and `DS-ELEVATION-007` no longer take quadratic time (many `backdrop-filter` declarations in one rule; a long run of `a:a:a:`). Finding a line no longer costs a pass over the file per finding. The findings are the same.
