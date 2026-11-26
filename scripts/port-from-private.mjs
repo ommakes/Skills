@@ -77,10 +77,10 @@ export function setSkillVersion(text, version) {
   return front + text.slice(m[0].length);
 }
 
-/** Sets the first `**vX.Y.Z**` in a README. Null when there is none. */
+/** Sets the first `**vX.Y.Z**` or `**Version X.Y.Z**` in a README, keeping the form it uses. Null when there is none. */
 export function setReadmeVersion(text, version) {
-  const re = /\*\*v\d+\.\d+\.\d+\*\*/;
-  return re.test(text) ? text.replace(re, `**v${version}**`) : null;
+  const re = /\*\*(v|Version )\d+\.\d+\.\d+\*\*/;
+  return re.test(text) ? text.replace(re, (_, form) => `**${form}${version}**`) : null;
 }
 
 /** Sets the `version` of the named skill in skills.json text, keeping the file's layout. Null when it cannot find exactly one. */

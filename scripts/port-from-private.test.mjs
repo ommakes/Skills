@@ -44,6 +44,8 @@ test("only the frontmatter version counts, and only that line is changed", () =>
 
 test("the README version line and the skills.json entry change for the right skill only", () => {
   assert.equal(setReadmeVersion("a\n**v1.0.0** - x **v0.1.0**\n", "1.1.0"), "a\n**v1.1.0** - x **v0.1.0**\n", "first one only");
+  assert.equal(setReadmeVersion("**Version 1.48.7** · For use", "1.48.8"), "**Version 1.48.8** · For use", "the long form keeps its words");
+  assert.equal(setReadmeVersion("**Versions 1.0.0**", "1.1.0"), null);
   assert.equal(setReadmeVersion("no version", "1.1.0"), null);
   const json = `{"skills":[{"name": "vois-tokens-extra", "version": "9.0.0"},{"name": "vois-tokens", "path": "vois-tokens", "version": "1.0.0", "tags": []}]}`;
   const out = setSkillsJsonVersion(json, "vois-tokens", "1.1.0");
