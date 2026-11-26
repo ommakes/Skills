@@ -2,9 +2,9 @@
 
 Run 26 Nov 2026. **Verdict: fail.** Held retrieval recall is 0.900 (needs 0.95) and two HELD ids are missed on every sample. The quality (eval score) check was not run. Workstream D must not start.
 
-## Read this first: these are not `claude -p` runs
+## Read this first: which harness produced these
 
-The VM that produced these files has no `claude` CLI and no model credentials, so `baseline.mjs` could not run. At the user's request each sample was run as a Cursor subagent (model slug `claude-sonnet-5-5-medium`) through `vois-eval/run/subagent-harness.mjs`, which writes rows in the same shape and is scored by the same `gate()`. Differences from the planned runs, all recorded in each file's `harness_note`:
+The skills are meant for any setup (Claude, OpenAI, Cursor and others), so no single harness is the reference. The only built-in runner, `baseline.mjs`, spawns the `claude` CLI, and this VM has no `claude` CLI or model credentials. At the user's request each sample was run as a Cursor subagent (model slug `claude-sonnet-5-5-medium`) through `vois-eval/run/subagent-harness.mjs`, which writes rows in the same shape and is scored by the same `gate()`. Differences from the `claude -p` runner, all recorded in each file's `harness_note`:
 
 - The query-only Bash hook cannot be enforced. `other_bash_attempts` and `search_calls` are not measured (`null`).
 - Tokens, cost and turns are not available. `total_in_tokens.median` is `n/a` in the table, and the plan's token comparison cannot be made from these files.
@@ -14,7 +14,7 @@ The VM that produced these files has no `claude` CLI and no model credentials, s
 - The skills arm copies `vois-components/CHANGELOG.md`, which describes HELD-04, 06 and 10 and their answers. Entries for those were seen in the run directory, so skills-arm numbers may be raised. The retrieval arm opened no CHANGELOG.
 - `vois-fields` is not in `SKILLS_UNDER_TEST`, so it is not in the run directory; field rules are reachable only through `query.mjs --fields` and `--id`.
 
-Do not mix these files with `baseline.mjs` files or draw a token conclusion from them. Rerun on `claude -p` (commands at the bottom) for the numbers the plan treats as the claim.
+Compare files only within the same harness; do not mix these with `baseline.mjs` files or draw a token conclusion from them. The recall, packet-size and "did it open the cards" checks do not depend on the model vendor, so they carry over; the query-only enforcement and the token numbers do not. The 95% claim needs a harness that enforces query-only access and records tokens, whichever vendor that is.
 
 ## Gate table
 
@@ -90,14 +90,14 @@ Static size only. The gate's `packet_lines` counts each packet the model actuall
 
 ## Open questions (workstream C)
 
-1. **Card text vs counts: models did not open the cards. Keep counts.** In held retrieval 0 of 30 samples opened a `behaviors/*.md` or any `SKILL.md`; the only opens in all 62 retrieval samples were the two ADV-08 text searches. By contrast 23 of 30 held skills-arm samples opened a card and all 30 opened `vois-components/SKILL.md`. So: do not add a second lookup to the hint, and `query.mjs` does not need to print the card text. This holds only on this subagent harness; confirm on `claude -p`, where the tool set differs.
+1. **Card text vs counts: models did not open the cards. Keep counts.** In held retrieval 0 of 30 samples opened a `behaviors/*.md` or any `SKILL.md`; the only opens in all 62 retrieval samples were the two ADV-08 text searches. By contrast 23 of 30 held skills-arm samples opened a card and all 30 opened `vois-components/SKILL.md`. So: do not add a second lookup to the hint, and `query.mjs` does not need to print the card text. This holds only on this subagent harness; confirm on each harness you ship for, since the tool set differs.
 2. **Two jobs, two components: list both, no conflict mark.** `--job JOB-CONFIRM-DESTRUCTIVE --job JOB-DATA-ENTRY` exits 0, lists both job trees and then AlertDialog and Toast under the first, Field and Form under the second, with no conflict line. In the reports I checked (HELD-03, ADV-02, ADV-09, ADV-10) none picked one component and left a second job unnamed; I did not read all 62.
 3. **Who owns adversarial answers.** Om corrected ADV-02, 06, 07, 08 on 25 Nov and kept the ids on ADV-01, 03, 04, 05, 10 on 26 Nov. The prose `answer` on those five may still be Claude's draft; the numeric gate uses `required_rules` only, so it is not blocked. ADV-09 stays a human read and no id is added in the scorer.
 
 ## Next steps
 
 1. Om: confirm the ADV-09 read, and decide item 3 above (ADV-02 ids) and whether ranges like `019/020` should ever count. Otherwise make the hint change in item 1 and rerun.
-2. Rerun on `claude -p` after any hint change (needs the `claude` CLI):
+2. Rerun after any hint change in each setup you care about (Cursor, OpenAI, Claude and so on). The `claude -p` runner, as one example (needs the `claude` CLI):
 
 ```bash
 MODEL=claude-sonnet-5-5
