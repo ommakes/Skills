@@ -12,11 +12,21 @@
 //   node vois-eval/run/subagent-harness.mjs prepare --tasks <file> --arm skills|retrieval --samples 3 --root /tmp/vois-subagent/<name> [--scenarios A,B]
 //   (start watch-opens.py on the root, run one subagent per entry in <root>/manifest.json, stop the watcher)
 //   node vois-eval/run/subagent-harness.mjs collect --root <root> --tasks <file> --model <slug> --out <result.json>
+//
+// Answer quality (the port of quality.mjs): the same design tasks and arm prompts, but each subagent writes ./out.tsx in its run directory,
+// and `collect-quality` scores it with the same deterministic scoreSample.
+//   node vois-eval/run/subagent-harness.mjs prepare-quality --arms skills,retrieval --samples 1 --root /tmp/vois-subagent/<name> [--tasks LP-01a,LP-01b]
+//   (start watch-opens.py on the root, run one subagent per run in manifest.json, stop the watcher)
+//   node vois-eval/run/subagent-harness.mjs collect-quality --root <root> --model <slug> --out <quality.json>
+//   node vois-eval/run/subagent-harness.mjs quality-gate <quality.json>
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildPrompt, loadTasks, ruleRecall, autoMatch, summarize } from "./baseline.mjs";
-import { copySkills, SKILLS_UNDER_TEST } from "./run.mjs";
+import { copySkills, extractCode, SKILLS_UNDER_TEST } from "./run.mjs";
+import { armPrompt, summarizeArms } from "./quality.mjs";
+import { loadTasks as loadDesignTasks } from "./tasks.mjs";
+import { scoreSample } from "./score.mjs";
 
 const QUERY_REL = ["skills", "vois-components", "scripts", "query.mjs"];
 
@@ -104,6 +114,68 @@ export function collect({ root, model, tasksFile }) {
   return { model, harness: "cursor-subagent", harness_note: "Not comparable with baseline.mjs files: no Bash hook, no tokens or cost, other Bash use and searches unmeasured (a burst of 20 or more file opens inside one second is treated as a text search and not counted as reads; see search_sweep_files), host project rules visible to the subagent. Query calls, packet lines and file opens are measured.", samples_per_scenario: m.samples, skills: SKILLS_UNDER_TEST, arm, outside_opens: outside, rows, summary: summarize(rows) };
 }
 
+const qualityRunName = (id, arm, sample) => `${id}-${arm}-s${sample}`;
+
+/** One run directory per task x arm x sample. The prompt is quality.mjs's armPrompt, plus the working rules every run here carries. */
+export function prepareQuality({ arms = ["skills", "retrieval"], samples, root, taskIds }) {
+  const all = loadDesignTasks();
+  const tasks = taskIds ? all.filter((t) => taskIds.includes(t.id)) : all;
+  if (taskIds && tasks.length !== taskIds.length) throw new Error("unknown id in --tasks");
+  const bad = arms.filter((a) => !["skills", "retrieval"].includes(a));
+  if (!arms.length || bad.length) throw new Error("--arms takes skills and/or retrieval");
+  mkdirSync(root, { recursive: true });
+  const runs = [];
+  for (const t of tasks) for (const arm of arms) for (let sample = 1; sample <= samples; sample++) {
+    const base = join(root, qualityRunName(t.id, arm, sample)), work = join(base, "work"), log = join(base, "log");
+    if (existsSync(base)) throw new Error(`${base} exists; use a new --root`);
+    mkdirSync(work, { recursive: true }); mkdirSync(log, { recursive: true });
+    copySkills(work);
+    const q = join(work, ...QUERY_REL);
+    if (arm === "retrieval") writeFileSync(q, instrumentQuery(readFileSync(q, "utf8"), join(log, "query-log.jsonl")));
+    const out = join(work, "out.tsx");
+    const prompt = `${armPrompt(arm, t)}\n\nWorking rules for this run: your working directory is ${work}. Read and run things only inside it${arm === "retrieval" ? " (run shell commands with that as the working directory)" : ""}. Do not open any other folder. Write the file to ${out} (that is the ./out.tsx above) with the Write tool, then reply with one line.`;
+    writeFileSync(join(log, "prompt.txt"), prompt);
+    runs.push({ id: t.id, sample, arm, work, log, out, prompt });
+  }
+  writeFileSync(join(root, "manifest.json"), JSON.stringify({ kind: "quality", arms, samples, runs: runs.map(({ prompt, ...m }) => m) }, null, 2) + "\n");
+  return runs;
+}
+
+/** Rows in quality.mjs's shape, so summarizeArms and the gate rule apply unchanged. A run with no out.tsx is an error row and counts as a fail. */
+export function collectQuality({ root, model }) {
+  const m = JSON.parse(readFileSync(join(root, "manifest.json"), "utf8"));
+  if (m.kind !== "quality") throw new Error("this root was not made by prepare-quality");
+  const tasks = new Map(loadDesignTasks().map((t) => [t.id, t]));
+  const opens = readJsonl(join(root, "opens.jsonl"));
+  const outside = opens.filter((o) => o.outside && !o.isdir).map((o) => o.path);
+  const rows = m.runs.map((r) => {
+    const calls = readJsonl(join(r.log, "query-log.jsonl"));
+    const { read, swept } = filesOpened(opens, r.work, calls);
+    const file = existsSync(r.out) ? readFileSync(r.out, "utf8") : "";
+    const src = extractCode(file, "");
+    const base = { task: r.id, arm: r.arm, sample: r.sample, cost_usd: 0, cost_unknown: true, turns: 0, duration_ms: 0, queries: calls.length, query_exit_codes: calls.map((c) => c.code), truncated: false, model_mismatch: false,
+      outside_cwd_access: [], files_read: read.length, file_paths: read.filter((p) => p !== "out.tsx"), search_sweep_files: swept.length };
+    if (!src) return { ...base, pass: false, error: "the subagent wrote no out.tsx" };
+    try { return { ...base, ...scoreSample(src, tasks.get(r.id)) }; }
+    catch (e) { return { ...base, pass: false, error: `scoring error: ${String(e?.message ?? e).slice(0, 200)}` }; }
+  });
+  return { schema: "vois-eval-quality/1", harness: "cursor-subagent", harness_note: "Not comparable with quality.mjs files: no cost, turns or tokens; the query-only hook is not enforced; other Bash use is unmeasured; host project rules visible to the subagent. Pass/fail is the same deterministic scoreSample. Query calls and file opens are measured.", date: new Date().toISOString().slice(0, 10), model, samples_per_task: m.samples, arms: m.arms, outside_opens: outside, summary: summarizeArms(rows), results: rows };
+}
+
+/** The Phase 2 quality rule: retrieval pass_rate >= skills pass_rate, over the same number of samples, with no more errors on the retrieval side than it can explain. */
+export function qualityGate(file) {
+  const { skills, retrieval } = file.summary ?? {};
+  if (!skills || !retrieval) return { pass: false, reason: "both arms are needed", skills: skills?.pass_rate ?? null, retrieval: retrieval?.pass_rate ?? null };
+  const checks = [
+    { name: "same number of samples in both arms", pass: skills.samples === retrieval.samples },
+    { name: "retrieval pass_rate >= skills pass_rate", pass: retrieval.pass_rate >= skills.pass_rate },
+  ];
+  const perTask = {};
+  for (const r of file.results) { const k = (perTask[r.task] ??= { skills: 0, retrieval: 0, n: 0 }); k[r.arm] += r.pass ? 1 : 0; if (r.arm === "retrieval") k.n++; }
+  const worse = Object.entries(perTask).filter(([, v]) => v.retrieval < v.skills).map(([id, v]) => `${id} (${v.retrieval} vs ${v.skills} of ${v.n})`);
+  return { pass: checks.every((c) => c.pass), skills: skills.pass_rate, retrieval: retrieval.pass_rate, errors: { skills: skills.errors, retrieval: retrieval.errors }, checks, tasks_where_retrieval_is_worse: worse };
+}
+
 function main() {
   const [cmd, ...argv] = process.argv.slice(2);
   const v = (n) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : undefined; };
@@ -117,6 +189,19 @@ function main() {
     writeFileSync(resolve(v("--out")), JSON.stringify(f, null, 2) + "\n");
     console.log(JSON.stringify(f.summary, null, 2));
     if (f.outside_opens.length) console.log(`WARNING: ${f.outside_opens.length} opens outside the run directories (held-out or eval files): ${f.outside_opens.slice(0, 5).join(", ")}`);
-  } else { console.error("usage: subagent-harness.mjs prepare|collect ..."); process.exit(1); }
+  } else if (cmd === "prepare-quality") {
+    const runs = prepareQuality({ arms: (v("--arms") ?? "skills,retrieval").split(","), samples: Number(v("--samples") ?? 1), root: resolve(v("--root") ?? ""), taskIds: v("--tasks")?.split(",") });
+    console.log(`${runs.length} runs prepared under ${resolve(v("--root"))}; manifest.json lists them`);
+  } else if (cmd === "collect-quality") {
+    const f = collectQuality({ root: resolve(v("--root")), model: v("--model") });
+    if (existsSync(resolve(v("--out")))) throw new Error(`${v("--out")} exists`);
+    writeFileSync(resolve(v("--out")), JSON.stringify(f, null, 2) + "\n");
+    console.log(JSON.stringify(f.summary, null, 2));
+    if (f.outside_opens.length) console.log(`WARNING: ${f.outside_opens.length} opens outside the run directories: ${f.outside_opens.slice(0, 5).join(", ")}`);
+  } else if (cmd === "quality-gate") {
+    const g = qualityGate(JSON.parse(readFileSync(resolve(argv[0]), "utf8")));
+    console.log(JSON.stringify(g, null, 2));
+    process.exit(g.pass ? 0 : 1);
+  } else { console.error("usage: subagent-harness.mjs prepare|collect|prepare-quality|collect-quality|quality-gate ..."); process.exit(1); }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) { try { main(); } catch (e) { console.error(e.message); process.exit(1); } }

@@ -5,7 +5,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { instrumentQuery, prepare, collect, filesOpened } from "./subagent-harness.mjs";
+import { instrumentQuery, prepare, collect, filesOpened, prepareQuality, collectQuality, qualityGate } from "./subagent-harness.mjs";
 import { gate } from "./baseline.mjs";
 
 const TASKS = fileURLToPath(new URL("../heldout/om-2026-11-25.json", import.meta.url));
@@ -76,4 +76,42 @@ test("a burst of opens is a text search sweep, not reads; single opens are still
   assert.equal(r.swept.length, 30);
   const few = Array.from({ length: 5 }, (_, i) => ({ t: 100 + i, path: `${work}/skills/s${i}/SKILL.md`, isdir: false }));
   assert.equal(filesOpened(few, work, []).read.length, 5, "five SKILL.md read in a row are reads");
+});
+
+test("prepareQuality: the two arms differ by the retrieval line; only the retrieval arm gets the logging query.mjs; nothing from the task's answer keys is in the prompt", () => {
+  const dir = mkdtempSync(join(tmpdir(), "sah-"));
+  try {
+    const runs = prepareQuality({ samples: 1, root: join(dir, "r"), taskIds: ["LP-01a"] });
+    assert.deepEqual(runs.map((r) => r.arm), ["skills", "retrieval"]);
+    const [a, b] = runs;
+    assert.ok(!a.prompt.includes("query.mjs") && b.prompt.includes("query.mjs"));
+    assert.ok(!readFileSync(join(a.work, "skills/vois-components/scripts/query.mjs"), "utf8").includes("__af"));
+    assert.ok(readFileSync(join(b.work, "skills/vois-components/scripts/query.mjs"), "utf8").includes("__af"));
+    assert.ok(!/expected_imports|forbidden_patterns|required_patterns/.test(a.prompt + b.prompt));
+    assert.throws(() => prepareQuality({ samples: 1, root: join(dir, "r"), taskIds: ["LP-01a"] }), /exists/);
+    assert.throws(() => prepareQuality({ samples: 1, root: join(dir, "x"), taskIds: ["NOPE"] }), /unknown id/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("collectQuality scores out.tsx with scoreSample, counts a missing file as an error fail, and qualityGate applies the retrieval >= skills rule", () => {
+  const dir = mkdtempSync(join(tmpdir(), "sah-"));
+  try {
+    const root = join(dir, "r");
+    const runs = prepareQuality({ samples: 1, root, taskIds: ["LP-01a"] });
+    const [sk, re] = runs;
+    writeFileSync(sk.out, "export default function X() { return <div>hi</div>; }");
+    writeFileSync(join(root, "opens.jsonl"), "");
+    const f = collectQuality({ root, model: "m" });
+    const rs = f.results.find((r) => r.arm === "skills"), rr = f.results.find((r) => r.arm === "retrieval");
+    assert.equal(typeof rs.pass, "boolean");
+    assert.equal(rr.error, "the subagent wrote no out.tsx");
+    assert.equal(rr.pass, false);
+    assert.equal(f.summary.retrieval.errors, 1);
+    const g = (skillsPass, retrievalPass) => qualityGate({ summary: { skills: { samples: 2, pass_rate: skillsPass, errors: 0 }, retrieval: { samples: 2, pass_rate: retrievalPass, errors: 0 } }, results: [] });
+    assert.equal(g(0.5, 0.5).pass, true);
+    assert.equal(g(0.5, 0.6).pass, true);
+    assert.equal(g(0.6, 0.5).pass, false);
+    assert.equal(qualityGate({ summary: { skills: { samples: 1, pass_rate: 1 } }, results: [] }).pass, false);
+    assert.equal(re.arm, "retrieval");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
