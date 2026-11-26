@@ -83,9 +83,13 @@ export function componentPacket(all, id, { full = false } = {}) {
   if (!c.card) missing.push("no behavior card");
   if (!c.registry) missing.push(c.coveredBy ? `no registry item of its own (covered by ${c.coveredBy})` : "no registry item");
   if (!c.jobs.length) missing.push("no job names it");
+  // The PATH nodes (from vois-patterns) whose text names this component as a whole word, so a lookup of Sheet leads to
+  // PATH-B-ROW-OPEN. An index with no copy of the nodes gives none. Capped, so a common name stays one line.
+  const named = new RegExp(`(?<![A-Za-z0-9])${c.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9])`);
+  const patternIds = pathNodes(index).filter((n) => named.test(`${n.condition} ${n.outcome}`)).map((n) => n.id).sort(byText);
   const packet = {
     kind: "component", state: "match", component: c.id, status: c.status, registry: c.registry,
-    card: c.card, jobs: c.jobs, decide, mentions, validate,
+    card: c.card, jobs: c.jobs, patterns: patternIds.slice(0, 6), patternsMore: Math.max(0, patternIds.length - 6), decide, mentions, validate,
     lookalikes: c.lookalikes.map((l) => ({ id: l, ...index.lookalikes[l] })),
     global: index.counts.globalRules, missing,
   };
@@ -215,6 +219,7 @@ function textComponent(p) {
   if (p.composedFrom) L.push(`compose    ${p.composedFrom.join(", ")}`);
   if (p.card) L.push(`card       behaviors/${p.card.id}.md  ${p.card.rows} rows: ${Object.entries(p.card.support).map(([k, v]) => `${v} ${k}`).join(", ")}`);
   L.push(`jobs       ${p.jobs.join(", ") || "none"}`);
+  if (p.patterns && p.patterns.length) L.push(`patterns   ${p.patterns.join(", ")}${p.patternsMore ? ` (+${p.patternsMore} more)` : ""} (page rules that name it; --id for the text)`);
   if (p.decide.length) {
     L.push("rules");
     for (const r of p.decide) L.push(`  ${r.id}  [${r.via.join(", ")}] ${r.rule}`);
