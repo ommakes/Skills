@@ -102,6 +102,11 @@ jobs:
           node scripts/check-skill-paths.test.mjs
           node scripts/check-skill-paths.mjs
 
+      - name: Every references/*.md file is named in its SKILL.md (tests, then the real check)
+        run: |
+          node scripts/check-reference-files.test.mjs
+          node scripts/check-reference-files.mjs
+
       - name: Port script and drift report (tests)
         run: node scripts/port-from-private.test.mjs
 
