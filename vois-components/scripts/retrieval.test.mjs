@@ -488,3 +488,17 @@ test("the date of birth pointer names a field rule that exists", () => {
   assert.match(main(["DatePicker"], all).out, /JOB-ACCEPT-TEXT/);
   assert.match(main(["--job", "JOB-ACCEPT-TEXT"], all).out, /FIELD-SENSITIVE-STORAGE/);
 });
+
+test("a component named by two or more jobs says where each job puts it", () => {
+  const all = loadAll(join(ROOT, "vois-components"));
+  const out = main(["Slider"], all).out;
+  assert.match(out, /JOB-ANSWER-SCALE-OR-RANK {2}when .*Slider/);
+  assert.match(out, /JOB-CHOOSE-FROM-LIST {2}when .*numeric range/);
+  for (const c of all.index.components.filter((x) => x.jobs.length >= 2)) {
+    const p = JSON.parse(main([c.id, "--json"], all).out);
+    assert.ok(p.placements.every((pl) => c.jobs.includes(pl.job)), c.id);
+    assert.ok(p.placements.length <= 4, c.id);
+  }
+  const single = JSON.parse(main(["Accordion", "--json"], all).out);
+  assert.deepEqual(single.placements, []);
+});

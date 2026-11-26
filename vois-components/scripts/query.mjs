@@ -87,9 +87,16 @@ export function componentPacket(all, id, { full = false } = {}) {
   // PATH-B-ROW-OPEN. An index with no copy of the nodes gives none. Capped, so a common name stays one line.
   const named = new RegExp(`(?<![A-Za-z0-9])${c.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9])`);
   const patternIds = pathNodes(index).filter((n) => named.test(`${n.condition} ${n.outcome}`)).map((n) => n.id).sort(byText);
+  // A component named by more than one job needs to say where each job puts it: the job titles alone do not tell a
+  // rating Slider from a range Slider. One leaf per job, the first whose text names the component as a whole word.
+  const placements = c.jobs.length < 2 ? [] : c.jobs.slice(0, 4).flatMap((jobId) => {
+    const job = all.jobs.find((j) => j.id === jobId);
+    const leaf = job && treeLeaves(job.decision_tree).find((l) => named.test(`${l.path.join(" ")} ${l.recommendation}`));
+    return leaf ? [{ job: jobId, when: leaf.path.join(" > "), then: leaf.recommendation }] : [];
+  });
   const packet = {
     kind: "component", state: "match", component: c.id, status: c.status, registry: c.registry,
-    card: c.card, jobs: c.jobs, patterns: patternIds.slice(0, 6), patternsMore: Math.max(0, patternIds.length - 6), decide, mentions, validate,
+    card: c.card, jobs: c.jobs, placements, patterns: patternIds.slice(0, 6), patternsMore: Math.max(0, patternIds.length - 6), decide, mentions, validate,
     lookalikes: c.lookalikes.map((l) => ({ id: l, ...index.lookalikes[l] })),
     global: index.counts.globalRules, missing,
   };
@@ -99,6 +106,15 @@ export function componentPacket(all, id, { full = false } = {}) {
     packet.rows = card ? [...(card.behaviors || []), ...(card.mistakes || [])].map((r) => ({ id: r.id, group: r.group, support: r.support, text: r.text, note: r.note })) : [];
   }
   return packet;
+}
+
+/** Every leaf of a decision tree as { path, recommendation }, where path is the conditions down to it. */
+function treeLeaves(tree, trail = [], out = []) {
+  for (const n of tree || []) {
+    if (n.recommendation) out.push({ path: [...trail, n.condition], recommendation: n.recommendation });
+    else treeLeaves(n.sub_branches, [...trail, n.condition], out);
+  }
+  return out;
 }
 
 function treeLines(tree, depth = 0, out = []) {
@@ -224,6 +240,7 @@ function textComponent(p) {
   if (p.composedFrom) L.push(`compose    ${p.composedFrom.join(", ")}`);
   if (p.card) L.push(`card       behaviors/${p.card.id}.md  ${p.card.rows} rows: ${Object.entries(p.card.support).map(([k, v]) => `${v} ${k}`).join(", ")}`);
   L.push(`jobs       ${p.jobs.join(", ") || "none"}`);
+  for (const pl of p.placements || []) L.push(`  ${pl.job}  when ${cut(pl.when, 90)} -> ${cut(pl.then, 70)}`);
   if (p.patterns && p.patterns.length) L.push(`patterns   ${p.patterns.join(", ")}${p.patternsMore ? ` (+${p.patternsMore} more)` : ""} (page rules that name it; --id for the text)`);
   if (p.decide.length) {
     L.push("rules");
