@@ -70,9 +70,9 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 | Open a record from a table row | Sheet (full page if the record is big) | Dialog |
 | One headline number | Stat tile in a Card (see vois-dataviz) | A one-bar chart |
 | Trend, comparison, share, distribution | Chart: walk the vois-dataviz decision tree | A table of raw rows |
-| One or several options in a questionnaire | RadioGroup or Checkbox as whole-row cards (Job 22) | Select |
-| Rate on a scale, or rank items | ToggleGroup, RadioGroup or Slider by scale; a drag-sort list with buttons to rank (Job 23) | A matrix grid |
-| Show how others answered a choice question | Poll or quiz result rows, after the answer (Job 24) | A chart |
+| One or several options in a questionnaire | RadioGroup or Checkbox as whole-row cards (`JOB-ANSWER-CHOICE-QUESTION`) | Select |
+| Rate on a scale, or rank items | ToggleGroup, RadioGroup or Slider by scale; a drag-sort list with buttons to rank (`JOB-ANSWER-SCALE-OR-RANK`) | A matrix grid |
+| Show how others answered a choice question | Poll or quiz result rows, after the answer (`JOB-SHOW-POLL-RESULTS`) | A chart |
 | Persistent app navigation | Sidebar | Drawer |
 | Contextual tools for selected item | Sheet or Panel | Sidebar, Drawer |
 
@@ -82,7 +82,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ### Feedback & Confirmation
 
-**Job 1 — Confirm a destructive or consequential action** `JOB-CONFIRM-DESTRUCTIVE`
+**Confirm a destructive or consequential action** `JOB-CONFIRM-DESTRUCTIVE`
 *The user is about to do something hard or impossible to undo.*
 - Reversible, affects only current user (archive, move) → Toast with undo action
 - Not reversible, affects only current user (delete, disconnect) → AlertDialog
@@ -91,7 +91,7 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 Why not Dialog? AlertDialog enforces `role="alertdialog"`, which screen readers announce with higher urgency — use it whenever consequences exist. Why not Toast for irreversible actions? Toasts auto-dismiss; if the user looks away, they miss confirmation. Reserve Toast-with-undo for actions with at least a 5-second undo window. Where does focus start in an AlertDialog? On Cancel, never on the destructive button (`DS-A11Y-020`), so a reflex Enter cannot confirm a delete.
 
-**Job 2 — Show transient feedback after a user action** `JOB-TRANSIENT-FEEDBACK`
+**Show transient feedback after a user action** `JOB-TRANSIENT-FEEDBACK`
 *The user did something and the UI needs to acknowledge it.*
 - Pure acknowledgment, no action required (saved, copied, sent) → Toast
 - User needs to act before continuing → Alert (inline, persistent until dismissed)
@@ -100,7 +100,7 @@ Why not Dialog? AlertDialog enforces `role="alertdialog"`, which screen readers 
 
 Why not Toast for actionable messages? It can disappear before the user reads or acts. Why not Toast for field errors? It's far from the source — inline Alert removes the mapping step.
 
-**Job 13 — Communicate loading state** `JOB-LOADING-STATE`
+**Communicate loading state** `JOB-LOADING-STATE`
 *Something is being fetched or processed.*
 - Fetching content that fills a known layout (page/list/card load) → Skeleton matching the shape of incoming content
 - Short in-place action (button submitting, search running) → Spinner inside/replacing the trigger, disable the trigger. With the registry Button, set its `loading` prop: it shows the Vois spinner, keeps the width and ignores clicks
@@ -109,7 +109,7 @@ Why not Toast for actionable messages? It can disappear before the user reads or
 
 Why not Spinner for page loads? No structure = no prediction of what's coming; Skeleton reduces perceived load time and prevents layout shift. Why not Skeleton for action feedback? Wrong location — Spinner keeps feedback local to the trigger. Why not Progress for unknown duration? An indeterminate bar is just a spinner in a different shape — use Progress only with a real percentage.
 
-**Job 14 — Handle missing or empty content** `JOB-EMPTY-CONTENT`
+**Handle missing or empty content** `JOB-EMPTY-CONTENT`
 *A list, table, or view has no data to show.*
 - True zero state, user can create from this screen → EmptyState with primary CTA
 - True zero state, user can't create from here → EmptyState with explanation, no CTA
@@ -123,11 +123,11 @@ Why not skip the empty state? A blank area with no explanation looks broken. Why
 
 ### Overlays & Containers
 
-**Job 3 — Contain a focused overlay interaction** `JOB-OVERLAY-INTERACTION`
+**Contain a focused overlay interaction** `JOB-OVERLAY-INTERACTION`
 *The user needs to complete an interaction without leaving the current context.*
 - Editing exactly one field/value, anchored to the specific row/item that triggered it → Popover (anchored to the trigger, no Dialog/Sheet/Drawer chrome)
 - Short, self-contained task, 1–4 fields or a single decision → Dialog
-- Short, self-contained, destructive/consequential → AlertDialog (see Job 1)
+- Short, self-contained, destructive/consequential → AlertDialog (see `JOB-CONFIRM-DESTRUCTIVE`)
 - Task touches a handful of fields or more, needs more screen space, or otherwise relates to a list item, user will want to see the page behind it → Sheet (right-anchored, partial overlap). When the user must keep working in the page behind it (compare, copy a value, pick rows), use it as a peek: no scrim, no inert background and no focus trap (`PATH-D-4`). The modal rules `DS-MODAL-001` and `DS-MODAL-002` do not apply to a peek
 - Longer task needing full attention → Drawer (full-height, slides from bottom on mobile)
 - Simple contextual input on mobile (quick select, number entry, confirmation) → Drawer (the bottom sheet pattern)
@@ -140,7 +140,7 @@ Why not Sheet for filters on mobile, when the user wants to see the list? On a p
 
 *Panel roles* (full rules in `vois-tokens`, `DS-PANEL-*`): Sheet is an `overlay-panel`, right-anchored, and becomes a push-panel only if the page template says so and `DS-PANEL-003` passes. Drawer is an `overlay-panel`, full-height, and full screen below `--breakpoint-md` (`DS-PANEL-002`). Drawer here means the shadcn Drawer, not a side panel.
 
-**Job 4 — Contain a unit of content** `JOB-CONTAIN-CONTENT`
+**Contain a unit of content** `JOB-CONTAIN-CONTENT`
 *You need a surface to group related content into a discrete visual block.*
 - Interactive, standard container for items → Card (header, body, optional footer)
 - Interactive, whole card is the primary action target → make the whole Card clickable
@@ -150,7 +150,7 @@ Why not Sheet for filters on mobile, when the user wants to see the list? On a p
 
 Why not wrap everything in a Card? It implies a discrete, interactive item — using it for every content group flattens visual hierarchy. Use semantic sections with headings instead. Why not `overflow: auto` on a div? It is right for the page. Inside a fixed region it gets the browser's scrollbar, which on some systems hides until you scroll, so nothing says there is more, and a box with no focusable children cannot be scrolled from the keyboard. ScrollArea fixes both and matches the Figma scrollbar.
 
-**Job 20 — Host secondary content or persistent navigation** `JOB-SECONDARY-CONTENT`
+**Host secondary content or persistent navigation** `JOB-SECONDARY-CONTENT`
 *A surface for secondary content, tools, or navigation outside the main content area.*
 - Persistent, always-visible app-level navigation → Sidebar (collapsible)
 - Contextual detail/tools for a selected item, user triggered it explicitly → Sheet
@@ -164,16 +164,16 @@ Why not Drawer for persistent navigation? Drawer is temporary; navigation the us
 
 ### Navigation & Switching
 
-**Job 5 — Switch between views or filter to a subset** `JOB-SWITCH-VIEWS`
+**Switch between views or filter to a subset** `JOB-SWITCH-VIEWS`
 *Navigate between distinct views, or filter content into categories.*
 - Switching between distinct pages/major content areas (Settings: Profile, Billing, Members) → Tabs (the registry's `vois-tabs` is pill by default, underline with `variant="underline"`). A settings page with 4 or more sections uses sidebar navigation instead
 - Filtering to a category, 2–4 mutually exclusive options → Segmented Control (or pill-styled Tabs)
-- Filtering, 5+ options or options that change dynamically → Select or Combobox (see Job 6)
+- Filtering, 5+ options or options that change dynamically → Select or Combobox (see `JOB-CHOOSE-FROM-LIST`)
 - Applying non-exclusive labels/types (tagging, multi-select filter) → Checkbox group or Badge filters, not Tabs
 
 Why not Segmented Control for major navigation? It communicates narrowing a view, not going somewhere new — use Tabs for distinct content areas. Why not Tabs/Pills for many options? Scrolling tabs are a bad pattern past 5–6 options — switch to Select/Combobox. Why not a ButtonGroup for switching views? A ButtonGroup holds actions: each Button does something when pressed and none stays chosen. Switching views is a choice of one that stays visible, which is a SegmentedControl or Tabs, with a selected state that screen readers announce.
 
-**Job 17 — Indicate position in a hierarchy and enable backtracking** `JOB-NAVIGATION-POSITION`
+**Indicate position in a hierarchy and enable backtracking** `JOB-NAVIGATION-POSITION`
 *The user has navigated into a nested view and needs to know where they are.*
 - 3+ levels deep, counting Home (Home > Invoices > Invoice) → Breadcrumb, full path, every item a link
 - 2 levels deep, counting Home (Home > Settings), came from a specific list/context → Back link (arrow + parent page name; just "Back" when the parent is Home)
@@ -183,7 +183,7 @@ Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unn
 
 ### Selection & Input
 
-**Job 6 — Let the user choose from a known list** `JOB-CHOOSE-FROM-LIST`
+**Let the user choose from a known list** `JOB-CHOOSE-FROM-LIST`
 *Select one or more items from a predefined set.*
 - Short list (under 8), no search needed, single select → Select (dropdown; the registry's `vois-select` is 36px on web, 48px native, 32px compact only inline in a table: `DS-COMPONENT-007`)
 - Long list (8+) or user might not know the exact option name → Combobox (Select + search)
@@ -193,7 +193,7 @@ Why not Breadcrumb for 2 levels deep? "Home > Current Page" is almost always unn
 
 Why not Combobox for short lists? Adds a search affordance where none is needed — Select is simpler with less friction. Why not Command for standard selection? It's a power-user tool; using it for a plain form field pick adds cognitive overhead. Why not a Select with a colored dot per option? A Select lists names in a column, so comparing colors means reading down the list, and it cannot show the set as a grid. The SwatchPicker shows every swatch at once, keeps one tab stop with the arrow keys moving across the grid, previews as you move, and names each swatch for screen readers.
 
-**Job 9 — Accept text input from the user** `JOB-ACCEPT-TEXT`
+**Accept text input from the user** `JOB-ACCEPT-TEXT`
 *The user needs to enter text as part of a form or interaction.*
 - Single line (name, email, search, number, URL) → Input (the registry's `vois-input` is 36px on web, 48px native, 32px compact only inline in a table; with an icon, prefix, clear or show-password button use `vois-input-group`; a label, description and error around any field is `vois-field`)
 - Fixed-length one-time code (email or SMS verification code, authenticator code) → InputOTP (one cell per character, behaves as a single field)
@@ -203,7 +203,7 @@ Why not Combobox for short lists? Adds a search affordance where none is needed 
 
 Why not Textarea for everything? Single-line inputs set a clear expectation — "Email address" in a Textarea implies more content than it needs. Why not RichTextEditor by default? Heavy, harder to validate, produces HTML/markdown to handle — only use when formatting is meaningful to the task. Why not a plain Input for a one-time code? Cells show how many characters are expected, and paste or autofill fills every character at once; a plain Input hides the length and invites typos in the middle.
 
-**Job 10 — Capture a binary preference** `JOB-BINARY-PREFERENCE`
+**Capture a binary preference** `JOB-BINARY-PREFERENCE`
 *Turn something on/off, or agree/disagree.*
 - Takes effect immediately, no save button → Switch (or Toggle; the registry's `vois-switch` is 32 x 20 on web, 52 x 32 native)
 - Part of a form submitted later, one option in a group → Checkbox
@@ -214,7 +214,7 @@ Why not Switch for form fields? Switch implies immediate effect; in a form with 
 
 ### Display & Identity
 
-**Job 11 — Label or categorize a piece of content** `JOB-LABEL-CONTENT`
+**Label or categorize a piece of content** `JOB-LABEL-CONTENT`
 *Communicate metadata, status, or category attached to an item.*
 - Status/category label, read-only, decorative → Badge (inline, non-interactive)
 - User-created label that can be applied and removed (tags, labels on an issue) → Badge with dismiss (Chip/Tag)
@@ -222,7 +222,7 @@ Why not Switch for form fields? Switch implies immediate effect; in a form with 
 
 Why not a Button for dismissible labels? A dismissible label says "this is an attribute you can remove"; a Button says "click me to do something" — different visual weight and meaning. Why not plain text? Can't carry color-coding, contrast, or truncation the way Badge can.
 
-**Job 12 — Represent a user or group** `JOB-REPRESENT-USER`
+**Represent a user or group** `JOB-REPRESENT-USER`
 *Show who's involved — who owns a record, who's in a conversation, who's online.*
 - Single user with a profile photo → Avatar (image)
 - Single user, no photo → Avatar (initials fallback)
@@ -231,7 +231,7 @@ Why not a Button for dismissible labels? A dismissible label says "this is an at
 
 Why not AvatarGroup when count doesn't matter? A single Avatar with initials or a "Team" label may be cleaner — AvatarGroup implies the count itself is meaningful.
 
-**Job 18 — Display structured data** `JOB-DISPLAY-DATA`
+**Display structured data** `JOB-DISPLAY-DATA`
 *Show a collection of items with shared attributes.*
 - Simple items, no sorting/filtering/bulk actions (notifications, activity feed) → List (semantic `ul`/`li`)
 - Multiple comparable attributes, under 100 rows, no freezing/virtualization → Table
@@ -242,18 +242,18 @@ Why not AvatarGroup when count doesn't matter? A single Avatar with initials or 
 
 Why not Table for simple lists? Table implies columns are meaningful for comparison — an activity feed isn't about comparison; List is lighter and more correct. Why not DataTable for small data sets? Pagination and bulk-action infrastructure is overhead for 20 rows — start with Table and add only what you need. Why not infinite scroll for a DataTable? Users lose their place, the footer count disappears, and a row's position stops being stable for stepping through records or sharing a link; pagination keeps all three.
 
-**Job 21 — Visualize data: chart, KPI tile, sparkline, or dashboard** `JOB-VISUALIZE-DATA`
+**Visualize data: chart, KPI tile, sparkline, or dashboard** `JOB-VISUALIZE-DATA`
 *The reader needs to see a number, a trend, a comparison, a share or a distribution, not read a list of records.*
 - One current value, with or without a change → Card containing a stat tile: value, delta against a named period, optional sparkline. Not a chart.
 - Shape over time, comparison, parts of a whole, relationship, distribution, or flow → hand off to `vois-dataviz` (full repo): walk its decision tree to pick the form, then build with the workspace chart primitives (typically shadcn Chart over Recharts)
-- Exact lookup, or many attributes at once → Table or DataTable (Job 18), with inline sparklines for trend
+- Exact lookup, or many attributes at once → Table or DataTable (`JOB-DISPLAY-DATA`), with inline sparklines for trend
 - A dashboard of several visualizations → each widget a Card with a header (title, scope, actions), the plot, and a footer link; sections or secondary views in Tabs; date range, comparison and dimension filters in one filter row above the cards; Skeleton in the final geometry while loading, an EmptyState per empty case, an inline error with retry inside the card
 
 Why not a Table for a trend? A table gives exact values but hides shape; use a chart and keep the table as its accessible twin. Why not a one-bar chart or a 2-slice pie for a single value? The number is the chart; a stat tile with a delta says it faster. Why hand off to `vois-dataviz`? Chart choice depends on the viewer's job, audience, series count and honesty rules (baseline, axes, partial periods) that this skill doesn't cover.
 
 ### Contextual Info & Actions
 
-**Job 7 — Provide additional context without cluttering the UI** `JOB-CONTEXTUAL-INFO`
+**Provide additional context without cluttering the UI** `JOB-CONTEXTUAL-INFO`
 *Something on screen needs a label or explanation that shouldn't always be visible.*
 - Short label for an icon/control/abbreviated text (≤25 words) → Tooltip (hover/focus, disappears on move)
 - Rich content (links, images, interactive elements), triggered by click → Popover
@@ -262,29 +262,29 @@ Why not a Table for a trend? A table gives exact values but hides shape; use a c
 
 Why not Popover for tooltips? Requires a click to open/close — more friction than a passive label needs. Why not Tooltip for interactive content? WCAG requires tooltip content be keyboard-accessible; interactive elements inside a Tooltip aren't reliably reachable — use Popover instead.
 
-**Job 8 — Trigger an action** `JOB-TRIGGER-ACTION`
+**Trigger an action** `JOB-TRIGGER-ACTION`
 *The user needs a target to tap or click.*
 - Has a text label, primary/secondary/destructive/outline/ghost → Button (variant handles it; the registry's `vois-button` is 36px on web, 48px native: `DS-COMPONENT-007`)
-- Has a text label, opens a menu of related choices → Button + DropdownMenu (see Job 15)
-- Has a text label, a few related actions that read as one control (formatting actions, a split button, a count with actions beside it) → ButtonGroup of outline or secondary Buttons (the registry's `vois-button-group`): joined edges, one border between neighbors, the focus ring kept visible. ButtonGroupSeparator splits two sets that still read as one control, ButtonGroupText holds a count or unit. It is for actions: choosing one view or mode is a SegmentedControl (Job 5)
+- Has a text label, opens a menu of related choices → Button + DropdownMenu (see `JOB-EXPOSE-ACTIONS`)
+- Has a text label, a few related actions that read as one control (formatting actions, a split button, a count with actions beside it) → ButtonGroup of outline or secondary Buttons (the registry's `vois-button-group`): joined edges, one border between neighbors, the focus ring kept visible. ButtonGroupSeparator splits two sets that still read as one control, ButtonGroupText holds a count or unit. It is for actions: choosing one view or mode is a SegmentedControl (`JOB-SWITCH-VIEWS`)
 - Icon-only, single action → IconButton (the registry's `vois-icon-button`) with a `label` that names the action, not the icon ("Add to favorites", not "Heart"). The label is required, so the name cannot be left out; it is the accessible name and the tooltip, which shows on hover and focus and is dropped while the button is disabled. Ghost by default, `variant="soft"` (light gray) when it must read as a button at rest. Sizes `icon-sm` 28, `icon` 36 and `icon-lg` 48, each one step up on a coarse pointer, and `circular` 56, which stays 56. No IconButton in the project and none can be added: Button with an icon size and an `aria-label`. Size, spacing, placement and style: Iconography in the Vois Tokens skill (`DS-ICON-003` to `DS-ICON-007`)
 - Icon-only, grouped with other icon actions → Toggle (on/off) or IconButton (one-shot). Several one-shot icon actions on the same thing that should read as one control: IconButtons with `variant="outline"` in a ButtonGroup
 - Removable selection or filter the user created → Badge with dismiss (Chip pattern), not a Button
 
 Why not a custom div/span? Buttons handle keyboard focus, Enter/Space activation, disabled state, and `role="button"` automatically — never fake a button. Why Button for icon-only instead of a bare icon? Button provides a hit area of at least the `--hit-area-min` token (`--hit-area-coarse` on a coarse pointer), a focus ring, and an accessible label. Why IconButton instead of Button with an icon size? IconButton makes the name a required prop, so an icon button cannot ship without one, and it adds the tooltip the icon-button rules ask for. Button keeps its loose types on purpose (shadcn's own components name icon buttons with visually hidden text, which TypeScript cannot see), so with Button the name is checked only by the `DS-ICON-005` detector in the full repo.
 
-**Job 15 — Expose a set of actions** `JOB-EXPOSE-ACTIONS`
+**Expose a set of actions** `JOB-EXPOSE-ACTIONS`
 *Give access to multiple actions without cluttering the primary UI.*
 - Item-specific actions (table row, selected card), triggered by button → DropdownMenu
 - Item-specific actions, triggered by right-click → ContextMenu
 - Global or page-level actions (header, toolbar) → DropdownMenu anchored to a trigger button
-- Actions searched/navigated by keyboard (power users) → Command (see Job 6)
+- Actions searched/navigated by keyboard (power users) → Command (see `JOB-CHOOSE-FROM-LIST`)
 
 Why not a flat list of buttons? Two visible actions is the target and three is the ceiling; group everything else, including secondary and destructive actions, in a DropdownMenu. Why not ContextMenu as the primary interface? Only discoverable by users who know to right-click — it's an enhancement, not a primary surface. Why not Command for row-level actions? Command is global; row actions are local — DropdownMenu keeps scope clear.
 
 ### Forms & Process
 
-**Job 16 — Guide through a multi-step process** `JOB-MULTISTEP-GUIDE`
+**Guide through a multi-step process** `JOB-MULTISTEP-GUIDE`
 *The user needs to complete multiple steps in sequence.*
 - All required, in order, progress visible, 2 to 5 steps, each step's content fits in a page container (a form, a short list) → Stepper (spec below)
 - All required, in order, progress visible, 6 or more steps, or any number where a step needs its own full-screen layout → Wizard
@@ -293,7 +293,7 @@ Why not a flat list of buttons? Two visible actions is the target and three is t
 
 Why not Progress for onboarding flows? Progress just displays how far along something is — it provides no navigation or form state. Stepper/Wizard provide that scaffolding; Progress can live inside it as a visual indicator. Why not Tabs for steps? Tabs let the user jump to any panel and gate nothing; steps are ordered and each validates before the next opens. Why 5 and 6 as the boundary? Past five markers the labels don't fit in one row at form width (judgment, not observed); the old wording said 2 to 5 and 5 or more, so exactly 5 fit both. Is a plus and minus control a Stepper? No, that is a quantity control. Stepper only means the step indicator.
 
-**Job 19 — Build a data entry surface** `JOB-DATA-ENTRY`
+**Build a data entry surface** `JOB-DATA-ENTRY`
 *A structured container for form fields.*
 - Simple form, all fields in one place, one submit action → Form (shadcn Form wrapper for validation)
 - Complex form with grouped sections (billing vs. shipping address) → Form with multiple FormSection/Fieldset groups
@@ -305,7 +305,7 @@ Why not FormProvider for everything? Excess infrastructure for a single controll
 
 One question per screen, answered on a phone. `vois-patterns` `PATH-H` has the structure around these jobs.
 
-**Job 22 — Let a respondent choose from options** `JOB-ANSWER-CHOICE-QUESTION`
+**Let a respondent choose from options** `JOB-ANSWER-CHOICE-QUESTION`
 *The question has a fixed set of answers.*
 - One answer: 7 options or fewer → RadioGroup as whole-row cards; 8 to 12 → RadioGroup as rows in a scrolling list; more than 12 → a searchable list with an announced result count
 - More than one answer: 12 options or fewer → Checkbox as whole-row cards, with the min and max stated before the answer, and at the max the rest disabled with a reason; more than 12 → a searchable checkbox list
@@ -313,7 +313,7 @@ One question per screen, answered on a phone. `vois-patterns` `PATH-H` has the s
 
 Why not a Select? On mobile the respondent taps and scrolls to see the options; a vertical list shows them all. Why disable at the max and not drop an earlier pick? Dropping a pick silently changes the answer. Why no auto-advance? A mis-tap cannot be corrected; Next is explicit and a Review screen follows.
 
-**Job 23 — Let a respondent rate or rank** `JOB-ANSWER-SCALE-OR-RANK`
+**Let a respondent rate or rank** `JOB-ANSWER-SCALE-OR-RANK`
 *The answer is a position on a scale, or an order.*
 - Rate one statement: 5 points → ToggleGroup as a Likert row, 48px points, every point labelled (vertical if a point would drop below 44px); 7 points → RadioGroup as full-width Likert rows, every point labelled; 11 points (0 to 10) → Slider (native range) with word labels on both ends and `aria-valuetext`
 - Rate several statements on one scale → an Accordion, one statement at a time, 5 per group at most; no grid below 1024px
@@ -321,7 +321,7 @@ Why not a Select? On mobile the respondent taps and scrolls to see the options; 
 
 Why is there no ranking component in shadcn? Build one on a sortable list library; the up and down buttons let a person rank without dragging (WCAG 2.5.7). Why 5 points by default? It is the lowest burden that still separates opinions; never mix 5 and 7 for one construct. Why not a matrix grid? On a phone it forces horizontal scroll or tiny targets.
 
-**Job 24 — Show how others answered a choice question** `JOB-SHOW-POLL-RESULTS`
+**Show how others answered a choice question** `JOB-SHOW-POLL-RESULTS`
 *After the answer, the respondent sees the crowd.*
 - The question has a right answer → quiz mode: result rows with a check icon and the words "Correct answer" on the right option, and "Your answer" on the respondent's pick
 - No right answer → poll mode: the respondent's pick marked and the most chosen option emphasised
