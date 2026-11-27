@@ -1,7 +1,7 @@
 # Skills
 Claude skills for UX and product design workflows.
 
-The Vois design system skills here (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-dataviz`, `righter`) are part of **Vois design intelligence**, the name for the whole Vois suite. Skill and folder names do not change.
+The Vois design system skills here (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-fields`, `vois-dataviz`, `righter`) are part of **Vois design intelligence**, the name for the whole Vois suite. Skill and folder names do not change.
 
 ## Install
 ```bash
@@ -12,7 +12,7 @@ npx skills add ommakes/Skills
 
 ## Design System Skills (Read in Order)
 
-These skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-tokens (with vois-dataviz between patterns and components for any screen that shows data), with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`vois_record_pattern_choice`, `vois_record_component_choice`, `vois_record_rule_usage`, `vois_get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
+These skills work together as a stack, and each one works standalone — no orchestrator or MCP server required. Read them in this order when building UI: vois-patterns → vois-components → vois-fields → vois-tokens (with vois-dataviz between patterns and components for any screen that shows data, and vois-fields only when the screen has a specialized input field), with righter consulted throughout for copy. Any telemetry tool call a skill mentions (`vois_record_pattern_choice`, `vois_record_component_choice`, `vois_record_rule_usage`, `vois_get_microcopy`) is optional — if the tool isn't available in your environment, the skill degrades gracefully and the instruction is simply skipped.
 
 Each skill's `data/*.json` is the canonical source for its rules — `references/*.md` restates them for readability and worked examples, but the JSON wins on conflict. [`scripts/check-rule-sync.mjs`](./scripts/check-rule-sync.mjs) enforces that the two never silently disagree, and runs in CI alongside [`scripts/check-verification.py`](./scripts/check-verification.py) (every rule in `vois-tokens`, `vois-dataviz` and the `vois-components` lookalike table declares `verification`, and each `detector` it names exists in code and each detector in code is claimed by a rule; it needs `node`) and `vois-tokens`' own detector regression suite (see [`.github/workflows/design-system-checks.yml`](./.github/workflows/design-system-checks.yml)).
 
@@ -36,7 +36,7 @@ Component selection rubrics organized by job-to-be-done. Covers the high-ambigui
 
 **Use when:** you need to decide between similar components — which one actually fits what you're building? Optionally calls `vois_record_component_choice` after selecting, if that tool is available.
 
-Ships as `SKILL.md` plus a `references/` folder grouped by job (forms, navigation, display, selection, overlays, feedback) — `SKILL.md` holds the quick-reference table and job index, references hold the full decision trees.
+Ships as `SKILL.md` (the quick-reference table, the job index and the lookalike rules), `data/components-rules.json` (the decision trees and "why not X" answers for all 24 jobs), behavior cards in `behaviors/`, component specs in `references/` (Stepper and the motion morphs), and `scripts/query.mjs`, which answers one component, job or rule id with a small packet so an agent never reads the whole rule file.
 
 → [`vois-components/`](./vois-components)
 
@@ -52,6 +52,19 @@ Data visualization and dashboard guidance, usable for both building and reviewin
 Ships as `SKILL.md` plus `data/*.json` (canonical), generated `references/*.md`, and `scripts/` with tests.
 
 → [`vois-dataviz/`](./vois-dataviz)
+
+---
+
+### Vois Fields
+Rules for specialized input fields: which keyboard, autofill, stored format, check timing and privacy handling each kind of field needs (email, phone, URL, postal code, name, VIN, driver's license, SSN, money, percent, date, one-time code). Also covers prefilled values, type-ahead pickers and sensitive data.
+
+**Read after** vois-components has picked the input component, and before vois-tokens. Skip it when the screen has no specialized field.
+
+**Use when:** a form asks for any of the values above, prefills a value, or picks a record by typing.
+
+Ships as `SKILL.md` plus `data/field-types.json` (12 field types), `data/fields-rules.json` (23 `FIELD-*` rules), three `references/` files, and `scripts/check-fields.mjs` with tests.
+
+→ [`vois-fields/`](./vois-fields)
 
 ---
 
@@ -119,7 +132,7 @@ Unpacks poorly written Jira or Azure DevOps tickets into design-relevant framing
 ### Onboarding Flow
 Designs new onboarding flows or evaluates/critiques existing ones — signup sequences, setup checklists, first-run wizards, personalization quizzes, permission priming, paywalls — for SaaS/web products and consumer/mobile apps. SaaS and consumer onboarding fail for opposite reasons if you cross the patterns, so the skill picks the right shape (companion checklist vs. linear sequence) before designing or evaluating anything, requires naming the product's activation event before sequencing screens, and pulls current visual reference from Mobbin when available. Routes all UI copy to righter and all structure/styling decisions to the vois skills (vois-patterns → vois-components → vois-tokens).
 
-Ships as `SKILL.md` plus two shape-specific `references/` files (`saas-onboarding.md`, `consumer-onboarding.md`), a `data/onboarding-rules.json` canonical rule set (18 rules, each tagged `MUST` or `SHOULD`: 5 universal, 6 SaaS, 7 consumer), its own `scripts/check-rule-sync.mjs` to keep the rules and worked examples in sync — same convention as vois-patterns' own rule-sync script — and an `evals/cases.json` regression corpus of worked flows. See [`onboarding-flow/CHANGELOG.md`](./onboarding-flow/CHANGELOG.md) for version history.
+Ships as `SKILL.md` plus two shape-specific `references/` files (`saas-onboarding.md`, `consumer-onboarding.md`), a `data/onboarding-rules.json` canonical rule set (18 rules, each tagged `MUST` or `SHOULD`: 5 universal, 6 SaaS, 7 consumer), its own `scripts/check-rule-sync.mjs` to keep the rules and worked examples in sync — same convention as the repo's `scripts/check-rule-sync.mjs` for vois-tokens and vois-patterns — and an `evals/cases.json` regression corpus of worked flows. See [`onboarding-flow/CHANGELOG.md`](./onboarding-flow/CHANGELOG.md) for version history.
 
 **Use when:** designing a new onboarding flow from scratch, or reviewing/auditing an existing one from screenshots or a description — signup sequences, setup checklists, first-run wizards, personalization quizzes, permission priming, or paywalls.
 

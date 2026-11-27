@@ -1,5 +1,7 @@
 # vois-patterns
 
+**Version 1.23.7** · Works standalone: no MCP server or orchestrator required.
+
 Structural decision trees and UI patterns for building consistent interfaces with Vois design tokens and components.
 
 Where it fits: this skill covers the Structure layer in the [Composition Blueprint](https://osuthar.com/work/vois/blueprint), which breaks a web page into five layers.
@@ -227,20 +229,20 @@ If you notice a recurring structure that's not covered:
 | 1.4.0 | 2026-07-21 | Standalone-safe: MCP telemetry calls are optional; no longer assumes `vois-router` |
 | 1.5.0 | 2026-07-23 | Added `data/patterns-rules.json` structured lookup |
 | 1.5.1 | 2026-07-23 | Fixed MCP tool names and call argument shape |
-| 1.15.0 | 2026-10-09 | Added `references/motion.md`: when a state change should travel or morph, with worked examples |
-| 1.16.0 | 2026-10-09 | Added the status button to `references/motion.md`: decision-test step, table row and worked example |
-| 1.18.0 | 2026-10-28 | Added `references/page-templates.md` and `data/page-templates.json`: 20 whole-page templates in five levels, plus `PATH-PAGE-*` rules for widths, navigation, density by width, overlays, button order, view to edit and narrow tables |
-| 1.22.0 | 2026-11-15 | Added the container ladder `PATH-D-1` to `PATH-D-5` (confirm, form dialog, large dialog, side peek, page). "Action sheet" is now "bottom sheet" for the mobile container, and stays only for a short choice list with a separate Cancel. |
-| 1.21.0 | 2026-11-13 | Added `PATH-DENSITY-PRODUCT` (workbench or relaxed), `references/native-behavior.md` with six `PATH-NATIVE-*` rules (iOS observed, Android not observed), and keyed `PATH-PAGE-DENSITY-TOUCH` on input instead of width |
-| 1.20.0 | 2026-11-12 | Added a `layout` field to every page template (shell, frame, regions, collections, panels, all token names) and `layout_fields`. Record properties panel is now a token. Split view starts at an 800px window. Phone splits in two at 600px for grids. |
-| 1.19.0 | 2026-10-28 | Added the Onboarding steps template (1-2-3 stepper, `PATH-PAGE-ONBOARDING`) and `PATH-PAGE-SORT-FILTER`: Filter and Sort pinned top right of every table, list and card grid. Blog article renamed Blog post, with reading time, newsletter and previous and next |
-| 1.17.0 | 2026-10-09 | `references/motion.md`: twelve-step decision test (tray, typed input, chart range change, collapse to indicator, small state changes), delight tiers, remove-the-motion review |
 | 1.9.0 | 2026-09-30 | Added `references/pricing-pages.md` (PATH-F) and 64 matching rule entries |
 | 1.10.0 | 2026-10-01 | Added `references/settings-interactions.md` and `references/form-field-groups.md` with 42 matching rule entries (`PATH-SET-*`, `PATH-FIELD-*`, `PATH-D-SIZE`, `PATH-B-ROW-ACTIONS`, `PATH-B-ROW-ACTIONS-REVEAL`, `PATH-B-NARROW`) |
-| 1.12.0 | 2026-10-02 | Added three narrow-screen table rules (`PATH-TABLE-NARROW-*`) |
 | 1.11.0 | 2026-10-02 | Added `references/table-interactions.md` (32 `PATH-TABLE-*` rules) and `PATH-B-SIMPLE`, `PATH-B-COMPLEX`, `PATH-B-ROW-OPEN`, `PATH-B-EDIT`. Row detail now defaults to a drawer instead of a modal for view-first |
+| 1.12.0 | 2026-10-02 | Added three narrow-screen table rules (`PATH-TABLE-NARROW-*`) |
+| 1.15.0 | 2026-10-09 | Added `references/motion.md`: when a state change should travel or morph, with worked examples |
+| 1.16.0 | 2026-10-09 | Added the status button to `references/motion.md`: decision-test step, table row and worked example |
+| 1.17.0 | 2026-10-09 | `references/motion.md`: twelve-step decision test (tray, typed input, chart range change, collapse to indicator, small state changes), delight tiers, remove-the-motion review |
+| 1.18.0 | 2026-10-28 | Added `references/page-templates.md` and `data/page-templates.json`: 20 whole-page templates in five levels, plus `PATH-PAGE-*` rules for widths, navigation, density by width, overlays, button order, view to edit and narrow tables |
+| 1.19.0 | 2026-10-28 | Added the Onboarding steps template (1-2-3 stepper, `PATH-PAGE-ONBOARDING`) and `PATH-PAGE-SORT-FILTER`: Filter and Sort pinned top right of every table, list and card grid. Blog article renamed Blog post, with reading time, newsletter and previous and next |
+| 1.20.0 | 2026-11-12 | Added a `layout` field to every page template (shell, frame, regions, collections, panels, all token names) and `layout_fields`. Record properties panel is now a token. Split view starts at an 800px window. Phone splits in two at 600px for grids. |
+| 1.21.0 | 2026-11-13 | Added `PATH-DENSITY-PRODUCT` (workbench or relaxed), `references/native-behavior.md` with six `PATH-NATIVE-*` rules (iOS observed, Android not observed), and keyed `PATH-PAGE-DENSITY-TOUCH` on input instead of width |
+| 1.22.0 | 2026-11-15 | Added the container ladder `PATH-D-1` to `PATH-D-5` (confirm, form dialog, large dialog, side peek, page). "Action sheet" is now "bottom sheet" for the mobile container, and stays only for a short choice list with a separate Cancel. |
 
-See `CHANGELOG.md` for detailed rationale on each update.
+This table lists the larger releases only. `CHANGELOG.md` lists every version, up to the current one, with the rationale for each update.
 
 ## Skills This Integrates With
 

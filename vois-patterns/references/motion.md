@@ -114,7 +114,7 @@ Use the tier to decide how far to go. `DS-MOTION-007` sets the rules every tier 
 
 Every tier follows `DS-MOTION-007`: it never gates the task, a still frame carries the same meaning, a loop pauses under reduced motion and while the page is hidden, and an easter egg is absent under reduced motion rather than swapped. Text inside an easter egg goes through `righter`, and humor never appears in an error.
 
-The MOTION dial in `vois-router` caps all of this. At 1 to 3 only crossfades and instant swaps are allowed, so T2 and T3 do not play.
+The MOTION taste dial caps all of this (`vois-tokens` reads it; it defaults to 4 when nothing sets it). At 1 to 3 only crossfades and instant swaps are allowed, so T2 and T3 do not play.
 
 ## Accessibility (required for every morph)
 
