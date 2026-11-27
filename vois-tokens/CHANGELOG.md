@@ -4,6 +4,13 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.11] - 2026-11-27
+
+### Added
+- `DS-MKT-009` to `DS-MKT-011` and `references/marketing-type-and-spacing.md` **Feature media**: marketing frame radius and minimum photo height, device-chrome padding, and scroll-entrance motion with a `prefers-reduced-motion` stop. Pairs with `vois-patterns` PATH M (`marketing-feature-media.md`).
+
+---
+
 ## [1.48.10] - 2026-11-27
 
 ### Fixed

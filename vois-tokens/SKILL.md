@@ -1,7 +1,7 @@
 ---
 name: vois-tokens
 description: Rules and patterns for building UI with shadcn/ui, Tailwind v4 or StyleX, and Motion against a Vois design token set. Use when building components, pages, or any UI that should conform to the workspace design system. Covers spacing, typography, color tokens, component architecture, animation, accessibility, and modern CSS/StyleX patterns.
-version: 1.48.10
+version: 1.48.11
 ---
 
 # Vois Tokens Skill
@@ -92,7 +92,7 @@ building fresh, not just the bare rule text:**
 | `references/overlays.md` | Dialog structure, bottom sheets and full-screen forms on phones, dialog accessibility (name, first focus, return focus, Escape, dragging) | `[DS-MODAL-004]` to `[DS-MODAL-007]` `[DS-RESPONSIVE-008]` to `[DS-RESPONSIVE-010]` `[DS-A11Y-019]` to `[DS-A11Y-023]` |
 | `references/questionnaire-ui.md` | Respondent-facing questionnaires: required labels, focus per question, reduced motion, sticky bar and keyboard, 56px option rows, poll and quiz results | `[DS-A11Y-024]` to `[DS-A11Y-028]` `[DS-RESPONSIVE-011]` to `[DS-RESPONSIVE-013]` |
 | `references/css-architecture.md` | @theme setup, selector specificity, media queries | `[DS-CSS]` |
-| `references/marketing-type-and-spacing.md` | Type scale and spacing for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 128px). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
+| `references/marketing-type-and-spacing.md` | Type scale, spacing, and feature-media tokens for marketing surfaces only (display and h2 face, 56ch body, section gap ratios, gaps above 128px, frame radius, device chrome, scroll motion). Ratios are rules, pixel values are starting points | `[DS-MKT]` |
 | `references/anti-slop.md` | Generic "AI-looking" layout/styling defaults (centered hero, AI gradient, three-card grids, eyebrow overuse, em dashes) — judgment-only, not indexed in `data/vois-rules.json` by design; read the file | `[DS-SLOP]` |
 | `references/hooks.md` | Setting up the automated per-edit checker, managing ignores | `[DS-HOOKS]` |
 
@@ -221,6 +221,9 @@ Run this regardless of which reference files you read — it's the universal gat
 - [ ] Body text capped at `56ch` `[DS-MKT-005]`
 - [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
 - [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
+- [ ] Feature media frames use marketing radius `[DS-MKT-009]`
+- [ ] Product UI in marketing media uses cropped device chrome `[DS-MKT-010]`
+- [ ] Reduced motion shows the final media frame `[DS-MKT-011]`
 
 **Anti-slop** (see `references/anti-slop.md` — read it before flagging; several are dial-gated)
 - [ ] No centered-everything default above `VARIANCE 4` `[DS-SLOP-001]`

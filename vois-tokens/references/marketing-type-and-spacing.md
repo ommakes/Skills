@@ -2,7 +2,7 @@
 
 Type scale and spacing for marketing surfaces: landing pages, product marketing, public site pages. Product UI keeps `[DS-TYPOGRAPHY]` and `[DS-SPACING]` as written.
 
-Structure rules for these pages (one idea per section, three blocks max, no dividers) are in `vois-patterns/references/marketing-pages.md`. Word limits are in `righter/references/marketing-copy.md`.
+Structure rules for these pages (one idea per section, three blocks max, no dividers) are in `vois-patterns/references/marketing-pages.md`. Media composition inside feature blocks (split rows, triptychs, chrome, focal callouts) is in `vois-patterns/references/marketing-feature-media.md` (`PATH-M`). Word limits are in `righter/references/marketing-copy.md`.
 
 **These are taste rules for marketing surfaces, not general laws.** A pricing comparison, a docs page, or an app screen can break them for good reasons.
 
@@ -66,6 +66,16 @@ Tight text, loose sections `[DS-MKT-007]`: the gap inside a block is smaller tha
 
 Above the product ceiling `[DS-MKT-008]`: on marketing surfaces, section-to-section gaps may go above 128px, up to 240px, in steps of 8. This is an exception to the allowed-values list in `spacing.md`. The divisible-by-4-or-8 rule in `[DS-SPACING-001]` still holds. Use a spacing token, not a bare number (`[DS-SPACING-003]`).
 
+## Feature media
+
+Applies when a marketing feature block shows product UI, a screenshot, or a photo. Layout treatments live in `vois-patterns/references/marketing-feature-media.md` (`PATH-M`).
+
+Frame radius `[DS-MKT-009]`: marketing feature media uses a larger radius than product cards — at least 16px on mobile and 20px on desktop — from a radius token. Photo tiles stay at least 300px tall on mobile (`PATH-G-TILE`).
+
+Chrome padding `[DS-MKT-010]`: simplified browser or device frames around product UI use 8 to 12px padding inside the frame and one elevation step above the page. Crop to the job; no literal OS chrome.
+
+Scroll motion `[DS-MKT-011]`: one entrance per section, `--motion-duration-base` or faster, still under `[DS-ANIMATION-001]`. When `prefers-reduced-motion` is set, show the final frame with no entrance motion.
+
 ## Pre-submit (marketing surfaces only)
 
 - [ ] Display face used only for display and h2, never below 28px `[DS-MKT-002]`
@@ -73,3 +83,6 @@ Above the product ceiling `[DS-MKT-008]`: on marketing surfaces, section-to-sect
 - [ ] Body text capped at `56ch` `[DS-MKT-005]`
 - [ ] Section gap at least 4x the heading-to-content gap `[DS-MKT-006]`
 - [ ] Gaps inside a block smaller than gaps between blocks `[DS-MKT-007]`
+- [ ] Feature media frames use marketing radius, not product card radius `[DS-MKT-009]`
+- [ ] Product UI in marketing media uses cropped device chrome when shown as the product `[DS-MKT-010]`
+- [ ] Reduced motion shows the final media frame with no scroll entrance `[DS-MKT-011]`

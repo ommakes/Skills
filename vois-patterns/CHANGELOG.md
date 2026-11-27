@@ -6,6 +6,13 @@ Format: **Version** | Date | Type | Summary
 
 ---
 
+## [1.23.8] - 2026-11-27
+
+### Added
+- `references/marketing-feature-media.md` and PATH M (`PATH-M` plus eleven `PATH-M-*` nodes in `data/patterns-rules.json`): treatments (centered, triptych, split, bento), frame, device chrome, backdrop blend, scroll motion, reduced motion, and focal callouts for product media inside marketing feature blocks. Builds on `PATH-G`. Evidence from six Mobbin marketing feature sections. Type values for frames, chrome, and motion route to `vois-tokens` (`DS-MKT-009` to `DS-MKT-011`).
+
+---
+
 ## [1.23.7] - 2026-11-26
 
 ### Changed
