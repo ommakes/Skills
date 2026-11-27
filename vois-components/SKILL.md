@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.44.6
+version: 1.44.7
 ---
 
 # Vois Component Selection Skill
@@ -148,6 +148,8 @@ Radix and native elements give roles and keyboard behavior. These parts are the 
 ## Lookalikes: Don't Hand-Build These
 
 Agents often write markup that looks like a component but isn't one: a raw `<button>` with its own focus ring, `Loader2` with `animate-spin`, buttons with `role="radio"`, numbered circles joined by lines, a round `div` holding an `<img>` as a person's picture, a rounded `span` with padding as a tag or label chip, `title="..."` as a tooltip. Before you write markup for something that looks like a component, use the component. If the project doesn't have one yet, check the registry (`registry/registry.json`) for a Vois version before reaching for stock shadcn. The full rows (what to write instead, why, rule IDs, a signal a script can match) are in `data/components-rules.json` under `lookalikes`. `node vois-components/scripts/query.mjs <ComponentName>` prints the ones that name that component.
+
+A raw `<button>` with your own focus ring, as a text link, an icon in an input, or a Tooltip or Popover trigger, is Button: `variant="link"` for text, `asChild` as a trigger. For an icon, IconButton with its required `label` (the registry's `vois-icon-button`); inside a field, InputGroupButton (vois-tokens `DS-ICON-006`). No project Button yet? Install the registry's `vois-button` item.
 
 When the prompt describes how something looks ("a red × in the corner", "a pill with a circle"), pick the component by its job, then style it. The look in a prompt is not the component.
 
