@@ -297,7 +297,7 @@
       "tree_path": [2],
       "user_prompt": "Add a quick launcher that power users open with a keyboard shortcut. They type to find any page, project or action in the app and jump straight to it.",
       "condition": "Actions are searched or navigated by keyboard (power users, complex apps)",
-      "expected_outcome": "Command (palette-style — see Job 6)",
+      "expected_outcome": "Command (palette-style — see JOB-CHOOSE-FROM-LIST)",
       "forbidden_outcomes": [
         "DropdownMenu (anchored to a button, not searchable across the app)",
         "Select or Combobox (picks a value, doesn't run actions or navigate)"
@@ -648,7 +648,7 @@
       "tree_path": [3],
       "user_prompt": "In the invite form, ask whether the person joins as 'Member' or 'Admin'.",
       "condition": "Only 2 options",
-      "expected_outcome": "Radio buttons or Segmented Control (see Job 5) — don't use Select for binary choices",
+      "expected_outcome": "Radio buttons or Segmented Control (see JOB-SWITCH-VIEWS) — don't use Select for binary choices",
       "forbidden_outcomes": [
         "Select (don't use a dropdown for a two-way choice)",
         "Checkbox (implies more than one can be chosen)"

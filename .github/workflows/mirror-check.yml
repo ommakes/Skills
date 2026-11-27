@@ -4,21 +4,27 @@ on:
   push:
     branches: [main]
     paths:
+      - ".github/workflows/mirror-check.yml"
       - "scripts/check-mirror.mjs"
+      - "scripts/mirror-config.mjs"
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
       - "vois-dataviz/**"
+      - "vois-fields/**"
       - "righter/**"
       - "registry/**"
       - "CLAUDE.md"
   pull_request:
     paths:
+      - ".github/workflows/mirror-check.yml"
       - "scripts/check-mirror.mjs"
+      - "scripts/mirror-config.mjs"
       - "vois-tokens/**"
       - "vois-patterns/**"
       - "vois-components/**"
       - "vois-dataviz/**"
+      - "vois-fields/**"
       - "righter/**"
       - "registry/**"
       - "CLAUDE.md"
