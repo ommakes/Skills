@@ -221,24 +221,43 @@ data, or writing up UX research findings for stakeholders.
 
 ---
 
+## Retrieval and the stack
+
+An agent building UI reads `vois-patterns` first. That skill decides the structure. When the screen shows data, `vois-dataviz` comes next, before `vois-components`. `vois-components` picks the component for each job. `vois-fields` follows that pick when the screen has a specialized input, and `vois-tokens` then applies spacing, type, color, motion and accessibility. `righter` is consulted throughout for the words. Each of the six works on its own. `vois-loop` and `vois-router` live in the private repo only.
+
+One question gets one packet. The agent names a component in any spelling (`Dialog`, `alert-dialog`, `Alert Dialog`), or a job or rule id, and [`vois-components/scripts/query.mjs`](./vois-components/scripts/query.mjs) answers from [`vois-components/data/retrieval-index.json`](./vois-components/data/retrieval-index.json). It also reads the job trees from [`vois-components/data/components-rules.json`](./vois-components/data/components-rules.json), and opens a behavior card when the packet asks for one. [`vois-components/scripts/retrieval.mjs`](./vois-components/scripts/retrieval.mjs) builds the index from that rules file (the 24 jobs and the lookalike rows) together with the component names, the behavior cards, and the pattern, field and token rules a packet quotes. A default text packet stays within 40 lines. `--full` adds the card rows, the job rationale, and the rest of a long pattern group. Lookalike rows `LOOKALIKE-001` to `LOOKALIKE-014` map a piece of hand-built markup to the component to use instead.
+
+```mermaid
+flowchart TD
+  subgraph order [Reading order]
+    patterns["vois-patterns, read first"] -->|screen shows data| dataviz["vois-dataviz"]
+    patterns --> components["vois-components"]
+    dataviz --> components
+    components -->|specialized input| fields["vois-fields"]
+    components --> tokens["vois-tokens"]
+    fields --> tokens
+  end
+  righter["righter, throughout"]
+  patterns -.-> righter
+  components -.-> righter
+  tokens -.-> righter
+  subgraph lookup [Just-in-time retrieval]
+    rules["components-rules.json"] --> index["retrieval-index.json"]
+    index --> query["query.mjs"]
+    ask["a component, job or rule"] --> query
+    query --> packet["one packet, 40 lines"]
+  end
+  components -.-> query
+```
+
 ## The Design System Stack
 
-The four design system skills form a complete pipeline:
-
-```
-1. vois-patterns
-   ↓ (structures → container types)
-2. vois-components
-   ↓ (selects → specific components for each job)
-3. vois-tokens
-   ↓ (implements → tokens, spacing, accessibility)
-4. righter (consulted throughout for all UI copy)
-```
-
-Read them in order. Each skill assumes you've read the previous one and points forward to the next. No orchestrator or MCP server is required — each skill works standalone.
+The reading order and the retrieval packet are in [Retrieval and the stack](#retrieval-and-the-stack). Each skill works standalone.
 
 - **Patterns** answers "what structure am I building?"
+- **Dataviz** answers "which chart or dashboard?" when the screen shows data.
 - **Components** answers "which component for this job?"
+- **Fields** answers "how does this specialized input behave?" when the screen has one.
 - **Tokens** answers "how do I implement this correctly?"
 - **Righter** answers "what words go here?" (consulted at every step)
 
@@ -250,6 +269,7 @@ The skills are the unit you install, so the folders follow the skills. This map 
 |---|---|---|
 | Tokens | Color, spacing, type, surface, elevation, motion, layout | `vois-tokens/data/vois-rules.json`, `vois-tokens/references/` |
 | Components | Which component for which job, and what not to hand-build | `vois-components/data/components-rules.json` (jobs, lookalikes), `vois-components/references/` (specs) |
+| Fields | Keyboard, autofill, stored format, check timing and privacy for a specialized input | `vois-fields/data/fields-rules.json`, `vois-fields/data/field-types.json` |
 | Patterns | How one container behaves: a settings page, a table with details, a form, a dialog | `vois-patterns/data/patterns-rules.json` (`PATH-A` to `PATH-G`) |
 | Templates | Which containers a page holds, in what order, at each width | `vois-patterns/data/page-templates.json` (`PATH-PAGE-*`) |
 | Charts | Chart form, color and dashboard rules | `vois-dataviz/data/` |
