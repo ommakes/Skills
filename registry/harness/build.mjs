@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Builds the accessibility harness: a small app that renders every registry component and its states, one page
-// each, so the rendered check (vois-loop/scripts/render-check.mjs) has something to open. It is a dev tool for this
+// each, so the rendered check (vois-loop/scripts/render-check.mjs, private repo only) has something to open. It is a dev tool for this
 // repo's CI. It is not a registry item and nothing in it reaches a consumer.
 //
 //   node harness/build.mjs             writes harness/dist/ (app.js, app.css, index.html), which git ignores

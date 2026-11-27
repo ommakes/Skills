@@ -7,6 +7,9 @@
 //   echo "Your copy text here" | node ari.mjs
 //   node ari.mjs --target 10 "Your copy text here"   (optional; default target is 6)
 
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 const GRADE_TABLE = [
   { grade: "Kindergarten", age: "5–6" },
   { grade: "Grade 1", age: "6–7" },
@@ -73,7 +76,11 @@ async function readStdin() {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// Comparing paths, not file:// strings, also covers spaces, % and # in the path, and Windows drive letters.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   const args = process.argv.slice(2);
   let target = 6;
   const targetIdx = args.indexOf("--target");

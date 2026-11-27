@@ -1,6 +1,6 @@
 # Vois Fields
 
-**Version 1.0.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Part of the Vois design system skills. Works without the Vois MCP server.
+**Version 1.0.1** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Part of the Vois design system skills. Works without the Vois MCP server.
 
 Rules for specialized input fields. It answers: what keyboard, autofill, stored format, check timing and privacy handling does this field need?
 

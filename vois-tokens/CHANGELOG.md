@@ -4,6 +4,22 @@ All notable changes to the Vois Tokens skill are documented here.
 
 ---
 
+## [1.48.10] - 2026-11-27
+
+### Fixed
+- **A symlinked install, or a path with a space, no longer makes `detect.mjs` or `check.mjs` print nothing and exit 0.** The entry-point check compared `process.argv[1]` with `import.meta.url` as raw strings. `npx skills add` links a skill as a symlink, so Node gives the script its real path and `argv[1]` the link path, and a path with a space or `%` is percent-encoded in the URL. Either way the script skipped `main()`, and an agent read the empty output as "no findings". Both sides now go through `realpathSync`, as `elevation-map.mjs` already did. An `argv[1]` that does not resolve (an import from `node -e` with arguments) no longer runs `main()`; `elevation-map.mjs` had that bug and is fixed too. `scripts/entry-points.test.mjs` runs every skill CLI from its real path, through a symlink and from a path with a space, `%` and `#`, and requires the same output each time. It also imports each one with another file as `argv[1]` and requires that nothing runs. `detect.mjs` also failed from a path with a space, because it compared against a hand-built `file://` string.
+- **A `.vois/hook-cache.json` of `{}`, or a `config.json` of `null`, crashed the hook on every edit.** `hook.mjs` says it always exits 0, but it threw (`Cannot read properties of undefined`) and exited 1. `loadCache` and `loadConfig` now reset any part with the wrong shape, and both hook entry points catch anything else and exit 0. The before-edit hook still denies on a slop finding when the cache was malformed. Tests cover ten cache shapes and seven config shapes in both files.
+- **The hook waived more than the CI gate.** `ignoredValues: {"DS-COLOR-001": [""]}` waived the whole rule in the hook, which `check.mjs` rejects. A value was also matched against the finding's message, so `"token"` dropped every DS-COLOR-001 finding. The hook now keeps only what `check.mjs`'s `loadWaivers` accepts (lists of non-empty strings; a wrong type is dropped, never widened) and matches a value against the line only, as `waived()` does. A test runs ten configs through both and requires the same result. Two differences remain, both documented: the hook also reads `.vois/config.local.json`, which the gate ignores (`references/hooks.md`), and the hook matches a value against the finding's snippet (at most 160 characters), so on a longer line it waives less than the gate, never more.
+- **A hand-edited block count such as `"9"` in `hook-cache.json` turned off blocking.** `"9" >= 3` is true in JavaScript, so the before-edit hook treated the finding as downgraded. A count that is not a non-negative integer now reads as 0.
+- **`DS-ANIMATION-005` blocked `{ xscale: 0 }`, `rescale(0)` and `d3.scale(0)`.** The blocking pattern had no left boundary, so the Cursor before-edit hook denied valid edits. It now needs `scale` to start a word (not after a letter, digit, `$`, `.` or `-`), and `transform: scale(0)`, `{scale:0}` and `scale: 0` still block.
+- **A quote inside a regex literal hid the comment after it.** In `s.replace(/["']/g, ""); // removed !important`, the comment blanker read `"` as the start of a string, so the comment counted as code and `DS-TAILWIND-004` (blocking) fired. `uncomment` now skips a JS regex literal where one can start (after an operator, `(`, `,`, `=>` or a keyword such as `return`; never after `<` or `}`, so JSX is unchanged). A postfix `++`, `--` or non-null `!` (`i++ / n`, `total! / n`), a self-closing `/>` and a keyword-named property (`x.of / 2`) are read as before, as a division or a tag. The scan is capped at 500 characters so a line of unclosed `(/[` stays linear.
+- `hook-lib.mjs` held two literal NUL bytes (the `**` placeholder in `globToRegExp`), so git and GitHub showed it as a binary file. They are `\u0000` escapes now, with the same meaning.
+
+### Changed
+- `references/hooks.md`: the lookalike row says `LOOKALIKE-001` to `LOOKALIKE-014` (10 of the 14), and the judgment-only list adds `LOOKALIKE-013` (left to `DS-COLOR-002`) and `LOOKALIKE-014`. The text landed in this repo before this release, with no version of its own.
+
+---
+
 ## [1.48.9] - 2026-11-26
 
 ### Changed

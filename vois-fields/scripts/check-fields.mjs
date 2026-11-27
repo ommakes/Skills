@@ -4,7 +4,7 @@
 // The schema validator below is a small subset on purpose (type, enum, required, properties,
 // additionalProperties, items, minItems, minLength, minimum, pattern, $ref to #/$defs). It fails closed:
 // a schema keyword it does not know is an error, so a schema can never ask for a check that is skipped.
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -87,7 +87,10 @@ export function checkAll(dir = DATA) {
   return [...validate(schema, data), ...semanticProblems(data)];
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   const problems = checkAll();
   if (problems.length) { console.error(problems.map((p) => "  " + p).join("\n")); console.error(`check-fields: ${problems.length} problem(s)`); process.exit(1); }
   console.log("check-fields: OK");

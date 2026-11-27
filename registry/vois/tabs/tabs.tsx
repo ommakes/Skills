@@ -12,7 +12,7 @@
 //     an inset shadow, so the height never changes.
 // Focus is a 2px --border-state-focus ring: around the pill, 2px out, or around the underline label box.
 //
-// Use Tabs for a few content areas the user moves between freely (vois-components Job 5), all visible
+// Use Tabs for a few content areas the user moves between freely (vois-components JOB-SWITCH-VIEWS), all visible
 // at once. For more than 5 or 6, use a Select. Tabs are always mutually exclusive.
 //
 // Which state wins: disabled, then active, then hover, then resting. data-* variants are written after

@@ -56,4 +56,9 @@ function main() {
   process.exit(0);
 }
 
-main();
+try {
+  main();
+} catch (e) {
+  console.error(`vois-tokens hook: skipped (${e?.message ?? e})`);
+  process.exit(0);
+}

@@ -19,6 +19,7 @@ node scripts/check-skill-paths.test.mjs
 node scripts/check-skill-paths.mjs
 node scripts/check-reference-files.test.mjs
 node scripts/check-reference-files.mjs
+node scripts/entry-points.test.mjs
 node scripts/port-from-private.test.mjs
 bash scripts/validate-skills.sh
 node vois-tokens/scripts/detect.test.mjs

@@ -6,7 +6,7 @@
 //   4. The question engine picks the right component (PATH-H-2).
 //   5. tokens.questionnaire.json thresholds match the engine.
 //   6. Righter copy entries have the right shape and point at real rule ids.
-//   7. Jobs 22 to 24 are present and complete.
+//   7. JOB-ANSWER-CHOICE-QUESTION, JOB-ANSWER-SCALE-OR-RANK and JOB-SHOW-POLL-RESULTS are present and complete.
 //   8. The registry copy of the engine is byte for byte this folder's engine.
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";

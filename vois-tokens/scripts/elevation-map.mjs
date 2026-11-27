@@ -172,7 +172,8 @@ export function checkAll(opts) {
   return [...s, ...missing, ...noExport, ...rest];
 }
 
-const isEntry = (() => { try { return !!process.argv[1] && realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1]); } catch { return true; } })();
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
 if (isEntry) {
   const problems = checkAll();
   if (problems.length) { console.error(problems.map((p) => "  " + p).join("\n")); console.error(`elevation-map: ${problems.length} problem(s)`); process.exit(1); }

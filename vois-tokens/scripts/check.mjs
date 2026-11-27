@@ -24,9 +24,9 @@
 // or config, an unknown option, a file that cannot be read). Bad input never means pass.
 // Paths are relative to the working directory and must be inside --root (default: the working directory).
 
-import { appendFileSync, existsSync, lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, lstatSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
 import { RULES, rulesForFile } from "./registry.mjs";
 import { loadTeams, paramsFor } from "./team-overrides.mjs";
@@ -321,6 +321,9 @@ export function main(argv, { stdout = (s) => console.log(s), stderr = (s) => con
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   process.exitCode = main(process.argv.slice(2));
 }

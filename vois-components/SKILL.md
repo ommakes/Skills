@@ -1,7 +1,7 @@
 ---
 name: vois-components
 description: Component selection rubrics organized by job-to-be-done. Use after vois-patterns determines structure, before vois-tokens applies tokens. Optionally records each choice via the vois_record_component_choice MCP tool if one is available. Use when deciding between similar components — Dialog vs Drawer, Toast vs Banner, Select vs Combobox, a chart vs a table, etc.
-version: 1.44.8
+version: 1.44.9
 ---
 
 # Vois Component Selection Skill
@@ -100,9 +100,9 @@ The Quick Reference table below resolves most cases on its own. When it doesn't 
 
 ---
 
-## Icons in Labeled Buttons (extends Job 8, Trigger an action)
+## Icons in Labeled Buttons (extends `JOB-TRIGGER-ACTION`)
 
-Default: no icon. A button with a clear label does not need one. Add an icon only when a rule below says so. Icon-only buttons are a different case (see Job 8). Icon size and stroke live in vois-tokens.
+Default: no icon. A button with a clear label does not need one. Add an icon only when a rule below says so. Icon-only buttons are a different case (see `JOB-TRIGGER-ACTION`). Icon size and stroke live in vois-tokens.
 
 Walk these in order. Stop at the first yes.
 

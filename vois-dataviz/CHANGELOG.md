@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.2.2] - 2026-11-27
+
+### Fixed
+
+- **`detect.mjs --strict` passed a file it could not read.** `--strict /nonexistent.tsx` exited 0, so a typo in a CI path was a green gate. Under `--strict` an unreadable file now exits 2 and is named on stderr. An unknown option (`--strcit`) exits 2 instead of being dropped. Without `--strict` an unreadable file is still skipped and the exit code is 0, but it is now named on stderr.
+- **A symlinked install, or a path with a space, no longer makes `detect.mjs` or `check-spec.mjs` print nothing and exit 0.** The entry-point check compared `process.argv[1]` with `import.meta.url` as raw strings. `npx skills add` links a skill as a symlink, so Node gives the script its real path and `argv[1]` the link path, and a path with a space or `%` is percent-encoded in the URL. Either way the script skipped `main()`, and an agent read the empty output as "no findings". Both sides now go through `realpathSync`, as `elevation-map.mjs` already did. An `argv[1]` that does not resolve (an import from `node -e` with arguments) no longer runs `main()`. `scripts/entry-points.test.mjs` runs every skill CLI from its real path, through a symlink and from a path with a space, `%` and `#`, and requires the same output each time. It also imports each one with another file as `argv[1]` and requires that nothing runs.
+
+---
+
 ## [1.2.1] - 2026-11-13
 
 ### Changed

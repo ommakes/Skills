@@ -1,6 +1,6 @@
 ---
 name: vois-fields
-version: 1.0.0
+version: 1.0.1
 description: >
   Rules for specialized input fields: which keyboard, autofill, stored format, check timing and privacy
   handling each kind of field needs. Use after vois-components has chosen an Input, Textarea, Select or

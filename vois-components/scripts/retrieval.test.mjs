@@ -98,6 +98,50 @@ test("registry: a value naming a missing item fails; with no registry folder the
   assert.ok(has(problemsOf(s), /Tabs registry must be a string or null/));
 });
 
+test("registry: every registry:ui item must be some component's registry, so query.mjs can find it", () => {
+  const outside = (s) => s.names.outsideInventory.names;
+  let s = fresh(); outside(s).find((c) => c.id === "IconButton").registry = null;
+  assert.ok(has(problemsOf(s), /vois-icon-button is a registry:ui item that no component/));
+  s = fresh(); s.names.outsideInventory.names = outside(s).filter((c) => c.id !== "SwatchPicker");
+  assert.ok(has(problemsOf(s), /vois-swatch-picker is a registry:ui item/));
+  // From the other side: only registry:ui items count, and a missing registry folder skips the check.
+  s = fresh(); s.registry.items.push({ name: "vois-unclaimed-theme", type: "registry:theme" }, { name: "vois-unclaimed-lib", type: "registry:lib" });
+  assert.ok(!has(problemsOf(s), /vois-unclaimed/));
+  s = fresh(); s.registry.items.push({ name: "vois-unclaimed-ui", type: "registry:ui" });
+  assert.ok(has(problemsOf(s), /vois-unclaimed-ui is a registry:ui item/));
+  s = fresh(); s.registry = null; outside(s).find((c) => c.id === "IconButton").registry = null;
+  assert.ok(!has(problemsOf(s), /registry:ui item/));
+  s = fresh(); outside(s).find((c) => c.id === "ButtonGroup").registry = "vois-icon-button";
+  assert.ok(has(problemsOf(s), /ButtonGroup and IconButton both name registry item vois-icon-button|IconButton and ButtonGroup both name registry item vois-icon-button/));
+  s = fresh(); s.registry = null; outside(s).find((c) => c.id === "ButtonGroup").registry = "vois-icon-button";
+  assert.ok(has(problemsOf(s), /both name registry item vois-icon-button/), "checked without a registry folder too");
+});
+
+test("a job or lookalike that cites a job by number fails; a JOB-* id or a number in other words does not", () => {
+  const tree = (s) => s.rules.jobs.find((j) => j.id === "JOB-TRIGGER-ACTION").decision_tree;
+  let s = fresh(); tree(s)[0].recommendation += " (see Job 8)";
+  assert.ok(has(problemsOf(s), /JOB-TRIGGER-ACTION says "Job 8"/));
+  s = fresh(); s.rules.lookalikes.rows[0].instead += " See Jobs 22.";
+  assert.ok(has(problemsOf(s), /says "Jobs 22"/));
+  for (const cite of ["see\nJob 8", "see\tJob 8", "see Job #8", "see JOB 8", "see Job-8", "see Job\u00a08", "see Job8"]) {
+    s = fresh(); tree(s)[0].recommendation += ` (${cite})`;
+    assert.ok(has(problemsOf(s), /JOB-TRIGGER-ACTION says "J(?:ob|OB)[^"]*8"/), JSON.stringify(cite));
+  }
+  s = fresh(); tree(s)[0].recommendation += " (see JOB-SWITCH-VIEWS; 8 jobs; Jobber 5; job 5 of the batch)";
+  assert.ok(!has(problemsOf(s), /name the job by its JOB-\* id/));
+});
+
+test("every component a job recommends by name resolves, including the ones only the registry had", () => {
+  const all = loadAll();
+  for (const name of ["IconButton", "ButtonGroup", "SwatchPicker", "DataTable", "InputGroupButton", "InputGroup", "ChoiceList", "ChoiceCard", "PageGrid", "PanelLayout", "Inspector", "vois-icon-button", "icon-button"]) {
+    const r = main([name]);
+    assert.equal(r.code, 0, `${name}: ${r.out.split("\n")[0]}`);
+  }
+  const job = (id) => all.index.components.filter((c) => c.jobs.includes(id)).map((c) => c.id);
+  assert.ok(job("JOB-TRIGGER-ACTION").includes("IconButton") && job("JOB-TRIGGER-ACTION").includes("ButtonGroup"));
+  assert.ok(job("JOB-DISPLAY-DATA").includes("DataTable"));
+});
+
 test("a rule cited by a card or a lookalike row must exist", () => {
   let s = fresh();
   s.cards.find((c) => c.file === "dialog.json").card.behaviors[0].rules = ["DS-A11Y-999"];

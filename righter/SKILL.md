@@ -6,7 +6,7 @@ description: >
   button labels, tooltips, empty states, permission prompts, onboarding copy, form helper text, accessible labels or link text, or any software interface copy.
   Also trigger when someone asks you to write new UI copy, label a button, draft an error message,
   write a modal, or create any in-product text. If the request involves words that appear inside software, use this skill.
-version: 1.12.0
+version: 1.12.1
 ---
 
 # Righter

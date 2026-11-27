@@ -2,7 +2,7 @@
 // No new dependency — uses Node's built-in test runner.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync, symlinkSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync, symlinkSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
@@ -755,6 +755,16 @@ test("DS-ANIMATION-005 still blocks scale(0) and only scale(0)", () => {
   assert.equal(low.length, 1);
   assert.equal(low[0].severity, "quality", "a start below the floor is never blocked");
   assert.match(low[0].message, /0\.5, below the 0\.9 floor/);
+});
+
+test("DS-ANIMATION-005 does not block a name that ends in scale", () => {
+  for (const src of ["const o = { xscale: 0 };", "rescale(0);", "d3.scale(0);", "const s = $scale(0);", ".a { --icon-scale: 0; }", "const a = { y_scale: 0 };"]) {
+    assert.deepEqual(startHits(src).filter((f) => f.severity === "slop"), [], src);
+  }
+  // From the other side: scale itself still blocks, wherever it starts.
+  for (const src of ["<motion.div initial={{scale:0}} />", ".a { transform: scale(0); }", ".a { transform:scale(0) }", ".a { scale: 0; }", "animate({ scale: 0 })", "const k = 'scale(0)';"]) {
+    assert.equal(startHits(src, src.startsWith(".") ? "a.css" : "src/Card.tsx").filter((f) => f.severity === "slop").length, 1, src);
+  }
 });
 
 test("DS-ANIMATION-005 reads the start of an enter animation in each spelling", () => {
@@ -2342,6 +2352,38 @@ test("blanking comments is linear, and a // or /* inside a string is not a comme
   assert.equal(has(detectFile("a.css", '.a::after { content: "/* x */"; color: red !important; }'), "DS-TAILWIND-004").length, 1, "a CSS string is not a comment");
 });
 
+test("a quote inside a regex literal opens no string, so the comment after it is still a comment", () => {
+  const important = (src, file = "a.ts") => has(detectFile(file, src), "DS-TAILWIND-004").length;
+  assert.equal(important('s.replace(/["\']/g, ""); // removed !important'), 0, "the public review's input");
+  assert.equal(important("const r = /'/; // was !important"), 0, "after =");
+  assert.equal(important('if (/"/.test(s)) x(); // !important'), 0, "after (");
+  assert.equal(important("const f = (s) => /[\"/]/.test(s); // !important"), 0, "after =>, with / inside a class");
+  assert.equal(important("function f() { return /'/g; } // !important"), 0, "after return");
+  assert.equal(important("const r = /\\/'/; // !important"), 0, "an escaped / does not end the literal");
+  // From the other side: a / that divides starts no regex, and real code after a regex still counts.
+  assert.equal(important('const a = b / c; const d = "x"; const e = "!important";'), 1, "division");
+  assert.equal(important("const a = (b) / 2; // it's /fine/ !important"), 0, "a // after a division is still a comment");
+  assert.equal(important('const r = /a/; const s = "!important";'), 1, "a string after a regex");
+  assert.equal(important('const r = /\'/; const s = "!important";'), 1, "a quote in a regex does not swallow the next string's start");
+  assert.equal(important('<a>y</a>; const s = "/"; // !important', "a.tsx"), 0, "a JSX closing tag is not a regex");
+  assert.equal(important('<p>{a}/{b}</p>; const s = "/"; // !important', "a.tsx"), 0, "{a}/{b} in JSX text is not a regex");
+  assert.equal(important(".a { content: '/'; color: red !important; }", "a.css"), 1, "CSS has no regex literals");
+  // An operand that ends in a postfix operator, a self-closing JSX tag, or a property named like a keyword.
+  assert.equal(important("const r = total! / count; // !important"), 0, "non-null ! then a division");
+  assert.equal(important("const r = f()! / count; // !important"), 0, "non-null ! after a call");
+  assert.equal(important("const r = i++ / count; // !important"), 0, "postfix ++ then a division");
+  assert.equal(important("const r = i-- / 2; // !important"), 0, "postfix -- then a division");
+  assert.equal(important("const w = <Fade in />; // !important", "a.tsx"), 0, "a self-closing tag after an attribute named like a keyword");
+  assert.equal(important("const r = x.of / 2; // it's !important"), 0, "a property named like a keyword");
+  assert.equal(has(detectFile("a.ts", "const a = x.y!/2; // transform: scale(0)"), "DS-ANIMATION-005").length, 0, "a comment the hook would block on");
+  assert.equal(important("if (!/'/.test(s)) x(); // !important"), 0, "a prefix ! still starts a regex");
+  assert.equal(important("const t = !!/'/.test(s); // !important"), 0, "!! still starts a regex");
+  assert.equal(important("const r = a + /'/.source; // !important"), 0, "a binary + still starts a regex");
+  const slow = (text) => { const t = Date.now(); detectFile("a.tsx", text); return Date.now() - t; };
+  assert.ok(slow("(/[".repeat(40000)) < 1500, "many unclosed regex starts on one line stay fast");
+  assert.ok(slow("x = /a/; ".repeat(20000)) < 1500);
+});
+
 test("a team folder that is a dangling link is reported, as a missing folder is not", () => {
   const root = mkdtempSync(join(tmpdir(), "vois-teams-"));
   mkdirSync(join(root, ".vois"));
@@ -2606,4 +2648,94 @@ test("the glass and elevation checks stay fast on thousands of repeats of text t
       for (const id of ids) assert.ok(ruleTime(id, file, src) < 1500, `${id} on ${JSON.stringify(token)} x 10,000 (${file})`);
     }
   }
+});
+
+// --- Hook state and config that have the wrong shape ---
+
+/** A project whose `.vois/<name>` holds `text`, and a file that trips DS-COLOR-001 and DS-TAILWIND-004. */
+function hookProject(files) {
+  const root = ignoringProject([]);
+  rmSync(join(root, ".vois", "config.json"));
+  for (const [name, text] of Object.entries(files)) writeFileSync(join(root, ".vois", name), text);
+  return root;
+}
+
+test("a hook-cache.json of the wrong shape resets instead of crashing either hook", () => {
+  for (const text of ["{}", "null", "[]", '"x"', "5", '{"files":[]}', '{"files":{"FILE":5}}', '{"files":{"FILE":{"editCount":"a","seenKeys":3}}}', '{"files":{},"blockCounts":"x"}', '{"files":{},"blockCounts":[1]}']) {
+    const root = hookProject({});
+    const file = join(root, "src", "legacy", "a.tsx");
+    writeFileSync(join(root, ".vois", "hook-cache.json"), text.replace("FILE", file.replace(/\\/g, "\\\\")));
+    const after = afterEdit(root, file);
+    assert.equal(after.status, 0, `hook.mjs with ${text}: ${after.stderr}`);
+    assert.match(after.stdout, /DS-COLOR-001/, `hook.mjs still reports with ${text}`);
+    assert.equal(after.stderr, "", `hook.mjs did not fall back to the catch with ${text}`);
+    const before = beforeEdit(root, file);
+    assert.equal(before.status, 2, `hook-before-edit.mjs still denies with ${text}: ${before.stderr}`);
+  }
+});
+
+test("a config.json or config.local.json of the wrong shape is read as no waivers, not as a crash", () => {
+  for (const text of ["null", "[]", '"x"', "5", '{"ignoredRules":null,"ignoredFiles":null,"ignoredValues":null}', '{"ignoredValues":{"DS-COLOR-001":null}}', '{"ignoredValues":[["DS-COLOR-001","#"]]}']) {
+    for (const name of ["config.json", "config.local.json"]) {
+      const root = hookProject({ [name]: text });
+      const file = join(root, "src", "legacy", "a.tsx");
+      const after = afterEdit(root, file);
+      assert.equal(after.status, 0, `${name} = ${text}: ${after.stderr}`);
+      assert.match(after.stdout, /DS-COLOR-001/, `${name} = ${text} waives nothing`);
+      assert.equal(beforeEdit(root, file).status, 2, `${name} = ${text}: the Cursor hook still denies`);
+    }
+  }
+});
+
+test("a waiver of the wrong type never widens: a string ignoredRules is not a substring match", () => {
+  const root = hookProject({ "config.json": JSON.stringify({ ignoredRules: "DS-COLOR-001 DS-TAILWIND-004", ignoredFiles: "src" }) });
+  const file = join(root, "src", "legacy", "a.tsx");
+  assert.match(afterEdit(root, file).stdout, /DS-COLOR-001/);
+  assert.equal(beforeEdit(root, file).status, 2);
+});
+
+test("the hook waives exactly what the CI gate waives, for every config the gate accepts", async () => {
+  const { loadWaivers, waived } = await import("./check.mjs");
+  const { loadConfig, filterFindings } = await import("./hook-lib.mjs");
+  const line = 'export const A = () => <div className="text-[#ff0000]" />;';
+  const configs = [
+    {},
+    { ignoredRules: ["DS-COLOR-001"] },
+    { ignoredRules: ["DS-COLOR"] },
+    { ignoredFiles: ["src/legacy/**"] },
+    { ignoredFiles: ["src/other/**"] },
+    { ignoredValues: { "DS-COLOR-001": ["#ff0000"] } },
+    { ignoredValues: { "DS-COLOR-001": ["#00ff00"] } },
+    { ignoredValues: { "DS-COLOR-001": ["token"] } }, // in the message, not in the line
+    { ignoredValues: { "DS-COLOR-001": ["Hardcoded"] } },
+    { ignoredValues: { "DS-COLOR-002": ["#ff0000"] } },
+  ];
+  for (const config of configs) {
+    const root = hookProject({ "config.json": JSON.stringify(config) });
+    const file = join(root, "src", "legacy", "a.tsx");
+    const findings = detectFile(file, line + "\n");
+    const hook = filterFindings(loadConfig(root), findings, root).map((f) => f.ruleId);
+    const gate = findings.filter((f) => !waived(loadWaivers(root), { ...f, file: "src/legacy/a.tsx", text: line }, root)).map((f) => f.ruleId);
+    assert.deepEqual(hook, gate, JSON.stringify(config));
+  }
+});
+
+test("an empty waiver value, which the gate rejects, waives nothing in the hook", () => {
+  for (const config of [{ ignoredValues: { "DS-COLOR-001": [""] } }, { ignoredFiles: [""] }, { ignoredRules: [""] }]) {
+    const root = hookProject({ "config.json": JSON.stringify(config) });
+    const file = join(root, "src", "legacy", "a.tsx");
+    assert.match(afterEdit(root, file).stdout, /DS-COLOR-001/, JSON.stringify(config));
+  }
+});
+
+test("a block count that is not a non-negative integer never downgrades a blocking finding", async () => {
+  const { isDowngraded, bumpBlockCount } = await import("./hook-lib.mjs");
+  for (const bad of ["9", 9.5, -4, null, true, [5], { n: 5 }, Infinity]) {
+    const cache = { files: {}, blockCounts: { "a.tsx::DS-X": bad } };
+    assert.equal(isDowngraded(cache, "a.tsx", "DS-X"), false, JSON.stringify(bad));
+    assert.equal(bumpBlockCount(cache, "a.tsx", "DS-X"), 1, JSON.stringify(bad));
+  }
+  const cache = { files: {}, blockCounts: {} };
+  for (let n = 1; n <= 3; n++) assert.equal(bumpBlockCount(cache, "a.tsx", "DS-X"), n);
+  assert.equal(isDowngraded(cache, "a.tsx", "DS-X"), true, "three real blocks still downgrade");
 });

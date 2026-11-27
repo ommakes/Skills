@@ -66,6 +66,10 @@ export function uncomment(text, filePath) {
       i = Math.min(j, n);
       continue;
     }
+    if (c === "/" && !css && text[i + 1] !== "/" && text[i + 1] !== "*" && regexCanStart(text, i)) {
+      const end = regexEnd(text, i);
+      if (end !== -1) { i = end; continue; } // a quote inside /["']/ is not a string
+    }
     if (c === "/" && text[i + 1] === "*" && !noBlockClose && (css || i === 0 || /[\s{(,;]/.test(text[i - 1]))) {
       const close = text.indexOf("*/", i + 2);
       if (close === -1) { noBlockClose = true; i += 2; continue; }
@@ -84,4 +88,54 @@ export function uncomment(text, filePath) {
   }
   parts.push(text.slice(last));
   return parts.join("");
+}
+
+const REGEX_KEYWORDS = new Set(["return", "typeof", "case", "do", "else", "in", "of", "void", "yield", "await", "delete", "instanceof", "new", "throw"]);
+
+/**
+ * Whether a "/" at `i` starts a regex literal rather than a division: it follows an operator or punctuation
+ * that begins an expression, `=>`, a keyword such as `return`, or nothing at all. "<" and "}" are left out on
+ * purpose, so JSX ("</div>", "{a}/{b}") never reads as a regex, and so is "/>" (a self-closing tag such as
+ * `<Fade in />`). A postfix `++`, `--` or non-null `!` (`i++ / n`, `total! / n`) ends an operand, so the "/" after
+ * it divides, and a keyword after "." is a property name (`x.of / 2`).
+ */
+function regexCanStart(text, i) {
+  if (text[i + 1] === ">") return false;
+  let k = i - 1;
+  while (k >= 0 && /\s/.test(text[k])) k--;
+  if (k < 0) return true;
+  const p = text[k];
+  if ((p === "+" || p === "-") && text[k - 1] === p) return false;
+  if (p === "!" && /[\w$)\]]/.test(text[k - 1] ?? "")) return false;
+  if ("(,=:[!&|?{;+-%~^".includes(p)) return true;
+  if (p === ">") return text[k - 1] === "=";
+  if (!/[\w$]/.test(p)) return false;
+  let s = k;
+  while (s > 0 && /[\w$]/.test(text[s - 1])) s--;
+  if (text[s - 1] === ".") return false;
+  return REGEX_KEYWORDS.has(text.slice(s, k + 1));
+}
+
+/**
+ * The index just past the regex literal (and its flags) that starts at `i`, or -1 when it does not close on the
+ * line within REGEX_MAX characters. The cap keeps a line full of unclosed "(/[" linear; a longer literal is read
+ * as before, as code.
+ */
+const REGEX_MAX = 500;
+function regexEnd(text, i) {
+  let inClass = false;
+  const stop = Math.min(text.length, i + REGEX_MAX);
+  for (let j = i + 1; j < stop; j++) {
+    const ch = text[j];
+    if (ch === "\n") return -1;
+    if (ch === "\\") { j++; continue; }
+    if (inClass) { if (ch === "]") inClass = false; continue; }
+    if (ch === "[") inClass = true;
+    else if (ch === "/") {
+      j++;
+      while (j < text.length && /[a-z]/i.test(text[j])) j++;
+      return j;
+    }
+  }
+  return -1;
 }

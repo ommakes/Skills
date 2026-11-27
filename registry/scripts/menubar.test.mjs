@@ -1,7 +1,7 @@
 // Drives the vois-menubar story in a real browser and checks the three behaviors the item adds to Radix: Arrow Up
 // opens a menu on its last item, Tab leaves the bar, and a safe triangle keeps the pointer from switching menus on
 // its way to the open one. Needs the `playwright` package and a Chromium; without them the tests are skipped,
-// not passed, as in vois-loop/scripts/render-check.test.mjs. It builds harness/dist, serves it on a free port, and
+// not passed, as in vois-loop/scripts/render-check.test.mjs (private repo only). It builds harness/dist, serves it on a free port, and
 // stops the server at the end.
 // Run: node registry/scripts/menubar.test.mjs
 import { test, before, after } from "node:test";

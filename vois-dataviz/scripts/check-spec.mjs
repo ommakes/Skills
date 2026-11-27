@@ -8,7 +8,8 @@
 // data/chart-spec.schema.json. This covers the rules with enforcement 'spec'
 // plus the mechanical parts of a few judgment rules.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { formIndex, loadData, resultsFrom, ruleIndex } from "./lib.mjs";
 
 const BAR_FORMS = new Set(["FORM-BAR-V", "FORM-BAR-H", "FORM-BAR-GROUPED", "FORM-BAR-STACKED", "FORM-BAR-STACKED-PCT", "FORM-BAR-DIVERGING"]);
@@ -139,5 +140,8 @@ function main(argv) {
   if (strict && results.some((r) => !r.ok)) process.exit(1);
 }
 
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// Comparing paths, not file:// strings, also covers spaces, % and # in the path, and Windows drive letters.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isMain = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
 if (isMain) main(process.argv);
