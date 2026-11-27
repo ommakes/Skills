@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [Unreleased]
+
+### Documentation
+- The root README now has a schema of just-in-time retrieval and of how `vois-patterns`, `vois-dataviz`, `vois-components`, `vois-fields`, `vois-tokens` and `righter` fit. It names `query.mjs`, `data/retrieval-index.json`, the 40-line packet and the `LOOKALIKE-001` to `LOOKALIKE-014` rows, and says `vois-loop` and `vois-router` live in the private repo only. No skill behavior changed, so there is no version bump.
+
+---
+
 ## [1.44.9] - 2026-11-27
 
 ### Fixed
