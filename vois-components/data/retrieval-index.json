@@ -4,10 +4,10 @@
     "components": 88,
     "jobs": 24,
     "cards": 18,
-    "rules": 247,
+    "rules": 250,
     "linkedRules": 77,
-    "globalRules": 170,
-    "pathNodes": 230,
+    "globalRules": 173,
+    "pathNodes": 242,
     "fieldRules": 23
   },
   "aliases": {
@@ -4709,6 +4709,112 @@
       "parent": "PATH-H",
       "condition": "The respondent should see how others answered a choice question, or whether their answer was correct.",
       "outcome": "Set reveal on a single_select or multi_select question. Show results only after the answer. Keep option order. Mark the correct option with an icon and words. Round single-choice percents to 100. Hide numbers under 10 votes. See PATH-H-6 in references/questionnaires.md."
+    },
+    "PATH-M": {
+      "kind": "top_level_pattern",
+      "name": "Marketing Feature Media",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "A marketing feature block shows product UI, a screenshot, photo, or illustration and needs a layout treatment (centered hero, split row, triptych, bento), frame, device chrome, backdrop, motion, or a focal callout.",
+      "outcome": "Read references/marketing-feature-media.md. When the page follows PATH-G, PATH-M-BUILDS-G still applies. Pick one treatment per section, then PATH-M-FRAME through PATH-M-FOCAL. Token values for frame, chrome, and motion go to vois-tokens (DS-MKT-009 to DS-MKT-011).",
+      "builds_on": [
+        "PATH-G"
+      ]
+    },
+    "PATH-M-BLEND": {
+      "kind": "cross_cutting_rule",
+      "name": "Blend",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "A framed screenshot or photo needs to meet a light page background.",
+      "outcome": "Add one soft shape or gradient behind the frame. One color family per section. Do not stack competing blobs."
+    },
+    "PATH-M-BUILDS-G": {
+      "kind": "cross_cutting_rule",
+      "name": "Builds on marketing pages",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "A marketing page already follows PATH-G.",
+      "outcome": "PATH-G section rules still apply: one idea per section, three blocks max, no dividers, left-align. PATH-M only changes media composition inside a feature block.",
+      "builds_on": [
+        "PATH-G"
+      ]
+    },
+    "PATH-M-CHROME": {
+      "kind": "cross_cutting_rule",
+      "name": "Chrome",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "Product UI is shown as marketing media.",
+      "outcome": "Wrap it in a simplified browser, window, or device frame (DS-MKT-010). Crop to the job; do not show a full OS desktop."
+    },
+    "PATH-M-FOCAL": {
+      "kind": "cross_cutting_rule",
+      "name": "Focal callout",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "A screenshot needs one control or region highlighted.",
+      "outcome": "Add one static callout (ring, magnifier, or label). Do not ship a second full screenshot. One focal point per frame."
+    },
+    "PATH-M-FRAME": {
+      "kind": "cross_cutting_rule",
+      "name": "Frame",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "Any marketing screenshot or photo in a feature block.",
+      "outcome": "Use a rounded frame with marketing radius (DS-MKT-009). Photo tiles stay at least 300px tall on mobile (PATH-G-TILE)."
+    },
+    "PATH-M-MOTION": {
+      "kind": "cross_cutting_rule",
+      "name": "Motion",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "Marketing media should reveal on scroll.",
+      "outcome": "One entrance per section (fade or short rise), under DS-ANIMATION-001, using DS-MKT-011. No looping motion and no autoplay video."
+    },
+    "PATH-M-REDUCED-MOTION": {
+      "kind": "cross_cutting_rule",
+      "name": "Reduced motion",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "prefers-reduced-motion is set.",
+      "outcome": "Show the final media frame with no entrance motion and no looping decoration. Focal callouts stay static (DS-MKT-011).",
+      "builds_on": [
+        "PATH-M-MOTION",
+        "PATH-M-FOCAL"
+      ]
+    },
+    "PATH-M-TREATMENT-BENTO": {
+      "kind": "sub_decision",
+      "name": "Bento grid",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "One section must show two or three unlike UI states and still count as one idea.",
+      "outcome": "Two or three tiles with unlike sizes (one large, others smaller). Phone: stack large first. Never three identical tiles."
+    },
+    "PATH-M-TREATMENT-CENTERED": {
+      "kind": "sub_decision",
+      "name": "Centered hero media",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "The section has one focal screenshot, illustration, or UI chrome block and no side-by-side row.",
+      "outcome": "Center one large media piece with copy above or below. Phone: stack copy then media."
+    },
+    "PATH-M-TREATMENT-SPLIT": {
+      "kind": "sub_decision",
+      "name": "Split row",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "One feature row needs a tall screenshot or device mockup beside copy.",
+      "outcome": "Two columns: media on one side, copy on the other. Alternate sides on desktop. Phone: media first, then copy."
+    },
+    "PATH-M-TREATMENT-TRIPTYCH": {
+      "kind": "sub_decision",
+      "name": "Triptych",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "The section must show three parallel claims with equal weight.",
+      "outcome": "Three equal columns: media, short title, one or two sentences. Phone: stack. Blocks should still differ in crop or emphasis (DS-SLOP-003)."
     },
     "PATH-NATIVE-BACK": {
       "kind": "cross_cutting_rule",

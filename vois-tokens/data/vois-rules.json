@@ -2274,6 +2274,36 @@
       "verification": "judgment"
     },
     {
+      "id": "DS-MKT-009",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Marketing feature media frames use a larger radius than product cards: at least 16px on mobile and 20px on desktop, from a radius token. Photo tiles stay at least 300px tall on mobile, matching PATH-G-TILE.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-MKT-010",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Device chrome around product UI in marketing media uses 8 to 12px padding inside the frame and one elevation step above the page background. Crop to the job; no literal OS chrome.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
+      "id": "DS-MKT-011",
+      "category": "DS-MKT",
+      "category_label": "Marketing Type and Spacing",
+      "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
+      "rule": "Marketing media scroll entrance uses --motion-duration-base or faster and stays under DS-ANIMATION-001. When prefers-reduced-motion is set, skip entrance motion and show the final frame.",
+      "severity": "recommended",
+      "enforcement": "advisory",
+      "verification": "judgment"
+    },
+    {
       "id": "DS-TOKEN-001",
       "category": "DS-TOKEN",
       "category_label": "Token Layers and Names",

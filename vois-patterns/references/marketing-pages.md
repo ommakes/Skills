@@ -7,6 +7,7 @@ Reference for `vois-patterns`. Read this when the goal is "show people what a pr
 **Routing:**
 - All words go to `righter`, which owns the slot limits (`righter/references/marketing-copy.md`). `gtm-positioning` decides what to say.
 - Type scale and spacing go to `vois-tokens` (`references/marketing-type-and-spacing.md`, `DS-MKT`).
+- Media composition inside feature blocks (split rows, triptychs, device chrome, focal callouts) goes to `references/marketing-feature-media.md` (`[PATH-M]`).
 - Component picks go to `vois-components`.
 - Pricing sections inside a marketing page follow `[PATH-F]`.
 
