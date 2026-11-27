@@ -4,10 +4,10 @@
     "components": 88,
     "jobs": 24,
     "cards": 18,
-    "rules": 250,
+    "rules": 247,
     "linkedRules": 77,
-    "globalRules": 173,
-    "pathNodes": 242,
+    "globalRules": 170,
+    "pathNodes": 245,
     "fieldRules": 23
   },
   "aliases": {
@@ -4710,112 +4710,6 @@
       "condition": "The respondent should see how others answered a choice question, or whether their answer was correct.",
       "outcome": "Set reveal on a single_select or multi_select question. Show results only after the answer. Keep option order. Mark the correct option with an icon and words. Round single-choice percents to 100. Hide numbers under 10 votes. See PATH-H-6 in references/questionnaires.md."
     },
-    "PATH-M": {
-      "kind": "top_level_pattern",
-      "name": "Marketing Feature Media",
-      "group": "marketing-feature-media",
-      "parent": null,
-      "condition": "A marketing feature block shows product UI, a screenshot, photo, or illustration and needs a layout treatment (centered hero, split row, triptych, bento), frame, device chrome, backdrop, motion, or a focal callout.",
-      "outcome": "Read references/marketing-feature-media.md. When the page follows PATH-G, PATH-M-BUILDS-G still applies. Pick one treatment per section, then PATH-M-FRAME through PATH-M-FOCAL. Token values for frame, chrome, and motion go to vois-tokens (DS-MKT-009 to DS-MKT-011).",
-      "builds_on": [
-        "PATH-G"
-      ]
-    },
-    "PATH-M-BLEND": {
-      "kind": "cross_cutting_rule",
-      "name": "Blend",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "A framed screenshot or photo needs to meet a light page background.",
-      "outcome": "Add one soft shape or gradient behind the frame. One color family per section. Do not stack competing blobs."
-    },
-    "PATH-M-BUILDS-G": {
-      "kind": "cross_cutting_rule",
-      "name": "Builds on marketing pages",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "A marketing page already follows PATH-G.",
-      "outcome": "PATH-G section rules still apply: one idea per section, three blocks max, no dividers, left-align. PATH-M only changes media composition inside a feature block.",
-      "builds_on": [
-        "PATH-G"
-      ]
-    },
-    "PATH-M-CHROME": {
-      "kind": "cross_cutting_rule",
-      "name": "Chrome",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "Product UI is shown as marketing media.",
-      "outcome": "Wrap it in a simplified browser, window, or device frame (DS-MKT-010). Crop to the job; do not show a full OS desktop."
-    },
-    "PATH-M-FOCAL": {
-      "kind": "cross_cutting_rule",
-      "name": "Focal callout",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "A screenshot needs one control or region highlighted.",
-      "outcome": "Add one static callout (ring, magnifier, or label). Do not ship a second full screenshot. One focal point per frame."
-    },
-    "PATH-M-FRAME": {
-      "kind": "cross_cutting_rule",
-      "name": "Frame",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "Any marketing screenshot or photo in a feature block.",
-      "outcome": "Use a rounded frame with marketing radius (DS-MKT-009). Photo tiles stay at least 300px tall on mobile (PATH-G-TILE)."
-    },
-    "PATH-M-MOTION": {
-      "kind": "cross_cutting_rule",
-      "name": "Motion",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "Marketing media should reveal on scroll.",
-      "outcome": "One entrance per section (fade or short rise), under DS-ANIMATION-001, using DS-MKT-011. No looping motion and no autoplay video."
-    },
-    "PATH-M-REDUCED-MOTION": {
-      "kind": "cross_cutting_rule",
-      "name": "Reduced motion",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "prefers-reduced-motion is set.",
-      "outcome": "Show the final media frame with no entrance motion and no looping decoration. Focal callouts stay static (DS-MKT-011).",
-      "builds_on": [
-        "PATH-M-MOTION",
-        "PATH-M-FOCAL"
-      ]
-    },
-    "PATH-M-TREATMENT-BENTO": {
-      "kind": "sub_decision",
-      "name": "Bento grid",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "One section must show two or three unlike UI states and still count as one idea.",
-      "outcome": "Two or three tiles with unlike sizes (one large, others smaller). Phone: stack large first. Never three identical tiles."
-    },
-    "PATH-M-TREATMENT-CENTERED": {
-      "kind": "sub_decision",
-      "name": "Centered hero media",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "The section has one focal screenshot, illustration, or UI chrome block and no side-by-side row.",
-      "outcome": "Center one large media piece with copy above or below. Phone: stack copy then media."
-    },
-    "PATH-M-TREATMENT-SPLIT": {
-      "kind": "sub_decision",
-      "name": "Split row",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "One feature row needs a tall screenshot or device mockup beside copy.",
-      "outcome": "Two columns: media on one side, copy on the other. Alternate sides on desktop. Phone: media first, then copy."
-    },
-    "PATH-M-TREATMENT-TRIPTYCH": {
-      "kind": "sub_decision",
-      "name": "Triptych",
-      "group": "marketing-feature-media",
-      "parent": "PATH-M",
-      "condition": "The section must show three parallel claims with equal weight.",
-      "outcome": "Three equal columns: media, short title, one or two sentences. Phone: stack. Blocks should still differ in crop or emphasis (DS-SLOP-003)."
-    },
     "PATH-NATIVE-BACK": {
       "kind": "cross_cutting_rule",
       "name": "Back and close on phone",
@@ -6459,6 +6353,132 @@
       "builds_on": [
         "PATH-B-ROW-OPEN"
       ]
+    },
+    "PATH-M": {
+      "kind": "top_level_pattern",
+      "name": "Marketing Feature Media",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "A marketing feature block needs non-flat media such as a screenshot, photo, illustration, device mockup, or multiple related UI states.",
+      "outcome": "Use PATH-M as the media-composition layer inside PATH-G. Choose one primary treatment based on claim structure and evidence shape, then apply composable media treatments and behavior rules.",
+      "builds_on": [
+        "PATH-G"
+      ]
+    },
+    "PATH-M-BLEND": {
+      "kind": "cross_cutting_rule",
+      "name": "Background blend",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Framed media sits on a tinted or gradient panel.",
+      "outcome": "Keep the tint or gradient behind the media only. Page copy stays on the page background unless the whole section is one contained card."
+    },
+    "PATH-M-BUILDS-G": {
+      "kind": "sub_decision",
+      "name": "Builds on marketing pages",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "Any feature-media section on a marketing surface.",
+      "outcome": "Keep PATH-G section rules: one idea per section, loose section gaps, tight copy, left-aligned text by default, at most one primary button in the section, no hairline dividers. The media is part of the section's single content block.",
+      "builds_on": [
+        "PATH-G"
+      ]
+    },
+    "PATH-M-CHROME": {
+      "kind": "cross_cutting_rule",
+      "name": "Show real chrome",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "A screenshot represents software in a feature-media section.",
+      "outcome": "Include enough app chrome that the shot reads as software: top bar, sidebar, or key navigation. Hide chrome only when the feature is one control and the copy names it."
+    },
+    "PATH-M-EVIDENCE": {
+      "kind": "cross_cutting_rule",
+      "name": "Claim-to-Media Evidence",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Marketing copy makes a product, outcome, workflow, or data claim supported by media.",
+      "outcome": "Use claim → expected evidence → media state → crop → optional callout. The media must visibly prove the claim; replace unsupported media rather than weakening the claim."
+    },
+    "PATH-M-FOCAL": {
+      "kind": "cross_cutting_rule",
+      "name": "One focal point",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "A feature-media composition needs to direct attention to the part that proves the claim.",
+      "outcome": "Use one focal element that matches the heading: the control, chart, or message named in the copy. Crop or de-emphasize surrounding UI. Use at most one callout per frame."
+    },
+    "PATH-M-FRAME": {
+      "kind": "cross_cutting_rule",
+      "name": "Device or window frame",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Product UI appears in feature media.",
+      "outcome": "Place UI inside a recognizable browser, app, or phone frame. Crop tightly enough to read the UI. Use the marketing frame radius from DS-MKT-010."
+    },
+    "PATH-M-MOTION": {
+      "kind": "cross_cutting_rule",
+      "name": "Motion in the slot",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Feature media uses video or animation to explain a claim.",
+      "outcome": "Use video/demo only when a sequence, transition, or continuous motion is necessary to understand the claim. Prefer static media for states and outcomes; use optional entrance motion for reveal."
+    },
+    "PATH-M-REDUCED-MOTION": {
+      "kind": "cross_cutting_rule",
+      "name": "Reduced motion",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Feature media uses motion or autoplay video.",
+      "outcome": "Honor prefers-reduced-motion: reduce. Replace motion/video with a static poster or still of the clearest state. Do not autoplay when reduced motion is requested."
+    },
+    "PATH-M-RESPONSIVE": {
+      "kind": "cross_cutting_rule",
+      "name": "Responsive Media Ordering",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "A marketing feature media treatment is being adapted across breakpoints.",
+      "outcome": "Preserve the primary hierarchy, stack rather than shrink into illegibility, place media before copy on phone, stack triptych in claim order, stack bento with the most important state first, and disable sticky/parallax on phone."
+    },
+    "PATH-M-STATE-VS-FLOW": {
+      "kind": "cross_cutting_rule",
+      "name": "State vs Flow Media",
+      "group": "marketing-feature-media",
+      "parent": null,
+      "condition": "Choosing whether marketing media should be static, animated, or video.",
+      "outcome": "Use static media for states and outcomes, optional entrance motion for reveal, and video/demo only when a sequence, transition, or continuous motion is necessary to understand the claim."
+    },
+    "PATH-M-TREATMENT-BENTO": {
+      "kind": "sub_decision",
+      "name": "Bento grid",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "One idea requires two or three materially different UI states with intentionally unequal visual importance.",
+      "outcome": "Use two or three intentionally unequal tiles. Reject when the tiles are identical, decorative, or each represents an independent claim."
+    },
+    "PATH-M-TREATMENT-CENTERED": {
+      "kind": "sub_decision",
+      "name": "Centered hero media",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "One claim, one focal state, and the media benefits from large scale without a side-by-side explanatory relationship.",
+      "outcome": "Use centered hero media. Reject when there are three equal claims, multiple materially different states, or tall/device-shaped media that benefits from adjacent copy."
+    },
+    "PATH-M-TREATMENT-SPLIT": {
+      "kind": "sub_decision",
+      "name": "Split row",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "One feature is being explained and the media is tall, narrow, device-shaped, or otherwise benefits from a side-by-side explanatory relationship.",
+      "outcome": "Use a two-column media/copy row. Reject when multiple independent claims need equal weight or the media is too wide to survive the crop."
+    },
+    "PATH-M-TREATMENT-TRIPTYCH": {
+      "kind": "sub_decision",
+      "name": "Triptych",
+      "group": "marketing-feature-media",
+      "parent": "PATH-M",
+      "condition": "Exactly three parallel claims have equal weight and each has distinct supporting media.",
+      "outcome": "Use three equal columns. Reject when three images merely decorate one claim or substantially repeat the same state."
     }
   },
   "fields": {
