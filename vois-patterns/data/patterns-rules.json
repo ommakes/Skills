@@ -2468,6 +2468,78 @@
       "outcome": "Use the Marketing Page pattern. Every feature block is the same stack: image, short title, one or two sentences, one link. Sections are far apart and text inside them is tight. PATH-G-* rules apply. Words go to righter (slot limits), type and spacing to vois-tokens (DS-MKT). These are taste rules for marketing surfaces, not general laws."
     },
     {
+      "id": "PATH-M",
+      "node_type": "top_level_pattern",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "pattern_name": "Marketing Feature Media",
+      "condition": "A marketing feature block needs non-flat media such as a screenshot, photo, illustration, device mockup, or multiple related UI states.",
+      "outcome": "Use PATH-M as the media-composition layer inside PATH-G. Choose one primary treatment based on claim structure and evidence shape, then apply composable media treatments and behavior rules."
+    },
+    {
+      "id": "PATH-M-TREATMENT-CENTERED",
+      "node_type": "sub_decision",
+      "parent": "PATH-M",
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "pattern_name": "Centered hero media",
+      "condition": "One claim, one focal state, and the media benefits from large scale without a side-by-side explanatory relationship.",
+      "outcome": "Use centered hero media. Reject when there are three equal claims, multiple materially different states, or tall/device-shaped media that benefits from adjacent copy."
+    },
+    {
+      "id": "PATH-M-TREATMENT-TRIPTYCH",
+      "node_type": "sub_decision",
+      "parent": "PATH-M",
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "pattern_name": "Triptych",
+      "condition": "Exactly three parallel claims have equal weight and each has distinct supporting media.",
+      "outcome": "Use three equal columns. Reject when three images merely decorate one claim or substantially repeat the same state."
+    },
+    {
+      "id": "PATH-M-TREATMENT-SPLIT",
+      "node_type": "sub_decision",
+      "parent": "PATH-M",
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "pattern_name": "Split row",
+      "condition": "One feature is being explained and the media is tall, narrow, device-shaped, or otherwise benefits from a side-by-side explanatory relationship.",
+      "outcome": "Use a two-column media/copy row. Reject when multiple independent claims need equal weight or the media is too wide to survive the crop."
+    },
+    {
+      "id": "PATH-M-TREATMENT-BENTO",
+      "node_type": "sub_decision",
+      "parent": "PATH-M",
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "pattern_name": "Bento grid",
+      "condition": "One idea requires two or three materially different UI states with intentionally unequal visual importance.",
+      "outcome": "Use two or three intentionally unequal tiles. Reject when the tiles are identical, decorative, or each represents an independent claim."
+    },
+    {
+      "id": "PATH-M-EVIDENCE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "rule_name": "Claim-to-Media Evidence",
+      "condition": "Marketing copy makes a product, outcome, workflow, or data claim supported by media.",
+      "outcome": "Use claim → expected evidence → media state → crop → optional callout. The media must visibly prove the claim; replace unsupported media rather than weakening the claim."
+    },
+    {
+      "id": "PATH-M-STATE-VS-FLOW",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "rule_name": "State vs Flow Media",
+      "condition": "Choosing whether marketing media should be static, animated, or video.",
+      "outcome": "Use static media for states/outcomes, optional entrance motion for reveal, and video/demo only when a sequence, transition, or continuous motion is necessary to understand the claim."
+    },
+    {
+      "id": "PATH-M-RESPONSIVE",
+      "node_type": "cross_cutting_rule",
+      "parent": null,
+      "source_file": "vois-patterns/references/marketing-feature-media.md",
+      "rule_name": "Responsive Media Ordering",
+      "condition": "A marketing feature media treatment is being adapted across breakpoints.",
+      "outcome": "Preserve the primary hierarchy, stack rather than shrink into illegibility, place media before copy on phone, stack triptych in claim order, stack bento with the most important state first, and disable sticky/parallax on phone."
+    },
+    {
       "id": "PATH-G-SECTION",
       "node_type": "cross_cutting_rule",
       "parent": null,
@@ -2538,195 +2610,6 @@
       "rule_name": "Footer at heading scale",
       "condition": "The footer of a marketing page.",
       "outcome": "Repeat the nav as large links at h2 size plus the wordmark. Small print stays small."
-    },
-    {
-      "id": "PATH-M",
-      "node_type": "top_level_pattern",
-      "parent": null,
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "pattern_name": "Marketing Feature Media",
-      "condition": "A marketing feature block shows product UI, a screenshot, photo, or illustration and needs a layout treatment (centered hero, split row, triptych, bento), frame, device chrome, backdrop, motion, or a focal callout.",
-      "outcome": "Read references/marketing-feature-media.md. When the page follows PATH-G, PATH-M-BUILDS-G still applies. Pick one treatment per section, then PATH-M-FRAME through PATH-M-FOCAL. Token values for frame, chrome, and motion go to vois-tokens (DS-MKT-009 to DS-MKT-011).",
-      "builds_on": [
-        "PATH-G"
-      ],
-      "basis": "observed",
-      "basis_note": "observed. Drawn from six Mobbin marketing feature sections.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/14411a67-2423-40d7-8a43-e99e56ec0b96",
-        "https://mobbin.com/sites/sections/49c13abb-220d-4270-b154-e787b15049a2",
-        "https://mobbin.com/sites/sections/d3625ad6-1ab3-4296-87a5-675165534eb4",
-        "https://mobbin.com/sites/sections/d5c68fe3-6a78-4471-86cb-818cd9cef5e5",
-        "https://mobbin.com/sites/sections/786c7ef4-96c6-4ebb-af75-5eb2bb3765ea",
-        "https://mobbin.com/sites/sections/0a96ffaa-d27e-4e2b-bae0-75aa69e0640b"
-      ]
-    },
-    {
-      "id": "PATH-M-BUILDS-G",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Builds on marketing pages",
-      "condition": "A marketing page already follows PATH-G.",
-      "outcome": "PATH-G section rules still apply: one idea per section, three blocks max, no dividers, left-align. PATH-M only changes media composition inside a feature block.",
-      "builds_on": [
-        "PATH-G"
-      ],
-      "basis": "decision",
-      "basis_note": "decision. Marketing media is a layer inside PATH-G, not a separate page type.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/14411a67-2423-40d7-8a43-e99e56ec0b96",
-        "https://mobbin.com/sites/sections/786c7ef4-96c6-4ebb-af75-5eb2bb3765ea"
-      ]
-    },
-    {
-      "id": "PATH-M-TREATMENT-CENTERED",
-      "node_type": "sub_decision",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "pattern_name": "Centered hero media",
-      "condition": "The section has one focal screenshot, illustration, or UI chrome block and no side-by-side row.",
-      "outcome": "Center one large media piece with copy above or below. Phone: stack copy then media.",
-      "basis": "observed",
-      "basis_note": "observed. HubSpot and Lovart feature hero media.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/14411a67-2423-40d7-8a43-e99e56ec0b96",
-        "https://mobbin.com/sites/sections/0a96ffaa-d27e-4e2b-bae0-75aa69e0640b"
-      ]
-    },
-    {
-      "id": "PATH-M-TREATMENT-TRIPTYCH",
-      "node_type": "sub_decision",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "pattern_name": "Triptych",
-      "condition": "The section must show three parallel claims with equal weight.",
-      "outcome": "Three equal columns: media, short title, one or two sentences. Phone: stack. Blocks should still differ in crop or emphasis (DS-SLOP-003).",
-      "basis": "observed",
-      "basis_note": "observed. Deezer Media Solutions triptych.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/d3625ad6-1ab3-4296-87a5-675165534eb4"
-      ]
-    },
-    {
-      "id": "PATH-M-TREATMENT-SPLIT",
-      "node_type": "sub_decision",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "pattern_name": "Split row",
-      "condition": "One feature row needs a tall screenshot or device mockup beside copy.",
-      "outcome": "Two columns: media on one side, copy on the other. Alternate sides on desktop. Phone: media first, then copy.",
-      "basis": "observed",
-      "basis_note": "observed. Mailchimp, OpenTable, Mural, and PayPal feature rows.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/14411a67-2423-40d7-8a43-e99e56ec0b96",
-        "https://mobbin.com/sites/sections/49c13abb-220d-4270-b154-e787b15049a2",
-        "https://mobbin.com/sites/sections/d5c68fe3-6a78-4471-86cb-818cd9cef5e5"
-      ]
-    },
-    {
-      "id": "PATH-M-TREATMENT-BENTO",
-      "node_type": "sub_decision",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "pattern_name": "Bento grid",
-      "condition": "One section must show two or three unlike UI states and still count as one idea.",
-      "outcome": "Two or three tiles with unlike sizes (one large, others smaller). Phone: stack large first. Never three identical tiles.",
-      "basis": "observed",
-      "basis_note": "observed. monday marketer, Discord quests, Customer.io features.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/786c7ef4-96c6-4ebb-af75-5eb2bb3765ea",
-        "https://mobbin.com/sites/sections/0a96ffaa-d27e-4e2b-bae0-75aa69e0640b"
-      ]
-    },
-    {
-      "id": "PATH-M-FRAME",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Frame",
-      "condition": "Any marketing screenshot or photo in a feature block.",
-      "outcome": "Use a rounded frame with marketing radius (DS-MKT-009). Photo tiles stay at least 300px tall on mobile (PATH-G-TILE).",
-      "basis": "observed",
-      "basis_note": "observed.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/d3625ad6-1ab3-4296-87a5-675165534eb4",
-        "https://mobbin.com/sites/sections/786c7ef4-96c6-4ebb-af75-5eb2bb3765ea"
-      ]
-    },
-    {
-      "id": "PATH-M-CHROME",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Chrome",
-      "condition": "Product UI is shown as marketing media.",
-      "outcome": "Wrap it in a simplified browser, window, or device frame (DS-MKT-010). Crop to the job; do not show a full OS desktop.",
-      "basis": "observed",
-      "basis_note": "observed. OpenTable and monday device frames.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/49c13abb-220d-4270-b154-e787b15049a2",
-        "https://mobbin.com/sites/sections/786c7ef4-96c6-4ebb-af75-5eb2bb3765ea"
-      ]
-    },
-    {
-      "id": "PATH-M-BLEND",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Blend",
-      "condition": "A framed screenshot or photo needs to meet a light page background.",
-      "outcome": "Add one soft shape or gradient behind the frame. One color family per section. Do not stack competing blobs.",
-      "basis": "observed",
-      "basis_note": "observed. OpenTable circles and Mural hero backdrops.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/49c13abb-220d-4270-b154-e787b15049a2",
-        "https://mobbin.com/sites/sections/d5c68fe3-6a78-4471-86cb-818cd9cef5e5"
-      ]
-    },
-    {
-      "id": "PATH-M-MOTION",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Motion",
-      "condition": "Marketing media should reveal on scroll.",
-      "outcome": "One entrance per section (fade or short rise), under DS-ANIMATION-001, using DS-MKT-011. No looping motion and no autoplay video.",
-      "basis": "judgment",
-      "basis_note": "judgment. Marketing pages may animate once on enter; product UI keeps DS-ANIMATION rules.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/14411a67-2423-40d7-8a43-e99e56ec0b96"
-      ]
-    },
-    {
-      "id": "PATH-M-REDUCED-MOTION",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Reduced motion",
-      "condition": "prefers-reduced-motion is set.",
-      "outcome": "Show the final media frame with no entrance motion and no looping decoration. Focal callouts stay static (DS-MKT-011).",
-      "builds_on": [
-        "PATH-M-MOTION",
-        "PATH-M-FOCAL"
-      ],
-      "basis": "decision",
-      "basis_note": "decision. Pairs with DS-A11Y reduced-motion rules.",
-      "evidence": []
-    },
-    {
-      "id": "PATH-M-FOCAL",
-      "node_type": "cross_cutting_rule",
-      "parent": "PATH-M",
-      "source_file": "vois-patterns/references/marketing-feature-media.md",
-      "rule_name": "Focal callout",
-      "condition": "A screenshot needs one control or region highlighted.",
-      "outcome": "Add one static callout (ring, magnifier, or label). Do not ship a second full screenshot. One focal point per frame.",
-      "basis": "observed",
-      "basis_note": "observed. OpenTable search magnification.",
-      "evidence": [
-        "https://mobbin.com/sites/sections/49c13abb-220d-4270-b154-e787b15049a2"
-      ]
     },
     {
       "id": "PATH-H",
