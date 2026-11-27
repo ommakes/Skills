@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.7] - 2026-11-26
+
+### Changed
+- **`SKILL.md` again states what to use for a raw button with its own focus ring (`LOOKALIKE-001`).** The 1.44.4 thin named the case and dropped the "use instead" line. That line is back, and only that line: Button, `variant="link"` for text, `asChild` as a trigger, IconButton with its required `label`, InputGroupButton inside a field, or the registry's `vois-button`.
+
+---
+
 ## [1.44.6] - 2026-11-26
 
 ### Changed
