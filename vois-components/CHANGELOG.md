@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.9] - 2026-11-27
+
+### Fixed
+- **`query.mjs IconButton` (and ButtonGroup, SwatchPicker, DataTable, InputGroupButton) said "not a component in the index … say the skills have no rule".** `query.mjs` is the way to look a component up, but nine `registry:ui` items had no entry in `component-names.json`. They are now under `outsideInventory`: IconButton, ButtonGroup, InputGroup, SwatchPicker, ChoiceList, ChoiceCard, PageGrid, PanelLayout and Inspector, each with its registry item. InputGroupButton (covered by InputGroup) and DataTable (no registry item) are added because job trees recommend them by name. `JOB-TRIGGER-ACTION` now lists IconButton and ButtonGroup, and `JOB-DISPLAY-DATA` lists DataTable.
+- **`retrieval.mjs` fails when a `registry:ui` item is not some component's `registry`,** so a new registry item cannot again be unreachable by name. Theme and lib items are not checked, and the check is skipped without a `registry/` folder. Two components that name the same registry item also fail.
+- **"see Job 8", "Job 15", "Job 6", "Job 5" and "Job 1" are `JOB-*` ids** in `components-rules.json` (six recommendations), `SKILL.md` ("Icons in Labeled Buttons") and the registry. The job number table is gone and `query.mjs --job` resolves only ids. `retrieval.mjs` now fails on a job or lookalike that cites a job by number (`Job 8`, `Jobs 22`, `JOB 8`, `Job #8`, `Job-8`, or after a line break); lowercase "job 5 of the batch" is not a citation.
+- **A symlinked install, or a path with a space, no longer makes `query.mjs`, `retrieval.mjs` or `behaviors.mjs` print nothing and exit 0.** The entry-point check compared `process.argv[1]` with `import.meta.url` as raw strings. `npx skills add` links a skill as a symlink, so Node gives the script its real path and `argv[1]` the link path, and a path with a space or `%` is percent-encoded in the URL. Either way the script skipped `main()`, and an agent read the empty output as "no findings". Both sides now go through `realpathSync`, as `elevation-map.mjs` already did. An `argv[1]` that does not resolve (an import from `node -e` with arguments) no longer runs `main()`. `scripts/entry-points.test.mjs` runs every skill CLI from its real path, through a symlink and from a path with a space, `%` and `#`, and requires the same output each time. It also imports each one with another file as `argv[1]` and requires that nothing runs.
+- The index `note` names all six sources; it left out `patterns-rules.json` and `fields-rules.json`.
+
+The data files and the three scripts are copied byte for byte from the private repo, where they changed in 1.45.3.
+
+---
+
 ## [1.44.8] - 2026-11-27
 
 ### Fixed

@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 // Standalone CLI: node detect.mjs [--strict] <file> [file...]
 // Prints JSON findings to stdout. Exit code is 0 unless --strict is passed and a
-// 'required' rule is hit. Same shape as vois-tokens/scripts/detect.mjs, so a
-// caller can fold both together.
+// 'required' rule is hit (1), or the input is bad (2): an unknown option, or under
+// --strict a file that cannot be read. Without --strict an unreadable file is named on
+// stderr and skipped. Same shape as vois-tokens/scripts/detect.mjs,
+// so a caller can fold both together.
 //
 // Covers the rules in data/dataviz-rules.json with enforcement 'auto'. Heuristic
 // by design: it reads text, not types. To silence a deliberate exception put
 //   // dataviz-allow: <detector-id>
 // on the same line or the line above (see DV-HONEST-002 for the one sanctioned case).
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { ruleIndex } from "./lib.mjs";
 
 const CHART_TAGS = ["LineChart", "BarChart", "AreaChart", "PieChart", "RadarChart", "RadialBarChart", "ScatterChart", "ComposedChart", "Treemap", "Sankey", "FunnelChart"];
@@ -261,24 +264,40 @@ export function detectFile(filePath, content) {
 function main(argv) {
   const args = argv.slice(2);
   const strict = args.includes("--strict");
+  const unknown = args.filter((a) => a.startsWith("--") && a !== "--strict");
+  if (unknown.length) {
+    console.error(`detect.mjs: unknown option ${unknown[0]}. Usage: detect.mjs [--strict] <file> [file...]`);
+    process.exit(2);
+  }
   const files = args.filter((a) => !a.startsWith("--"));
   if (files.length === 0) {
     console.error("Usage: detect.mjs [--strict] <file> [file...]");
     process.exit(1);
   }
   const all = [];
+  const unreadable = [];
   for (const filePath of files) {
     let content;
     try {
       content = readFileSync(filePath, "utf8");
     } catch {
+      unreadable.push(filePath);
       continue;
     }
     all.push(...detectFile(filePath, content));
   }
   console.log(JSON.stringify(all, null, 2));
+  // A gate that cannot read a file has not checked it, so --strict fails closed.
+  if (strict && unreadable.length) {
+    console.error(`detect.mjs: cannot read ${unreadable.join(", ")}`);
+    process.exit(2);
+  }
+  if (unreadable.length) console.error(`detect.mjs: cannot read ${unreadable.join(", ")}; skipped, not checked (--strict fails on this)`);
   if (strict && all.some((f) => f.severity === "required")) process.exit(1);
 }
 
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// Comparing paths, not file:// strings, also covers spaces, % and # in the path, and Windows drive letters.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isMain = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
 if (isMain) main(process.argv);

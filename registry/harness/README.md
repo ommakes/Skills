@@ -2,7 +2,7 @@
 
 A small app that renders every registry component and its states, one page each, so the rendered accessibility check has something to open. It is a dev tool for this repo's CI. It is not a registry item, and nothing in this folder reaches a consumer.
 
-The check itself is `vois-loop/scripts/render-check.mjs` (axe, focus rings, reduced motion, sideways scrolling) with `vois-loop/scripts/a11y-baseline.mjs`. The workflows are `.github/workflows/a11y.yml` (every pull request), `a11y-release.yml` (releases) and `a11y-reusable.yml` (the shared job). A pull request fails on a FAIL finding that `registry/a11y-baseline.json` does not list.
+The check itself is `vois-loop/scripts/render-check.mjs` (axe, focus rings, reduced motion, sideways scrolling) with `vois-loop/scripts/a11y-baseline.mjs`, both in the private repo only. The workflows, also private only, are `.github/workflows/a11y.yml` (every pull request), `a11y-release.yml` (releases) and `a11y-reusable.yml` (the shared job). A pull request fails on a FAIL finding that `registry/a11y-baseline.json` does not list.
 
 ## Run it
 
@@ -12,7 +12,7 @@ npm ci --ignore-scripts
 npm run harness                    # builds harness/dist and serves it on http://localhost:3000 (PORT changes the port)
 ```
 
-Then, from `registry/` in a second terminal (it needs `playwright` with Chromium, and `axe-core`; without `axe-core` the run says axe was skipped):
+Then, from `registry/` in a second terminal (private repo only, where `vois-loop` lives; it needs `playwright` with Chromium, and `axe-core`; without `axe-core` the run says axe was skipped):
 
 ```bash
 npm i --no-save --no-package-lock --ignore-scripts playwright axe-core

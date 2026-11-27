@@ -20,7 +20,7 @@
 // Enter chooses. Once a value is chosen it cannot be cleared: pressing the chosen item again does
 // nothing, because Radix single ToggleGroup would otherwise send "" and leave no selection.
 //
-// Use it for 2 to 5 short, mutually exclusive views or modes shown side by side (vois-components Job 5,
+// Use it for 2 to 5 short, mutually exclusive views or modes shown side by side (vois-components JOB-SWITCH-VIEWS,
 // and the ToggleGroup answer to LOOKALIKE-003). For a choice inside a form, use RadioGroup. For panels
 // of content, use Tabs.
 //

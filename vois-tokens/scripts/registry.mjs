@@ -402,7 +402,8 @@ export const RULES = [
     fixHint: "Start an enter animation at scale 0.9 or higher, never from 0.",
     check({ content, lines, params = BASE_PARAMS }) {
       // scale(0) stays the blocking check. The findings below it are the rest of the rule ("start at 0.9 or higher"), so they are quality only.
-      const findings = scanRegex(content, lines, /scale\(\s*0\s*\)|scale:\s*0\b(?!\.\d)/, "Animating from scale(0) — start from a small non-zero scale instead.");
+      // The left boundary keeps xscale: 0, rescale(0), d3.scale(0) and --icon-scale: 0 out of a blocking rule.
+      const findings = scanRegex(content, lines, /(?<![\w$.-])scale\(\s*0\s*\)|(?<![\w$.-])scale:\s*0\b(?!\.\d)/, "Animating from scale(0) — start from a small non-zero scale instead.");
       const floor = params.get("DS-ANIMATION-005", "min_start_scale");
       const note = limitNote(params, "DS-ANIMATION-005", "min_start_scale");
       // scale 0 is the blocking check's job where it reads it (CSS and motion). The Tailwind spellings below it does not read, so zero counts there.

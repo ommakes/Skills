@@ -2,7 +2,7 @@
 
 A shadcn-style registry of Vois core components, so an agent can install a real component instead of hand-building a lookalike. It is a reference implementation of the Vois skills on shadcn/ui and Tailwind v4, not a competing component library.
 
-**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Forty-six items:
+**Status: Phase 1 components, complete, plus Wave 0 of the AI components and the inspector controls.** Fifty-two items in `registry.json` (49 components, 2 theme items and 1 lib). Among them:
 
 - `vois-tokens`: default values for every Vois token, plus the motion tokens.
 - `vois-theme`: shadcn's variables pointed at those tokens.
@@ -323,7 +323,7 @@ The group spaces items by `--space-v-between-items`. Pair each item with a `<lab
 | Disabled | `--tab-disabled`, `--text-state-disabled` | `--text-state-disabled`, a 1px `--border-state-disabled` edge |
 | Focus | 2px `--border-state-focus`, 2px out | 2px `--border-state-focus` around the label box |
 
-Disabled wins over active. In Figma, the Tabs set (Selectors page, `8084:6370`) has Underline and Pill variants with a panel `Content` slot (code: `TabsContent`). Keep tabs visible all at once: for more than 5 or 6, use a Select (`vois-components` Job 5).
+Disabled wins over active. In Figma, the Tabs set (Selectors page, `8084:6370`) has Underline and Pill variants with a panel `Content` slot (code: `TabsContent`). Keep tabs visible all at once: for more than 5 or 6, use a Select (`vois-components` `JOB-SWITCH-VIEWS`).
 
 ### `vois-textarea` and `vois-field`
 
@@ -388,7 +388,7 @@ Icon-only buttons need an `aria-label`. Inside a `vois-field`, `FieldControl` wo
 
 `vois/segmented-control/segmented-control.tsx` is shadcn's ToggleGroup fixed to one choice (no `type` prop, always `single`), from the Figma Segments set. It exports `SegmentedControl` and `SegmentedControlItem`, the names `vois-components` uses. It no longer exports `ToggleGroup` or `ToggleGroupItem`: those names are `vois-toggle-group`'s.
 
-A 32 tall track (`--segment-inactive`, `--shape-subtle`). The active segment is a 28 tall indicator (`--segment-active`, 1px `--border-default`, `--shadow-base`). Inactive labels use `--text-state-resting`, active labels `--text-on-light`. Focus is a 2px `--segment-focus-ring`, on the indicator when active and inside the cell (over `--segment-focus-inactive`) when not. Every item uses the active padding, so the control does not change width when the choice moves. One tab stop, arrow keys move, and the chosen item cannot be cleared. Use it for 2 to 5 short views or modes (`vois-components` Job 5).
+A 32 tall track (`--segment-inactive`, `--shape-subtle`). The active segment is a 28 tall indicator (`--segment-active`, 1px `--border-default`, `--shadow-base`). Inactive labels use `--text-state-resting`, active labels `--text-on-light`. Focus is a 2px `--segment-focus-ring`, on the indicator when active and inside the cell (over `--segment-focus-inactive`) when not. Every item uses the active padding, so the control does not change width when the choice moves. One tab stop, arrow keys move, and the chosen item cannot be cleared. Use it for 2 to 5 short views or modes (`vois-components` `JOB-SWITCH-VIEWS`).
 
 ### `vois-toggle-group`
 
@@ -653,4 +653,4 @@ An earlier draft mapped shadcn's `@theme inline` keys instead. That only works i
 | `npm run harness:check` and `npm run harness:test` (in `registry/`) | Yes (esbuild) | Every `registry:ui` item is on a page of the accessibility harness (`harness/README.md`), `vois-render.json` is what the stories give, and `a11y-baseline.json` names pages and states that exist. The second is the check's own tests |
 | `npm run build` (in `registry/`) | Yes | `shadcn build` validates every item against the registry schema |
 
-CI runs all of these on every PR; the first three need no install, and the install job runs the rest. The rendered accessibility check (`.github/workflows/a11y.yml`) starts the harness and opens each page in a browser; `harness/README.md` says what it holds in its baseline and what it does not check. `node registry/scripts/build-tokens.mjs --check` is the same up-to-date check as `check-registry`'s, for use on its own. The shadcn version is pinned in `package.json`; bump it here first, with a CHANGELOG line.
+CI runs all of these on every PR; the first three need no install, and the install job runs the rest. The rendered accessibility check (`.github/workflows/a11y.yml`, in the private repo only) starts the harness and opens each page in a browser; `harness/README.md` says what it holds in its baseline and what it does not check. `node registry/scripts/build-tokens.mjs --check` is the same up-to-date check as `check-registry`'s, for use on its own. The shadcn version is pinned in `package.json`; bump it here first, with a CHANGELOG line.

@@ -119,4 +119,10 @@ function main() {
   denyDecision(`vois-tokens: blocked — ${reasonLines.join(" | ")}`);
 }
 
-main();
+try {
+  main();
+} catch (e) {
+  // Our own failure is never a reason to deny an edit.
+  console.error(`vois-tokens before-edit hook: skipped (${e?.message ?? e})`);
+  process.exit(0);
+}

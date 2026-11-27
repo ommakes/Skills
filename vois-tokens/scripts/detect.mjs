@@ -5,8 +5,9 @@
 // With --root, team override files in <dir>/.vois/teams tighten the limits for the files they cover.
 // Without it the base limits apply.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { rulesForFile } from "./registry.mjs";
 import { snippetAt, uncomment } from "./check-utils.mjs";
 import { BASE_PARAMS, loadTeams, paramsFor } from "./team-overrides.mjs";
@@ -62,5 +63,8 @@ function main(argv) {
   console.log(JSON.stringify(allFindings, null, 2));
 }
 
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// Comparing paths, not file:// strings, also covers spaces, % and # in the path, and Windows drive letters.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isMain = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
 if (isMain) main(process.argv);

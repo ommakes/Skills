@@ -5,6 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectFile } from "./detect.mjs";
@@ -253,4 +254,34 @@ test("rules stay platform-agnostic: sources come from a short allowed list", () 
   for (const r of ruleIndex().values()) {
     for (const src of r.sources) assert.ok(allowed.has(src), `${r.id} cites '${src}', which is not an allowed source`);
   }
+});
+
+// ---- the CLI gate fails closed ----
+
+const cli = (...args) => spawnSync(process.execPath, [join(dirname(fileURLToPath(import.meta.url)), "detect.mjs"), ...args], { encoding: "utf8" });
+
+test("detect.mjs --strict exits 2 on a file it cannot read, and names it", () => {
+  const r = cli("--strict", "/nonexistent/chart.tsx");
+  assert.equal(r.status, 2, r.stderr);
+  assert.match(r.stderr, /cannot read \/nonexistent\/chart\.tsx/);
+  const mixed = cli("--strict", join(FIXTURES, "good-chart.tsx"), "/nonexistent/chart.tsx");
+  assert.equal(mixed.status, 2, "one unreadable file fails the gate even when the others pass");
+});
+
+test("detect.mjs exits 2 on an unknown option instead of dropping it", () => {
+  for (const flag of ["--strcit", "--stric", "--", "--json"]) {
+    const r = cli(flag, join(FIXTURES, "bad-chart.tsx"));
+    assert.equal(r.status, 2, `${flag}: ${r.stderr}`);
+    assert.match(r.stderr, /unknown option/);
+  }
+});
+
+test("detect.mjs still passes a clean file, fails a required finding, and stays advisory without --strict", () => {
+  assert.equal(cli("--strict", join(FIXTURES, "good-chart.tsx")).status, 0);
+  assert.equal(cli("--strict", join(FIXTURES, "bad-chart.tsx")).status, 1);
+  assert.equal(cli(join(FIXTURES, "bad-chart.tsx")).status, 0);
+  const skipped = cli("/nonexistent/chart.tsx");
+  assert.equal(skipped.status, 0, "without --strict an unreadable file is skipped, as before");
+  assert.match(skipped.stderr, /cannot read \/nonexistent\/chart\.tsx; skipped, not checked/, "but it is named on stderr");
+  assert.equal(cli(join(FIXTURES, "good-chart.tsx")).stderr, "", "a readable file prints nothing on stderr");
 });

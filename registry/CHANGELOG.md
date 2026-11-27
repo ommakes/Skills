@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.32.2] - 2026-11-27
+
+Docs and comments only; no item changes.
+
+- `README.md` counted forty-six items. `registry.json` has 52 (49 components, 2 theme items, 1 lib), and the list under the count is not complete, so it now says so.
+- "`vois-components` Job 5" is `JOB-SWITCH-VIEWS` in `README.md`, `tabs.tsx` and `segmented-control.tsx`. Jobs have no numbers since vois-components 1.45.0.
+- `README.md`, `harness/README.md`, `harness/build.mjs` and `scripts/menubar.test.mjs` name `vois-loop` scripts and the `a11y` workflows, which exist only in the private repo. Each now says so, because this folder is mirrored to the public repo byte for byte.
+
+---
+
 ## [0.32.1] - 2026-11-25
 
 Contrast fixes found by the rendered accessibility check on `main` (axe-core 4.14.1, Chromium 1255).

@@ -123,6 +123,9 @@ jobs:
           node scripts/check-reference-files.test.mjs
           node scripts/check-reference-files.mjs
 
+      - name: Every skill CLI runs through a symlinked install and from a path with a space
+        run: node scripts/entry-points.test.mjs
+
       - name: Port script and drift report (tests)
         run: node scripts/port-from-private.test.mjs
 

@@ -14,7 +14,7 @@
 //
 // It reads the index, the job file and the behavior cards, all inside vois-components, so an installed skill works alone.
 // The index carries a copy of the vois-patterns and vois-fields rule text for the same reason.
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { norm, byText } from "./retrieval.mjs";
@@ -361,7 +361,10 @@ export function main(argv, all = loadAll()) {
   return { code, out };
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   let r;
   try { r = main(process.argv.slice(2)); } catch (e) { r = { code: 1, out: `query: ${e.message}. Run node vois-components/scripts/retrieval.mjs to check the index.` }; }
   (r.code === 1 ? console.error : console.log)(r.out);

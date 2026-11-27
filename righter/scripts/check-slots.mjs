@@ -10,9 +10,9 @@
 // Exit code is 0 (no failures) or 1 (at least one failure). Warnings do not
 // change the exit code.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const LIMITS = JSON.parse(readFileSync(join(ROOT, "data/marketing-limits.json"), "utf8"));
@@ -134,6 +134,9 @@ function main(argv) {
   return results.some((r) => r.error || r.fail.length) ? 1 : 0;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   process.exit(main(process.argv));
 }

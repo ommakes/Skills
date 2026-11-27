@@ -7,7 +7,7 @@
 //
 // The schema validator below is a small subset on purpose (same one vois-fields uses). It fails closed: a schema
 // keyword it does not know is an error, so a schema can never ask for a check that is skipped.
-import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, existsSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -187,7 +187,10 @@ export function checkAll({ dir = CARDS, schemaPath = SCHEMA, dsIds = loadDsIds()
   return out;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// realpath on both sides: a symlinked skill install gives argv[1] the link path but import.meta.url the real one.
+// An argv[1] that does not resolve (an import from `node -e` with arguments) is not this script, so main() stays off.
+const isEntry = (() => { let arg; try { arg = process.argv[1] && realpathSync(process.argv[1]); } catch { return false; } if (!arg) return false; try { return realpathSync(fileURLToPath(import.meta.url)) === arg; } catch { return true; } })();
+if (isEntry) {
   const problems = checkAll({ write: process.argv.includes("--write") });
   if (problems.length) { console.error(problems.map((p) => "  " + p).join("\n")); console.error(`behaviors: ${problems.length} problem(s)`); process.exit(1); }
   console.log("behaviors: OK");
