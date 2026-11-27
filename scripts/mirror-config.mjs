@@ -40,6 +40,7 @@ export const RULE_FILES = [
   "vois-patterns/data/patterns-rules.json",
   "vois-components/data/components-rules.json",
   "vois-dataviz/data/dataviz-rules.json",
+  "vois-fields/data/fields-rules.json",
 ];
 
 
@@ -61,7 +62,7 @@ export function trackedFiles(root, tree) {
 }
 
 
-export const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-patterns", "vois-tokens"];
+export const STANDALONE_SKILLS = ["righter", "vois-components", "vois-dataviz", "vois-fields", "vois-patterns", "vois-tokens"];
 
 // Collect every object that carries a string "id", keyed by that id. A duplicate ID is an
 // error: identity has to be unique inside a file.

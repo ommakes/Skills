@@ -1,6 +1,6 @@
 # Vois Fields
 
-**Version 1.0.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Part of the Vois design system skills (premium tier). Works without the Vois MCP server.
+**Version 1.0.0** · For use with Claude Code, Claude.ai, and any Claude-powered agentic coding tool. Part of the Vois design system skills. Works without the Vois MCP server.
 
 Rules for specialized input fields. It answers: what keyboard, autofill, stored format, check timing and privacy handling does this field need?
 
@@ -23,7 +23,7 @@ The other Vois skills say which component to use and how to style it. None said 
 
 ## Where it sits in the chain
 
-`vois-patterns` then `vois-components` then **`vois-fields`** then `vois-tokens`, with `righter` throughout. It runs only when the screen has a specialized field. See `../graph.json` and `../vois-router/SKILL.md`.
+`vois-patterns` then `vois-components` then **`vois-fields`** then `vois-tokens`, with `righter` throughout. It runs only when the screen has a specialized field. The repo [README](../README.md) gives the reading order.
 
 ## Where the rules came from, and how sure we are
 

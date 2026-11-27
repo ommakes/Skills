@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.44.8] - 2026-11-27
+
+### Fixed
+- **`SKILL.md` names all 18 behavior cards.** The list stopped at 15 and left out Carousel, Drawer and Resizable, whose cards came in 1.38.0. The same paragraph says to report "no card" rather than invent rules, so an agent that trusted the list could skip a card that exists. No card, rule or index change.
+
+---
+
 ## [1.44.7] - 2026-11-26
 
 ### Changed

@@ -2,7 +2,7 @@
 // Checks that every rule id tagged in the .md files (`id: XXX-000`) resolves to a real
 // entry in data/onboarding-rules.json, that every id in the JSON is cited somewhere in the
 // .md files, and that every JSON rule has a valid strength. Same convention as
-// vois-patterns/scripts/check-rule-sync.mjs.
+// scripts/check-rule-sync.mjs (the one that checks vois-tokens and vois-patterns).
 //
 // Usage: node scripts/check-rule-sync.mjs
 // Exit code 0 = in sync, 1 = drift found (prints what's missing on which side).

@@ -87,6 +87,20 @@ jobs:
       - name: Every conversion-patterns rule is referenced and consistent
         run: node conversion-patterns/scripts/check-rule-sync.mjs
 
+      - name: Every onboarding-flow rule is tagged and cross-referenced
+        run: node onboarding-flow/scripts/check-rule-sync.mjs
+
+      - name: Behavior cards match their schema, and each .md is what its .json gives (vois-components)
+        run: |
+          node vois-components/scripts/behaviors.test.mjs
+          node vois-components/scripts/behaviors.mjs
+
+      - name: Subagent harness tests (vois-eval)
+        run: node --test vois-eval/run/subagent-harness.test.mjs
+
+      - name: Design previews are well formed
+        run: bash design-previews/scripts/validate-previews.sh
+
       - name: Every rule says how it is verified, and detectors match the code
         run: python3 scripts/check-verification.py
 
@@ -111,6 +125,19 @@ jobs:
 
       - name: Port script and drift report (tests)
         run: node scripts/port-from-private.test.mjs
+
+      # Last in the job: setup-python changes which python3 every later step gets. feedback-synthesizer's scoring needs scipy.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: UX research eval tests
+        run: |
+          pip install scipy
+          python3 ux-research/survey-architect/evals/test_selection.py
+          python3 ux-research/feedback-synthesizer/evals/test_scoring.py
+          python3 ux-research/research-reporter/evals/test_report_checks.py
+          python3 ux-research/research-loop/evals/test_routing.py
 
   # The registry is the only part that installs packages. It runs on every PR, like the job above,
   # so a change to the detector or the token docs still rebuilds it. Its own job because it needs the
@@ -159,7 +186,14 @@ jobs:
         run: npm run typecheck:test
       - name: IconButton renders its label as the name, and keeps its tooltip closed when disabled
         run: npm run icon-button:test
-      # Needs playwright and Chromium; where they are missing the test reports itself skipped.
+      # The browser tests look for playwright in registry/ or at the repo root, and report themselves skipped without it.
+      # Installed at the root so registry/node_modules stays exactly what the lock file gives. Pinned: an older Chromium
+      # (playwright 1.49) reads :focus-visible differently and fails the resizable ring test.
+      - name: Install playwright and Chromium for the real-browser tests
+        working-directory: .
+        run: |
+          npm i --no-save --no-package-lock playwright@1.65.1
+          npx playwright install --with-deps chromium
       - name: Menubar keys and safe triangle in a real browser
         run: npm run menubar:test
       - name: InputOTP typing, paste and states in a real browser

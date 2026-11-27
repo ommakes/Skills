@@ -9,6 +9,7 @@ Run what CI runs:
 ```
 node scripts/check-rule-sync.mjs
 node conversion-patterns/scripts/check-rule-sync.mjs
+node onboarding-flow/scripts/check-rule-sync.mjs
 node scripts/check-editions.test.mjs
 node scripts/check-editions.mjs
 python3 scripts/check-verification.py
@@ -41,15 +42,23 @@ node vois-eval/lookalike-pass/scan.test.mjs
 node vois-components/scripts/motion-logic.test.mjs
 node vois-components/scripts/retrieval.test.mjs
 node vois-components/scripts/retrieval.mjs
+node vois-components/scripts/behaviors.test.mjs
+node vois-components/scripts/behaviors.mjs
+node --test vois-eval/run/subagent-harness.test.mjs
+bash design-previews/scripts/validate-previews.sh
+for t in ux-research/*/evals/test_*.py; do python3 "$t"; done # test_scoring.py needs scipy
 node vois-dataviz/scripts/dataviz.test.mjs
+node vois-dataviz/scripts/build-reference.mjs --check
 node registry/scripts/build-tokens.test.mjs
 node registry/scripts/check-registry.test.mjs
 node registry/scripts/check-registry.mjs
 (cd registry && npm ci --ignore-scripts && npm run syntax && npm run syntax:test && npm run panel:test && npm run typecheck && npm run typecheck:test && npm run icon-button:test && npm run menubar:test && npm run input-otp:test && npm run drawer:test && npm run carousel:test && npm run resizable:test && npm run harness:test && npm run harness:check && npm run build)
+# The five real-browser tests above skip without playwright; CI installs it at the repo root:
+# npm i --no-save --no-package-lock playwright@1.65.1 && npx playwright install --with-deps chromium
 node scripts/check-mirror.mjs --private <path to a checkout of ommakes/vois-skills>
 ```
 
-`motion-logic.test.mjs` needs Node 22.13 or newer.
+`motion-logic.test.mjs` needs Node 22.13 or newer. The browser tests need Playwright 1.65 or newer: an older Chromium fails the resizable focus-ring test.
 
 Then read your own diff as if someone else wrote it, looking for the classes below. For anything that touches a validator, detector or regex, get a second set of eyes (a `/code-review` run or a fresh subagent that has not seen your reasoning) before pushing. Every Bugbot round so far found things the author could have found by reading the diff once more.
 
@@ -70,7 +79,7 @@ Mutation tests ("what if I remove this guard") run in a copy or a `git worktree`
 
 ## Conventions
 
-- For the Vois design system skills (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-dataviz`, `righter`) and the component registry (`registry/`), `ommakes/vois-skills` (private) is canonical. Change the rules, the detector and the premium wording there first. This repo is the standalone mirror: it must work without the Vois MCP.
+- For the Vois design system skills (`vois-tokens`, `vois-patterns`, `vois-components`, `vois-fields`, `vois-dataviz`, `righter`) and the component registry (`registry/`), `ommakes/vois-skills` (private) is canonical. Change the rules, the detector and the premium wording there first. This repo is the standalone mirror: it must work without the Vois MCP.
 - Port to this repo after the private change merges. `scripts/check-mirror.mjs` checks the mirror. It fails when the shared detector code or any git-tracked file in `registry/` differs, when a rule ID or its content differs outside the named exceptions in `ALLOWED`, or when a public skill presents an MCP call as required. Run it with `--private <path to a checkout of ommakes/vois-skills>`. CI does this with a read-only token.
 - Public must never gain a required MCP call. If a change needs the MCP, the premium wording goes in the private repo only.
 - Other skills in this repo (`design-ask`, `design-rationale`, `conversion-patterns`, `metrics-tagging`, and the rest) keep the public repo as their source.
