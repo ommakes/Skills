@@ -1,7 +1,7 @@
 ---
 name: vois-patterns
-description: Structural decision trees for container types, form states, table layouts, and page-level patterns. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
-version: 1.23.8
+description: Structural decision trees for container types, form states, table layouts, page-level patterns, and marketing feature media. Use before vois-tokens. Routes to righter skill for all microcopy (labels, errors, buttons, helpers). Use when building pages, forms, features, workflows.
+version: 1.23.9
 ---
 
 # Vois Patterns Skill
@@ -85,7 +85,12 @@ START: What is the user trying to accomplish?
 │
 └─ PATH G: Show what a product or business offers to people not yet using it (landing page, homepage)
    └─ → read references/marketing-pages.md                   [PATH-G]
-      └─ IF: feature block needs screenshot, chrome, or motion → read references/marketing-feature-media.md   [PATH-M]
+      └─ IF: feature block needs screenshot, chrome, motion, or non-flat media
+         → read references/marketing-feature-media.md         [PATH-M]
+         → choose one primary media treatment from claim/media structure
+         → apply composable media treatment(s)
+         → choose static/motion behavior
+         → read vois-components and vois-tokens for implementation
 
 ├─ PATH M: Compose product media inside a marketing feature block (screenshot, photo, illustration, device mockup)
 │  └─ → read references/marketing-feature-media.md           [PATH-M]
@@ -126,7 +131,7 @@ existing paths.
 | `references/detail-pages.md` | Read-only single-record views | `[PATH-E]` |
 | `references/pricing-pages.md` | Pricing pages by billing model (flat, seat, usage, hybrid, consumer) and tier count (1 to 4), calculators, comparison tables, trial timelines | `[PATH-F]` `[PATH-PRICE-U1]` to `[PATH-PRICE-C11]` |
 | `references/marketing-pages.md` | Landing pages and homepages: one idea per section, three blocks max, detail behind a link, image tiles, no dividers, one primary button. Taste rules for marketing surfaces only | `[PATH-G]` `[PATH-G-*]` |
-| `references/marketing-feature-media.md` | Marketing feature blocks: centered, split, triptych, and bento treatments; frames, device chrome, backdrop blends, scroll motion, focal callouts. Builds on PATH-G | `[PATH-M]` `[PATH-M-*]` |
+| `references/marketing-feature-media.md` | Marketing feature blocks: explicit centered/split/triptych/bento treatment selection plus composable media, evidence, behavior, responsive, accessibility, and performance rules. Builds on PATH-G | `[PATH-M]` `[PATH-M-*]` |
 | `references/questionnaires.md` | Surveys, intake forms, quizzes and polls: one question per screen, component per question type, Likert, rank by drag, multi-select limit, progress, required and errors, prefill, poll and quiz results | `[PATH-H]` |
 | `references/permissions-and-conditional-logic.md` | Hide vs disable by role, personal data (mask, reveal, keep out of URLs), parent/child input dependencies, accordions | `[PATH-PERM-*]` `[PATH-COND-*]` (cross-cutting) |
 | `references/composition.md` | A brief doesn't name a container type directly, or seems to need more than one at once | `[PATH-COMPOSITION-*]` (cross-cutting) |

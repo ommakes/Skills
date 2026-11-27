@@ -2278,7 +2278,7 @@
       "category": "DS-MKT",
       "category_label": "Marketing Type and Spacing",
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
-      "rule": "Marketing feature media frames use a larger radius than product cards: at least 16px on mobile and 20px on desktop, from a radius token. Photo tiles stay at least 300px tall on mobile, matching PATH-G-TILE.",
+      "rule": "Feature media on marketing surfaces may span the full marketing content width. Copy beside or above the media still caps at 56ch (DS-MKT-005). Do not upscale raster screenshots beyond their capture.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -2288,7 +2288,7 @@
       "category": "DS-MKT",
       "category_label": "Marketing Type and Spacing",
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
-      "rule": "Device chrome around product UI in marketing media uses 8 to 12px padding inside the frame and one elevation step above the page background. Crop to the job; no literal OS chrome.",
+      "rule": "Browser, app, and phone frames in feature media use 12px corner radius on mobile and 16px on desktop unless a product frame token overrides.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"
@@ -2298,7 +2298,7 @@
       "category": "DS-MKT",
       "category_label": "Marketing Type and Spacing",
       "source_file": "vois-tokens/references/marketing-type-and-spacing.md",
-      "rule": "Marketing media scroll entrance uses --motion-duration-base or faster and stays under DS-ANIMATION-001. When prefers-reduced-motion is set, skip entrance motion and show the final frame.",
+      "rule": "Feature media frames use at most one elevation shadow step, matching marketing cards on the same page. No stacked outer glow and inner shadow.",
       "severity": "recommended",
       "enforcement": "advisory",
       "verification": "judgment"

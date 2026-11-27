@@ -1,3 +1,11 @@
+## [1.23.9] - 2026-11-27
+
+### Changed
+- Revised PATH-M marketing feature media guidance into an explicit treatment-selection decision system: centered, split, triptych, and bento now have best-fit and rejection criteria.
+- Separated primary media treatment from composable frame, chrome, blend, focal callout, and behavior rules.
+- Added claim-to-evidence guidance, state-vs-flow media selection, shared responsive rules, and clearer performance/accessibility ownership.
+- Updated PATH-M routing in SKILL.md and the structured decision index.
+
 # Changelog: vois-patterns
 
 All notable changes to the vois-patterns skill are documented here. This file tracks rule updates, new templates, and improvements based on usage data and feedback.
